@@ -1,0 +1,13 @@
+name = "Kenny [HORROR]"
+filename = "Kenny-6.0.0-neoforge+mc1.21.1.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/1qMrluiH/versions/UbZq9jAY/Kenny-6.0.0-neoforge%2Bmc1.21.1.jar"
+hash-format = "sha512"
+hash = "b4b52e2289258354a5aa76287ec5d2da3152f68ca84a592bec932664b56052c0cdd8ca447ff97be8fc73d37a9f18b9f2445b96070b552de9435a97938ffdf43b"
+
+[update]
+[update.modrinth]
+mod-id = "1qMrluiH"
+version = "UbZq9jAY"

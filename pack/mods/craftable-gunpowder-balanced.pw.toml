@@ -1,0 +1,13 @@
+name = "Craftable Gunpowder balanced"
+filename = "liposcraftablegunpowder-1.0.1.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/uRPQgaEk/versions/zOGa06V5/liposcraftablegunpowder-1.0.1.jar"
+hash-format = "sha512"
+hash = "469a50169a45d8eefa09502571514b8b6df9e1291f2300ed79786f991c31094559e095505fdee50d81d2bb884658dd529b2cec1b4926843dae99a42b74ebbf79"
+
+[update]
+[update.modrinth]
+mod-id = "uRPQgaEk"
+version = "zOGa06V5"

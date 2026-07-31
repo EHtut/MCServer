@@ -1,0 +1,13 @@
+name = "Grim & Bleak"
+filename = "grim_and_bleak-2.5.2-neoforge-1.21.1.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/RpyTo7KH/versions/x4IDBdv8/grim_and_bleak-2.5.2-neoforge-1.21.1.jar"
+hash-format = "sha512"
+hash = "b2d04d89333dd4da4636275e49ad9c59f347e64dbc48e169253eefbd9b2828c5652a41c3ac812c1dfeeb22a7f77f51a407fff00e02378457b7cc007d54a52d1e"
+
+[update]
+[update.modrinth]
+mod-id = "RpyTo7KH"
+version = "x4IDBdv8"

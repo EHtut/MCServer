@@ -1,0 +1,13 @@
+name = "Born in Chaos: Forgotten Content"
+filename = "born_in_chaos_fc-v1.2.0-1.21.1-neoforge.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/8H5Npk5F/versions/gbhFtEWp/born_in_chaos_fc-v1.2.0-1.21.1-neoforge.jar"
+hash-format = "sha512"
+hash = "a4816a7339f52a444dc968f99fba7efbb3b61c1c5ec95a3de6d2602c51cdd2589079d763e314c9f622c1dd0f23d9b22f26dbc3ca4309b45cdcfdb8ca0d759367"
+
+[update]
+[update.modrinth]
+mod-id = "8H5Npk5F"
+version = "gbhFtEWp"

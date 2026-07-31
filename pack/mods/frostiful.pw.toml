@@ -1,0 +1,13 @@
+name = "Frostiful"
+filename = "frostiful-2.3.3+1.21.1-neoforge.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/Ae6qoBj3/versions/p6QunhUe/frostiful-2.3.3%2B1.21.1-neoforge.jar"
+hash-format = "sha512"
+hash = "c68cdd82ffbb4a78cd793f6daa96ca4d49865ba608a86e21203630440b5246f23c17b16a2d3b35db29259efb5c3906b74fbfcbc8902ecaf8ebdc232b4f5bbc47"
+
+[update]
+[update.modrinth]
+mod-id = "Ae6qoBj3"
+version = "p6QunhUe"

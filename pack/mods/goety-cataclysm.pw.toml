@@ -1,0 +1,13 @@
+name = "Goety Cataclysm"
+filename = "goety_cataclysm-1.21.1-1.8.2.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/YwmuwbXi/versions/w1fCgD0m/goety_cataclysm-1.21.1-1.8.2.jar"
+hash-format = "sha512"
+hash = "9d188b8c3f7bd5b0d74c42dbdc002afefdc5081ece2a0f37897e041110e5af8112500b63e8c23cb966a62b5a3087cdbc8971681dfeb6c4483b9bf350c5cf9018"
+
+[update]
+[update.modrinth]
+mod-id = "YwmuwbXi"
+version = "w1fCgD0m"

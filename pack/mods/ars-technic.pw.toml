@@ -1,0 +1,13 @@
+name = "Ars Technic"
+filename = "arstechnic-0.1.0.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/BnVyWNTM/versions/XHVLXQZi/arstechnic-0.1.0.jar"
+hash-format = "sha512"
+hash = "8eaef12893d2beb7a8c2a24bebac6854217d1801881ac5ddbe0c8411322a7f1be4a09f2e0135dc1b18fdc7092658aa1194d735a4fbec4f85bb02224cc77f452b"
+
+[update]
+[update.modrinth]
+mod-id = "BnVyWNTM"
+version = "XHVLXQZi"

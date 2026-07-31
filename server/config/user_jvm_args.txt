@@ -1,0 +1,63 @@
+# ---------------------------------------------------------------------------
+# JVM arguments for the NeoForge server launcher. One argument per line.
+# Copied into the instance by setup-server; edit here, not there.
+#
+# Java 21 is REQUIRED for Minecraft 1.21.1. Java 8 will not launch it.
+# ---------------------------------------------------------------------------
+
+# --- HEAP -------------------------------------------------------------------
+# THIS IS THE LINE YOU CHANGE WHEN THE SERVER MOVES TO ITS OWN BOX.
+#
+# 8G is set for the buildout phase, because this workstation is also running
+# other work and only had ~12.5 GB free when the server was built. Committing
+# more than that would make the two fight.
+#
+# On the dedicated box: raise both to 12G. Not higher. A 400-mod server does not
+# need more than 12G, and past roughly 12-16G G1's pause times get worse, not
+# better - you trade smooth ticks for occasional multi-second stalls.
+#
+# Xms and Xmx are deliberately EQUAL. A heap that grows on demand spends its
+# early life resizing, and the pauses land exactly when players are loading in.
+-Xms8G
+-Xmx8G
+
+# --- GC ---------------------------------------------------------------------
+# Aikar's flags: the long-standing tuned G1 configuration for Minecraft
+# servers. The short version is that they bias G1 towards a large young
+# generation and frequent, cheap collections, because Minecraft allocates
+# enormous numbers of short-lived objects every tick.
+#
+# On Java 21 the alternative is Generational ZGC (-XX:+UseZGC -XX:+ZGenerational),
+# which trades a few percent throughput for near-zero pauses. Worth testing on
+# the dedicated box; G1 is the safer default and the one these values tune.
+-XX:+UseG1GC
+-XX:+ParallelRefProcEnabled
+-XX:MaxGCPauseMillis=200
+-XX:+UnlockExperimentalVMOptions
+-XX:+DisableExplicitGC
+-XX:+AlwaysPreTouch
+-XX:G1NewSizePercent=30
+-XX:G1MaxNewSizePercent=40
+-XX:G1HeapRegionSize=8M
+-XX:G1ReservePercent=20
+-XX:G1HeapWastePercent=5
+-XX:G1MixedGCCountTarget=4
+-XX:InitiatingHeapOccupancyPercent=15
+-XX:G1MixedGCLiveThresholdPercent=90
+-XX:G1RSetUpdatingPauseTimePercent=5
+-XX:SurvivorRatio=32
+-XX:+PerfDisableSharedMem
+-XX:MaxTenuringThreshold=1
+
+# --- modded server hygiene --------------------------------------------------
+# Mixin-heavy packs produce enormous stack traces; keep them intact so a crash
+# report is actually diagnosable.
+-XX:-OmitStackTraceInFastThrow
+
+# Deterministic file encoding. Several mods write JSON/NBT with non-ASCII
+# characters and inherit the platform default otherwise - which differs between
+# this Windows box and the Linux server it is moving to.
+-Dfile.encoding=UTF-8
+
+# Quieter, faster startup on a headless box.
+-Djava.awt.headless=true

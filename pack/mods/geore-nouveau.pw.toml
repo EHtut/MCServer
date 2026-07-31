@@ -1,0 +1,13 @@
+name = "GeOre Nouveau"
+filename = "GeOre_Nouveau-1.21.1-0.5.9.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/wxufWCS4/versions/q5seiQcv/GeOre_Nouveau-1.21.1-0.5.9.jar"
+hash-format = "sha512"
+hash = "ba8b76ea48817b358022e5e36da91acce4728508d0b5ce3602265cc4ce4ee4bab22dbf0da689e4ff9a1dbb4417d407b0eb1717ed67a2306f1a73ce01a134eace"
+
+[update]
+[update.modrinth]
+mod-id = "wxufWCS4"
+version = "q5seiQcv"

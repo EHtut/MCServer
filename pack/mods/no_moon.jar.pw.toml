@@ -1,0 +1,13 @@
+name = "no_moon.jar"
+filename = "no_moon-1.4.4-neoforge-1.21.1.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/GUIbwsfo/versions/prX1mOlL/no_moon-1.4.4-neoforge-1.21.1.jar"
+hash-format = "sha512"
+hash = "d7d2f52665fe4793992965398414731603a01a43658d2bd6b17c65347c141ca66752169302dbfb86c05371f07325a7c3d1a55ce9547909cbfcc3a814a5c441e0"
+
+[update]
+[update.modrinth]
+mod-id = "GUIbwsfo"
+version = "prX1mOlL"

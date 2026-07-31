@@ -1,0 +1,13 @@
+name = "Gunpowder Ore"
+filename = "gunpowderore-1.0.1-neoforge-1.21.1.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/gVSsBIWd/versions/ItOcb8DZ/gunpowderore-1.0.1-neoforge-1.21.1.jar"
+hash-format = "sha512"
+hash = "db6eeb387514becc52cfdda80fc0298722d056d4a509f6376373fab23a7f9319e51bc0c781605e130c2518dbaea5e622d00ee456c0edf5b27fc6b8f990c2c625"
+
+[update]
+[update.modrinth]
+mod-id = "gVSsBIWd"
+version = "ItOcb8DZ"

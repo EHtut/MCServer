@@ -1,0 +1,13 @@
+name = "Mythic Upgrades"
+filename = "mythicupgrades-neoforge-1.21.1-5.1.0.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/ERH7cFoy/versions/UQvrrZMy/mythicupgrades-neoforge-1.21.1-5.1.0.jar"
+hash-format = "sha512"
+hash = "eb169cc0b9b8bc02b905760c16d02ebeed34577b3175d9d66c6b974c737e02101ba6bb6e4c2519dcc6cd076d5f764c82aff6787149e1c0d9cff8488559069cad"
+
+[update]
+[update.modrinth]
+mod-id = "ERH7cFoy"
+version = "UQvrrZMy"

@@ -1,0 +1,13 @@
+name = "Knight Quest"
+filename = "knightquest-neoforge-1.21.1-1.9.3.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/VEOQ4Jz4/versions/974yQ1qF/knightquest-neoforge-1.21.1-1.9.3.jar"
+hash-format = "sha512"
+hash = "8cebc08b0295c0b54589b0b07fc604dfbd1d035d11f7ee3e1b5988e3aad8ba1f7419dbebbac61a36275cd14fca8f3922ae0c49a44db2b56310dbcb7be61b714c"
+
+[update]
+[update.modrinth]
+mod-id = "VEOQ4Jz4"
+version = "974yQ1qF"

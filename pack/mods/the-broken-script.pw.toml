@@ -1,0 +1,13 @@
+name = "The Broken Script"
+filename = "thebrokenscript-1.10.1+mc1.21.1-build.280.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/TocuaDpt/versions/AztIoeo1/thebrokenscript-1.10.1%2Bmc1.21.1-build.280.jar"
+hash-format = "sha512"
+hash = "09e015a630c6e962fee23600c724a3b293002f90c283e847d5a85462b823ad5472cb161b58dd3012add66411e44523bea4766d340dea9779e84017f8e8e3e214"
+
+[update]
+[update.modrinth]
+mod-id = "TocuaDpt"
+version = "AztIoeo1"

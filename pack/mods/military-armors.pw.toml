@@ -1,0 +1,13 @@
+name = "Military Armors"
+filename = "militaristic_armor-1.0.0-neoforge-1.21.1.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/xqyS1U92/versions/aWRFRfRU/militaristic_armor-1.0.0-neoforge-1.21.1.jar"
+hash-format = "sha512"
+hash = "16cdb78ed1617e66d270e860559736e1684bd6ede1d4e287bfc7f978e4eb3f8c2c30c298b282f393f528eb2eb48330744d6050f8b093cbbb47926b4c33b762a4"
+
+[update]
+[update.modrinth]
+mod-id = "xqyS1U92"
+version = "aWRFRfRU"

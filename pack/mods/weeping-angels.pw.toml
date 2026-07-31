@@ -1,0 +1,13 @@
+name = "Doctor Who: Weeping Angels"
+filename = "forge-weeping_angels-mc1.21-v1.0.4-forge.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/TEzJJY7H/versions/QNSEcPLb/forge-weeping_angels-mc1.21-v1.0.4-forge.jar"
+hash-format = "sha512"
+hash = "2cc0d2ebea449eecfeb119bec656b6d2cd6c106d3162a092a6cf5cd65920eaed8bc839e35a5aeeb364734aaca97fc372962f183d9ae03e2a31370cb9321ebe4d"
+
+[update]
+[update.modrinth]
+mod-id = "TEzJJY7H"
+version = "QNSEcPLb"

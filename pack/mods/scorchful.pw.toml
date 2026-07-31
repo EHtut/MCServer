@@ -1,0 +1,13 @@
+name = "Scorchful"
+filename = "scorchful-neoforge-0.15.2+1.21.1-neoforge.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/SZQ5qcdn/versions/4yMBdLHx/scorchful-neoforge-0.15.2%2B1.21.1-neoforge.jar"
+hash-format = "sha512"
+hash = "7cf96f9c86d60f53149c842fa55e238d863a33e69ccc1dd40db09fa8a9e549faba25225378f34938906553bd556ac5c303658d6d63cddbc1eb16765012c8950d"
+
+[update]
+[update.modrinth]
+mod-id = "SZQ5qcdn"
+version = "4yMBdLHx"
