@@ -1,0 +1,19 @@
+# Normalise line endings so the same repo drives a Windows dev box and a Linux
+# dedicated server without the shell scripts arriving with CRLF and dying.
+* text=auto eol=lf
+
+*.ps1   text eol=crlf
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+
+*.sh    text eol=lf
+*.toml  text eol=lf
+*.json  text eol=lf
+*.yaml  text eol=lf
+*.yml   text eol=lf
+*.md    text eol=lf
+*.properties text eol=lf
+
+*.jar   binary
+*.png   binary
+*.zip   binary

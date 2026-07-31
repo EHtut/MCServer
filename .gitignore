@@ -1,0 +1,81 @@
+# ---------------------------------------------------------------------------
+# MCServer — the repo tracks the RECIPE, never the runtime.
+#
+# Everything a server generates (world, logs, jars, caches, player data) is
+# either huge, churning, or reproducible from the manifest. None of it belongs
+# in git. If you find yourself wanting to commit something under here, the
+# right move is almost always to commit the config/manifest that produces it.
+# ---------------------------------------------------------------------------
+
+# --- Runtime instance (should live OUTSIDE this repo; ignored if it strays) --
+/instance/
+/run/
+/server-runtime/
+
+# --- Mod / loader binaries --------------------------------------------------
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+/pack/mods/*.jar
+/libraries/
+/versions/
+
+# --- World + player data (never commit; use the backup script) --------------
+/world/
+/world_nether/
+/world_the_end/
+world/
+usercache.json
+usernamecache.json
+banned-ips.json
+banned-players.json
+ops.json
+whitelist.json
+!server/config/ops.example.json
+!server/config/whitelist.example.json
+
+# --- Logs, crashes, profiling ----------------------------------------------
+logs/
+crash-reports/
+debug/
+*.log
+*.log.gz
+hs_err_pid*.log
+replay_pid*.log
+/spark/
+/profiling/
+
+# --- Loader / launcher scratch ---------------------------------------------
+.fabric/
+.mixin.out/
+/mods/.index/
+/defaultconfigs/.bak/
+eula.txt
+
+# --- Backups ----------------------------------------------------------------
+/backups/
+*.tar.zst
+*.tar.gz
+*.zip
+!docs/assets/*.zip
+
+# --- Tooling scratch --------------------------------------------------------
+/tools/.cache/
+/tools/out/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# --- Secrets ----------------------------------------------------------------
+.env
+*.secret
+secrets.json
+curseforge-api-key.txt
+
+# --- OS / editor ------------------------------------------------------------
+Thumbs.db
+desktop.ini
+.DS_Store
+.idea/
+.vscode/
+*.swp
