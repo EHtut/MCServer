@@ -1,0 +1,69 @@
+COGS & CADAVERS — how to join
+=============================
+
+You need two things: Prism Launcher, and this file. That is all.
+
+
+1. INSTALL PRISM LAUNCHER  (free, open source)
+
+   https://prismlauncher.org/download/
+
+   Windows users can also just run:   winget install PrismLauncher.PrismLauncher
+
+
+2. IMPORT THIS PACK
+
+   Open Prism  ->  "Add Instance"  ->  "Import from zip"
+   Pick the .zip you downloaded (do NOT unzip it first).
+
+   An instance called "Cogs and Cadavers" appears.
+
+
+3. SIGN IN
+
+   Prism  ->  top right  ->  "Manage Accounts"  ->  add your Microsoft account.
+
+
+4. LAUNCH IT
+
+   The first launch downloads about 1.5 GB of mods. It looks like it is doing
+   nothing for a while. It is not - watch the small progress window.
+
+   Every launch after that only downloads what actually changed, which is
+   usually nothing.
+
+
+5. JOIN
+
+   Server address:   stammer-unsmooth.tun.ply.gg
+
+   You must be whitelisted first. Send Ethan your exact Minecraft username.
+
+
+NOTES
+-----
+
+* 8 GB of RAM is already configured. Do not raise it - Minecraft clients gain
+  nothing above ~8 GB and the pauses get longer, which feels like stutter.
+
+* You need Java 21. Prism will offer to download it automatically; say yes.
+
+* DO NOT add or delete mods by hand. packwiz re-syncs the mods folder on every
+  launch and will undo it. If everyone is not running identical mods, the server
+  refuses the connection - and the error blames a mod rather than the mismatch.
+
+* Voice chat is built in (Simple Voice Chat). Set your microphone in its
+  settings BEFORE the first session, not during one. Press V for the menu.
+
+* Shaders are supported but not included - they are large and personal taste.
+  If you want them: download Complementary Unbound from
+  https://modrinth.com/shader/complementary-unbound
+  and drop the .zip into the instance's shaderpacks folder
+  (Prism -> right-click instance -> Folder), then pick it in
+  Options -> Video Settings -> Shader Packs.
+
+  If frames are tight, MakeUp Ultra Fast is far cheaper and still looks good.
+
+* Render distance: keep it LOW (8-12). Distant Horizons is installed and draws
+  everything past that far more cheaply. Cranking vanilla render distance is the
+  usual way to have this pack and still run badly.
