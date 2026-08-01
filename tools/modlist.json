@@ -24,7 +24,8 @@
       ["sculk-horde", "Stops at 1.20.6"],
       ["eidolon-repraised", "No 1.21.1 NeoForge build"],
       ["ledger", "Fabric only - block audit logging has no NeoForge equivalent"],
-      ["configured", "Went Fabric-only; no in-game config editor for NeoForge 1.21.1"]
+      ["configured", "Went Fabric-only; no in-game config editor for NeoForge 1.21.1"],
+      ["zoniex", "MISLABELLED ON MODRINTH. Tagged 1.21.1 + neoforge, but the jar contains only a legacy Forge mods.toml declaring mc=[1.20.1]. Proven by reading the jar (tools/check_jars.py), not guessed. It would not have loaded."]
     ]
   },
   "categories": {
@@ -277,7 +278,6 @@
         ["arphex", "Phobia-grade arthropod horror and supernatural bosses", "risky"],
         ["fungal-infectionspore", "A spreading fungal infection. The closest 1.21.1 has to Scape and Run: Parasites", "major"],
         ["crimson_curse", "A Nether-born virus that escapes into the Overworld and spreads", "major"],
-        ["zoniex", "Zombie Nightmare Expansions - creepy undead with unusual mechanics", "minor"],
         ["abandoned-watchtowers", "Abandoned watchtowers in forests - atmosphere in worldgen", "minor"],
         ["frights-delight", "Farmer's Delight dishes made from hostile mob drops. Grim, and it ties horror to the food economy", "minor"],
         ["diligentstalker", "Remote camera drones and cave vision, reframed as SALVAGE from the buried facilities. Gives players reconnaissance tools instead of being purely prey - and its modernity is the point, not a flaw", "minor"],

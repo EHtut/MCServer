@@ -1979,8 +1979,3 @@ metafile = true
 file = "mods/zombie-awareness.pw.toml"
 hash = "25f44960f8a331cafb3446c9388f959989aa01bd53a17a38766967f6cf20bb60"
 metafile = true
-
-[[files]]
-file = "mods/zoniex.pw.toml"
-hash = "e28ba0f65670c454a589766a083c094e7574f17cfe0d7f3c9055a75b52fcf2a8"
-metafile = true

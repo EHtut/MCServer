@@ -7,8 +7,8 @@
 
 ## Summary
 
-- **397 / 450** mod slots used
-- **367** stable releases, **30** beta/alpha
+- **396 / 450** mod slots used
+- **366** stable releases, **30** beta/alpha
 - **6** entries carry a known hazard (see below)
 
 ---
@@ -27,6 +27,7 @@ spends an evening re-checking.
 | `eidolon-repraised` | No 1.21.1 NeoForge build |
 | `ledger` | Fabric only - block audit logging has no NeoForge equivalent |
 | `configured` | Went Fabric-only; no in-game config editor for NeoForge 1.21.1 |
+| `zoniex` | MISLABELLED ON MODRINTH. Tagged 1.21.1 + neoforge, but the jar contains only a legacy Forge mods.toml declaring mc=[1.20.1]. Proven by reading the jar (tools/check_jars.py), not guessed. It would not have loaded. |
 
 **This is the cost of choosing 1.21.1 over 1.20.1.** It was a real cost -
 the gun and horror catalogues on 1.20.1 Forge are deeper - but the

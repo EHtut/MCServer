@@ -4,11 +4,11 @@
 > `tools/modlist.json` + the resolution cache. Do not hand-edit -
 > change `tools/modlist.json` and regenerate.
 
-**397 mods** for Minecraft 1.21.1 / neoforge, 1,507 MB total.
+**396 mods** for Minecraft 1.21.1 / neoforge, 1,506 MB total.
 
 | side | count | meaning |
 |---|---:|---|
-| both | 321 | installed on the server *and* every client |
+| both | 320 | installed on the server *and* every client |
 | client | 45 | client-only; the server never loads them |
 | server | 31 | server-only; players do not need them |
 
@@ -155,7 +155,7 @@ Pillar 3a: the brother's track, rebuilt to the period ruling. PERIOD (Ethan, 202
 | [TslatEntityStatus](https://modrinth.com/mod/tslatentitystatus) | `1.8.3` | both | minor | Entity health readouts; matters when fights last minutes |
 | [Valarian Conquest](https://modrinth.com/mod/valarian-conquest) | `4.2.1.1` | both | minor | Combat and exploration enhancement for the overworld |
 
-## horror (43)
+## horror (42)
 
 Pillar 3b: horror. Built from stalkers, atmosphere and escalating pressure rather than jump-scares, so it stays frightening over a long server. Several entries are configurable ambient systems rather than mobs - exactly the surface a future dungeon master would drive. STALKER RULING (Ethan, 2026-07-31): all six hunting entities stay, staggered in config so at most one or two can be active at a time - see docs/06-BURIED-TECH.md and pack/config. Six simultaneous stalkers is comedy, not horror; the config IS the feature. THE BROKEN SCRIPT WAS CUT ON SAFETY, NOT PERIOD: the author states the mod WILL grief the world, WILL destroy buildings, can ban you from your own save and writes files to the desktop. Disqualifying for a shared long-running world.
 
@@ -203,7 +203,6 @@ Pillar 3b: horror. Built from stalkers, atmosphere and escalating pressure rathe
 | [Nyf's Spiders](https://modrinth.com/mod/nyfs-spiders) | `3.0.1` | both | minor | Spiders that move like spiders. Genuinely worse |
 | [Scorchful](https://modrinth.com/mod/scorchful) | `0.15.2+1.21.1-neoforge` *alpha* | both | minor | Heat as survival pressure |
 | [Spawn Animations](https://modrinth.com/mod/spawn-animations) | `1.11.5+mod` | both | minor | Mobs claw out of the ground instead of popping in |
-| [Zombie Nightmare Expansions - Undead Horror Monsters](https://modrinth.com/mod/zoniex) | `1.2.1` | both | minor | Zombie Nightmare Expansions - creepy undead with unusual mechanics |
 
 ## world-structures (44)
 
