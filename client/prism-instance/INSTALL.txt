@@ -67,20 +67,61 @@ Things that will make you sad if you ignore them
   to let you in, and the error message blames a random mod instead of saying
   what is actually wrong.
 
-* Do NOT raise render distance. It is set to 8 on purpose. A mod called
-  Distant Horizons draws everything past that much more cheaply, so turning
-  render distance up makes the game slower and NOT prettier.
+* Do NOT add or raise things before you have played once. The settings are
+  deliberately low - see the next section.
 
-* This pack wants a computer with 16 GB of memory. 10 GB of it is already
-  reserved for Minecraft and the settings are already correct - you do not need
-  to change anything.
 
-  If your computer has 8 GB total: right-click the instance -> Edit ->
-  Settings -> Memory, and set the maximum to 5000. Then turn Distant Horizons
-  off in Options -> Video Settings. It will still run, just with less view.
+YOUR PC IS BETTER THAN THE DEFAULTS?
+------------------------------------
+Everything is set low on purpose, so the game runs on the weakest computer in
+the group. If yours is comfortable, turn these up - IN THIS ORDER. Change one,
+play for five minutes, then change the next.
 
-  If Minecraft freezes on "Loading terrain" and then says it ran out of
-  memory, that is this, and that is the fix.
+  1. Make the window bigger. Drag the corner, or press F11 for fullscreen.
+     This is the biggest one by far.
+
+  2. Options -> Video Settings -> Render Distance:      6  ->  10
+
+  3. Options -> Video Settings -> Graphics:           Fast  ->  Fancy
+
+  4. Options -> Video Settings -> Particles:       Minimal  ->  All
+
+  5. Options -> Video Settings -> Smooth Lighting:     OFF  ->  ON
+
+If anything gets choppy, put it back. Nothing here can break the game, and
+none of it affects anybody else on the server.
+
+There is also a mod called Distant Horizons that draws far-away terrain. It is
+turned OFF because it is the most expensive thing in the pack. If your computer
+is strong and you want the view, ask Ethan to turn it on for you.
+
+* THIS PACK NEEDS 16 GB OF MEMORY IN YOUR COMPUTER. Not 8.
+
+  That is the one hard requirement. Everything else about a slow computer can
+  be fixed in the settings; this cannot.
+
+  With 8 GB you will not get an error message. You will get the game freezing
+  for seconds at a time, forever, because Windows is shuffling memory to disk.
+  400 mods need about 5 GB for the game plus 2 GB of overhead, and Windows
+  itself wants 3-4 GB. It does not fit, and no setting makes it fit.
+
+  If you have 8 GB: a 8 GB memory stick is cheap and it is the only real fix.
+  Everything is already set up correctly for 16 GB - you do not need to change
+  anything at all.
+
+
+* IF THE GAME LOOKS RIGHT BUT RUNS BADLY ON A LAPTOP
+
+  Laptops have two graphics chips - a slow one built into the processor and a
+  fast one. Minecraft sometimes grabs the slow one.
+
+  To check: right-click the instance -> Folder, open "logs", open "latest.log",
+  and search for the line starting "OpenGL Renderer:". If it names Intel UHD,
+  Intel Iris, or AMD Radeon Graphics (with no model number), it took the slow
+  one.
+
+  To fix: Windows Settings -> System -> Display -> Graphics, add
+  "javaw.exe", set it to High performance. Then restart the game.
 
 
 Want shaders?  (optional, looks great, costs frames)

@@ -44,17 +44,37 @@ INSTANCE_NAME = "Cogs and Cadavers"
 # "Loading terrain" and then "Minecraft has run out of memory" - not as anything
 # that names memory while it is happening.
 #
-# 10G rather than the 12G on the host machine: friends' RAM is unknown, and a
-# -Xmx larger than physical memory does not fail at launch, it just swaps until
-# something dies. 10G assumes a 16G machine, which is stated in INSTALL.txt.
-MAX_HEAP = 10240
+# 6G, not the 10G shipped before, and NOT the 12G the host machine uses.
+#
+# The old value reasoned only about heap vs physical RAM and ignored the JVM's
+# non-heap footprint, which is large here: Metaspace for 400 mods, JIT code
+# cache, GC metadata, Sodium's off-heap chunk buffers, GL driver allocations -
+# roughly 2-2.5G on top of whatever -Xmx says. A 10G heap is therefore ~12.5G
+# resident, and a 16G machine also running Windows, a browser and Discord then
+# pages. The symptom is stutter and hitching, never an out-of-memory dialog, so
+# nobody ever traces it back to the heap being too BIG.
+MAX_HEAP = 6144
 
-# Prism leaves the collector unconfigured. An unconfigured G1 on a heap this
-# size produces multi-second stop-the-world pauses that are indistinguishable
-# from a hang while chunks are loading.
-JVM_ARGS = ("-XX:+UseG1GC -XX:MaxGCPauseMillis=50 -XX:+UnlockExperimentalVMOptions "
-            "-XX:G1NewSizePercent=20 -XX:G1ReservePercent=20 -XX:G1HeapRegionSize=32M "
+# Xms == Xmx. A heap that resizes does it exactly while the world is loading.
+MIN_HEAP = MAX_HEAP
+
+# Sized for a ~6G heap on a modest CPU. Three deliberate omissions:
+#   G1HeapRegionSize  - was pinned at 32M. G1 targets ~2048 regions, so 32M
+#                       gives a 6G heap only 192 of them and it cannot do sane
+#                       incremental mixed collections. Let G1 auto-size.
+#   G1ReservePercent  - 20% of a 6G heap held back is 1.2G unavailable.
+#   MaxGCPauseMillis  - 50 on a 4-core makes G1 shrink the young gen and collect
+#                       constantly. 100 is calmer and is what the host machine
+#                       already runs.
+JVM_ARGS = ("-XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UnlockExperimentalVMOptions "
+            "-XX:G1NewSizePercent=20 "
             "-XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC")
+
+# Pixel count is the dominant cost on an integrated GPU, and this is the single
+# biggest GPU-side lever available. 1280x720 on a 1080p laptop is ~44% fewer
+# pixels. It is also the friendliest thing in the world to undo: drag the window
+# corner, or press F11.
+WIN_WIDTH, WIN_HEIGHT = 1280, 720
 
 # Client config shipped with the instance, copied into .minecraft/config/.
 #
@@ -91,13 +111,38 @@ def servers_dat(entries: list[tuple[str, str]]) -> bytes:
     return out
 
 
+# The shipped video baseline, tuned for the WEAKEST machine in the group.
+# Ethan's ruling 2026-08-01: "its not an actual potato but i want to baseline it
+# there for max optimization." So these are the defaults everyone gets, and
+# INSTALL.txt tells strong machines what to turn UP - not the other way round.
+#
+# THE BUG THIS FIXES: this block used to list six keys and NOT `particles`.
+# Minecraft then filled it in with the vanilla default. ParticleStatus is
+# declared ALL(0), DECREASED(1), MINIMAL(2) - verified in the 1.21.1 client jar -
+# so the default is ALL, the most expensive setting, in a pack running Create
+# (fans, steam, spouts), Ars Nouveau, TaCZ muzzle flash, Subtle Effects, Particle
+# Core and Dynamic Trees. Every friend has been playing on maximum particles.
+# An omitted key is not a neutral choice; it is whatever vanilla picks.
+#
+# Same enum trap in graphicsMode: FAST(0), FANCY(1), FABULOUS(2). 0 is the cheap
+# one here, which is the opposite of particles. Check the enum, never the number.
 OPTIONS = """\
-renderDistance:8
-simulationDistance:8
-maxFps:120
+renderDistance:6
+simulationDistance:5
+maxFps:60
 guiScale:0
 fullscreen:false
-enableVsync:true
+enableVsync:false
+particles:2
+graphicsMode:0
+ao:false
+biomeBlendRadius:0
+entityDistanceScaling:0.5
+entityShadows:false
+mipmapLevels:2
+menuBackgroundBlurriness:0
+glintStrength:0.0
+renderClouds:"false"
 """
 
 
@@ -125,16 +170,20 @@ notes=Mods update automatically every time you press Play. Do not add or remove 
 iconKey=default
 
 OverrideMemory=true
-MinMemAlloc=4096
+MinMemAlloc={MIN_HEAP}
 MaxMemAlloc={MAX_HEAP}
 
 OverrideJavaArgs=true
 JvmArgs={JVM_ARGS}
 
+OverrideWindow=true
+LaunchMaximized=false
+MinecraftWinWidth={WIN_WIDTH}
+MinecraftWinHeight={WIN_HEIGHT}
+
 OverrideCommands=true
 PreLaunchCommand="$INST_JAVA" -jar packwiz-installer-bootstrap.jar {PACK_URL}
 
-OverrideWindow=false
 OverrideConsole=false
 """
 
@@ -223,20 +272,61 @@ Things that will make you sad if you ignore them
   to let you in, and the error message blames a random mod instead of saying
   what is actually wrong.
 
-* Do NOT raise render distance. It is set to 8 on purpose. A mod called
-  Distant Horizons draws everything past that much more cheaply, so turning
-  render distance up makes the game slower and NOT prettier.
+* Do NOT add or raise things before you have played once. The settings are
+  deliberately low - see the next section.
 
-* This pack wants a computer with 16 GB of memory. 10 GB of it is already
-  reserved for Minecraft and the settings are already correct - you do not need
-  to change anything.
 
-  If your computer has 8 GB total: right-click the instance -> Edit ->
-  Settings -> Memory, and set the maximum to 5000. Then turn Distant Horizons
-  off in Options -> Video Settings. It will still run, just with less view.
+YOUR PC IS BETTER THAN THE DEFAULTS?
+------------------------------------
+Everything is set low on purpose, so the game runs on the weakest computer in
+the group. If yours is comfortable, turn these up - IN THIS ORDER. Change one,
+play for five minutes, then change the next.
 
-  If Minecraft freezes on "Loading terrain" and then says it ran out of
-  memory, that is this, and that is the fix.
+  1. Make the window bigger. Drag the corner, or press F11 for fullscreen.
+     This is the biggest one by far.
+
+  2. Options -> Video Settings -> Render Distance:      6  ->  10
+
+  3. Options -> Video Settings -> Graphics:           Fast  ->  Fancy
+
+  4. Options -> Video Settings -> Particles:       Minimal  ->  All
+
+  5. Options -> Video Settings -> Smooth Lighting:     OFF  ->  ON
+
+If anything gets choppy, put it back. Nothing here can break the game, and
+none of it affects anybody else on the server.
+
+There is also a mod called Distant Horizons that draws far-away terrain. It is
+turned OFF because it is the most expensive thing in the pack. If your computer
+is strong and you want the view, ask Ethan to turn it on for you.
+
+* THIS PACK NEEDS 16 GB OF MEMORY IN YOUR COMPUTER. Not 8.
+
+  That is the one hard requirement. Everything else about a slow computer can
+  be fixed in the settings; this cannot.
+
+  With 8 GB you will not get an error message. You will get the game freezing
+  for seconds at a time, forever, because Windows is shuffling memory to disk.
+  400 mods need about 5 GB for the game plus 2 GB of overhead, and Windows
+  itself wants 3-4 GB. It does not fit, and no setting makes it fit.
+
+  If you have 8 GB: a 8 GB memory stick is cheap and it is the only real fix.
+  Everything is already set up correctly for 16 GB - you do not need to change
+  anything at all.
+
+
+* IF THE GAME LOOKS RIGHT BUT RUNS BADLY ON A LAPTOP
+
+  Laptops have two graphics chips - a slow one built into the processor and a
+  fast one. Minecraft sometimes grabs the slow one.
+
+  To check: right-click the instance -> Folder, open "logs", open "latest.log",
+  and search for the line starting "OpenGL Renderer:". If it names Intel UHD,
+  Intel Iris, or AMD Radeon Graphics (with no model number), it took the slow
+  one.
+
+  To fix: Windows Settings -> System -> Display -> Graphics, add
+  "javaw.exe", set it to High performance. Then restart the game.
 
 
 Want shaders?  (optional, looks great, costs frames)
