@@ -1,5 +1,20 @@
 # Open Decisions
 
+**Most of this was answered 2026-08-01.** What remains is at the top; the
+answered items are kept below with their resolutions so the reasoning survives.
+
+## STILL OPEN
+
+| | |
+|---|---|
+| **A3** | Which existing item becomes the deep-only resource. Wants no other source in the pack so the item type itself is the gate; SecurityCraft's unobtainable items are the pool. |
+| **B4** | Epic Knights - 11 pavises render as the missing-model cube, 18 weapons get no Epic Fight movesets. (Answered under this number was B5; B4 itself is still open.) Recommend: accept, revisit if noticeable in play. |
+| **NEW** | Is **Iron's Spells n Spellbooks** still wanted? "Main magic should be ars" implies not - but it is a whole magic pillar with 4 dependent mods, so it is a much bigger cut than cataclysm-spellbooks was. |
+
+---
+
+## ANSWERED
+
 Everything found during the 2026-07-31 → 08-01 audit and design sessions that
 still needs Ethan's call. Each has a recommendation, so "yes to all recommended"
 is a valid answer.
@@ -10,7 +25,7 @@ Settled items are at the bottom so they are not re-litigated later.
 
 ## A. Blocks building the depth loop
 
-### A1. The creeper horde ⚠️ *the one most likely to be regretted*
+### A1. The creeper horde ✅ **(b) - they CAN breach the base**
 
 > "no creepers, i honestly don't like creepers to begin with. I do need a horde
 > of them blowing up my stuff"
@@ -28,7 +43,7 @@ because taken literally it contradicts the rule the whole design rests on:
 **Recommend (a).** On a four-person server where one person built the factory,
 base destruction is the likeliest thing to make someone stop playing.
 
-### A2. How the deep-only resource is made
+### A2. How the deep-only resource is made ✅ **neither - gate existing drops by depth**
 
 | | | download |
 |---|---|---|
@@ -47,7 +62,7 @@ unobtainable items are already becoming Vault loot and are the obvious pool.
 
 **Needs:** a pick, or permission to choose one and report it.
 
-### A4. Nemesis — one boss or four
+### A4. Nemesis ✅ **(a) one collective nemesis**
 
 | | |
 |---|---|
@@ -57,7 +72,7 @@ unobtainable items are already becoming Vault loot and are the obvious pool.
 **Recommend (a).** Four simultaneous bosses is chaos; one shared nemesis reads
 instantly and still comes from the group's real history.
 
-### A5. Respawn during an invasion
+### A5. Respawn ✅ **spectator in invasions; instant at bed otherwise, no death screen**
 
 | | |
 |---|---|
@@ -67,7 +82,7 @@ instantly and still comes from the group's real history.
 **Recommend (a)**, with (b) as a config toggle. Under (b) the first player to die
 sits out a long fight doing nothing.
 
-### A6. Cycle numbers
+### A6. Cycle numbers ✅ **base 30 / floor 10 as proposed**
 
 Agreed: the cycle shortens the longer the group survives. Needs bounds, or a
 competent group earns a permanent invasion.
@@ -79,7 +94,7 @@ push the cycle *longer* — a group that barely won gets breathing room.
 
 ## B. Mods with a gameplay consequence
 
-### B1. Create × Ars Compact — an undocumented gate on all magic
+### B1. Create x Ars Compact ✅ **KEEP the brass gate - "it merges ars and create"**
 
 Its own compaction recipes are dead (they need a fluid from an uninstalled mod).
 But it **also overrides 39 Ars Nouveau recipes, swapping gold for brass** — and
@@ -94,14 +109,14 @@ and nobody chose that.
 **No recommendation** — this is a taste call about how the two pillars relate,
 and you play both.
 
-### B2. Cataclysm Spellbooks — 40% broken
+### B2. Cataclysm Spellbooks ✅ **CUT** - Ars is the magic pillar
 
 20 of its own items are unregistered (the whole technomancy branch: gauntlets,
 braces, the Excelsius upgrade chain, 4 named weapons). Spellbooks and rings work.
 
 **Recommend: keep and version-check.** Cutting working content is not cleanup.
 
-### B3. Two parry systems, and the docs disagree
+### B3. Two parry systems ✅ **CUT Shield Expansion** - Epic Fight is the parry
 
 `epicfight-common.toml` has `initialMode = 1`, so Epic Fight battle mode is
 default and it owns shield right-click. Shield Expansion hooks the vanilla
@@ -125,7 +140,7 @@ vanilla items in a combat-overhaul pack.
 **Recommend: accept for now.** The armour and most weapons work. Revisit if the
 missing movesets are noticeable in play.
 
-### B5. The peaceful surface silences a lot of what you paid for
+### B5. The peaceful surface ✅ **REVISED - rare spawns + blood-moon spike, not a hard deny**
 
 Now that the deny rule actually works, **nothing hostile spawns above y40**. That
 silences Born in Chaos (3 mods), Rotten Creatures, Mutant Monsters, Nyf's
@@ -149,7 +164,7 @@ This is your design working as specified — but nobody priced it.
 
 ## C. Operations
 
-### C1. Backups
+### C1. Backups ✅ **by hand**
 
 You said "backup is fine here" with the server down. Two exist, both taken by
 hand. `backup.ps1 -Live` works with no downtime.
@@ -168,12 +183,12 @@ Distant Horizons settings — only reaches them on a **fresh zip import**.
 
 `lehykt` and `rehykt` are in. Two friends never sent usernames.
 
-### C4. `quark-common.toml` → `experimental = true`
+### C4. quark experimental ✅ **non-issue** - every module inside it is false; nothing is on
 
 Not the default. Enables Quark's experimental module category on a pack that has
 been unstable. Deliberate, or worth turning off?
 
-### C5. Epic Fight GPU skinning
+### C5. Epic Fight GPU skinning ✅ **on for Ethan's instance only; off in the shipped config**
 
 `use_compute_shader` and `use_persistent_buffer` are both `false`. Enabling them
 moves skeletal vertex-skinning to the GPU — CPU-cheaper, and your GPU is idle.

@@ -286,11 +286,6 @@ hash = "a736ec571e08dbcc566b4bb7fe1af7f6895c78108fb736f852feaae23d6246d0"
 metafile = true
 
 [[files]]
-file = "mods/cataclysm-spellbooks.pw.toml"
-hash = "69d59bab0c85b839b35daca121b8f3043e7480e9e2e2db69573791fc72f66fb4"
-metafile = true
-
-[[files]]
 file = "mods/cerbons-api.pw.toml"
 hash = "479dab388743fb59d3399d2d87a0a7dc0819a4184b74f734fa9cc1eecdd6f6f6"
 metafile = true
@@ -1497,7 +1492,7 @@ metafile = true
 
 [[files]]
 file = "mods/polytone.pw.toml"
-hash = "0191c19b1f28e15859db3a5ece31a486c1a215c4019bda2a5f5db7fe20984ce4"
+hash = "5349bc385fcaed2c0322739139efedab9152fff4e003497f15f0b2b43311ef12"
 metafile = true
 
 [[files]]
@@ -1572,7 +1567,7 @@ metafile = true
 
 [[files]]
 file = "mods/revervox.pw.toml"
-hash = "228a16ce127dca7cefab4a4a2ba7dc47db6befa7c4082746f2ac21cb2b17231b"
+hash = "8ad2b8f1f14642897e3ffbd984687257b6da14f51ac89612341abc28ff2c7eb0"
 metafile = true
 
 [[files]]
@@ -1658,11 +1653,6 @@ metafile = true
 [[files]]
 file = "mods/shatterbyte-lib.pw.toml"
 hash = "3f552bbdc42f07fd7d5695ced1d27d774af63cff5460be45817939e5f8e4f9de"
-metafile = true
-
-[[files]]
-file = "mods/shield-expansion.pw.toml"
-hash = "87db45eeaa826bfb058d0f6e426c8a0c5381c127c4fd1479fd2886aa48ecbda7"
 metafile = true
 
 [[files]]
@@ -1882,7 +1872,7 @@ metafile = true
 
 [[files]]
 file = "mods/voice-chat-recording.pw.toml"
-hash = "21a7e5b8ec72e5c79e7c701bce972eaf5e3f71c689e85c401c667503d4d3b433"
+hash = "0b544987dcc0f8995d940a5d692f42283f86971be7520c65be25869feca9b992"
 metafile = true
 
 [[files]]

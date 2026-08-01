@@ -1,13 +1,13 @@
 name = "Revervox"
-filename = "revervox_mod-1.21.1-2.0.jar"
+filename = "revervox_mod-1.21.1-2.1.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/4FxDHlKg/versions/5014Rtjo/revervox_mod-1.21.1-2.0.jar"
+url = "https://cdn.modrinth.com/data/4FxDHlKg/versions/uPaIda4z/revervox_mod-1.21.1-2.1.jar"
 hash-format = "sha512"
-hash = "6faa0794e0521a2e7acb39785b8cf48c139f4c63e631c65f67cd00cf2917413b8f56ba46ee177449c1cbc1abfd00c47d9c80aaf280574e9f0ed6a98f7d6848bc"
+hash = "8d007155046a9cd003c0644c45608f9635ca245d780bd9a8eca8f4b5f1ac898b7fb5d0e6ff439b237830fe0da206124b2392ba1dca0d7ff5fb58a755e71e16b7"
 
 [update]
 [update.modrinth]
 mod-id = "4FxDHlKg"
-version = "5014Rtjo"
+version = "uPaIda4z"

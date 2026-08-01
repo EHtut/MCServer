@@ -36,7 +36,44 @@ The surface industry **funds** expeditions; expeditions bring back what the
 industry **consumes**. That closes the circuit between Create and buried tech,
 which currently run in parallel and never touch.
 
-> **Death costs the run. It never costs the base.** ✅
+> **Death costs the run. It never costs the base.**
+> **— AMENDED 2026-08-01. Invasions CAN cost the base.** ✅
+
+Ethan chose option (b) on the creeper horde: the horde can genuinely breach and
+destroy. That is a deliberate reversal, recorded here rather than arrived at
+quietly, and it changes the shape of the design for the better.
+
+The original rule protected the base because nothing threatened it, which made
+"why descend" a question about personal power. Now the base is at risk on a
+clock, and **that closes the loop in a way the salvage framing never did:**
+
+```
+  creepers can destroy your base
+        ↓
+  you need blast-resistant building material
+        ↓
+  SecurityCraft REINFORCED BLOCKS resist explosions
+        ↓
+  reinforced blocks are VAULT loot, y -64..-128
+        ↓
+  descending is how you protect what you built
+```
+
+The Vaults were already going to be SecurityCraft's loot path (§3c). This makes
+that choice load-bearing rather than convenient: **the reason to go down is now
+the reason to stay up.** Nothing else in the design produces a motive that
+survives the group getting rich.
+
+The distinction that still holds, and should be defended in tuning:
+
+| | |
+|---|---|
+| **Ordinary death** | costs the run. Never the base. Corpse + heat reset already do this. |
+| **Invasion** | can cost the base — but only during the event, and only if the defence fails. |
+
+So a bad night underground never burns your factory. Losing an invasion might.
+That is a real stake attached to a scheduled, announced, defensible event rather
+than to routine play, which is the version worth having.
 
 Roguelike death and base-building fight each other: if dying costs your factory
 nobody descends; if it costs nothing, depth is trivial. The expedition framing
@@ -85,11 +122,31 @@ group's *total* deaths to it. Four simultaneous bosses is chaos; one shared
 nemesis reads instantly and stays personal. Per-player staggered bosses remain
 the fallback if it feels too impersonal in play.
 
-**Respawn rule.** Ethan's original was "no respawn until everyone is dead". That
-has a failure mode: the first player to die sits out a long fight doing nothing.
-Build **spectator-until-the-wave-breaks** — dead players spectate the living,
-staying in the event without being able to act. Keep full-lock as a config
-toggle.
+**Respawn rule ✅ — spectator during invasions, instant everywhere else.**
+
+Ethan:
+
+> Spectator I think. Normal deaths shouldn't have a death screen and it should be
+> youre back at your bed a moment later
+
+Two rules, and the contrast between them is the point.
+
+| | |
+|---|---|
+| **Ordinary death** | **no death screen. Instant respawn at your bed.** |
+| **Invasion death** | spectator until the wave breaks |
+
+The instant-respawn half is a new requirement and it is not cosmetic — it is what
+makes the expedition loop feel right. Combined with Corpse, dying underground
+becomes: you are back at base immediately, your gear is still down there in your
+body, and the cost is *the trip*, not a screen and a menu. That is precisely
+"death costs the run" expressed as a UX rather than a rule.
+
+It also makes the invasion's spectator lock land harder. If every other death in
+the game is a two-second inconvenience, being *held* dead is a genuine signal
+that this is different.
+
+Serverside via KubeJS (auto-respawn on death). Full-lock stays a config toggle.
 
 > ⚠️ **The invasion CANNOT work by raising spawn rates.** The peaceful-surface
 > rule denies hostile spawns above y40, so a rate-based event produces nothing.
@@ -97,7 +154,48 @@ toggle.
 > suspended for the duration. This is almost certainly why Enhanced Celestials'
 > blood moons already appear to do nothing.
 
-### 3b. The rising surface ✅
+### 3b. The rising surface ✅ — REVISED: rare, not absent
+
+Ethan, 2026-08-01, on the cost of the hard deny:
+
+> This one is complicated because it hurts my peaceful surface dream... what if
+> bad mob spawns are rare and then blood moons drastically increase spawns
+> instead
+
+**This is a better design than the hard deny, and it is closer to the original
+brief than what was built.** The very first spec said:
+
+> we can do light horror above just to be like this world isn't right but it
+> should be rare
+
+A deny rule produces *zero*, which is not the same as rare. Zero also wasted
+roughly ten mob mods (Born in Chaos, Rotten Creatures, Mutant Monsters, Nyf's
+Spiders, Creeper Overhaul, Enderman Overhaul, Cryptid, ArPhEx, Legendary
+Monsters, Zombie Awareness) and silently neutered Enhanced Celestials, because a
+blood moon works by *raising spawn rates* and there was nothing to raise.
+
+**The model is now a floor and two multipliers, not a switch:**
+
+| | above y40 |
+|---|---|
+| **Baseline** | a small `maxcount` — hostiles exist, they are rare, and meeting one is an event |
+| **× cycle tier** | the cube curve raises the cap as the invasion approaches |
+| **× blood moon** | a hard spike — the sky turns red and it *means* something |
+
+A rare mob is scarier than no mob, because the surface stops being safe and
+starts being *usually* safe. That is the horror register the brief asked for.
+
+Implementation: In Control's `maxcount` on a phase-gated rule rather than
+`result: deny`. `RuleKeys` also carries `random`, so a probability gate is
+available if a concurrent cap reads wrong in play. Blood moons need KubeJS to
+detect the Enhanced Celestials event and set the phase — the same
+`/incontrol setphase` lever the cycle clock uses.
+
+⚠️ The invasion note below still stands and matters more now: the boss and its
+adds must be spawned **explicitly**, not by raising rates, because rates are now
+a tuned resource rather than a hard zero.
+
+### 3b-i. The old hard-deny model (superseded, kept for context)
 
 Ethan:
 
@@ -239,15 +337,38 @@ real one. Check a Vault chest actually rolls gun loot.
 *Note:* structures only generate in **newly generated chunks**. This does not
 need a world regen, but it does mean walking somewhere new.
 
-### D3 — The deep-only resource
+### D3 — The deep-only resource ✅ SIMPLIFIED
 
-One ammo component — casing, propellant, refined powder — obtainable **only**
-from the Abyssal band or Vault loot. Guns stay *found*, ammo stays *craftable*
-(Ethan's ruling, unchanged), but ammo is now permanently tethered to descent.
+Ethan, 2026-08-01:
+
+> i assumed that what we are doing is just limiting drops to lootr chests or mob
+> drops to a specific depth level
+
+**He is right, and this collapses the whole problem.** The previous section
+agonised over minting a new item — components vs a KubeJS registration vs
+writing a mod, and what each costs a client to download. None of that is needed.
+
+The requirement was never "a new item". It was **an item whose only source is
+deep.** So: take something that already exists in the pack, ensure it has no
+other source, and inject it into deep loot tables and deep mob drops. That is a
+datapack. No new registry entry, no components, no resource pack, no client
+download, and no KubeJS ingredient trickery.
+
+- **Source:** Vault chests (Lootr) + mob drops gated by y-level.
+- **Sink:** one ammo recipe ingredient.
+- **Mechanism:** loot table + global loot modifier, exactly like the existing
+  TaCZ injectors.
+
+Guns stay *found*, ammo stays *craftable* (Ethan's ruling, unchanged) — ammo is
+simply now tethered to descent forever.
+
+**Still open (A3):** *which* existing item. It wants no other source in the pack,
+so the item type itself is the gate. SecurityCraft's currently-unobtainable
+items are the obvious pool since they are already becoming Vault loot.
 
 Depends on D2 for a source.
 
-*Verify:* the recipe requires it; the component appears nowhere above y −64.
+*Verify:* the recipe requires it; the item is obtainable nowhere above y −64.
 
 ### D4 — The Nemesis invasion
 

@@ -1,13 +1,13 @@
 name = "Voice Chat Recording"
-filename = "voicechatrecording-1.21.1-2.0.jar"
+filename = "voicechatrecording-1.21.1-2.1.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/NdyEsNQU/versions/hjUoWRAX/voicechatrecording-1.21.1-2.0.jar"
+url = "https://cdn.modrinth.com/data/NdyEsNQU/versions/ShvWjC7k/voicechatrecording-1.21.1-2.1.jar"
 hash-format = "sha512"
-hash = "2156415db28be5cad4c26171a852093593b03d6d60dfd9d0d49ccde62aa772cda3a100d53fac95f51e6c32629269513f2cf57641a82d4bfcecd26af0cd4fffed"
+hash = "5a420cf7c955d63854e0b85b9d00011395e4a2a0d1588d7f9f7c90f61e91186ab6f242c6ca9be1c0b3f0781734d87c0a3472002bd75ca7c9557ac1e157f94069"
 
 [update]
 [update.modrinth]
 mod-id = "NdyEsNQU"
-version = "hjUoWRAX"
+version = "ShvWjC7k"

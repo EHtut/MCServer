@@ -58,6 +58,36 @@ CUTS: dict[str, str] = {
     "epic-fight-sword-soaring": "F14. RuntimeException: Attempted to load class net/minecraft/client/gui/screens/Screen for invalid dist DEDICATED_SERVER. Painful loss - this was the wuxia specialisation layer Ethan chose to make melee about movesets rather than stat lines. Epic Fight itself still supplies movesets, stances and combos.",
     "kenny": "F14. Same DEDICATED_SERVER crash. One stalker of six, and the least distinctive; The Knocker, Obsessed, The Skinwalker Hunt, Distant Friends and Weeping Angels remain.",
 
+    # --- F27: two systems answering one input -------------------------------
+    # epicfight-common.toml has initialMode = 1, so Epic Fight battle mode is the
+    # default for every player and it owns shield right-click with its own Guard
+    # skill and its own parry window. Shield Expansion hooks the VANILLA blocking
+    # path. Neither jar references the other - byte-scanned both - so there is no
+    # negotiation; whichever intercepts the input first wins, and in battle mode
+    # that is always Epic Fight.
+    #
+    # The damage is not the redundancy, it is the teaching: Shield Expansion's
+    # stamina HUD and parry-window tooltips are visible and describe a system
+    # that is NOT the one responding to your clicks. A player learns the wrong
+    # timing from an on-screen indicator.
+    #
+    # The docs disagreed too - 07-THEME-AUDIT.md passes R5 by counting Epic Fight
+    # as the one parry system, while modlist.json calls Shield Expansion "The ONE
+    # parry system". Ethan's call, 2026-08-01: cut it, Epic Fight is the parry.
+    "shield-expansion": "F27. Duplicate parry/block system. Epic Fight's battle mode is default (initialMode=1) and owns shield right-click, so Shield Expansion never fires - but its stamina HUD and parry-window tooltips stay on screen teaching a timing that is not the active one. Epic Fight is the single parry system.",
+
+    # --- F28: a bridge that only half-connects ------------------------------
+    # 26 of its 65 recipes fail every boot, and 20 of its OWN items are unknown
+    # registry keys despite the jar shipping models and textures for all of them
+    # - the entire technomancy branch: gauntlets, mechanical braces, the
+    # Excelsius upgrade chain, and four named weapons.
+    #
+    # Cut on a design ruling rather than the breakage: Ars Nouveau is the magic
+    # pillar, and it already has craftable spellbooks with authored spells that
+    # can be shared between players. A second spell system bridging two mods,
+    # 40% broken, is not worth a slot.
+    "cataclysm-spellbooks": "F28. 26 of 65 recipes fail every boot and 20 of its own items never register. Cut on Ethan's ruling that Ars Nouveau is the magic pillar - it already provides craftable, authored, shareable spellbooks.",
+
     # --- F25: present, loading, delivering nothing --------------------------
     # The class the Spelunkery cut exposed. None of these fail loudly; each
     # loads clean and quietly hands back most or all of its content. Found by
