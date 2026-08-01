@@ -26,7 +26,8 @@
 param(
     [string]$InstanceDir = "C:\MCServer\instance",
     [string]$DestDir     = "C:\MCServer\backups",
-    [switch]$Force
+    [switch]$Force,
+    [switch]$Live
 )
 
 $ErrorActionPreference = "Stop"
@@ -47,21 +48,45 @@ try {
     }
 } catch { }
 
-if ($running -and -not $Force) {
+# --- -Live: flush and hold saves over the copy, via RCON --------------------
+#
+# Why this exists: without it the ONLY safe path required stopping the server,
+# and on a box where the server is always up that meant no backup was EVER
+# taken. An unusable safe path is not a safe path - it is just an absent one.
+#
+# -Force is the trap it replaces. Compress-Archive succeeds against a live
+# world (session.lock's exclusive handle does not stop it), so -Force yields an
+# archive that looks perfectly healthy and is a torn mid-write copy. The
+# failure only appears when you restore it, which is the worst possible moment
+# to discover it.
+$heldSaves = $false
+if ($running -and $Live) {
+    $rcon = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) "tools\rcon.py"
+    if (-not (Test-Path $rcon)) { Die "-Live needs tools\rcon.py and it is missing" }
+    $prev = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    try {
+        Say "server is up - flushing and holding saves"
+        & python $rcon "save-off"        | Out-Null
+        & python $rcon "save-all flush"  | Out-Null
+        Start-Sleep -Seconds 3
+        $heldSaves = $true
+    } finally { $ErrorActionPreference = $prev }
+    if (-not $heldSaves) { Die "could not reach RCON; refusing to copy a live world" }
+}
+elseif ($running -and -not $Force) {
     Die @"
 The server appears to be RUNNING.
 
 Copying region files while the server writes them produces a backup that looks
-fine and restores broken. Do one of these first:
+fine and restores broken. Either:
 
-  In the server console:   save-off
-                           save-all flush
-      (run this backup)
-                           save-on
+  Run this with -Live       (flushes and holds saves over the copy via RCON,
+                             then releases them - no downtime)
 
-  Or stop the server:      stop
+  Or stop the server:       stop
 
-Then re-run. Pass -Force only if you know the world is idle.
+-Force does NOT make a live copy safe. It only skips this check, and the
+archive it produces looks valid while being torn. Use -Live.
 "@
 }
 
@@ -78,7 +103,44 @@ foreach ($n in @("world", "world_nether", "world_the_end", "config",
 if (-not $items) { Die "nothing to back up in $InstanceDir" }
 
 Say "archiving $($items.Count) item(s) -> $archive"
-Compress-Archive -Path $items -DestinationPath $archive -CompressionLevel Optimal
+$stage = Join-Path $env:TEMP "mcbackup-$stamp"
+try {
+    # Stage first, then zip the stage.
+    #
+    # Compress-Archive cannot read world\session.lock - the server holds it
+    # exclusively and the whole archive fails with UnauthorizedAccessError. So
+    # a direct archive of a running instance does not merely risk a torn copy,
+    # it produces NOTHING. robocopy skips what it cannot open (/R:0, no
+    # retries) and we exclude the lock explicitly.
+    #
+    # Staging is also what makes the -Live window short: saves stay held only
+    # for the copy, not for compression, which is the slow half.
+    New-Item -ItemType Directory -Force -Path $stage | Out-Null
+    foreach ($src in $items) {
+        $leaf = Split-Path $src -Leaf
+        if (Test-Path $src -PathType Container) {
+            $null = robocopy $src (Join-Path $stage $leaf) /MIR /R:0 /W:0 /NFL /NDL /NJH /NJS /NP /XF session.lock
+            # robocopy exit codes < 8 are success; 8+ are real failures.
+            if ($LASTEXITCODE -ge 8) { Die "robocopy failed on $src (exit $LASTEXITCODE)" }
+        } else {
+            Copy-Item $src (Join-Path $stage $leaf) -Force
+        }
+    }
+    Compress-Archive -Path (Join-Path $stage "*") -DestinationPath $archive -CompressionLevel Optimal
+}
+finally {
+    if (Test-Path $stage) { Remove-Item $stage -Recurse -Force -ErrorAction SilentlyContinue }
+    # ALWAYS release saves, including on failure. A backup that dies partway
+    # through and leaves save-off set would give a server that never writes to
+    # disk again - silently, until the next restart loses everything since.
+    # That failure is far worse than the missing backup that caused it.
+    if ($heldSaves) {
+        $prev = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+        try { & python $rcon "save-on" | Out-Null; Say "saves released" }
+        catch { Warn "COULD NOT RE-ENABLE SAVES - run 'save-on' in the console NOW" }
+        finally { $ErrorActionPreference = $prev }
+    }
+}
 
 $sizeMb = [math]::Round((Get-Item $archive).Length / 1MB, 1)
 Say "wrote $archive ($sizeMb MB)"

@@ -2,15 +2,15 @@
   {
     "dimension": "minecraft:overworld",
     "hostile": true,
-    "miny": 40,
+    "minheight": 40,
     "result": "deny"
   },
   {
     "dimension": "minecraft:overworld",
     "hostile": true,
-    "miny": 0,
-    "maxy": 39,
     "maxcount": 40,
+    "minheight": 0,
+    "maxheight": 39,
     "result": "default"
   }
 ]

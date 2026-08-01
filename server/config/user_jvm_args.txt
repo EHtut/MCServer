@@ -18,7 +18,7 @@
 #
 # Xms and Xmx are deliberately EQUAL. A heap that grows on demand spends its
 # early life resizing, and the pauses land exactly when players are loading in.
--Xms8G
+-Xms4G
 -Xmx8G
 
 # --- GC ---------------------------------------------------------------------
@@ -35,7 +35,10 @@
 -XX:MaxGCPauseMillis=200
 -XX:+UnlockExperimentalVMOptions
 -XX:+DisableExplicitGC
--XX:+AlwaysPreTouch
+# -XX:+AlwaysPreTouch   <- RESTORE THIS when the server moves to its own
+# machine. While the client shares this box, pre-touching all 8G at startup
+# just takes pages the client needs and produces swap stalls that look like
+# server lag.
 -XX:G1NewSizePercent=30
 -XX:G1MaxNewSizePercent=40
 -XX:G1HeapRegionSize=8M
@@ -62,3 +65,15 @@
 # Quieter, faster startup on a headless box.
 -Djava.awt.headless=true
 
+# The client runs on this same 16c/32t machine. Without this both JVMs
+# size GC threads, ForkJoinPool and mod worker pools as if each owned all 32
+# logical processors, so the box is oversubscribed roughly 2x before a single
+# mod thread starts.
+-XX:ActiveProcessorCount=12
+
+# max-tick-time=-1 (required for a 350-mod server) disables the watchdog, so a
+# wedged or out-of-memory server stays ALIVE - holding session.lock, accepting
+# connections, never saving again - instead of dying and being restartable.
+# This flag turns an OOM back into a clean exit. It matters more once the server
+# is in another room.
+-XX:+ExitOnOutOfMemoryError

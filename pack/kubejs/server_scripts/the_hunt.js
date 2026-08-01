@@ -60,9 +60,23 @@ EntityEvents.death(event => {
   let isMonster = false
   try {
     // Category is the reliable signal across ~390 mods; an id list would rot.
-    isMonster = String(victim.type ? victim.getMobCategory() : '').toUpperCase().includes('MONSTER')
+    //
+    // This line used to call victim.getMobCategory(), WHICH DOES NOT EXIST.
+    // Verified against server-1.21.1-srg.jar: getCategory() lives on Mob and on
+    // EntityType; Entity has neither getMobCategory nor getCategory. So the call
+    // threw on EVERY kill, the catch set isMonster = false, and heat never once
+    // incremented - which also meant the tick loop always returned at
+    // `heat <= 0`, so no hunter ever spawned. The mechanic was dead from the day
+    // it was written and the script still loaded with zero errors.
+    const cat = victim.getCategory ? victim.getCategory()
+              : (victim.getType ? victim.getType().getCategory() : null)
+    isMonster = String(cat).toUpperCase().includes('MONSTER')
   } catch (e) {
-    isMonster = false
+    // NEVER swallow this again. The silent catch is the whole reason this went
+    // unnoticed: "the call threw" and "that mob was not hostile" produced the
+    // identical result, so there was nothing to see. If it breaks again it now
+    // says so, on every kill, until someone fixes it.
+    console.error('[the_hunt] cannot read mob category, heat will NOT accrue: ' + e)
   }
   if (!isMonster) return
 
