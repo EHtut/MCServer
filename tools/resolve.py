@@ -185,11 +185,29 @@ def cmd_check(slugs: list[str]) -> int:
     return 0
 
 
+PINS: dict[str, str] = {}
+
+
 def resolve_one(slug: str) -> dict:
     p = project(slug)
     if p is None:
         return {"slug": slug, "status": "NOT_FOUND"}
     vs = versions(slug)
+
+    # A pinned mod takes its exact version, not the newest.
+    #
+    # Necessary because "newest release of everything, independently" breaks
+    # tightly-coupled pairs: Iris declares sodium "[0.6,)" but genuinely needs
+    # 0.6.x, so resolving both to newest gave Iris a Sodium whose classes it
+    # cannot find, and the client died on world load.
+    pin = PINS.get(slug)
+    if pin:
+        exact = [v for v in vs if v.get("version_number") == pin]
+        if not exact:
+            return {"slug": slug, "status": "PIN_NOT_FOUND", "pin": pin,
+                    "available": [v.get("version_number") for v in vs[:8]]}
+        vs = exact
+
     if not vs:
         return {
             "slug": slug, "status": "NO_MATCHING_VERSION",
@@ -236,6 +254,10 @@ def load_modlist(path: str) -> list[dict]:
     category and is not resolved twice.
     """
     src = json.loads(pathlib.Path(path).read_text(encoding="utf-8"))
+    PINS.clear()
+    PINS.update((src.get("pins") or {}).get("versions") or {})
+    if PINS:
+        print(f"(pinned: {', '.join(f'{k}={v}' for k, v in PINS.items())})")
     entries: list[dict] = []
     seen: set[str] = set()
     dupes = 0

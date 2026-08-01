@@ -28,6 +28,12 @@
       ["zoniex", "MISLABELLED ON MODRINTH. Tagged 1.21.1 + neoforge, but the jar contains only a legacy Forge mods.toml declaring mc=[1.20.1]. Proven by reading the jar (tools/check_jars.py), not guessed. It would not have loaded."]
     ]
   },
+  "pins": {
+    "_comment": ["Exact versions for mods that must be version-matched with EACH OTHER. The resolver otherwise takes", "the newest release of every mod INDEPENDENTLY, which silently breaks tightly-coupled pairs.", "", "Iris and Sodium are the case that proved it. Iris 1.8.12 declares 'sodium [0.6,)' - open-ended, so", "the dependency check passed against Sodium 0.8.12 - but its human-readable reason said 'Please", "install Sodium 0.6'. Sodium 0.8 moved SodiumGameOptions$PerformanceSettings, so Iris's compat mixin", "died with ClassNotFoundException the instant a world loaded. The machine-readable range was wrong;", "the prose was right.", "", "Downgrading Sodium to 0.6 was the wrong direction: Reese's Sodium Options requires >= 0.8.12 and", "Supplementaries declares itself INCOMPATIBLE with 0.6. The rest of the pack wants new Sodium, so", "Iris moves forward instead - 1.8.14-beta.1 is the first build whose reason text says 'use Sodium 0.8'.", "It is a beta, and it is the only build that works with the Sodium everything else needs.", "", "Format: slug -> exact Modrinth version_number."],
+    "versions": {
+      "iris": "1.8.14-beta.1+1.21.1-neoforge"
+    }
+  },
   "shaderpacks": {
     "_comment": ["Shader packs are a different Modrinth project type: they resolve against the 'iris' loader, not", "'neoforge', and install to shaderpacks/ rather than mods/. Shipping them in the pack means nobody", "has to find and download one - they just pick from the list in Video Settings.", "Iris and Euphoria Patches are already in the mod list; Euphoria is what gives Complementary its", "Distant Horizons support.", "None is enabled by default - a shader is a per-machine performance decision, and four people have", "four different GPUs."],
     "packs": [
