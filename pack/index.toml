@@ -966,16 +966,6 @@ hash = "5a26489b734991c0511abfe43bf9143c935b8483d854a78fecd2e84993fb09cc"
 metafile = true
 
 [[files]]
-file = "mods/geore-nouveau.pw.toml"
-hash = "15638213b0f943f393c2c70e2e5de115dec30c0c9ce9b13e8e884cf75bc18a79"
-metafile = true
-
-[[files]]
-file = "mods/geore.pw.toml"
-hash = "af5b227b56eb612aa3d1975bde5827bf294c64407b375ff2d4d21749493b488d"
-metafile = true
-
-[[files]]
 file = "mods/glitchcore.pw.toml"
 hash = "e53646f88aeb6bd54c38db50da972abdac91e83c145a8f974107b0ca103b15bc"
 metafile = true
@@ -1968,11 +1958,6 @@ metafile = true
 [[files]]
 file = "mods/yungs-api.pw.toml"
 hash = "d9c0c9209bac0b693af2a7c1e47ffb28d366bad19c91df31dc6d345fa75250a1"
-metafile = true
-
-[[files]]
-file = "mods/yungs-better-caves.pw.toml"
-hash = "31ae9ae93a8e3020278dd846c58d3376f53d2f90e2f0e8a25eab81029e2e8604"
 metafile = true
 
 [[files]]

@@ -58,6 +58,43 @@ CUTS: dict[str, str] = {
     "epic-fight-sword-soaring": "F14. RuntimeException: Attempted to load class net/minecraft/client/gui/screens/Screen for invalid dist DEDICATED_SERVER. Painful loss - this was the wuxia specialisation layer Ethan chose to make melee about movesets rather than stat lines. Epic Fight itself still supplies movesets, stances and combos.",
     "kenny": "F14. Same DEDICATED_SERVER crash. One stalker of six, and the least distinctive; The Knocker, Obsessed, The Skinwalker Hunt, Distant Friends and Weeping Angels remain.",
 
+    # --- F23: the underground was being carved twice -----------------------
+    # Better Caves is purely a WorldCarver implementation - it removes
+    # minecraft:cave and cave_extra_underground and adds its own. That was the
+    # whole story in 1.16. Since 1.18 the DOMINANT cave shape comes from the
+    # noise router (final_density: caves/entrances, spaghetti_2d,
+    # spaghetti_roughness, pillars, noodle), which Better Caves never touches -
+    # and which our own mcserver_depth datapack preserves verbatim from vanilla.
+    #
+    # So both systems ran: full vanilla noise caves PLUS a second carver at
+    # cave_spawn_chance 100.0 from y-63 to y80. The player-visible result is
+    # perforated ore veins, buried structures opened to the void, and very
+    # little solid stone - all of which work directly against the surface-ore
+    # design (ore above 54 as a real choice) and the buried-tech pillar
+    # (structures worth finding intact).
+    #
+    # It also hardcodes bottom_y -63, so it contributed nothing at all to the
+    # -64..-128 band the depth extension exists for.
+    #
+    # Nothing depends on it: Cave Biomes, Underground Worlds, Galosphere,
+    # Deeper Dark and Arda's Sculks all decorate whatever hole exists.
+    # Ethan's call, 2026-08-01, decided BEFORE the world regen because carving
+    # is baked into chunks and cannot be changed afterwards.
+    "yungs-better-caves": "F23. Removes only the legacy carvers while the 1.18+ noise-router caves it cannot see keep generating, so the underground is carved twice - fragmented ore veins, structures broken open, little solid stone. Also hardcodes bottom_y=-63 and so contributes nothing to the extended -64..-128 band. Cave Biomes, Underground Worlds, Galosphere, Deeper Dark and Arda's Sculks are unaffected.",
+
+    # --- F24: a dependency that smuggled in the wrong genre ----------------
+    # geore is present ONLY as a requirement of geore-nouveau (Ars golems for
+    # geodes, rated 'minor'). It adds 24 geode types to every overworld biome at
+    # y6-30 - roughly one geode per 12 chunks - and their materials include
+    # allthemodium, unobtainium, vibranium, osmium, platinum, tungsten, uranium
+    # and monazite: ores for mods that are not installed, in a world Ethan ruled
+    # "preindustrial to fantasy". Digging down in a steam-and-brass world and
+    # finding a budding vibranium geode is exactly what R2 existed to prevent.
+    #
+    # Cut before the regen because geodes are worldgen and bake into chunks.
+    "geore": "F24. Adds 24 geode types to every overworld biome including allthemodium, unobtainium, vibranium, osmium and uranium - against the preindustrial-to-fantasy ruling (R2). Present only as a dependency of geore-nouveau.",
+    "geore-nouveau": "F24. The only reason geore was in the pack; rated 'minor' in the manifest. Ars Nouveau keeps Additions, Creo, Controle, Unification, Ars'n'Spells, Polymorphia, Structurize, Artillery, Technic, Ocultas, Lumos and the lectern fix.",
+
     # --- F22: right-click a block, the server dies -------------------------
     # A Carry On <-> Create: Aeronautics compat shim whose mixin no longer
     # matches Carry On 2.2.6.13:
