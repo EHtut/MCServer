@@ -1,0 +1,13 @@
+name = "darkaroundme"
+filename = "DarkAroundMe-1.21.1-1.0.0.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/T9FsqvvF/versions/SpJ1GZaw/DarkAroundMe-1.21.1-1.0.0.jar"
+hash-format = "sha512"
+hash = "7cd8153cd4de4821884d17a4bcb6debd3936a103fc7cc4667ce36f60cee136750eb06f29d2c6e95ecbeaaa4d5c888c31f6b106c3f1346512dc92d050dca652ad"
+
+[update]
+[update.modrinth]
+mod-id = "T9FsqvvF"
+version = "SpJ1GZaw"

@@ -4,73 +4,74 @@
 > `tools/modlist.json` + the resolution cache. Do not hand-edit -
 > change `tools/modlist.json` and regenerate.
 
-**400 mods** for Minecraft 1.21.1 / neoforge, 1,723 MB total.
+**397 mods** for Minecraft 1.21.1 / neoforge, 1,507 MB total.
 
 | side | count | meaning |
 |---|---:|---|
-| both | 329 | installed on the server *and* every client |
-| client | 43 | client-only; the server never loads them |
-| server | 28 | server-only; players do not need them |
+| both | 321 | installed on the server *and* every client |
+| client | 45 | client-only; the server never loads them |
+| server | 31 | server-only; players do not need them |
 
 Every entry is pinned to an exact file and sha512 in `pack/mods/*.pw.toml`.
 The **Why** column is the reason that mod is in the pack, not a description
 of what it does - if a mod cannot justify a slot, it should not have one.
 
-## create (45)
+## create (46)
 
-Pillar 1: Create and its addon family - the industrial spine. Addons were chosen to WIDEN Create rather than bolt a competing tech mod alongside it, which is why there is no Mekanism or Immersive Engineering here.
+Pillar 1: Create and its addon family - the industrial spine. Addons WIDEN Create rather than bolting a competing tech mod alongside it. TECH CEILING (Ethan, 2026-07-31): steam and early electricity. Oil, diesel, concrete and sci-fi digital storage are out of period; electricity survives as a late-game marvel rather than a baseline.
 
 | Mod | Version | Side | Tier | Why |
 |---|---|---|---|---|
 | [Create](https://modrinth.com/mod/create) | `6.0.10+mc1.21.1` | both | core | The pillar itself |
-| [Applied Energistics 2](https://modrinth.com/mod/ae2) | `19.2.17` | both | major | Applied Energistics 2 - the digital storage layer Create lacks |
-| [CC: Tweaked](https://modrinth.com/mod/cc-tweaked) | `1.120.0` *alpha* | both | major | ComputerCraft: in-world programmable computers with an HTTP/websocket API. Also the most natural in-world surface for the future AI dungeon master to speak and act through |
-| [Create Big Cannons](https://modrinth.com/mod/create-big-cannons) | `5.11.7` | both | major | Buildable artillery - and the seam into the combat pillar |
+| [Create: Copycats+](https://modrinth.com/mod/copycats) | `3.0.4+mc.1.21.1-neoforge` | both | major | Create: Copycats+ - the building addon Create players treat as mandatory |
+| [Create Big Cannons](https://modrinth.com/mod/create-big-cannons) | `5.11.7` | both | major | Buildable artillery. Black powder is period-correct - this is the in-band answer to modern weapons |
 | [Create: Central Kitchen](https://modrinth.com/mod/create-central-kitchen) | `2.5.0` | both | major | Automates Farmer's Delight cooking with Create |
+| [Create: Compatible Storage](https://modrinth.com/mod/create-compatible-storage) | `2.11.0-neoforge` | both | major | Fixes Quark chests on contraptions - and Quark is in the pack |
 | [Create: Connected](https://modrinth.com/mod/create-connected) | `1.3.2-mc1.21.1` | both | major | The QoL blocks Create itself lacks; highly configurable |
 | [Create Deco](https://modrinth.com/mod/create-deco) | `2.1.3` | both | major | Industrial decoration; makes Create bases look intentional |
-| [Create: Diesel Generators](https://modrinth.com/mod/create-diesel-generators) | `1.21.1-1.3.15` | both | major | Oil, fuel and compact engines |
 | [Create: Enchantment Industry](https://modrinth.com/mod/create-enchantment-industry) | `2.4.2` | both | major | Automatable enchanting - the bridge from industry into magic |
-| [Create Jetpack](https://modrinth.com/mod/create-jetpack) | `5.2.1` | both | major | Backtank-powered flight - mobility that stays in theme |
-| [Create: New Age](https://modrinth.com/mod/create-new-age) | `1.2.0+mc1.21.1` | both | major | Create's own electricity tier |
+| [Create Jetpack](https://modrinth.com/mod/create-jetpack) | `5.2.1` | both | major | Flight from a pressurised-air backtank, not an energy cell. Rocketeer, not Iron Man |
+| [Create: Meta Logistics](https://modrinth.com/mod/create-meta-logistics) | `0.4.6` | both | major | Remote and unloaded storage networks in Create's own idiom. Replaces AE2's FUNCTION without importing its science fiction |
+| [Create: New Age](https://modrinth.com/mod/create-new-age) | `1.2.0+mc1.21.1` | both | major | Create's own electricity tier - late-game marvel, not baseline infrastructure |
 | [Create Ore Excavation](https://modrinth.com/mod/create-ore-excavation) | `1.21.1-1.6.8` | both | major | Rotational-powered resource extraction |
 | [Create: Power Loader](https://modrinth.com/mod/create-power-loader) | `2.0.5-mc1.21.1` | both | major | In-world chunk loading, instead of a cheat command |
+| [Create: Storage [Neo/Forge]](https://modrinth.com/mod/create-storage-neo-forge) | `1.3.2` | both | major | Create: Storage - storage boxes and backpacks built as a Create addon, so portable storage progresses INSIDE the industry pillar rather than beside it. Chosen over Traveler's and Sophisticated on the kinetic ruling |
 | [Create Stuff 'N Additions](https://modrinth.com/mod/create-stuff-additions) | `2.1.4.a` | both | major | Tools, armour and gadgets in Create's style |
-| [Create: The Factory Must Grow](https://modrinth.com/mod/create-tfmg) | `1.2.0` | both | major | The Factory Must Grow - heavy industry, oil, concrete |
-| [Create Crafts & Additions](https://modrinth.com/mod/createaddition) | `neoforge-1.21.1-1.6.0` | both | major | Create Crafts & Additions - bridges kinetics to electricity |
+| [Create Crafts & Additions](https://modrinth.com/mod/createaddition) | `neoforge-1.21.1-1.6.0` | both | major | Create Crafts & Additions - kinetics to electricity. The top of the tech ceiling |
 | [Mystical Agriculture](https://modrinth.com/mod/mystical-agriculture) | `8.0.27` | both | major | Resource crops - the automation sink Create wants |
 | [Create: Numismatics](https://modrinth.com/mod/numismatics) | `1.0.20+neoforge-mc1.21.1` | both | major | Create-styled currency; groundwork for a server economy |
 | [Create Slice & Dice](https://modrinth.com/mod/slice-and-dice) | `4.3.3` | both | major | Sane Farmer's Delight automation |
-| [Applied Energistics 2 Wireless Terminals](https://modrinth.com/mod/applied-energistics-2-wireless-terminals) | `19.5.1` | both | minor | Wireless AE2 terminals |
 | [Bartering Station](https://modrinth.com/mod/bartering-station) | `v21.1.0-1.21.1-NeoForge` | both | minor | Automated piglin bartering |
 | [Create: Bells & Whistles](https://modrinth.com/mod/bellsandwhistles) | `v0.4.7-1.21.1` | both | minor | Create: Bells & Whistles - adornments |
-| [Chunk Loaders](https://modrinth.com/mod/chunk-loaders) | `1.2.9-neoforge-mc1.21` | both | minor | Tiered chunk loaders as a non-Create fallback |
-| [Create Aeronautics](https://modrinth.com/mod/create-aeronautics) | `1.3.0+mc1.21.1` | both | risky | Buildable airships and planes - spectacular, still alpha |
+| [Camerapture](https://modrinth.com/mod/camerapture) | `1.10.12+mc1.21.1-neoforge` | both | minor | In-game camera and shareable photographs. Photography is 1840s technology - it fits the band |
+| [Create Aeronautics](https://modrinth.com/mod/create-aeronautics) | `1.3.0+mc1.21.1` | both | risky | Buildable airships. Explicitly requested; the single most on-period Create addon there is |
 | [Create: Bits 'n' Bobs](https://modrinth.com/mod/create-bits-n-bobs) | `0.0.44` | both | minor | Decorative and mechanical Create additions |
 | [Create: Copper & Zinc](https://modrinth.com/mod/create-copper-zinc) | `2.0.0` | both | minor | Renewable veridium and asurine |
+| [Create: Design n' Decor](https://modrinth.com/mod/create-design-n-decor) | `2.2b` | both | minor | Factory decor blocks |
 | [Create: Dreams & Desires](https://modrinth.com/mod/create-dreams-and-desires) | `2.3a-BETA` | both | minor | Broad Create content expansion |
 | [Create Encased](https://modrinth.com/mod/create-encased) | `1.21.1-1.9.0-ht3` | both | minor | Encased shafts and pipes |
 | [Create: Framed](https://modrinth.com/mod/create-framed) | `1.8.2+1.21.1` | both | minor | More framed glass variants |
+| [Create: Let The Adventure Begin](https://modrinth.com/mod/create-let-the-adventure-begin) | `4.0.3` | both | minor | Create-themed structures, balanced for progression |
 | [Create: Misc and Things](https://modrinth.com/mod/create-misc-and-things) | `4.1.1` | both | minor | More Create odds and ends |
 | [Create: Pattern Schematics](https://modrinth.com/mod/create-pattern-schematics) | `2.0.10` | both | minor | Repeating schematics - big builds without RSI |
 | [Create Railways Navigator](https://modrinth.com/mod/create-railways-navigator) | `1.21.1-beta-0.9.1-C6` *beta* | both | minor | Train routing and navigation UI |
+| [Create: Sound of Steam](https://modrinth.com/mod/create-sound-of-steam) | `0.8.2-1.21.1` *beta* | both | minor | Pipe organs. Audio immersion that is exactly this period |
 | [Steam 'n' Rails Neoforge](https://modrinth.com/mod/create-steam-n-rails-1.21.1) | `0.2.1+neoforge-mc1.21.1` | both | risky | Community 1.21.1 port of Steam 'n' Rails - trains, couplers, signals |
+| [Create: Structures Arise](https://modrinth.com/mod/create-structures-arise) | `176.49.48` | both | minor | 28 Create-themed structures in worldgen |
 | [Create: Trading floor](https://modrinth.com/mod/create-trading-floor) | `3.0.16` | both | minor | Automated villager trading |
+| [Create: Tweaked Controllers](https://modrinth.com/mod/create-tweaked-controllers) | `1.21.1-1.2.7` | both | minor | Proper contraption control |
+| [Create: Oxidized](https://modrinth.com/mod/create_oxidized) | `0.1.3` | server | minor | Oxidation recipes for all copper blocks |
 | [Delightful Creators](https://modrinth.com/mod/delightful-creators) | `1.2` | both | minor | More Create/Farmer's Delight glue |
 | [Easy Villagers](https://modrinth.com/mod/easy-villagers) | `neoforge-1.21.1-1.1.42` | both | minor | Villager handling without the boat-based war crimes |
-| [Extended AE](https://modrinth.com/mod/extended-ae) | `1.21-2.2.29-neoforge` | both | minor | AE2 QoL blocks |
 | [Create: Extended Wrenches](https://modrinth.com/mod/extended-wrenches) | `2.0.2` | both | minor | Cosmetic wrench variants |
 | [Create: Interiors](https://modrinth.com/mod/interiors) | `0.6.1` | both | minor | Create: Interiors - furniture in the Create idiom |
-| [Iron Jetpacks](https://modrinth.com/mod/iron-jetpacks) | `8.0.11` | both | minor | Configurable jetpack tiers |
-| [MEGA Cells](https://modrinth.com/mod/mega) | `4.11.0` | both | minor | MEGA Cells - larger AE2 storage tiers |
-| [ME Requester](https://modrinth.com/mod/merequester) | `1.21.1-1.4.3+neoforge` | both | minor | Keep AE2 stock levels topped up automatically |
 | [Moving Elevators](https://modrinth.com/mod/moving-elevators) | `1.4.12-neoforge-mc1.21` | both | minor | Real elevators for tall Create bases |
 | [Rechiseled: Create](https://modrinth.com/mod/rechiseled-create) | `1.1.1-neoforge-mc1.21` | both | minor | Chiselled variants of Create blocks |
 | [Trash Cans](https://modrinth.com/mod/trash-cans) | `1.0.18c-neoforge-mc1.21` | both | minor | Void items, fluids and energy |
 
-## magic (45)
+## magic (42)
 
-Pillar 2: Ars Nouveau as the magic spine plus a deliberately chosen set of addons. Ars Creo and Create: Ars Nouveau are the explicit seam between the magic and industry pillars - spells that drive machines, machines that fuel spells.
+Pillar 2: Ars Nouveau as the magic spine plus a deliberately chosen set of addons. Ars Creo and Create: Ars Nouveau are the explicit seam between the magic and industry pillars - spells that drive machines, machines that fuel spells. DEPTH RULING (Ethan, 2026-07-31): the Ars spine plus FOUR strong alternatives - Iron's Spells (combat magic), Goety (necromancy, feeds the horror pillar), Occultism (summoning), Theurgy (alchemy). Malum, Forbidden Arcanus and Hexerei were cut as a fifth, sixth and seventh parallel progression that four players would never finish. Ice & Fire, Vampirism and Werewolves stay as world-content rather than competing spell systems.
 
 | Mod | Version | Side | Tier | Why |
 |---|---|---|---|---|
@@ -81,16 +82,14 @@ Pillar 2: Ars Nouveau as the magic spine plus a deliberately chosen set of addon
 | [Ars Additions](https://modrinth.com/mod/ars-additions) | `21.3.0` | both | major | Ars QoL and small additions |
 | [Ars Creo](https://modrinth.com/mod/ars-creo) | `5.4.0` | both | major | The Ars/Create bridge. The single most on-theme mod in the pack |
 | [Ars Elemancy](https://modrinth.com/mod/ars-elemancy) | `1.17` | both | major | Elemental spell expansion |
-| [Ars Énergistique](https://modrinth.com/mod/ars-energistique) | `2.1.1-beta` *beta* | both | major | Ars Nouveau to AE2 bridge |
 | [Ars 'n Spells](https://modrinth.com/mod/ars-n-spells) | `3.0.1` | both | major | Bridges Ars Nouveau and Iron's Spells into one progression |
 | [Ars Unification](https://modrinth.com/mod/ars-unification) | `1.2.19` | both | major | Lets Ars take recipes from other mods - important at this mod count |
 | [Create Ars Nouveau](https://modrinth.com/mod/create-ars-nouveau) | `1.20.5` | both | major | Second Create/Ars integration - gears meet glyphs |
-| [Forbidden and Arcanus ](https://modrinth.com/mod/forbidden-arcanus) | `2.6.1` | both | major | Dark artefact magic with real progression |
 | [Goety - The Dark Arts](https://modrinth.com/mod/goety) | `3.1.0` | both | major | Necromancy and dark rituals. Sits exactly on the magic/horror seam |
 | [IceAndFire Community Edition](https://modrinth.com/mod/iceandfire-ce) | `2.0` | both | major | Dragons as a late-game target |
 | [Iron's Spells 'n Spellbooks](https://modrinth.com/mod/irons-spells-n-spellbooks) | `1.21.1-3.16.2` | both | major | Classic RPG spellcasting - the combat-facing magic |
-| [Malum](https://modrinth.com/mod/malum) | `1.8.2` | both | major | Blood and soul magic with a strong aesthetic |
 | [Occultism](https://modrinth.com/mod/occultism) | `1.21.1-neoforge-1.224.1` | both | major | Demon summoning and ritual magic |
+| [Theurgy](https://modrinth.com/mod/theurgy) | `1.21.1-neoforge-1.76.0` | both | major | Classical alchemy - replication and transmutation. The one alchemy system, chosen over Parachymistry and Reactive for depth |
 | [Vampirism](https://modrinth.com/mod/vampirism) | `1.21-1.10.12` | both | major | Become or hunt vampires - magic that feeds the horror pillar |
 | [Ars Artillery](https://modrinth.com/mod/ars-artillery) | `1.1` | both | minor | Deployable magical defensive turrets - magic answer to the gun track |
 | [Ars Controle](https://modrinth.com/mod/ars-controle) | `1.6.15` | both | minor | Automation control glyphs |
@@ -107,62 +106,58 @@ Pillar 2: Ars Nouveau as the magic spine plus a deliberately chosen set of addon
 | [Enchanting Infuser](https://modrinth.com/mod/enchanting-infuser) | `v21.1.4-1.21.1-NeoForge` | both | minor | Deterministic enchanting - removes the slot machine |
 | [GeOre Nouveau](https://modrinth.com/mod/geore-nouveau) | `0.5.9` | both | minor | Ars golems for geodes |
 | [Goety Cataclysm](https://modrinth.com/mod/goety-cataclysm) | `1.21.1-1.8.2` | both | minor | Goety and Cataclysm integration |
-| [Hexerei](https://modrinth.com/mod/hexerei) | `0.5.0.3` | both | minor | Witchcraft, brewing and broomsticks |
-| [Immersive Casting for Ars Nouveau](https://modrinth.com/mod/immersive-casting-for-ars-nouveau) | `0.1.3` *beta* | both | minor | Cast spells by speaking them. With proximity voice chat this is a genuinely different game |
 | [Magic Vibe Decorations (Crystals, Halloween)](https://modrinth.com/mod/magic-vibe-decorations) | `1.0.7` | both | minor | Crystal and magical decoration |
 | [Make Ars Lectern Great Again](https://modrinth.com/mod/make-ars-lectern-great-again) | `1.0.0` | both | minor | Fixes and expands the storage lectern UI |
 | [More Totems of Undying](https://modrinth.com/mod/more-totems-of-undying) | `2.20.3` | both | minor | Mob-themed totems |
-| [Mythic Upgrades](https://modrinth.com/mod/mythic-upgrades) | `5.1.0` | both | minor | Gem-based gear upgrades |
 | [Relics](https://modrinth.com/mod/relics-mod) | `0.10.7.8` | both | minor | Treasure items with unique mechanics |
 | [Reliquified Ars Nouveau](https://modrinth.com/mod/reliquified-ars-nouveau) | `0.6.1` | both | minor | Relics and Ars compatibility |
+| [Sooty Chimneys](https://modrinth.com/mod/sooty-chimneys) | `1.3.5` | both | minor | Rustic hearths, successor to campfires. Atmosphere, not a progression tree |
 | [Soul Fire'd](https://modrinth.com/mod/soul-fire-d) | `6.1.0` | both | minor | Soul fire as a real damage source |
+| [Summoning Rituals](https://modrinth.com/mod/summoningrituals) | `1.21.1-3.14.2+neoforge` | both | minor | Custom summoning rituals for items, mobs and commands. Not a parallel system - a primitive, and a clean future DM lever |
 | [Thaumon](https://modrinth.com/mod/thaumon) | `2.3.0+1.21` | both | minor | Thaumcraft-flavoured decoration for magic builds |
 | [Werewolves](https://modrinth.com/mod/werewolves) | `1.21-2.0.3.3` | both | minor | Vampirism's sister mod |
 | [XP Tome](https://modrinth.com/mod/xp-tome) | `v2.4` | both | minor | Bankable XP |
 
-## combat-guns (33)
+## combat-guns (30)
 
-Pillar 3a: the brother's track. 1.21.1 NeoForge turned out to have a real gun ecosystem - three independent frameworks plus a Create-native one. Create: Gunsmithing is the standout: guns built in Create's own idiom, which ties this pillar to the first one instead of sitting beside it.
+Pillar 3a: the brother's track, rebuilt to the period ruling. PERIOD (Ethan, 2026-07-31): preindustrial-to-fantasy, with TaCZ as the ONE sanctioned anachronism - one deliberate exception reads as intentional, four read as an accident. Modern warfare, tactical gear and electronic security are out. PRESENTATION RULING: melee is chosen for MOVESETS AND ANIMATION, not stat lines - a weapon that Epic Fight cannot animate is a differently-coloured sword and does not earn a slot. EASE RULING (delegated to Claude): one system per verb. One dodge, one parry, one camera - nobody should have to bind twelve keys to fight.
 
 | Mod | Version | Side | Tier | Why |
 |---|---|---|---|---|
-| [Better Combat](https://modrinth.com/mod/better-combat) | `2.4.0+1.21.1-neoforge` | both | major | Directional, weighty melee. Chosen over Epic Fight for compatibility |
+| [Armor of the Ages](https://modrinth.com/mod/armor-of-the-ages) | `1.5.10` | both | major | Animated armour sets drawn from real cultures. Presentation, not +1 protection |
 | [Bosses of Mass Destruction Forge](https://modrinth.com/mod/bosses-of-mass-destruction-forge) | `1.3.3` | both | major | Set-piece boss fights |
-| [Create: Gunsmithing](https://modrinth.com/mod/cgs) | `1.4.9` | both | major | Create: Gunsmithing - steampunk firearms built with Create machinery. The most on-theme gun mod in the pack |
-| [Combat Roll](https://modrinth.com/mod/combat-roll) | `2.0.6+1.21.1-neoforge` | both | major | Dodge roll - the best survivability verb against boss mods |
+| [Epic Fight](https://modrinth.com/mod/epic-fight) | `21.17.3.1-mc1.21.1-neoforge` | both | major | Souls-like combat: weapon-specific movesets, stances, combos, its own dodge and battle camera. The animation ENGINE the whole melee pillar is built on |
+| [Epic Fight Progressive Difficulty](https://modrinth.com/mod/epic-fight-progressive-difficulty) | `1.2.1` | server | major | Scales mobs' Epic Fight attributes to player progression, so the combat system stays meaningful past the early game |
+| [Epic Fight - Sword Soaring](https://modrinth.com/mod/epic-fight-sword-soaring) | `21.14.2.5-mc1.21.1-neoforge` | both | major | Wuxia martial-arts skills, learnable techniques, aerial combat. The specialisation layer - this is what makes melee feel different rather than merely re-textured |
+| [Epic Fight x Iron's Spells: Enhanced Animation](https://modrinth.com/mod/epic-fight-x-irons-spells-enhanced-animation) | `3.1.0` | both | major | Iron's Spells casting animated in Epic Fight's style, so magic and melee read as one system instead of two |
+| [Epic Knights: Shields Armor and Weapons](https://modrinth.com/mod/epic-knights-shields-armor-and-weapons) | `10.12` | both | major | The definitive medieval arms and armour set, and it carries Epic Fight support |
 | [Hostile Mobs Improve Over Time](https://modrinth.com/mod/hostile-mobs-improve-over-time) | `1.10.1b+mod` | both | major | Mobs get stronger the longer the world runs. A time-based difficulty curve, and an obvious future DM lever |
 | [Immersive Armors](https://modrinth.com/mod/immersive-armors) | `1.7.6+1.21.1` | both | major | Vanilla-faithful armour sets with real identity |
 | [L2 Hostility](https://modrinth.com/mod/l2hostility) | `3.0.18` | both | major | Enemy traits and difficulty progression - the knob that keeps combat scary at hour 200 |
 | [L_Ender's Cataclysm](https://modrinth.com/mod/l_enders-cataclysm) | `3.32` | both | major | Hard dungeons, real bosses, powerful rewards. The combat centrepiece |
 | [Legendary Monsters](https://modrinth.com/mod/legendary-monsters) | `1.21.1` | both | major | Early, mid and late-game bosses |
-| [SecurityCraft](https://modrinth.com/mod/security-craft) | `v1.10.2.1` | both | major | Cameras, mines, laser grids. Base defence that pairs with guns and raids |
-| [Simply Swords](https://modrinth.com/mod/simply-swords) | `1.63.0-1.21.1` | both | major | Spears, glaives, katanas and friends |
-| [Superb Warfare](https://modrinth.com/mod/superb-warfare) | `0.8.9-final` | both | major | Guns, heavy cannons and drivable vehicles. The broadest modern-warfare package on 1.21.1 |
-| [Vic's Point Blank](https://modrinth.com/mod/vics-point-blank) | `1.11.1` | both | major | High-quality, streamlined gun framework |
-| [Advanced Netherite](https://modrinth.com/mod/advanced-netherite) | `neoforge-2.3.1-mc1.21.1` | both | minor | Netherite tiers beyond vanilla's dead end |
+| [Medieval Siege Machines](https://modrinth.com/mod/medieval-siege-machines) | `1.33` | both | major | Trebuchet, catapult, ballista, battering ram, mortar. The in-period answer to artillery; pairs with Create: Big Cannons |
+| [SecurityCraft](https://modrinth.com/mod/security-craft) | `v1.10.2.1` | both | major | Cameras, mines, laser grids, keycards - RESTORED under the buried-tech ruling as salvaged security systems from the underground facilities. Also the pack's only real base defence against the horror layer |
+| [Shield Expansion](https://modrinth.com/mod/shield-expansion) | `1.4.1` | both | major | Parrying, shield tiers and enchantments. The ONE parry system - Shield Parry was cut so there is a single timing window to learn |
+| [Pufferfish's Skills](https://modrinth.com/mod/skills) | `0.18.3` *beta* | both | major | Pufferfish's Skills - a fully configurable skill system. Real character specialisation, authored by us, and an obvious future DM hook |
 | [Better Archeology](https://modrinth.com/mod/better-archeology) | `1.21.1-1.3.7` | both | minor | Archaeology worth doing |
-| [Better Third Person](https://modrinth.com/mod/better-third-person) | `1.9.0` | client | minor | Over-the-shoulder camera; helps ranged combat enormously |
+| [Better Third Person](https://modrinth.com/mod/better-third-person) | `1.9.0` | client | minor | Over-the-shoulder camera for exploration. The ONE camera mod - Epic Fight supplies the battle camera itself |
 | [Cataclysm Dimension](https://modrinth.com/mod/cataclysm-dimension) | `1.5.1` | both | minor | Extra Cataclysm dimension content |
-| [Cataclysm Tools](https://modrinth.com/mod/cataclysm-tools) | `2.0.0` | both | minor | Tools from Cataclysm materials |
-| [Craftable Gunpowder balanced](https://modrinth.com/mod/craftable-gunpowder-balanced) | `1.0.1` | both | minor | Balanced gunpowder crafting, built for Vic's Point Blank |
+| [Craftable Gunpowder balanced](https://modrinth.com/mod/craftable-gunpowder-balanced) | `1.0.1` | both | minor | Balanced gunpowder crafting |
 | [Cut Through](https://modrinth.com/mod/cut-through) | `v21.1.0-1.21.1-NeoForge` | client | minor | Swing through grass instead of mowing lawns mid-fight |
 | [Ender Dragon Fight Remastered](https://modrinth.com/mod/edf-remastered) | `5.0.2+mod` | both | minor | A dragon fight worth four players |
-| [First-person Model](https://modrinth.com/mod/first-person-model) | `2.7.2` | client | minor | See your own body |
-| [GD656Killicon](https://modrinth.com/mod/gd656killicon) | `1.1.0.020-1.21.1-neoforge` *alpha* | both | minor | FPS-style killfeed - cheap, but it makes gunplay feel right |
+| [First-person Model](https://modrinth.com/mod/first-person-model) | `2.7.2` | client | minor | See your own body - no keybind, pure presentation |
 | [Guard Villagers](https://modrinth.com/mod/guard-villagers) | `2.4.10` | both | minor | Hireable village defenders |
 | [Gunpowder Ore](https://modrinth.com/mod/gunpowder-ore) | `1.0.0` | both | minor | A natural gunpowder source - ammo economy without creeper farming |
-| [Health Indicators](https://modrinth.com/mod/health-indicators) | `21.1.3` | client | minor | Floating health bars |
 | [Knight Quest](https://modrinth.com/mod/knight-quest) | `1.9.3` | both | minor | 30+ armour sets earned through a quest chain |
-| [Military Armors](https://modrinth.com/mod/military-armors) | `1.1.1` | both | minor | Armour designed for gun combat rather than melee |
-| [Not Enough Animations](https://modrinth.com/mod/not-enough-animations) | `1.12.4` | client | minor | Third-person animation coverage |
-| [Shoulder Surfing Reloaded](https://modrinth.com/mod/shoulder-surfing-reloaded) | `1.21.1-5.0.9+neoforge` | client | minor | Configurable third-person camera |
-| [[UNOFFICIAL] TaCZ 1.21.1 NeoForge Port](https://modrinth.com/mod/tacz-1.21.1) | `1.1.8-hotfix-r6` | both | risky | Community NeoForge port of Timeless and Classics Zero - attachments, ammo types, custom gun packs |
+| [Not Enough Animations](https://modrinth.com/mod/not-enough-animations) | `1.12.4` | client | minor | Third-person animation coverage for everything Epic Fight does not touch |
+| [[UNOFFICIAL] TaCZ 1.21.1 NeoForge Port](https://modrinth.com/mod/tacz-1.21.1) | `1.1.8-hotfix-r6` | both | risky | Community NeoForge port of Timeless and Classics Zero. The single sanctioned anachronism; the official build never left 1.20.1 Forge |
 | [TslatEntityStatus](https://modrinth.com/mod/tslatentitystatus) | `1.8.3` | both | minor | Entity health readouts; matters when fights last minutes |
 | [Valarian Conquest](https://modrinth.com/mod/valarian-conquest) | `4.2.1.1` | both | minor | Combat and exploration enhancement for the overworld |
 
-## horror (45)
+## horror (43)
 
-Pillar 3b: horror. Built from stalkers, atmosphere and escalating pressure rather than jump-scares, so it stays frightening over a long server. Several entries here are configurable ambient systems rather than mobs - which is exactly the surface a future dungeon master would drive. NOTE: the stalker entities MUST be staggered in config; five of them hunting at once is comedy, not horror.
+Pillar 3b: horror. Built from stalkers, atmosphere and escalating pressure rather than jump-scares, so it stays frightening over a long server. Several entries are configurable ambient systems rather than mobs - exactly the surface a future dungeon master would drive. STALKER RULING (Ethan, 2026-07-31): all six hunting entities stay, staggered in config so at most one or two can be active at a time - see docs/06-BURIED-TECH.md and pack/config. Six simultaneous stalkers is comedy, not horror; the config IS the feature. THE BROKEN SCRIPT WAS CUT ON SAFETY, NOT PERIOD: the author states the mod WILL grief the world, WILL destroy buildings, can ban you from your own save and writes files to the desktop. Disqualifying for a shared long-running world.
 
 | Mod | Version | Side | Tier | Why |
 |---|---|---|---|---|
@@ -198,36 +193,41 @@ Pillar 3b: horror. Built from stalkers, atmosphere and escalating pressure rathe
 | [Arthropod Phobia Expansions + Horror Bosses / Arachnophobia](https://modrinth.com/mod/arphex) | `5.0.2` | both | risky | Phobia-grade arthropod horror and supernatural bosses |
 | [Born in Chaos: Forgotten Content](https://modrinth.com/mod/born-in-chaos-fc) | `1.2.0` | both | minor | Born in Chaos: Forgotten Content |
 | [Creeper Overhaul](https://modrinth.com/mod/creeper-overhaul) | `4.0.6` | both | minor | Biome-specific creepers |
-| [Diligent Stalker](https://modrinth.com/mod/diligentstalker) | `1.1.1` | both | minor | Camera drones and cave vision - horror TOOLS rather than horror threats |
+| [Diligent Stalker](https://modrinth.com/mod/diligentstalker) | `1.1.1` | both | minor | Remote camera drones and cave vision, reframed as SALVAGE from the buried facilities. Gives players reconnaissance tools instead of being purely prey - and its modernity is the point, not a flaw |
 | [Enderman Overhaul](https://modrinth.com/mod/enderman-overhaul) | `2.0.3` | both | minor | 20+ enderman variants |
 | [Fright's Delight](https://modrinth.com/mod/frights-delight) | `neoforge-1.21.1-1.4.8` | both | minor | Farmer's Delight dishes made from hostile mob drops. Grim, and it ties horror to the food economy |
 | [Frostiful](https://modrinth.com/mod/frostiful) | `2.3.3+1.21.1-neoforge` *alpha* | both | minor | Cold as survival pressure |
 | [Galosphere](https://modrinth.com/mod/galosphere) | `1.21.1-1.5.5` | both | minor | Cave expansion with an eerie register |
 | [Grim & Bleak](https://modrinth.com/mod/grim-and-bleak) | `2.5.2` | both | minor | Ambience-led horror with its own dimension |
 | [Horror messages](https://modrinth.com/mod/horror-messages) | `1.0.0` | both | minor | Periodic horror messages in chat. Trivial, disproportionately effective, and an obvious DM hook |
-| [Legendary Tooltips](https://modrinth.com/mod/legendary-tooltips) | `1.5.5` | client | minor | Rare items feel rare |
 | [Nyf's Spiders](https://modrinth.com/mod/nyfs-spiders) | `3.0.1` | both | minor | Spiders that move like spiders. Genuinely worse |
 | [Scorchful](https://modrinth.com/mod/scorchful) | `0.15.2+1.21.1-neoforge` *alpha* | both | minor | Heat as survival pressure |
 | [Spawn Animations](https://modrinth.com/mod/spawn-animations) | `1.11.5+mod` | both | minor | Mobs claw out of the ground instead of popping in |
-| [The Broken Script](https://modrinth.com/mod/the-broken-script) | `1.10.1` | both | risky | Corrupted-game horror; unsettling because it looks like a bug |
 | [Zombie Nightmare Expansions - Undead Horror Monsters](https://modrinth.com/mod/zoniex) | `1.2.1` | both | minor | Zombie Nightmare Expansions - creepy undead with unusual mechanics |
 
-## world-structures (38)
+## world-structures (44)
 
 Worldgen and structures, chosen as ONE coherent set: BWG for biomes, the YUNG suite for vanilla structure overhauls, and a small number of dungeon and settlement mods. Deliberately not stacking competing terrain generators.
 
 | Mod | Version | Side | Tier | Why |
 |---|---|---|---|---|
 | [Dungeons and Taverns](https://modrinth.com/mod/dungeons-and-taverns) | `v4.4.4+mod` | both | major | Dungeons, taverns and settlements |
+| [Epic Structures: Villages](https://modrinth.com/mod/epic-structures-villages) | `1.3.2` | both | major | Completely replaces vanilla villages with sprawling medieval cities. Chosen OVER Towns and Towers, which was cut - two mods overhauling villages is a collision, not a variety |
 | [Friends&Foes (Forge/NeoForge)](https://modrinth.com/mod/friends-and-foes-forge) | `neoforge-4.0.26+mc1.21.1` | both | major | The mob-vote losers, well implemented |
+| [Lootr](https://modrinth.com/mod/lootr) | `1.21.1-1.11.37.122` | both | major | Loot chests instanced PER PLAYER. Ends the four-player race to the treasure; everyone rolls the same chest independently |
+| [Medieval Buildings](https://modrinth.com/mod/medieval-buildings) | `1.1.1` | both | major | Medieval structures with hidden enemies and treasure. The core of the world-dressing ruling |
 | [Mowzie's Mobs](https://modrinth.com/mod/mowzies-mobs) | `1.8.2` | both | major | A handful of exceptional set-piece creatures |
 | [Naturalist](https://modrinth.com/mod/naturalist) | `2.0.2+1.21.1-neoforge` | both | major | 47 animals with real behaviours - the world feels inhabited |
 | [Oh The Biomes We've Gone](https://modrinth.com/mod/oh-the-biomes-weve-gone) | `2.6.0-NeoForge` | both | major | The biome layer - 50+ biomes, TerraBlender-based |
 | [Quark](https://modrinth.com/mod/quark) | `4.1-482` | both | major | Hundreds of small vanilla+ additions, individually toggleable |
+| [Serene Seasons](https://modrinth.com/mod/serene-seasons) | `10.1.0.3` *beta* | both | major | Seasons with shifting colour and temperature. NOTE: this makes crops seasonal, so it is a real gameplay change on top of Farmer's Delight, not decoration |
+| [Spelunkery](https://modrinth.com/mod/spelunkery) | `1.21.1-0.4.3` | both | major | Cave overhaul with tool progression and mining strategy. Makes descending a deliberate activity with its own tech tree, which is what the buried-tech ruling needs to be worth doing |
 | [Structory](https://modrinth.com/mod/structory) | `1.3.17` | both | major | Small atmospheric structures, very high quality |
 | [Supplementaries](https://modrinth.com/mod/supplementaries) | `1.21.1-3.8.5` | both | major | Signs, sconces, flags and dozens of small useful blocks |
-| [Towns and Towers](https://modrinth.com/mod/towns-and-towers) | `1.13.9` | both | major | New villages, outposts and ships |
+| [The Undergarden](https://modrinth.com/mod/the-undergarden) | `0.9.6` *beta* | both | major | An entire forgotten dimension deep underground. Thematically it IS the lost world beneath |
+| [Underground Worlds](https://modrinth.com/mod/underground-worlds) | `3.0.2-1.21.1` | both | major | Underground biomes AND underground dungeons. The most direct vessel for the buried-tech device - dungeons are where the salvage goes |
 | [When Dungeons Arise](https://modrinth.com/mod/when-dungeons-arise) | `2.1.68` | server | major | Large hand-built dungeons |
+| [YUNG's Better Caves](https://modrinth.com/mod/yungs-better-caves) | `1.21.1-NeoForge-3.1.4` | server | major | Overhauled cave generation, underground lakes and lava oceans. Same author as Cave Biomes and designed to work with it |
 | [YUNG's Better Desert Temples](https://modrinth.com/mod/yungs-better-desert-temples) | `1.21.1-NeoForge-4.1.5` | server | major | Desert temple overhaul |
 | [YUNG's Better Dungeons](https://modrinth.com/mod/yungs-better-dungeons) | `1.21.1-NeoForge-5.1.4` | server | major | Vanilla dungeons made worth entering |
 | [YUNG's Better End Island](https://modrinth.com/mod/yungs-better-end-island) | `1.21.1-NeoForge-3.1.2` | server | major | End island overhaul |
@@ -238,7 +238,6 @@ Worldgen and structures, chosen as ONE coherent set: BWG for biomes, the YUNG su
 | [YUNG's Better Strongholds](https://modrinth.com/mod/yungs-better-strongholds) | `1.21.1-NeoForge-5.1.3` | server | major | Stronghold overhaul |
 | [YUNG's Better Witch Huts](https://modrinth.com/mod/yungs-better-witch-huts) | `1.21.1-NeoForge-4.1.1` | server | major | Witch hut overhaul - thematically perfect here |
 | [YUNG's Cave Biomes](https://modrinth.com/mod/yungs-cave-biomes) | `1.21.1-NeoForge-3.1.1` | both | major | Underground biome variety |
-| [The Aether](https://modrinth.com/mod/aether) | `1.21.1-1.5.10-neoforge` | both | minor | The classic sky dimension as a late-game destination |
 | [Alex's Mobs (Unofficial Port)](https://modrinth.com/mod/alexs-mobs(1.21.1)) | `1.22.17` | both | risky | Community port of Alex's Mobs - the biggest creature roster in modded Minecraft |
 | [Battle Towers](https://modrinth.com/mod/battle-towers) | `1.3.0+mod` | both | minor | Climbable combat towers |
 | [Critters and Companions](https://modrinth.com/mod/critters-and-companions) | `2.6.2` | both | minor | Small creatures and pets |
@@ -247,17 +246,17 @@ Worldgen and structures, chosen as ONE coherent set: BWG for biomes, the YUNG su
 | [Hybrid Aquatic](https://modrinth.com/mod/hybrid-aquatic) | `1.6.8-neoforge` | both | minor | Ocean life worth diving for |
 | [Improved Pillager Outpost](https://modrinth.com/mod/improved-pillager-outpost) | `5` | both | minor | Outposts that are actually a fight |
 | [Jaden's Nether Expansion](https://modrinth.com/mod/jadens-nether-expansion) | `2.4.0-BETA.7` *beta* | both | minor | Nether content expansion |
+| [Medieval Buildings [End Edition]](https://modrinth.com/mod/medieval-buildings-end-edition) | `1.0.4` | both | minor | Medieval structures for the End |
+| [Medieval Buildings [Nether Edition]](https://modrinth.com/mod/medieval-buildings-nether-edition) | `1.0.2` | both | minor | Medieval structures for the Nether |
 | [Nether Depths Upgrade](https://modrinth.com/mod/nether-depths-upgrade) | `3.1.8` | both | minor | Lava-sea flora and fauna |
-| [Nullscape](https://modrinth.com/mod/nullscape) | `1.2.14` | both | minor | End dimension overhaul |
 | [Philips Ruins](https://modrinth.com/mod/philips-ruins) | `1.21.1-2.0` | both | minor | Ancient ruins scattered through the world |
+| [SeasonHud](https://modrinth.com/mod/seasonhud) | `1.21.1-2.0.7` | both | minor | Shows the current season on the HUD - without it, seasonal farming is guesswork |
 | [Structory: Towers](https://modrinth.com/mod/structory-towers) | `1.0.17` | both | minor | Structory's tower set |
-| [Tectonic](https://modrinth.com/mod/tectonic) | `3.0.26-neoforge-21.1` | both | risky | Dramatic terrain shaping. Layers on top of the biome mod and needs a first-boot check |
-| [The Bumblezone - NeoForge/Forge](https://modrinth.com/mod/the-bumblezone) | `7.15.3+1.21.1-neoforge` | both | minor | A dimension with a strong identity |
 | [When Dungeons Arise: Seven Seas](https://modrinth.com/mod/when-dungeons-arise-seven-seas) | `1.0.4` | server | minor | Naval dungeon set |
 | [YUNG's Bridges](https://modrinth.com/mod/yungs-bridges) | `1.21.1-NeoForge-5.1.1` | server | minor | Natural bridges |
 | [YUNG's Extras](https://modrinth.com/mod/yungs-extras) | `1.21.1-NeoForge-5.1.1` | server | minor | Extra vanilla+ structures |
 
-## qol (45)
+## qol (53)
 
 Quality of life. At 400 mods this is not garnish - it is what stops the pack being unplayable. Recipe lookup, tooltips, sorting, waypoints and death recovery carry the whole experience.
 
@@ -268,7 +267,6 @@ Quality of life. At 400 mods this is not garnish - it is what stops the pack bei
 | [Clumps](https://modrinth.com/mod/clumps) | `19.0.0.1` | both | core | Merges XP orbs - QoL and a real server performance win |
 | [Controlling](https://modrinth.com/mod/controlling) | `19.0.5` | client | core | Search the keybind list. With 400 mods, mandatory |
 | [EMI](https://modrinth.com/mod/emi) | `1.1.24+1.21.1+neoforge` | both | core | The recipe viewer. Chosen over JEI for performance and its handling of huge recipe sets |
-| [GraveStone Mod](https://modrinth.com/mod/gravestone-mod) | `neoforge-1.21.1-1.0.38` | both | core | Death inventory recovery. Non-negotiable in a pack this lethal |
 | [Jade 🔍](https://modrinth.com/mod/jade) | `15.10.5+neoforge` | both | core | Block and entity inspection |
 | [Mouse Tweaks](https://modrinth.com/mod/mouse-tweaks) | `1.21-2.26.1-neoforge` | client | core | Inventory mouse handling |
 | [Polymorph](https://modrinth.com/mod/polymorph) | `1.1.0+1.21.1` | both | core | Resolves conflicting recipes. At 400 mods, collisions are certain |
@@ -276,21 +274,24 @@ Quality of life. At 400 mods this is not garnish - it is what stops the pack bei
 | [Waystones](https://modrinth.com/mod/waystones) | `21.1.39+neoforge-1.21.1` | both | core | Fast travel between discovered points. Essential for four players |
 | [Xaero's Minimap](https://modrinth.com/mod/xaeros-minimap) | `neoforge-1.21.1-26.4.2` | both | core | Minimap |
 | [Xaero's World Map](https://modrinth.com/mod/xaeros-world-map) | `neoforge-1.21.1-1.44.2` | both | core | Full world map |
+| [AmbientSounds](https://modrinth.com/mod/ambientsounds) | `6.3.8` | client | major | Biome and structure-aware ambient soundscapes - wind, water, caves, weather. Completes the audio layer alongside Sound Physics and voice chat, and is arguably the highest-impact immersion mod in the pack |
+| [Carry On](https://modrinth.com/mod/carry-on) | `2.2.6` | both | major | Pick up a chest WITH its contents, a machine, or a mob, and walk off with it. The most kinetic storage verb there is, and it needs no UI to understand |
 | [Comforts](https://modrinth.com/mod/comforts) | `9.0.5+1.21.1` | both | major | Sleeping bags and hammocks - four players, four sleep schedules |
+| [darkaroundme](https://modrinth.com/mod/darkaroundme) | `1.0.0` | both | major | Renders unlit areas as ABSOLUTE darkness instead of vanilla grey murk. Makes carried light a real resource and gives the horror layer somewhere to hide |
+| [Distant Horizons](https://modrinth.com/mod/distanthorizons) | `3.2.0-b-1.21.1` *beta* | both | major | Massively increased render distance at low cost. For a world built for atmosphere, seeing the horizon IS the immersion |
 | [Easy Anvils](https://modrinth.com/mod/easy-anvils) | `v21.1.0-1.21.1-NeoForge` | both | major | Anvils without the too-expensive wall |
+| [Emotecraft](https://modrinth.com/mod/emotecraft) | `2.4.12+1.21.1-forge` | both | major | Player-made emotes. With proximity voice chat, this is how four people actually roleplay rather than type |
 | [Explorer's Compass](https://modrinth.com/mod/explorers-compass) | `1.21.1-3.4.0-neoforge` | both | major | Find structures |
+| [Figura](https://modrinth.com/mod/figura) | `0.1.6+1.21.1` | client | major | Custom scripted player avatars. Client-side, so it costs the server nothing and each player controls their own presence |
 | [Inventory Profiles Next](https://modrinth.com/mod/inventory-profiles-next) | `neoforge-1.21.1-2.2.5` | client | major | Inventory sorting and profiles |
 | [Nature's Compass](https://modrinth.com/mod/natures-compass) | `1.21.1-3.4.0-neoforge` | both | major | Find biomes without wandering for an hour |
-| [Sophisticated Backpacks](https://modrinth.com/mod/sophisticated-backpacks) | `1.21.1-3.25.73.2020` | both | major | Upgrades, filters, magnet pickup |
-| [Sophisticated Storage](https://modrinth.com/mod/sophisticated-storage) | `1.21.1-1.5.83.2017` | both | major | Barrels and chests with upgrades |
-| [Storage Drawers](https://modrinth.com/mod/storagedrawers) | `1.21.1-13.11.4` | both | major | Bulk item storage |
-| [Traveler's Backpack](https://modrinth.com/mod/travelersbackpack) | `1.21.1-10.1.38` | both | major | Upgradeable backpacks with real capacity |
+| [Storage Drawers](https://modrinth.com/mod/storagedrawers) | `1.21.1-13.11.4` | both | major | Bulk storage with contents visible on the block face - storage you can read by looking at it |
 | [VeinMiner](https://modrinth.com/mod/veinminer) | `2.11.2` | both | major | Vein mining |
 | [3D Skin Layers](https://modrinth.com/mod/3dskinlayers) | `1.11.2` | client | minor | 3D skin layers |
 | [Advancement Plaques](https://modrinth.com/mod/advancement-plaques) | `1.6.8` | client | minor | Better advancement popups |
 | [BetterF3](https://modrinth.com/mod/betterf3) | `11.0.3` | client | minor | Readable debug screen |
 | [Boat Item View](https://modrinth.com/mod/boat-item-view) | `1.21-1.21.1-0.0.6-neoforge` | client | minor | See held items in boats |
-| [Camerapture](https://modrinth.com/mod/camerapture) | `1.10.12+mc1.21.1-neoforge` | both | minor | In-game camera and shareable pictures |
+| [Carry On + Create Aeronautics Compat](https://modrinth.com/mod/carryon-aeronautics-compat) | `1.1.1` | server | minor | Patches Carry On to work with Create Aeronautics contraptions |
 | [Chat Heads](https://modrinth.com/mod/chat-heads) | `0.15.3` | client | minor | Faces in chat - small, disproportionately social |
 | [Easy Magic](https://modrinth.com/mod/easy-magic) | `v21.1.4-1.21.1-NeoForge` | both | minor | Enchanting table QoL |
 | [Easy Shulker Boxes](https://modrinth.com/mod/easy-shulker-boxes) | `v21.1.3-1.21.1-NeoForge` | both | minor | Open shulkers in place |
@@ -298,10 +299,16 @@ Quality of life. At 400 mods this is not garnish - it is what stops the pack bei
 | [EMI Loot](https://modrinth.com/mod/emi-loot) | `0.7.9+1.21+neoforge` | both | minor | Loot table viewing in EMI |
 | [EMIffect](https://modrinth.com/mod/emiffect) | `2.1.6+mc1.21.1` | client | minor | Status effect information in EMI |
 | [Fancy Toasts \| Better Advancements](https://modrinth.com/mod/fancy-toasts) | `1.4.7-neoforge-1.21.1` | client | minor | Overhauls the toast system |
+| [Figura v5 support](https://modrinth.com/mod/figura-v5-support) | `1.2.2` | client | minor | Compatibility layer for Figura v5 avatars |
+| [Figura ExtraBone](https://modrinth.com/mod/figura_extrabone) | `0.0.3-neoforge+1.21.1` | client | minor | Model extensions for Figura |
+| [Figura ExtraFight](https://modrinth.com/mod/figura_extrafight) | `0.0.41-neoforge+1.21.1` | client | minor | Hooks Figura avatars into Epic Fight's animation system, so custom models actually fight properly |
 | [Forgiving Void](https://modrinth.com/mod/forgiving-void) | `21.1.7+neoforge-1.21.1` | server | minor | The void becomes survivable instead of run-ending |
+| [Immersive Paintings](https://modrinth.com/mod/immersive-paintings) | `0.7.8+1.21.1` | both | minor | Hang real images as in-world paintings, server-synced. Four people decorating a shared world with their own art |
 | [Item Borders](https://modrinth.com/mod/item-borders) | `1.2.5` | client | minor | Rarity borders in inventory slots |
 | [Item Highlighter](https://modrinth.com/mod/item-highlighter) | `1.1.11` | client | minor | Highlights newly picked-up items |
 | [Just Enough Breeding (JEBr)](https://modrinth.com/mod/justenoughbreeding) | `3.2.1` | client | minor | Breeding information in the recipe viewer |
+| [Legendary Tooltips](https://modrinth.com/mod/legendary-tooltips) | `1.5.5` | client | minor | Rare items feel rare |
+| [[Let's Do] Camping](https://modrinth.com/mod/lets-do-camping) | `2.1.4` | both | minor | Tents, bedrolls and campfires. Turns an expedition into an activity instead of digging a dirt hole at dusk - and the buried-tech device depends on people going far from base |
 | [Make Bubbles Pop](https://modrinth.com/mod/make_bubbles_pop) | `0.4.0-beta.1-neoforge` *beta* | client | minor | Better bubble particles |
 | [No Chat Reports](https://modrinth.com/mod/no-chat-reports) | `NeoForge-1.21.1-v2.9.1` | both | minor | Removes chat reporting on a private server |
 | [Remove Reloading Screen](https://modrinth.com/mod/rrls) | `5.0.11+mc1.21.1-forge` *beta* | client | minor | Removes the reloading screen |
@@ -338,7 +345,7 @@ Building blocks and furniture. Four players sharing a world need a deep palette 
 | [Macaw's Windows](https://modrinth.com/mod/macaws-windows) | `2.4.2` | both | minor | Windows |
 | [Storage Delight](https://modrinth.com/mod/storage-delight) | `26.07.01a-1.21-neoforge` | both | minor | Kitchen and storage furniture |
 
-## food-farm (12)
+## food-farm (11)
 
 Farmer's Delight and its ecosystem. This exists because Create: Central Kitchen and Slice & Dice make food a real automation target rather than a chore.
 
@@ -351,7 +358,6 @@ Farmer's Delight and its ecosystem. This exists because Create: Central Kitchen 
 | [Chef's Delight - Farmer's Delight Villagers](https://modrinth.com/mod/chefs-delight) | `1.0.5` | both | minor | Chef and cook villager professions |
 | [Corn Delight](https://modrinth.com/mod/corn-delight) | `1.2.10-1.21.1` | both | minor | Corn crops and dishes |
 | [Farmer's Knives](https://modrinth.com/mod/farmers-knives) | `1.21.1-4.2.0` | both | minor | Knives for other mods' materials |
-| [[Let's Do] Beachparty](https://modrinth.com/mod/lets-do-beachparty) | `2.1.4` | both | minor | Beach content |
 | [[Let's Do] BloomingNature](https://modrinth.com/mod/lets-do-bloomingnature) | `1.1.10` | both | minor | Terrain and plant expansion |
 | [[Let's Do] Meadow](https://modrinth.com/mod/lets-do-meadow) | `1.4.8` | both | minor | Meadow overhaul and dairy |
 | [[Let's Do] Vinery](https://modrinth.com/mod/lets-do-vinery) | `1.5.3` *beta* | both | minor | Wine-making with real depth |
@@ -380,23 +386,18 @@ Split deliberately: server-side mods cut tick time for everyone, client-side mod
 | [Chunks fade in](https://modrinth.com/mod/chunks-fade-in) | `v3.0.25-1.21-neoforge` | client | minor | Cosmetic chunk fade; masks load stutter |
 | [Dynamic FPS](https://modrinth.com/mod/dynamic-fps) | `3.11.4` | client | minor | Throttles FPS when the window is unfocused |
 
-## server-admin (9)
+## server-admin (4)
 
 Server operation, and the beginnings of the AI dungeon master seam. KubeJS is the important entry: it is the scriptable surface a DM would eventually drive, and it costs nothing to include now. The quest engine is the known gap - see curseforge_only above.
 
 | Mod | Version | Side | Tier | Why |
 |---|---|---|---|---|
-| [Advanced Backups](https://modrinth.com/mod/advanced-backups) | `3.7.1` | both | major | Actively maintained backup mod with incremental support |
 | [KubeJS](https://modrinth.com/mod/kubejs) | `2101.7.2-build.368` | both | major | Server-side scripting - recipes, custom items and world events in JavaScript. The most plausible execution surface for the future dungeon master |
 | [ServerCore](https://modrinth.com/mod/servercore) | `1.5.19+1.21.1` | server | major | Server-side dynamic performance tuning |
-| [Simple Backups](https://modrinth.com/mod/simple-backups) | `1.21-4.0.21` | both | major | Scheduled world backups |
-| [AntiXray](https://modrinth.com/mod/anti-xray) | `1.4.8+1.21.1` | server | minor | Ore obfuscation |
-| [Backup Manager](https://modrinth.com/mod/backup-manager) | `1.0.0` | both | minor | GUI over the backup mods |
 | [Crash Assistant](https://modrinth.com/mod/crash-assistant) | `1.11.11` | client | minor | Better crash diagnostics |
-| [Death Backup](https://modrinth.com/mod/death-backup) | `1.21.1-3.6-fabric+forge+neo` | server | minor | Snapshots player inventories before death - recoverable by command |
 | [LuckPerms](https://modrinth.com/mod/luckperms) | `v5.4.140-neoforge` | server | minor | Permissions system |
 
-## core-libs (37)
+## core-libs (36)
 
 APIs and shared code. Listed explicitly rather than left to transitive resolution so a dependency change shows up as a visible diff.
 
@@ -428,7 +429,6 @@ APIs and shared code. Listed explicitly rather than left to transitive resolutio
 | [Resourceful Lib](https://modrinth.com/mod/resourceful-lib) | `3.0.12` | both | core | Resourceful family library |
 | [RunicLib](https://modrinth.com/mod/runiclib) | `5.0.7` | both | core | Attributes and effects library |
 | [SmartBrainLib](https://modrinth.com/mod/smartbrainlib) | `1.16.11` | server | core | Brain/AI library used by modern mob mods |
-| [Sophisticated Core](https://modrinth.com/mod/sophisticated-core) | `1.21.1-1.4.80.2194` | both | core | Backing library for the Sophisticated storage family |
 | [TerraBlender](https://modrinth.com/mod/terrablender) | `4.1.0.8` *beta* | both | core | Biome injection layer |
 | [YUNG's API](https://modrinth.com/mod/yungs-api) | `1.21.1-NeoForge-5.1.6` | both | core | Required by every YUNG structure mod |
 | [Athena](https://modrinth.com/mod/athena-ctm) | `4.0.6` | client | minor | Connected-textures backend |
@@ -440,7 +440,7 @@ APIs and shared code. Listed explicitly rather than left to transitive resolutio
 | [Prickle](https://modrinth.com/mod/prickle) | `21.1.11` | both | minor | Config library |
 | [Searchables](https://modrinth.com/mod/searchables) | `1.0.2` | client | minor | Search-field library |
 
-## auto-deps (53)
+## auto-deps (50)
 
 Required dependencies discovered by resolving the pack's declared dependency graph (tools/resolve.py deps). These were being pulled in implicitly; listing them explicitly means a dependency appearing or disappearing is a reviewable diff rather than a surprise at boot. Fabric API and QSL were correctly excluded - multiloader jars declare them even though no NeoForge build needs them.
 
@@ -463,10 +463,10 @@ Required dependencies discovered by resolving the pack's declared dependency gra
 | [Elysium API](https://modrinth.com/mod/elysium-api) | `1.21.1-2.0.0-BETA.6` *beta* | both | core | Required by jadens-nether-expansion |
 | [[EMF] Entity Model Features](https://modrinth.com/mod/entity-model-features) | `3.2.4-neoforge-1.21` | client | core | Required by crimson_curse |
 | [[ETF] Entity Texture Features](https://modrinth.com/mod/entitytexturefeatures) | `7.1-neoforge-1.21` | client | core | Required by crimson_curse |
+| [Epic Fight - Invincible Lib](https://modrinth.com/mod/epic-fight-invincible-lib) | `21.15.8.2-mc1.21.1-neoforge` | server | core | Required by Epic Fight - Sword Soaring |
 | [Forgified Fabric API](https://modrinth.com/mod/forgified-fabric-api) | `0.116.15+2.3.1+1.21.1` | both | core | Required by frostiful, scorchful - the Sinytra shim, a real NeoForge mod |
 | [Fusion (Connected Textures)](https://modrinth.com/mod/fusion-connected-textures) | `1.3.12-neoforge-mc1.21.1` | client | core | Required by rechiseled |
 | [GeOre](https://modrinth.com/mod/geore) | `6.2.3` *beta* | both | core | Required by geore-nouveau |
-| [GuideME](https://modrinth.com/mod/guideme) | `21.1.17` | both | core | Required by ae2 |
 | [Iceberg](https://modrinth.com/mod/iceberg) | `1.3.2` | both | core | Required by advancement-plaques, item-borders, legendary-tooltips |
 | [Jupiter](https://modrinth.com/mod/jupiter) | `2.3.7-1.21.1-neoforge` | both | core | Required by iceandfire-ce |
 | [KotlinLangForge](https://modrinth.com/mod/kotlin-lang-forge) | `2.12.2-k2.4.10-3.0+neoforge` | both | core | Required by veinminer |
@@ -481,22 +481,19 @@ Required dependencies discovered by resolving the pack's declared dependency gra
 | [Oh The Trees You'll Grow](https://modrinth.com/mod/oh-the-trees-youll-grow) | `1.21.1-5.3.2-NeoForge` | server | core | Required by oh-the-biomes-weve-gone |
 | [oωo (owo-lib)](https://modrinth.com/mod/owo-lib) | `0.12.15.5-beta.1+1.21` *beta* | both | core | Required by accessories, accessories-compat-layer, aether, simple-hats |
 | [Platform](https://modrinth.com/mod/platform) | `1.3.3` | both | core | Required by rottencreatures |
-| [PolyLib](https://modrinth.com/mod/polylib) | `2100.0.3-build.160` | both | core | Required by backup-manager |
 | [Polytone](https://modrinth.com/mod/polytone) | `1.21-3.10.3` | client | core | Required by crimson_curse |
 | [Prism](https://modrinth.com/mod/prism-lib) | `1.0.11` | client | core | Required by item-borders, legendary-tooltips |
 | [Prometheus](https://modrinth.com/mod/prometheus-api) | `1.2.5` | both | core | Required by soul-fire-d |
 | [Rhino](https://modrinth.com/mod/rhino) | `2101.2.7-build.85+Rhino-1.21` | both | core | Required by kubejs |
 | [Ritchie's Projectile Library](https://modrinth.com/mod/rpl) | `2.1.2` | both | core | Ritchie's Projectile Library - required by create-big-cannons |
 | [Sable](https://modrinth.com/mod/sable) | `2.0.3+mc1.21.1` | both | core | Required by create-aeronautics |
-| [Simply Tooltips](https://modrinth.com/mod/simply-tooltips) | `0.1.3` | client | core | Required by simply-swords |
+| [Sparkweave Engine](https://modrinth.com/mod/sparkweave) | `0.510.0+NeoForge` *beta* | both | core | Sparkweave Engine - required by velvet-api, which Scorchful needs |
 | [SuperMartijn642's Config Lib](https://modrinth.com/mod/supermartijn642s-config-lib) | `1.1.8-neoforge-mc1.21` | both | core | Required by chunk-loaders, moving-elevators, rechiseled, trash-cans |
 | [SuperMartijn642's Core Lib](https://modrinth.com/mod/supermartijn642s-core-lib) | `1.1.22-neoforge-mc1.21` | both | core | Required by chunk-loaders, moving-elevators, rechiseled, trash-cans |
 | [Thermoo](https://modrinth.com/mod/thermoo) | `4.8.1-neoforge` *alpha* | both | core | Required by frostiful, scorchful |
 | [Uranus](https://modrinth.com/mod/uranus) | `2.4.1` | both | core | Required by iceandfire-ce |
-| [Valhelsia Core](https://modrinth.com/mod/valhelsia-core) | `1.1.4` | both | core | Required by forbidden-arcanus |
 | [Velvet](https://modrinth.com/mod/velvet-api) | `0.5.1+NeoForge` | client | core | Required by scorchful |
 | [Voice Chat Recording](https://modrinth.com/mod/voice-chat-recording) | `2.0` | both | core | Required by revervox - the mod that records your friends' voices |
-| [VoiceLib](https://modrinth.com/mod/voicelib) | `1.0.1` | both | core | Required by immersive-casting-for-ars-nouveau |
 | [YetAnotherConfigLib (YACL)](https://modrinth.com/mod/yacl) | `3.8.2+1.21.1-neoforge` | both | core | Required by critters-and-companions, health-indicators |
 | [Zeta](https://modrinth.com/mod/zeta) | `1.1-40` | both | core | Required by quark |
 

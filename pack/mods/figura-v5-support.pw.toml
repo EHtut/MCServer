@@ -1,0 +1,13 @@
+name = "Figura v5 support"
+filename = "figurav5addon-neoforge-1.2.2.jar"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/dDOISgs4/versions/mxln8aa7/figurav5addon-neoforge-1.2.2.jar"
+hash-format = "sha512"
+hash = "d97ab929e37696e58392188156744262b9349e479b2df8015e3bb6e77165e71f3d504ea6211a9941b92244fc98621641473852eee53f12c33e67a3d11b4a1bc7"
+
+[update]
+[update.modrinth]
+mod-id = "dDOISgs4"
+version = "mxln8aa7"

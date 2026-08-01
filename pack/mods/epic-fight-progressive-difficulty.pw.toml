@@ -1,0 +1,13 @@
+name = "Epic Fight Progressive Difficulty"
+filename = "efprogressivediff-1.2.1-neoforge-1.21.1.jar"
+side = "server"
+
+[download]
+url = "https://cdn.modrinth.com/data/7IrEY7fQ/versions/8riRPldS/efprogressivediff-1.2.1-neoforge-1.21.1.jar"
+hash-format = "sha512"
+hash = "4421e20ea26e6b2651cf36abd153891455dba23898dfdf25dac24fd5e541d75c0419a66d16251f6ed8aad79065ddf882ffce277a9c9ab047a2be02e402b941d6"
+
+[update]
+[update.modrinth]
+mod-id = "7IrEY7fQ"
+version = "8riRPldS"

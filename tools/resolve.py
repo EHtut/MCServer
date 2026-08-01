@@ -325,6 +325,28 @@ def cmd_deps() -> int:
     print(f"\n=== CROSS-LOADER: no 1.21.1 NeoForge build, safe to ignore ({len(cross)}) ===")
     for slug, title, n, by in sorted(cross, key=lambda e: -e[2]):
         print(f"  {slug:<32} {str(title)[:28]:<28} declared by {n}: {', '.join(by)}")
+
+    # --- the mirror check: libraries nobody needs any more -----------------
+    # Cutting a content mod silently strands its libraries. They still resolve,
+    # still download, still load - they are simply dead weight, and dead weight
+    # in a library is worse than in a content mod because nobody ever looks at
+    # it again. Only auto-deps is checked: core-libs holds deliberate choices.
+    needed: set[str] = set()
+    for r in rows:
+        if r["status"] != "RESOLVED":
+            continue
+        for d in r.get("dependencies") or []:
+            if d.get("project_id"):
+                needed.add(d["project_id"])
+    orphans = [
+        r for r in rows
+        if r["status"] == "RESOLVED"
+        and r.get("category") == "auto-deps"
+        and r.get("project_id") not in needed
+    ]
+    print(f"\n=== ORPHANED: in auto-deps but nothing depends on them ({len(orphans)}) ===")
+    for r in sorted(orphans, key=lambda x: x["slug"]):
+        print(f"  {r['slug']:<34} {str(r.get('title'))[:30]:<30} {r.get('why', '')[:52]}")
     return 0
 
 

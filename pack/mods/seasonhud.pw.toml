@@ -1,0 +1,13 @@
+name = "SeasonHud"
+filename = "seasonhud-neoforge-1.21.1-2.0.7.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/VNjUn3NA/versions/OxKyONSA/seasonhud-neoforge-1.21.1-2.0.7.jar"
+hash-format = "sha512"
+hash = "25c6af485884527e7739ae1055f176a3dbbd88c17ba4bddfca1591307a598cf33d00036dfecfa262e41d1177bb37c7e708f01f31658c190095ac13a9f179901f"
+
+[update]
+[update.modrinth]
+mod-id = "VNjUn3NA"
+version = "OxKyONSA"

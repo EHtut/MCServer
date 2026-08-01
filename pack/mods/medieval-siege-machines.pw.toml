@@ -1,0 +1,13 @@
+name = "Medieval Siege Machines"
+filename = "[1.21.1-neoforge]-Siege-Machines-1.33.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/ctnEXZ5V/versions/OVtxchAg/%5B1.21.1-neoforge%5D-Siege-Machines-1.33.jar"
+hash-format = "sha512"
+hash = "fa7810971070375b0655a0b0c606b50b4fbeda21c2457a0395878a2ec29ae7ada325288482c24108ca986806977f62893cc080e3f84a177c481da2d2ebc49648"
+
+[update]
+[update.modrinth]
+mod-id = "ctnEXZ5V"
+version = "OVtxchAg"

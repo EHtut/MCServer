@@ -1,0 +1,13 @@
+name = "Figura ExtraFight"
+filename = "figuraextrafight-0.0.41-neoforge+1.21.1.jar"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/AL0pBloV/versions/rrVikds5/figuraextrafight-0.0.41-neoforge%2B1.21.1.jar"
+hash-format = "sha512"
+hash = "56ac6ab41b38e80fa02696d0cb740e34e8b9d2fc995daefedb8fc8749a02ae266ee155b7e0a834262fe3e8913d0f7cb5d1e382a8ff120f2f74388fcf45b28acb"
+
+[update]
+[update.modrinth]
+mod-id = "AL0pBloV"
+version = "rrVikds5"

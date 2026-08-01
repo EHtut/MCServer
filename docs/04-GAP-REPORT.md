@@ -7,9 +7,9 @@
 
 ## Summary
 
-- **400 / 400** mod slots used
-- **372** stable releases, **28** beta/alpha
-- **8** entries carry a known hazard (see below)
+- **397 / 450** mod slots used
+- **367** stable releases, **30** beta/alpha
+- **6** entries carry a known hazard (see below)
 
 ---
 
@@ -44,12 +44,12 @@ path or a decision to do without.
 
 | Mod | Why it matters |
 |---|---|
-| `ftb-quests` | The quest engine. FTB withdrew their mods from Modrinth; this is CurseForge-only. Directly relevant to the future DM, which would author questlines into it |
-| `ftb-library` | Required by everything FTB |
-| `ftb-teams` | Team support for quests |
-| `ftb-essentials` | Homes, warps, admin commands |
-| `ftb-backups-2` | Automated backups |
-| `timeless-and-classics-zero` | The OFFICIAL TaCZ. 1.20.1 Forge only - we use the community 1.21.1 NeoForge port instead |
+| `ftb-quests` | REJECTED. The obvious quest engine, but CurseForge-only and it would force the DM to author into someone else's data model. Building our own instead |
+| `ftb-library` | REJECTED with the rest of the FTB family |
+| `ftb-teams` | REJECTED - not needed without FTB Quests |
+| `ftb-essentials` | REJECTED - homes/warps are covered by Waystones |
+| `ftb-backups-2` | REJECTED - Simple Backups and Advanced Backups are in the pack, plus our own backup scripts |
+| `timeless-and-classics-zero` | UNAVAILABLE. The OFFICIAL TaCZ, 1.20.1 Forge only - we ship the community 1.21.1 NeoForge port instead |
 
 **The one that actually matters is FTB Quests.** It is the natural artefact
 for a DM-authored questline to be written into, and FTB withdrew their
@@ -68,12 +68,10 @@ worth knowing before it bites.
 |---|---|---|
 | [Alex's Mobs (Unofficial Port)](https://modrinth.com/mod/alexs-mobs(1.21.1)) | `1.22.17` | Community port of Alex's Mobs - the biggest creature roster in modded Minecraft |
 | [Arthropod Phobia Expansions + Horror Bosses / Arachnophobia](https://modrinth.com/mod/arphex) | `5.0.2` | Phobia-grade arthropod horror and supernatural bosses |
-| [Create Aeronautics](https://modrinth.com/mod/create-aeronautics) | `1.3.0+mc1.21.1` | Buildable airships and planes - spectacular, still alpha |
+| [Create Aeronautics](https://modrinth.com/mod/create-aeronautics) | `1.3.0+mc1.21.1` | Buildable airships. Explicitly requested; the single most on-period Create addon there is |
 | [Steam 'n' Rails Neoforge](https://modrinth.com/mod/create-steam-n-rails-1.21.1) | `0.2.1+neoforge-mc1.21.1` | Community 1.21.1 port of Steam 'n' Rails - trains, couplers, signals |
 | [Dynamic Trees](https://modrinth.com/mod/dynamictrees) | `1.7.2` | Growing, spreading trees - beautiful, but touches worldgen everywhere |
-| [[UNOFFICIAL] TaCZ 1.21.1 NeoForge Port](https://modrinth.com/mod/tacz-1.21.1) | `1.1.8-hotfix-r6` | Community NeoForge port of Timeless and Classics Zero - attachments, ammo types, custom gun packs |
-| [Tectonic](https://modrinth.com/mod/tectonic) | `3.0.26-neoforge-21.1` | Dramatic terrain shaping. Layers on top of the biome mod and needs a first-boot check |
-| [The Broken Script](https://modrinth.com/mod/the-broken-script) | `1.10.1` | Corrupted-game horror; unsettling because it looks like a bug |
+| [[UNOFFICIAL] TaCZ 1.21.1 NeoForge Port](https://modrinth.com/mod/tacz-1.21.1) | `1.1.8-hotfix-r6` | Community NeoForge port of Timeless and Classics Zero. The single sanctioned anachronism; the official build never left 1.20.1 Forge |
 
 ### Non-release builds
 
@@ -82,23 +80,21 @@ They are the first place to look when something breaks.
 
 | Mod | Version | Channel |
 |---|---|---|
-| `cc-tweaked` | `1.120.0` | alpha |
 | `frostiful` | `2.3.3+1.21.1-neoforge` | alpha |
-| `gd656killicon` | `1.1.0.020-1.21.1-neoforge` | alpha |
 | `scorchful` | `0.15.2+1.21.1-neoforge` | alpha |
 | `thermoo` | `4.8.1-neoforge` | alpha |
 | `accessories` | `1.1.0-beta.53+1.21.1` | beta |
 | `accessories-compat-layer` | `0.1.12` | beta |
-| `ars-energistique` | `2.1.1-beta` | beta |
 | `ars-structurize` | `1.1.3` | beta |
 | `corpse` | `neoforge-1.21.1-1.1.13` | beta |
 | `create-railways-navigator` | `1.21.1-beta-0.9.1-C6` | beta |
+| `create-sound-of-steam` | `0.8.2-1.21.1` | beta |
 | `crimson_curse` | `1.4.3.1+mod` | beta |
+| `distanthorizons` | `3.2.0-b-1.21.1` | beta |
 | `dragonlib` | `1.21.1-beta-3.0.28` | beta |
 | `elysium-api` | `1.21.1-2.0.0-BETA.6` | beta |
 | `geore` | `6.2.3` | beta |
 | `glitchcore` | `2.1.0.2` | beta |
-| `immersive-casting-for-ars-nouveau` | `0.1.3` | beta |
 | `in-control` | `1.21-10.2.6` | beta |
 | `jadens-nether-expansion` | `2.4.0-BETA.7` | beta |
 | `l2library` | `3.0.8` | beta |
@@ -108,8 +104,12 @@ They are the first place to look when something breaks.
 | `playeranimator` | `2.0.4+1.21.1-forge` | beta |
 | `radium` | `0.13.1` | beta |
 | `rrls` | `5.0.11+mc1.21.1-forge` | beta |
+| `serene-seasons` | `10.1.0.3` | beta |
+| `skills` | `0.18.3` | beta |
 | `sound-physics-remastered` | `neoforge-1.21.1-1.4.10` | beta |
+| `sparkweave` | `0.510.0+NeoForge` | beta |
 | `terrablender` | `4.1.0.8` | beta |
+| `the-undergarden` | `0.9.6` | beta |
 
 ---
 

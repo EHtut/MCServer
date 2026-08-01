@@ -2,7 +2,8 @@
   "_comment": ["The CURATED candidate list. Human-authored input to the build; everything downstream", "(resolution, the packwiz pack, the docs) is generated from it.", "", "Format: categories -> mods -> [slug, why, tier].", "  tier 'core'   = the pack is pointless or broken without it", "  tier 'major'  = a headline feature of its theme", "  tier 'minor'  = flavour/convenience, first to be cut for budget", "  tier 'risky'  = wanted, but a known stability, balance or compatibility hazard", "", "Revision 2: slugs corrected against the live Modrinth API, dead candidates removed,", "and the 1.21.1 catalogue's actual strengths folded in (the Ars addon family, the", "NeoForge gun ecosystem, and a far deeper horror layer than the wishlist assumed).", "", "Sidedness is NOT declared here - it is read from Modrinth metadata at generation time."],
   "game_version": "1.21.1",
   "loader": "neoforge",
-  "budget": 400,
+  "budget": 450,
+  "budget_note": "Raised from 400 to 450 (Ethan, 2026-07-31) AFTER the category review, on the reasoning that mod count is not itself a performance limit - load time and RAM are, and there is 61.6 GB here with more on the dedicated box. The trim happens AFTER the cave-generation test world, so cuts are made on what actually breaks or underdelivers in a real world rather than on guesses about value.",
   "curseforge_only": {
     "_comment": ["Known-good mods that Modrinth cannot supply. DECIDED (Ethan, 2026-07-31): the pack takes NO CurseForge dependency.", "The quest engine specifically will be CUSTOM-BUILT as part of the dungeon-master harness rather than", "authored into FTB Quests, so the pack needs no quest mod at all. See docs/03-AI-DM-SEAM.md.", "Kept here as a record of what was considered and rejected, not as a to-do list."],
     "mods": [
@@ -47,7 +48,6 @@
         ["moonlight", "MehVahdJukaar's library - Supplementaries, Every Compat", "core"],
         ["kotlin-for-forge", "Kotlin runtime some mods ship against", "core"],
         ["yungs-api", "Required by every YUNG structure mod", "core"],
-        ["sophisticated-core", "Backing library for the Sophisticated storage family", "core"],
         ["playeranimator", "Player animation API for combat and emote mods", "core"],
         ["azurelib", "Animation library several gun and mob mods need", "core"],
         ["smartbrainlib", "Brain/AI library used by modern mob mods", "core"],
@@ -89,17 +89,15 @@
         ["dragonlib", "Required by create-railways-navigator", "core"],
         ["sable", "Required by create-aeronautics", "core"],
         ["dynamic_asset_generator", "Required by ars-lumos", "core"],
-        ["voicelib", "Required by immersive-casting-for-ars-nouveau", "core"],
         ["geore", "Required by geore-nouveau", "core"],
         ["aces-spell-utils", "Required by cataclysm-spellbooks", "core"],
-          ["prometheus-api", "Required by soul-fire-d", "core"],
+        ["prometheus-api", "Required by soul-fire-d", "core"],
         ["cobweb", "Required by soul-fire-d", "core"],
         ["monolib", "Required by dis-enchanting-table", "core"],
         ["uranus", "Required by iceandfire-ce", "core"],
         ["jupiter", "Required by iceandfire-ce", "core"],
         ["apothic-spawners", "Required by apotheosis", "core"],
         ["apothic-enchanting", "Required by apotheosis", "core"],
-        ["simply-tooltips", "Required by simply-swords", "core"],
         ["l2library", "Required by l2hostility", "core"],
         ["l2-complements", "Required by l2hostility", "core"],
         ["cerbons-api", "Required by bosses-of-mass-destruction-forge", "core"],
@@ -122,7 +120,8 @@
         ["mmlib", "Required by corn-delight", "core"],
         ["nexuslib", "Required by bountiful-fares", "core"],
         ["rhino", "Required by kubejs", "core"],
-        ["polylib", "Required by backup-manager", "core"]
+        ["sparkweave", "Sparkweave Engine - required by velvet-api, which Scorchful needs", "core"],
+        ["epic-fight-invincible-lib", "Required by Epic Fight - Sword Soaring", "core"]
       ]
     },
     "create": {
@@ -143,7 +142,6 @@
         ["create-ore-excavation", "Rotational-powered resource extraction", "major"],
         ["create-meta-logistics", "Remote and unloaded storage networks in Create's own idiom. Replaces AE2's FUNCTION without importing its science fiction", "major"],
         ["copycats", "Create: Copycats+ - the building addon Create players treat as mandatory", "major"],
-        ["create-horse-power", "Animal-powered machinery. The medieval floor of the tech band", "major"],
         ["create-sound-of-steam", "Pipe organs. Audio immersion that is exactly this period", "minor"],
         ["create-compatible-storage", "Fixes Quark chests on contraptions - and Quark is in the pack", "major"],
         ["create-tweaked-controllers", "Proper contraption control", "minor"],
@@ -151,8 +149,6 @@
         ["create_oxidized", "Oxidation recipes for all copper blocks", "minor"],
         ["create-structures-arise", "28 Create-themed structures in worldgen", "minor"],
         ["create-let-the-adventure-begin", "Create-themed structures, balanced for progression", "minor"],
-        ["create-dimension,-steamworks-realm", "A steampunk mining dimension", "minor"],
-        ["mebahels-creatures-dwarven-automatons", "A hostile clockwork-dwarf faction. Fantasy and machinery in one", "minor"],
         ["create-dreams-and-desires", "Broad Create content expansion", "minor"],
         ["create-misc-and-things", "More Create odds and ends", "minor"],
         ["create-bits-n-bobs", "Decorative and mechanical Create additions", "minor"],
@@ -170,9 +166,9 @@
         ["delightful-creators", "More Create/Farmer's Delight glue", "minor"],
         ["create-stuff-additions", "Tools, armour and gadgets in Create's style", "major"],
         ["create-encased", "Encased shafts and pipes", "minor"],
+        ["create-storage-neo-forge", "Create: Storage - storage boxes and backpacks built as a Create addon, so portable storage progresses INSIDE the industry pillar rather than beside it. Chosen over Traveler's and Sophisticated on the kinetic ruling", "major"],
         ["moving-elevators", "Real elevators for tall Create bases", "minor"],
         ["trash-cans", "Void items, fluids and energy", "minor"],
-        ["chunk-loaders", "Tiered chunk loaders as a non-Create fallback", "minor"],
         ["easy-villagers", "Villager handling without the boat-based war crimes", "minor"],
         ["bartering-station", "Automated piglin bartering", "minor"],
         ["mystical-agriculture", "Resource crops - the automation sink Create wants", "major"],
@@ -222,7 +218,6 @@
         ["werewolves", "Vampirism's sister mod", "minor"],
         ["apotheosis", "Affixed loot, enchantment overhaul, bosses - deepens magic and combat together", "major"],
         ["apothic-attributes", "Attribute backend for Apotheosis", "core"],
-        ["mythic-upgrades", "Gem-based gear upgrades", "minor"],
         ["thaumon", "Thaumcraft-flavoured decoration for magic builds", "minor"],
         ["magic-vibe-decorations", "Crystal and magical decoration", "minor"]
       ]
@@ -243,13 +238,11 @@
         ["medieval-siege-machines", "Trebuchet, catapult, ballista, battering ram, mortar. The in-period answer to artillery; pairs with Create: Big Cannons", "major"],
         ["epic-knights-shields-armor-and-weapons", "The definitive medieval arms and armour set, and it carries Epic Fight support", "major"],
         ["immersive-armors", "Vanilla-faithful armour sets with real identity", "major"],
-        ["advanced-netherite", "Netherite tiers beyond vanilla's dead end", "minor"],
         ["l2hostility", "Enemy traits and difficulty progression - the knob that keeps combat scary at hour 200", "major"],
         ["hostile-mobs-improve-over-time", "Mobs get stronger the longer the world runs. A time-based difficulty curve, and an obvious future DM lever", "major"],
         ["legendary-monsters", "Early, mid and late-game bosses", "major"],
         ["bosses-of-mass-destruction-forge", "Set-piece boss fights", "major"],
         ["l_enders-cataclysm", "Hard dungeons, real bosses, powerful rewards. The combat centrepiece", "major"],
-        ["cataclysm-tools", "Tools from Cataclysm materials", "minor"],
         ["cataclysm-dimension", "Extra Cataclysm dimension content", "minor"],
         ["security-craft", "Cameras, mines, laser grids, keycards - RESTORED under the buried-tech ruling as salvaged security systems from the underground facilities. Also the pack's only real base defence against the horror layer", "major"],
         ["guard-villagers", "Hireable village defenders", "minor"],
@@ -309,8 +302,7 @@
         ["spawn-animations", "Mobs claw out of the ground instead of popping in", "minor"],
         ["frostiful", "Cold as survival pressure", "minor"],
         ["scorchful", "Heat as survival pressure", "minor"],
-        ["corpse", "Your body stays where you died - a walk back into the dark to retrieve it", "major"],
-        ["legendary-tooltips", "Rare items feel rare", "minor"]
+        ["corpse", "Your body stays where you died - a walk back into the dark to retrieve it", "major"]
       ]
     },
     "world-structures": {
@@ -352,9 +344,6 @@
         ["improved-pillager-outpost", "Outposts that are actually a fight", "minor"],
         ["jadens-nether-expansion", "Nether content expansion", "minor"],
         ["nether-depths-upgrade", "Lava-sea flora and fauna", "minor"],
-        ["the-bumblezone", "A dimension with a strong identity", "minor"],
-        ["aether", "The classic sky dimension as a late-game destination", "minor"],
-        ["nullscape", "End dimension overhaul", "minor"],
         ["naturalist", "47 animals with real behaviours - the world feels inhabited", "major"],
         ["critters-and-companions", "Small creatures and pets", "minor"],
         ["friends-and-foes-forge", "The mob-vote losers, well implemented", "major"],
@@ -381,13 +370,11 @@
         ["easy-anvils", "Anvils without the too-expensive wall", "major"],
         ["easy-magic", "Enchanting table QoL", "minor"],
         ["easy-shulker-boxes", "Open shulkers in place", "minor"],
-        ["travelersbackpack", "Upgradeable backpacks with real capacity", "major"],
-        ["sophisticated-backpacks", "Upgrades, filters, magnet pickup", "major"],
-        ["sophisticated-storage", "Barrels and chests with upgrades", "major"],
-        ["storagedrawers", "Bulk item storage", "major"],
+        ["carry-on", "Pick up a chest WITH its contents, a machine, or a mob, and walk off with it. The most kinetic storage verb there is, and it needs no UI to understand", "major"],
+        ["carryon-aeronautics-compat", "Patches Carry On to work with Create Aeronautics contraptions", "minor"],
+        ["storagedrawers", "Bulk storage with contents visible on the block face - storage you can read by looking at it", "major"],
         ["waystones", "Fast travel between discovered points. Essential for four players", "core"],
         ["comforts", "Sleeping bags and hammocks - four players, four sleep schedules", "major"],
-        ["gravestone-mod", "Death inventory recovery. Non-negotiable in a pack this lethal", "core"],
         ["xaeros-minimap", "Minimap", "core"],
         ["xaeros-world-map", "Full world map", "core"],
         ["xaeroplus", "Xaero feature extensions", "minor"],
@@ -403,6 +390,16 @@
         ["tips", "Loading-screen tips - a place to teach the pack's own systems", "minor"],
         ["elytra-slot", "Elytra in an accessory slot", "minor"],
         ["3dskinlayers", "3D skin layers", "minor"],
+        ["figura", "Custom scripted player avatars. Client-side, so it costs the server nothing and each player controls their own presence", "major"],
+        ["figura_extrabone", "Model extensions for Figura", "minor"],
+        ["figura_extrafight", "Hooks Figura avatars into Epic Fight's animation system, so custom models actually fight properly", "minor"],
+        ["figura-v5-support", "Compatibility layer for Figura v5 avatars", "minor"],
+        ["emotecraft", "Player-made emotes. With proximity voice chat, this is how four people actually roleplay rather than type", "major"],
+        ["ambientsounds", "Biome and structure-aware ambient soundscapes - wind, water, caves, weather. Completes the audio layer alongside Sound Physics and voice chat, and is arguably the highest-impact immersion mod in the pack", "major"],
+        ["darkaroundme", "Renders unlit areas as ABSOLUTE darkness instead of vanilla grey murk. Makes carried light a real resource and gives the horror layer somewhere to hide", "major"],
+        ["immersive-paintings", "Hang real images as in-world paintings, server-synced. Four people decorating a shared world with their own art", "minor"],
+        ["lets-do-camping", "Tents, bedrolls and campfires. Turns an expedition into an activity instead of digging a dirt hole at dusk - and the buried-tech device depends on people going far from base", "minor"],
+        ["distanthorizons", "Massively increased render distance at low cost. For a world built for atmosphere, seeing the horizon IS the immersion", "major"],
         ["boat-item-view", "See held items in boats", "minor"],
         ["make_bubbles_pop", "Better bubble particles", "minor"],
         ["rrls", "Removes the reloading screen", "minor"],
@@ -414,7 +411,8 @@
         ["camerapture", "In-game camera and shareable pictures", "minor"],
         ["forgiving-void", "The void becomes survivable instead of run-ending", "minor"],
         ["enchantment-descriptions", "Duplicate; deduped at generation", "minor"],
-        ["xp-tome", "Duplicate; deduped at generation", "minor"]
+        ["xp-tome", "Duplicate; deduped at generation", "minor"],
+        ["legendary-tooltips", "Rare items feel rare", "minor"]
       ]
     },
     "building-deco": {
@@ -457,7 +455,6 @@
         ["lets-do-meadow", "Meadow overhaul and dairy", "minor"],
         ["lets-do-bloomingnature", "Terrain and plant expansion", "minor"],
         ["lets-do-wildernature", "Hunting, bounties and trophies", "minor"],
-        ["lets-do-beachparty", "Beach content", "minor"],
         ["animal_feeding_trough", "Animals feed themselves", "minor"]
       ]
     },
@@ -487,13 +484,8 @@
       "mods": [
         ["kubejs", "Server-side scripting - recipes, custom items and world events in JavaScript. The most plausible execution surface for the future dungeon master", "major"],
         ["servercore", "Server-side dynamic performance tuning", "major"],
-        ["simple-backups", "Scheduled world backups", "major"],
-        ["advanced-backups", "Actively maintained backup mod with incremental support", "major"],
         ["luckperms", "Permissions system", "minor"],
-        ["anti-xray", "Ore obfuscation", "minor"],
-        ["crash-assistant", "Better crash diagnostics", "minor"],
-        ["backup-manager", "GUI over the backup mods", "minor"],
-        ["death-backup", "Snapshots player inventories before death - recoverable by command", "minor"]
+        ["crash-assistant", "Better crash diagnostics", "minor"]
       ]
     }
   },
@@ -530,6 +522,23 @@
       ["spooky-doors", "Gimmick that fires constantly and would wear out within a week."],
       ["toms-storage", "Third storage network alongside AE2 and Sophisticated Storage."],
       ["warlerys-dark-blood", "Overlaps Enhanced Celestials' blood moons and no_moon.jar's escalation."]
+    ]
+  },
+  "theme_audit": {
+    "_comment": ["Applied by tools/apply_audit.py; findings in docs/07-THEME-AUDIT.md.", "Cuts are data, not history: delete an entry from CUTS and re-run to restore."],
+    "cuts": [
+      ["advanced-netherite", "F9. More netherite tiers - pure numbers, no new behaviour."],
+      ["aether", "F6. Dimension sprawl. Kept only the two dimensions that serve a pillar directly - The Undergarden (buried-tech) and Cataclysm (combat)."],
+      ["better-library", "F5. Transitive dependency three levels down from Steamworks Realm."],
+      ["cataclysm-tools", "F9. Tools from boss materials, mostly stat lines."],
+      ["chunk-loaders", "F3. Duplicate of Create: Power Loader, which is kinetic and Create-native. This one is a generic utility block doing the same verb."],
+      ["create-better-villagers", "F5. Transitive dependency of Steamworks Realm; also collided with Epic Structures: Villages, which was chosen precisely because it replaces other village mods."],
+      ["create-dimension,-steamworks-realm", "F5. Cost four mods via its dependency chain and directly caused the village collision in F4. Weakest thing in the pack per mod spent."],
+      ["gravestone-mod", "F2. Duplicate of Corpse. Kept Corpse - retrieving your own body from where it fell suits the horror layer better than a tidy headstone."],
+      ["mythic-upgrades", "F9. Gem-based gear upgrades are pure numbers. R4 cut Simply Swords and Medieval Craft for the same reason; Apotheosis already supplies affixed loot for progression."],
+      ["nullscape", "F6. Dimension sprawl - an End overhaul serving no pillar."],
+      ["the-bumblezone", "F6. Dimension sprawl - no connection to any pillar."],
+      ["underground-village,-stoneholm", "F5. Transitive dependency two levels down from Steamworks Realm."]
     ]
   }
 }
