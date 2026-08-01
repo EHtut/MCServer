@@ -1251,11 +1251,6 @@ hash = "a0a2036a901c1d61589768d62bc92d0cd630a40e9dfe92f45aefdc835c0c808d"
 metafile = true
 
 [[files]]
-file = "mods/luckperms.pw.toml"
-hash = "30552c09591d589e0e0a681b1f5c5d6e0aaf23e3eb6bbd3c8bab49e1ea9ed28d"
-metafile = true
-
-[[files]]
 file = "mods/macaws-bridges.pw.toml"
 hash = "0c961c709297bcc89f2f07e1eb1049e4d21a331adb020f1786e5a9a0883e037c"
 metafile = true
@@ -1433,11 +1428,6 @@ metafile = true
 [[files]]
 file = "mods/no-chat-reports.pw.toml"
 hash = "5da18814472be5dc93a21886983646da3a7236413800075ac75229be82d114fa"
-metafile = true
-
-[[files]]
-file = "mods/no_moon.jar.pw.toml"
-hash = "e506ebd2e63f62687c863dfee1b0a123b5361c7aea55bc11d8176fd24251337f"
 metafile = true
 
 [[files]]

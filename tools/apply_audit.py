@@ -58,6 +58,11 @@ CUTS: dict[str, str] = {
     "epic-fight-sword-soaring": "F14. RuntimeException: Attempted to load class net/minecraft/client/gui/screens/Screen for invalid dist DEDICATED_SERVER. Painful loss - this was the wuxia specialisation layer Ethan chose to make melee about movesets rather than stat lines. Epic Fight itself still supplies movesets, stances and combos.",
     "kenny": "F14. Same DEDICATED_SERVER crash. One stalker of six, and the least distinctive; The Knocker, Obsessed, The Skinwalker Hunt, Distant Friends and Weeping Angels remain.",
 
+    "no_moon.jar": "F20. Throws on EVERY PLAYER TICK: 'Cannot get config value before config is loaded' in net.mcreator.nomoon.procedures.PlayerTickNewProcedure, reached from Player.tick. The player is disconnected within a second of spawning. Identical defect class to jadens-nether-expansion - both are MCreator-generated mods reading config before it exists.",
+
+    # --- F19: prevents ANY player from joining -----------------------------
+    "luckperms": "F19. Server could not place any player in the world: IllegalStateException 'Capability has not been initialised' in LuckPerms' UserCapabilityImpl, reached via Balm asking PermissionAPI for a permission during PlayerList.placeNewPlayer. Players connected and were dropped within a second. A permissions plugin was never worth this on a four-person whitelisted server.",
+
     # --- F18: breaks the mod-channel handshake, nobody can join ------------
     # Sable installs its own UDP networking channel and wraps NeoForge's. The
     # client log shows it closing that channel microseconds before NeoForge
