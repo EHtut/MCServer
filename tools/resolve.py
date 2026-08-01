@@ -34,7 +34,7 @@ import urllib.parse
 import urllib.request
 
 API = "https://api.modrinth.com/v2"
-UA = "EHtut/MCServer-buildout/0.1 (github.com/EHtut)"
+UA = "EHtut/MCServer-buildout/0.1 (+https://github.com/EHtut)"
 SLEEP = 0.12
 
 GAME_VERSION = "1.21.1"

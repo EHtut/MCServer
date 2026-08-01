@@ -36,7 +36,7 @@ API = "https://api.modrinth.com/v2"
 
 # Modrinth asks for an identifying User-Agent and rate-limits to 300 req/min.
 # We stay far under that; being a good citizen costs us nothing here.
-UA = "EHtut/MCServer-buildout/0.1 (github.com/EHtut)"
+UA = "EHtut/MCServer-buildout/0.1 (+https://github.com/EHtut)"
 SLEEP = 0.25
 
 GAME_VERSION = "1.21.1"
