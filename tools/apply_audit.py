@@ -36,6 +36,23 @@ CUTS: dict[str, str] = {
     "the-bumblezone": "F6. Dimension sprawl - no connection to any pillar.",
     "nullscape": "F6. Dimension sprawl - an End overhaul serving no pillar.",
 
+    # --- F12: blocked by CurseForge-only libraries -------------------------
+    # Found at first boot by tools/check_deps.py, not by any registry check.
+    # Each needs a library that exists only on CurseForge, and Ethan's ruling is
+    # that the pack takes no CurseForge dependency at all. Holding the ruling
+    # costs these six; the alternative was sourcing four libraries from a second
+    # registry and losing the single-source, hash-pinned property of the pack.
+    "create-new-age": "F12. Needs 'esl', CurseForge-only. Cheapest of the six to lose: Create: Crafts & Additions already provides the electricity tier, so this was a second path to the same capability.",
+    "illager-invasion": "F12. Needs 'extensibleenums', CurseForge-only. Costs one mob roster out of many.",
+    "diagonal-fences": "F12. Needs 'diagonalblocks', CurseForge-only.",
+    "diagonal-walls": "F12. Needs 'diagonalblocks', CurseForge-only.",
+    "diagonal-windows": "F12. Needs 'diagonalblocks', CurseForge-only.",
+    "easy-shulker-boxes": "F12. Needs 'iteminteractions', CurseForge-only.",
+    "ars-elemancy": "F12. Hard-requires 'ars_elemental' [0.7.0.9,), which is CurseForge-only - its own manifest links to CurseForge. Found at second boot. Ars keeps Additions, Creo, Controle, Unification, Ars'n'Spells, Polymorphia, Structurize, Artillery, Technic, Lumos and the lectern fix.",
+
+    # --- F13: mistagged multi-version jars, proven by reading them ----------
+    "structory-towers": "F13. Modrinth tags it 1.21.1 + neoforge, but the jar is a multi-version build (26.2) carrying neoforge.mods.toml, mods.toml AND fabric.mod.json plus 1.21.5/1.21.11 overlay folders. NeoForge rejects it outright: 'not a valid mod file'. Same class as zoniex. Base Structory stays and works.",
+
     # --- F9: R4 applied consistently to gear, not just weapons -------------
     "mythic-upgrades": "F9. Gem-based gear upgrades are pure numbers. R4 cut Simply Swords and Medieval Craft for the same reason; Apotheosis already supplies affixed loot for progression.",
     "advanced-netherite": "F9. More netherite tiers - pure numbers, no new behaviour.",

@@ -7,8 +7,8 @@
 
 ## Summary
 
-- **399 / 450** mod slots used
-- **370** stable releases, **29** beta/alpha
+- **391 / 450** mod slots used
+- **362** stable releases, **29** beta/alpha
 - **6** entries carry a known hazard (see below)
 
 ---

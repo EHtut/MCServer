@@ -97,11 +97,19 @@ def parse(text: str) -> tuple[dict[str, str], list[dict]]:
             kind = "incompatible"
         else:
             tm = re.search(r'type\s*=\s*"([^"]+)"', body)
+            mand = re.search(r"mandatory\s*=\s*(true|false)", body)
             if tm:
                 kind = tm.group(1).lower()
+            elif mand:
+                # Legacy Forge form: mandatory=true/false.
+                kind = "required" if mand.group(1) == "true" else "optional"
             else:
-                mand = re.search(r"mandatory\s*=\s*(true|false)", body)
-                kind = "required" if (mand and mand.group(1) == "true") else "optional"
+                # NeoForge's modern form omits `type` entirely, and its DEFAULT
+                # IS "required". Defaulting to optional here silently downgraded
+                # every dependency of every mod using the modern format - which
+                # is how ars_elemancy's hard requirement on ars_elemental passed
+                # a clean check and then killed the boot.
+                kind = "required"
         vr = re.search(r'versionRange\s*=\s*"([^"]*)"', body)
         # side defaults to BOTH when unstated.
         sm = re.search(r'side\s*=\s*"([^"]+)"', body)

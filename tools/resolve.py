@@ -347,6 +347,12 @@ def cmd_deps() -> int:
     print(f"\n=== ORPHANED: in auto-deps but nothing depends on them ({len(orphans)}) ===")
     for r in sorted(orphans, key=lambda x: x["slug"]):
         print(f"  {r['slug']:<34} {str(r.get('title'))[:30]:<30} {r.get('why', '')[:52]}")
+    if orphans:
+        print("\n  !! DO NOT CUT THESE ON THIS EVIDENCE ALONE. This list is built from")
+        print("     Modrinth's dependency data, which is author-maintained and provably")
+        print("     incomplete - OctoLib, Knight Lib and Iron's Lib are all REQUIRED by")
+        print("     jar manifests while Modrinth declares no dependents at all.")
+        print("     Confirm with tools/check_deps.py, which reads the jars, before removing.")
     return 0
 
 

@@ -121,11 +121,6 @@ hash = "e735b472ad5c38359636d5abb84ed1baeb461f72aa19c324c349543823a16188"
 metafile = true
 
 [[files]]
-file = "mods/ars-elemancy.pw.toml"
-hash = "1bb8715ec65c1316ab6a982df05577a44b3a339813e8278b45c9952bfec65955"
-metafile = true
-
-[[files]]
 file = "mods/ars-lumos.pw.toml"
 hash = "7b9ae92dca84c311f8eec343a501c542db4f89a0a6217d91cf570fa4a0d35023"
 metafile = true
@@ -496,11 +491,6 @@ hash = "055a23471c72576d1f79e2edcd6a20bcaa59ac70c84480fc10069c6469b3f528"
 metafile = true
 
 [[files]]
-file = "mods/create-new-age.pw.toml"
-hash = "39499039e11a6e0f50542d80af94c172342fdb686f3a59d5ee4457d978a54e75"
-metafile = true
-
-[[files]]
 file = "mods/create-ore-excavation.pw.toml"
 hash = "10d3389f72e8e8f78518f5b6786ccec4e62dbad117491d2970e8e1f75e390251"
 metafile = true
@@ -641,21 +631,6 @@ hash = "f77747f2492fd97202d853b78dd58f17b8c4d56ea66f1e04b1c6ad83f6ab30ec"
 metafile = true
 
 [[files]]
-file = "mods/diagonal-fences.pw.toml"
-hash = "632743d54d410c8b78fb92c94d8f3bb6a7a3faed45171f91e554877f94f82163"
-metafile = true
-
-[[files]]
-file = "mods/diagonal-walls.pw.toml"
-hash = "bbc15c019fd260bbb9058b14a8e03232a55df77608d9aca466d051007d62abd2"
-metafile = true
-
-[[files]]
-file = "mods/diagonal-windows.pw.toml"
-hash = "218dcd780f0251a15f78b097206ea22a519d57b974b39e2fdd43dce91ac07133"
-metafile = true
-
-[[files]]
 file = "mods/diligentstalker.pw.toml"
 hash = "5e3dd7e1c5785ccb22f27e6858f0e850fdb0a7133a5ba23df8ecce9817b991af"
 metafile = true
@@ -713,11 +688,6 @@ metafile = true
 [[files]]
 file = "mods/easy-magic.pw.toml"
 hash = "1aa75105514780685caab9b945db2a2ea7c0594ced8c01e12f2a3e331f1af4e6"
-metafile = true
-
-[[files]]
-file = "mods/easy-shulker-boxes.pw.toml"
-hash = "9f96f136c61af30a45a3c85588d8906ae8031b58316ae70d16930c01fd211ed6"
 metafile = true
 
 [[files]]
@@ -1028,11 +998,6 @@ metafile = true
 [[files]]
 file = "mods/iceberg.pw.toml"
 hash = "a2fbecad69fcbff54919864ea8b95e54d140a1a2c637d73307fb366e76066fe6"
-metafile = true
-
-[[files]]
-file = "mods/illager-invasion.pw.toml"
-hash = "bf9baef8bb1145e580ae8ee57b285e22838e943c56a96ffb424fd02bf99c468e"
 metafile = true
 
 [[files]]
@@ -1733,11 +1698,6 @@ metafile = true
 [[files]]
 file = "mods/storagedrawers.pw.toml"
 hash = "1d277d4c4d8f3abc49176d3b029584b70d92dcb9b89cf2cf6094e674fe9885c8"
-metafile = true
-
-[[files]]
-file = "mods/structory-towers.pw.toml"
-hash = "0f4f506b1171a3a7d7b73150721075f5b1bc703c043fa539bcdd72c93e665b94"
 metafile = true
 
 [[files]]

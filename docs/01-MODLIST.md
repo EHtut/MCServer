@@ -4,11 +4,11 @@
 > `tools/modlist.json` + the resolution cache. Do not hand-edit -
 > change `tools/modlist.json` and regenerate.
 
-**399 mods** for Minecraft 1.21.1 / neoforge, 1,508 MB total.
+**391 mods** for Minecraft 1.21.1 / neoforge, 1,502 MB total.
 
 | side | count | meaning |
 |---|---:|---|
-| both | 324 | installed on the server *and* every client |
+| both | 316 | installed on the server *and* every client |
 | client | 45 | client-only; the server never loads them |
 | server | 30 | server-only; players do not need them |
 
@@ -16,7 +16,7 @@ Every entry is pinned to an exact file and sha512 in `pack/mods/*.pw.toml`.
 The **Why** column is the reason that mod is in the pack, not a description
 of what it does - if a mod cannot justify a slot, it should not have one.
 
-## create (46)
+## create (45)
 
 Pillar 1: Create and its addon family - the industrial spine. Addons WIDEN Create rather than bolting a competing tech mod alongside it. TECH CEILING (Ethan, 2026-07-31): steam and early electricity. Oil, diesel, concrete and sci-fi digital storage are out of period; electricity survives as a late-game marvel rather than a baseline.
 
@@ -32,7 +32,6 @@ Pillar 1: Create and its addon family - the industrial spine. Addons WIDEN Creat
 | [Create: Enchantment Industry](https://modrinth.com/mod/create-enchantment-industry) | `2.4.2` | both | major | Automatable enchanting - the bridge from industry into magic |
 | [Create Jetpack](https://modrinth.com/mod/create-jetpack) | `5.2.1` | both | major | Flight from a pressurised-air backtank, not an energy cell. Rocketeer, not Iron Man |
 | [Create: Meta Logistics](https://modrinth.com/mod/create-meta-logistics) | `0.4.6` | both | major | Remote and unloaded storage networks in Create's own idiom. Replaces AE2's FUNCTION without importing its science fiction |
-| [Create: New Age](https://modrinth.com/mod/create-new-age) | `1.2.0+mc1.21.1` | both | major | Create's own electricity tier - late-game marvel, not baseline infrastructure |
 | [Create Ore Excavation](https://modrinth.com/mod/create-ore-excavation) | `1.21.1-1.6.8` | both | major | Rotational-powered resource extraction |
 | [Create: Power Loader](https://modrinth.com/mod/create-power-loader) | `2.0.5-mc1.21.1` | both | major | In-world chunk loading, instead of a cheat command |
 | [Create: Storage [Neo/Forge]](https://modrinth.com/mod/create-storage-neo-forge) | `1.3.2` | both | major | Create: Storage - storage boxes and backpacks built as a Create addon, so portable storage progresses INSIDE the industry pillar rather than beside it. Chosen over Traveler's and Sophisticated on the kinetic ruling |
@@ -69,7 +68,7 @@ Pillar 1: Create and its addon family - the industrial spine. Addons WIDEN Creat
 | [Rechiseled: Create](https://modrinth.com/mod/rechiseled-create) | `1.1.1-neoforge-mc1.21` | both | minor | Chiselled variants of Create blocks |
 | [Trash Cans](https://modrinth.com/mod/trash-cans) | `1.0.18c-neoforge-mc1.21` | both | minor | Void items, fluids and energy |
 
-## magic (42)
+## magic (41)
 
 Pillar 2: Ars Nouveau as the magic spine plus a deliberately chosen set of addons. Ars Creo and Create: Ars Nouveau are the explicit seam between the magic and industry pillars - spells that drive machines, machines that fuel spells. DEPTH RULING (Ethan, 2026-07-31): the Ars spine plus FOUR strong alternatives - Iron's Spells (combat magic), Goety (necromancy, feeds the horror pillar), Occultism (summoning), Theurgy (alchemy). Malum, Forbidden Arcanus and Hexerei were cut as a fifth, sixth and seventh parallel progression that four players would never finish. Ice & Fire, Vampirism and Werewolves stay as world-content rather than competing spell systems.
 
@@ -81,7 +80,6 @@ Pillar 2: Ars Nouveau as the magic spine plus a deliberately chosen set of addon
 | [Apotheosis](https://modrinth.com/mod/apotheosis) | `1.21.1-8.6.1` | both | major | Affixed loot, enchantment overhaul, bosses - deepens magic and combat together |
 | [Ars Additions](https://modrinth.com/mod/ars-additions) | `21.3.0` | both | major | Ars QoL and small additions |
 | [Ars Creo](https://modrinth.com/mod/ars-creo) | `5.4.0` | both | major | The Ars/Create bridge. The single most on-theme mod in the pack |
-| [Ars Elemancy](https://modrinth.com/mod/ars-elemancy) | `1.17` | both | major | Elemental spell expansion |
 | [Ars 'n Spells](https://modrinth.com/mod/ars-n-spells) | `3.0.1` | both | major | Bridges Ars Nouveau and Iron's Spells into one progression |
 | [Ars Unification](https://modrinth.com/mod/ars-unification) | `1.2.19` | both | major | Lets Ars take recipes from other mods - important at this mod count |
 | [Create Ars Nouveau](https://modrinth.com/mod/create-ars-nouveau) | `1.20.5` | both | major | Second Create/Ars integration - gears meet glyphs |
@@ -155,7 +153,7 @@ Pillar 3a: the brother's track, rebuilt to the period ruling. PERIOD (Ethan, 202
 | [TslatEntityStatus](https://modrinth.com/mod/tslatentitystatus) | `1.8.3` | both | minor | Entity health readouts; matters when fights last minutes |
 | [Valarian Conquest](https://modrinth.com/mod/valarian-conquest) | `4.2.1.1` | both | minor | Combat and exploration enhancement for the overworld |
 
-## horror (42)
+## horror (41)
 
 Pillar 3b: horror. Built from stalkers, atmosphere and escalating pressure rather than jump-scares, so it stays frightening over a long server. Several entries are configurable ambient systems rather than mobs - exactly the surface a future dungeon master would drive. STALKER RULING (Ethan, 2026-07-31): all six hunting entities stay, staggered in config so at most one or two can be active at a time - see docs/06-BURIED-TECH.md and pack/config. Six simultaneous stalkers is comedy, not horror; the config IS the feature. THE BROKEN SCRIPT WAS CUT ON SAFETY, NOT PERIOD: the author states the mod WILL grief the world, WILL destroy buildings, can ban you from your own save and writes files to the desktop. Disqualifying for a shared long-running world.
 
@@ -173,7 +171,6 @@ Pillar 3b: horror. Built from stalkers, atmosphere and escalating pressure rathe
 | [Enhanced Celestials](https://modrinth.com/mod/enhanced-celestials) | `6.0.2.5-neoforge` | both | major | Blood moons and lunar events - scheduled, world-wide dread |
 | [EnhancedVisuals](https://modrinth.com/mod/enhancedvisuals) | `1.8.29` | both | major | Screen damage, blur and blood. Turns being hurt into an experience |
 | [Fungal Infection:Spore](https://modrinth.com/mod/fungal-infectionspore) | `2.2.0j` | both | major | A spreading fungal infection. The closest 1.21.1 has to Scape and Run: Parasites |
-| [Illager Invasion](https://modrinth.com/mod/illager-invasion) | `v21.1.6-1.21.1-NeoForge` | both | major | Expanded illager threat |
 | [Kenny [HORROR]](https://modrinth.com/mod/kenny) | `6.0.0` | both | major | A silent stalker that grows more aggressive each day |
 | [Mimicked](https://modrinth.com/mod/mimicked) | `2.0.0` | client | major | Voice-mimicking horror atmosphere |
 | [Mutant Monsters](https://modrinth.com/mod/mutant-monsters) | `v21.1.1-1.21.1-NeoForge` | both | major | Mutant variants of vanilla mobs |
@@ -204,7 +201,7 @@ Pillar 3b: horror. Built from stalkers, atmosphere and escalating pressure rathe
 | [Scorchful](https://modrinth.com/mod/scorchful) | `0.15.2+1.21.1-neoforge` *alpha* | both | minor | Heat as survival pressure |
 | [Spawn Animations](https://modrinth.com/mod/spawn-animations) | `1.11.5+mod` | both | minor | Mobs claw out of the ground instead of popping in |
 
-## world-structures (44)
+## world-structures (43)
 
 Worldgen and structures, chosen as ONE coherent set: BWG for biomes, the YUNG suite for vanilla structure overhauls, and a small number of dungeon and settlement mods. Deliberately not stacking competing terrain generators.
 
@@ -250,12 +247,11 @@ Worldgen and structures, chosen as ONE coherent set: BWG for biomes, the YUNG su
 | [Nether Depths Upgrade](https://modrinth.com/mod/nether-depths-upgrade) | `3.1.8` | both | minor | Lava-sea flora and fauna |
 | [Philips Ruins](https://modrinth.com/mod/philips-ruins) | `1.21.1-2.0` | both | minor | Ancient ruins scattered through the world |
 | [SeasonHud](https://modrinth.com/mod/seasonhud) | `1.21.1-2.0.7` | both | minor | Shows the current season on the HUD - without it, seasonal farming is guesswork |
-| [Structory: Towers](https://modrinth.com/mod/structory-towers) | `1.0.17` | both | minor | Structory's tower set |
 | [When Dungeons Arise: Seven Seas](https://modrinth.com/mod/when-dungeons-arise-seven-seas) | `1.0.4` | server | minor | Naval dungeon set |
 | [YUNG's Bridges](https://modrinth.com/mod/yungs-bridges) | `1.21.1-NeoForge-5.1.1` | server | minor | Natural bridges |
 | [YUNG's Extras](https://modrinth.com/mod/yungs-extras) | `1.21.1-NeoForge-5.1.1` | server | minor | Extra vanilla+ structures |
 
-## qol (53)
+## qol (52)
 
 Quality of life. At 400 mods this is not garnish - it is what stops the pack being unplayable. Recipe lookup, tooltips, sorting, waypoints and death recovery carry the whole experience.
 
@@ -293,7 +289,6 @@ Quality of life. At 400 mods this is not garnish - it is what stops the pack bei
 | [Carry On + Create Aeronautics Compat](https://modrinth.com/mod/carryon-aeronautics-compat) | `1.1.1` | server | minor | Patches Carry On to work with Create Aeronautics contraptions |
 | [Chat Heads](https://modrinth.com/mod/chat-heads) | `0.15.3` | client | minor | Faces in chat - small, disproportionately social |
 | [Easy Magic](https://modrinth.com/mod/easy-magic) | `v21.1.4-1.21.1-NeoForge` | both | minor | Enchanting table QoL |
-| [Easy Shulker Boxes](https://modrinth.com/mod/easy-shulker-boxes) | `v21.1.3-1.21.1-NeoForge` | both | minor | Open shulkers in place |
 | [Elytra Slot](https://modrinth.com/mod/elytra-slot) | `9.0.2+1.21.1` | both | minor | Elytra in an accessory slot |
 | [EMI Loot](https://modrinth.com/mod/emi-loot) | `0.7.9+1.21+neoforge` | both | minor | Loot table viewing in EMI |
 | [EMIffect](https://modrinth.com/mod/emiffect) | `2.1.6+mc1.21.1` | client | minor | Status effect information in EMI |
@@ -315,7 +310,7 @@ Quality of life. At 400 mods this is not garnish - it is what stops the pack bei
 | [VeinMiner Enchantment](https://modrinth.com/mod/veinminer-enchantment) | `2.11.2` | both | minor | Gates vein mining behind an enchantment so it is earned |
 | [XaeroPlus](https://modrinth.com/mod/xaeroplus) | `2.35.0+neoforge-1.21.1` | client | minor | Xaero feature extensions |
 
-## building-deco (22)
+## building-deco (19)
 
 Building blocks and furniture. Four players sharing a world need a deep palette or every base looks identical. Every Compat plus the Macaw suite produces an enormous variant space for very little runtime cost.
 
@@ -327,9 +322,6 @@ Building blocks and furniture. Four players sharing a world need a deep palette 
 | [Handcrafted](https://modrinth.com/mod/handcrafted) | `4.0.3` | both | major | Furniture with craft appeal |
 | [Rechiseled](https://modrinth.com/mod/rechiseled) | `1.2.5-neoforge-mc1.21` | both | major | Chiselled variants |
 | [Another Furniture](https://modrinth.com/mod/another-furniture) | `4.0.2` | both | minor | Modern furniture set |
-| [Diagonal Fences](https://modrinth.com/mod/diagonal-fences) | `v21.1.1-1.21.1-NeoForge` | both | minor | Diagonal fences |
-| [Diagonal Walls](https://modrinth.com/mod/diagonal-walls) | `v21.1.2-1.21.1-NeoForge` | both | minor | Diagonal walls |
-| [Diagonal Windows](https://modrinth.com/mod/diagonal-windows) | `v21.1.1-1.21.1-NeoForge` | both | minor | Diagonal windows |
 | [Dynamic Trees](https://modrinth.com/mod/dynamictrees) | `1.7.2` | both | risky | Growing, spreading trees - beautiful, but touches worldgen everywhere |
 | [Immersive Furniture](https://modrinth.com/mod/immersive-furniture) | `0.3.2+1.21.1` | both | minor | In-game custom furniture designer |
 | [Macaw's Bridges](https://modrinth.com/mod/macaws-bridges) | `3.1.2` | both | minor | Bridges |
