@@ -1,0 +1,13 @@
+name = "Cogs & Cadavers"
+author = "EHtut"
+version = "0.1.0"
+pack-format = "packwiz:1.1.0"
+
+[index]
+file = "index.toml"
+hash-format = "sha256"
+hash = "79bf9174b883bba6da26ba7e2915ba938a99003202599cf1ce0d5dab7d7a847d"
+
+[versions]
+minecraft = "1.21.1"
+neoforge = "21.1.247"

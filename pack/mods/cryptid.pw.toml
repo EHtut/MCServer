@@ -1,0 +1,13 @@
+name = "CRYPTID"
+filename = "cryptid-1.1.0.2.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/fgon4GGl/versions/jsfY9Tv4/cryptid-1.1.0.2.jar"
+hash-format = "sha512"
+hash = "42babf095e93d90a1af999989871dfebf9349c6acd87b1c090a0f9e6a8ae08e07389252df9ab5b27bdb3e7b3e9babc9fbd8637dd3b363f87264ef9d9fbba970b"
+
+[update]
+[update.modrinth]
+mod-id = "fgon4GGl"
+version = "jsfY9Tv4"

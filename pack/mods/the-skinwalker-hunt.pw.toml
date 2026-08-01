@@ -1,0 +1,13 @@
+name = "The Skinwalker Hunt"
+filename = "The Skinwalker Hunt [v6.0] [NeoForge 1.21.1].jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/pyz8tuYw/versions/Tsfx4ht4/The%20Skinwalker%20Hunt%20%5Bv6.0%5D%20%5BNeoForge%201.21.1%5D.jar"
+hash-format = "sha512"
+hash = "8ecede5c2873974a5e101c2052314850dc5301ea5d72110407a169ae355c4e7f8e1b7ef236082dbe23097ff7bd9d4c03fefd702b084cae68ec71910d2bf48399"
+
+[update]
+[update.modrinth]
+mod-id = "pyz8tuYw"
+version = "Tsfx4ht4"

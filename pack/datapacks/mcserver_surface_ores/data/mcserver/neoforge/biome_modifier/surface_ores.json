@@ -1,0 +1,18 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": [
+    "mcserver:surface_coal",
+    "mcserver:surface_copper_small",
+    "mcserver:surface_copper_large",
+    "mcserver:surface_iron",
+    "mcserver:surface_iron_small",
+    "mcserver:surface_gold",
+    "mcserver:surface_redstone",
+    "mcserver:surface_lapis",
+    "mcserver:surface_diamond_small",
+    "mcserver:surface_diamond_medium",
+    "mcserver:surface_emerald"
+  ],
+  "step": "underground_ores"
+}

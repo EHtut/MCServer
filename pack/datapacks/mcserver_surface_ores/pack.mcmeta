@@ -1,0 +1,6 @@
+{
+  "pack": {
+    "pack_format": 48,
+    "description": "MCServer: every ore also generates sparsely between y54 and y120, so going deeper is a choice rather than a requirement."
+  }
+}

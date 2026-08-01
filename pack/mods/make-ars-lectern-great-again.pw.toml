@@ -1,0 +1,13 @@
+name = "Make Ars Lectern Great Again"
+filename = "make_ars_lectern_great_again-1.12.1-1.0.0.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/TlmL4ZOs/versions/9YrCOdiq/make_ars_lectern_great_again-1.12.1-1.0.0.jar"
+hash-format = "sha512"
+hash = "becf8342c8f1f51ea85b023f300aafcfd88fc9b7b0e3d102e9dc5a2896844211588cd1e94dffb4381391bbd28bf1c25d257818f9a0f259eaa63108aacd2cdf97"
+
+[update]
+[update.modrinth]
+mod-id = "TlmL4ZOs"
+version = "9YrCOdiq"

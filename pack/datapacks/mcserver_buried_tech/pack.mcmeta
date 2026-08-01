@@ -1,0 +1,6 @@
+{
+  "pack": {
+    "pack_format": 48,
+    "description": "MCServer buried tech: modern weapons and devices are salvage, not manufacture. Disables their recipes via neoforge:false; ammunition stays craftable."
+  }
+}

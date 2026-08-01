@@ -1,0 +1,13 @@
+name = "More Totems of Undying"
+filename = "MoreTotems-neoforge-1.21-2.20.3.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/Xt0pMhSq/versions/YpnBUEFl/MoreTotems-neoforge-1.21-2.20.3.jar"
+hash-format = "sha512"
+hash = "7a0d5213c5589e122f860ae0762ae712931db7af1c883abb59ffa183505ed7c13512a75881e06cd350da9aabe397c944efb6875c3fa38cdfb87d5e3e34741b4c"
+
+[update]
+[update.modrinth]
+mod-id = "Xt0pMhSq"
+version = "YpnBUEFl"

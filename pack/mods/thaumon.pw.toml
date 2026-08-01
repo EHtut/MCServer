@@ -1,0 +1,13 @@
+name = "Thaumon"
+filename = "thaumon-neoforge-2.3.0+1.21.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/PvssKrgi/versions/rx9dpWVN/thaumon-neoforge-2.3.0%2B1.21.jar"
+hash-format = "sha512"
+hash = "4a980fa5e0717eb7fb26cf38790419787970e6915c3def303398ddf1ff2caa41d6f682b97d88e6afab8283a62330e750c8d52c3a0ce702dae9bd61bd20609b85"
+
+[update]
+[update.modrinth]
+mod-id = "PvssKrgi"
+version = "rx9dpWVN"

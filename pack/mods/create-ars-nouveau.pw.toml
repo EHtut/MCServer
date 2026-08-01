@@ -1,0 +1,13 @@
+name = "Create Ars Nouveau"
+filename = "createarscompact-1.20.5.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/edZTqBgP/versions/AVB3wxRY/createarscompact-1.20.5.jar"
+hash-format = "sha512"
+hash = "9643f1aa663d883145b0fb4ac847e13eb93b2f3d0945a2399a18fea00cb358354429db4086d6ab578e716f0f60ab9529402d661470a0f53910d1a5dd4cecffa1"
+
+[update]
+[update.modrinth]
+mod-id = "edZTqBgP"
+version = "AVB3wxRY"

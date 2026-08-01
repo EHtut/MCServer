@@ -1,0 +1,13 @@
+name = "Figura ExtraBone"
+filename = "figuraextrabone-0.0.3-neoforge-1.21.1.jar"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/PNBaqE8G/versions/uRT6oOZK/figuraextrabone-0.0.3-neoforge-1.21.1.jar"
+hash-format = "sha512"
+hash = "41563e324178f4041345965b2ea242c9b1f8e49da93dfcd2c11bcf9b051401075324495533ca89b715a01a8ce3b10d5fbcdb58382cd72144a153ac0767647355"
+
+[update]
+[update.modrinth]
+mod-id = "PNBaqE8G"
+version = "uRT6oOZK"

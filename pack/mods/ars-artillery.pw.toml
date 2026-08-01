@@ -1,0 +1,13 @@
+name = "Ars Artillery"
+filename = "Ars Artillery 1.21.1-1.1.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/65NbZTp2/versions/oIIBEnSK/Ars%20Artillery%201.21.1-1.1.jar"
+hash-format = "sha512"
+hash = "52fde745e6013fbead0631a4f6b5a3b57be5d40000c3d5cce31a3cd0861654a19a9982d40a43326d03e523bb940d45820c3f0d90e9eafa4dfbc5acedc620f637"
+
+[update]
+[update.modrinth]
+mod-id = "65NbZTp2"
+version = "oIIBEnSK"
