@@ -66,20 +66,38 @@ CUTS: dict[str, str] = {
     #   in carryonaerocompat.mixins.json:PickupHandlerMixin
     #   failed injection check, (0/1) succeeded. Scanned 0 target(s).
     #
-    # "Scanned 0 target(s)" means the method it redirects is simply not there
-    # any more. The mixin is applied lazily, when Carry On's CommonEvents
-    # .onBlockClick first loads the class - so the server survives boot, accepts
-    # players, and then dies in the tick loop the moment anyone right-clicks a
-    # block. Ethan hit it within a minute of joining a brand new world.
+    # The mixin applies LAZILY, when Carry On's CommonEvents.onBlockClick first
+    # loads the class - so the server survives boot, accepts players, and then
+    # dies in the tick loop the moment anyone right-clicks a block. Ethan hit it
+    # within a minute of joining a brand new world.
     #
-    # Nothing in this repo could have predicted it. The jar declares exactly one
-    # dependency - minecraft [1.21.1]. A compat mod that names neither of the
-    # two mods it sits between cannot be version-checked against them, and a
-    # lazily-applied mixin cannot be caught at boot. Only playing finds this.
+    # TWO CORRECTIONS to my first reading of this, both worth keeping because
+    # both were confidently wrong:
     #
-    # Carry On and Aeronautics both keep working; what is lost is whatever the
-    # shim mediated between them.
-    "carryon-aeronautics-compat": "F22. Mixin PickupHandlerMixin fails injection against Carry On 2.2.6.13 ('Scanned 0 target(s)'), crashing the server tick loop the first time any player right-clicks a block. Declares no dependency on either carryon or aeronautics, so no manifest check could flag it.",
+    # 1. I reported that it declares only `minecraft [1.21.1]`, and built a
+    #    "compat mod that names neither mod it sits between" heuristic on that.
+    #    FALSE. It declares [[dependencies.carryonaerocompat]] modId="carryon"
+    #    type="required". My scan missed it because the regex required a
+    #    versionRange after each modId, and the carryon entry has none - so only
+    #    the minecraft entry matched. The heuristic was built on my own bug.
+    #
+    # 2. "Scanned 0 target(s)" does NOT mean the target method is gone. Both the
+    #    class AND the method still exist: PickupHandler.canCarryGeneral is
+    #    present in Carry On 2.2.6.13. What vanished is one level deeper - the
+    #    @At(INVOKE, target="Vec3.distanceTo(Vec3)D") INJECTION POINT inside
+    #    that method's body. Carry On moved the distance check into isInDistance
+    #    and switched to ServerPlayer.distanceToSqr. The @Redirect found the
+    #    method, scanned it, matched zero instructions, and defaultRequire=1
+    #    turned that into a throw.
+    #
+    # So the real signature is instruction-level drift inside a method body.
+    # Class-level AND method-level checks both PASS on this bug; only decoding
+    # the target method's bytecode finds it. A later sweep did exactly that
+    # across 180,167 classes and found no second instance in the pack.
+    #
+    # Carry On and Aeronautics both keep working; what is lost is picking up
+    # blocks from Aeronautics' simulated contraptions.
+    "carryon-aeronautics-compat": "F22. @Redirect in PickupHandlerMixin targets a Vec3.distanceTo call that Carry On 2.2.6.13 refactored away ('Scanned 0 target(s)'); with defaultRequire=1 that throws, killing the server tick loop the first time any player right-clicks a block. The target class and method both still exist - the missing thing is the injection point inside the method body, which no class- or method-level check can see.",
 
     # --- F21: in the pack, doing nothing, and unfixable -------------------
     # Its whole server-side contribution is delivered through Moonlight's
