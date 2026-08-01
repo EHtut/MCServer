@@ -211,11 +211,6 @@ hash = "b3c09f5948d5ce7b121b3191d124a7a9fc6c482ad98af673e29f1554c9b64705"
 metafile = true
 
 [[files]]
-file = "mods/better-library.pw.toml"
-hash = "1054e81ab64a42507cddb2161cb066518a4e352edaa6b3e889d267cd16a52589"
-metafile = true
-
-[[files]]
 file = "mods/better-third-person.pw.toml"
 hash = "e1f1588b18947699ddc9b4f7c5b5406c5559155b8cb52dcd0f203c07c31cd0b8"
 metafile = true
@@ -1828,11 +1823,6 @@ metafile = true
 [[files]]
 file = "mods/tslatentitystatus.pw.toml"
 hash = "bea86b2dafe903607fb42809da2ee7c31140be970e8181d6cb06733fa6c4cc60"
-metafile = true
-
-[[files]]
-file = "mods/underground-village--stoneholm.pw.toml"
-hash = "2f7758c4210f63c9fc8d05729dbf18c5ca80ffe78bec65ea80d0f736bc5c0f51"
 metafile = true
 
 [[files]]
