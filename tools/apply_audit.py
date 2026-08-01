@@ -58,6 +58,20 @@ CUTS: dict[str, str] = {
     "epic-fight-sword-soaring": "F14. RuntimeException: Attempted to load class net/minecraft/client/gui/screens/Screen for invalid dist DEDICATED_SERVER. Painful loss - this was the wuxia specialisation layer Ethan chose to make melee about movesets rather than stat lines. Epic Fight itself still supplies movesets, stances and combos.",
     "kenny": "F14. Same DEDICATED_SERVER crash. One stalker of six, and the least distinctive; The Knocker, Obsessed, The Skinwalker Hunt, Distant Friends and Weeping Angels remain.",
 
+    # --- F18: breaks the mod-channel handshake, nobody can join ------------
+    # Sable installs its own UDP networking channel and wraps NeoForge's. The
+    # client log shows it closing that channel microseconds before NeoForge
+    # reports eight mods' channels as "missing on the client side" - while those
+    # mods are byte-identical and loaded on BOTH sides, which no ordinary
+    # mismatch can produce. Sable's own crash header asks you to rule it out
+    # before blaming other mods; that is the tell.
+    #
+    # Sable exists ONLY as a dependency of Create: Aeronautics, so the airships
+    # go with it. Ethan asked for Aeronautics by name, so this is a real loss -
+    # but an unjoinable server is not a trade.
+    "create-aeronautics": "F18. Its required library Sable breaks NeoForge's mod-channel handshake, making the server reject every client with 'channel missing on the client side' for eight unrelated mods. Removed to get people online; revisit if Sable is fixed upstream.",
+    "sable": "F18. The actual culprit. Only present as a Create: Aeronautics dependency.",
+
     # --- F17: crashes the CLIENT, proven by a crash report -----------------
     "jadens-nether-expansion": "F17. Crashes the client every tick: IllegalStateException 'Cannot get config value before config is loaded' in JNEClientEvents.onClientTickPost. Only BETA builds exist for 1.21.1 (2.4.0-BETA.1 through .7), so there is no stable version to fall back to. Proven by crash-2026-07-31_22.16.18-client.txt, not guessed.",
 
