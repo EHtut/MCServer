@@ -164,8 +164,21 @@ $packKube = Join-Path $RepoRoot "pack\kubejs"
 if (Test-Path $packKube) {
     $destKube = Join-Path $InstanceDir "kubejs"
     New-Item -ItemType Directory -Force -Path $destKube | Out-Null
+
+    # MIRROR, don't merge. Copy alone never removes a script deleted from the
+    # repo, so a retired script keeps running forever - and a stale gating script
+    # is worse than none, because it silently enforces rules nobody can find in
+    # source. Only the fully repo-managed script directories are cleared;
+    # anything KubeJS generates itself (exported/, config) is left alone.
+    foreach ($sub in @("server_scripts", "startup_scripts", "client_scripts")) {
+        $src = Join-Path $packKube $sub
+        $dst = Join-Path $destKube $sub
+        if ((Test-Path $src) -and (Test-Path $dst)) {
+            Remove-Item "$dst\*" -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
     Copy-Item "$packKube\*" $destKube -Recurse -Force
-    Say "applied KubeJS scripts"
+    Say "applied KubeJS scripts (mirrored - retired scripts removed)"
 }
 
 # World datapacks - the depth extension. These are read WHEN THE WORLD IS

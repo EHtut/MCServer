@@ -105,8 +105,15 @@ fi
 # KubeJS scripts - the buried-tech gating. Reloadable in-game with /kubejs reload.
 if [[ -d "$REPO_ROOT/pack/kubejs" ]]; then
   mkdir -p "$INSTANCE_DIR/kubejs"
+  # MIRROR, don't merge: a plain copy never removes a script deleted from the
+  # repo, so a retired gating script keeps running forever - enforcing rules that
+  # no longer exist in source. Only repo-managed script dirs are cleared.
+  for sub in server_scripts startup_scripts client_scripts; do
+    [[ -d "$REPO_ROOT/pack/kubejs/$sub" && -d "$INSTANCE_DIR/kubejs/$sub" ]] \
+      && rm -rf "${INSTANCE_DIR:?}/kubejs/$sub/"*
+  done
   cp -rf "$REPO_ROOT/pack/kubejs/." "$INSTANCE_DIR/kubejs/"
-  say "applied KubeJS scripts"
+  say "applied KubeJS scripts (mirrored - retired scripts removed)"
 fi
 
 # World datapacks - the depth extension. Read WHEN THE WORLD IS CREATED, so they
