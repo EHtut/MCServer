@@ -61,3 +61,21 @@
 
 # Quieter, faster startup on a headless box.
 -Djava.awt.headless=true
+
+# Stop writing logs/debug.log.
+#
+# NeoForge's log4j2 config binds that appender to
+# ${sys:forge.logging.debugFile.level:-debug}, so this one property disables it
+# without needing a custom log4j2.xml.
+#
+# It was costing 145 MB per session and growing ~2.2 MB/min - roughly 3 GB/day
+# on a server left running - and full DEBUG logging on a 400-mod pack is not
+# free in tick time either.
+#
+# Nothing was lost: every fault diagnosed on this pack (LuckPerms, no_moon,
+# jadens-nether-expansion, the client OOM, moreculling vs Sodium 0.8) was found
+# in latest.log or a crash report. debug.log was never once the thing that
+# answered a question.
+#
+# To get it back for a debugging session, set this to 'debug' and restart.
+-Dforge.logging.debugFile.level=off
