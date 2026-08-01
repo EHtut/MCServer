@@ -1,69 +1,87 @@
-COGS & CADAVERS — how to join
+HOW TO JOIN - Cogs & Cadavers
 =============================
 
-You need two things: Prism Launcher, and this file. That is all.
+Four steps. You do not need to understand any of it.
 
 
-1. INSTALL PRISM LAUNCHER  (free, open source)
+STEP 1 - Install Prism Launcher (free)
 
-   https://prismlauncher.org/download/
+    https://prismlauncher.org/download/
 
-   Windows users can also just run:   winget install PrismLauncher.PrismLauncher
-
-
-2. IMPORT THIS PACK
-
-   Open Prism  ->  "Add Instance"  ->  "Import from zip"
-   Pick the .zip you downloaded (do NOT unzip it first).
-
-   An instance called "Cogs and Cadavers" appears.
+    Download, run the installer, click through it.
 
 
-3. SIGN IN
+STEP 2 - Import this pack
 
-   Prism  ->  top right  ->  "Manage Accounts"  ->  add your Microsoft account.
+    Open Prism.
+    Click "Add Instance" (top left).
+    Choose "Import from zip" on the left.
+    Click "Browse" and pick the zip file you downloaded.
+    Click OK.
 
-
-4. LAUNCH IT
-
-   The first launch downloads about 1.5 GB of mods. It looks like it is doing
-   nothing for a while. It is not - watch the small progress window.
-
-   Every launch after that only downloads what actually changed, which is
-   usually nothing.
+    Do NOT unzip the file first. Prism wants the zip itself.
 
 
-5. JOIN
+STEP 3 - Sign in
 
-   Server address:   stammer-unsmooth.tun.ply.gg
+    Top right of Prism, click your profile / "Manage Accounts".
+    Add your Microsoft account (the one you own Minecraft on).
 
-   You must be whitelisted first. Send Ethan your exact Minecraft username.
+    If Prism asks to download Java, say YES.
 
 
-NOTES
------
+STEP 4 - Play
 
-* 8 GB of RAM is already configured. Do not raise it - Minecraft clients gain
-  nothing above ~8 GB and the pauses get longer, which feels like stutter.
+    Double-click "Cogs and Cadavers".
 
-* You need Java 21. Prism will offer to download it automatically; say yes.
+    The FIRST launch downloads about 1.5 GB of mods and looks frozen for
+    several minutes. It is not frozen. Leave it alone.
 
-* DO NOT add or delete mods by hand. packwiz re-syncs the mods folder on every
-  launch and will undo it. If everyone is not running identical mods, the server
-  refuses the connection - and the error blames a mod rather than the mismatch.
+    When Minecraft opens: Multiplayer -> the server is already in the list.
+    Just double-click it.
 
-* Voice chat is built in (Simple Voice Chat). Set your microphone in its
-  settings BEFORE the first session, not during one. Press V for the menu.
 
-* Shaders are supported but not included - they are large and personal taste.
-  If you want them: download Complementary Unbound from
-  https://modrinth.com/shader/complementary-unbound
-  and drop the .zip into the instance's shaderpacks folder
-  (Prism -> right-click instance -> Folder), then pick it in
-  Options -> Video Settings -> Shader Packs.
+THAT'S IT.
+==========
 
-  If frames are tight, MakeUp Ultra Fast is far cheaper and still looks good.
 
-* Render distance: keep it LOW (8-12). Distant Horizons is installed and draws
-  everything past that far more cheaply. Cranking vanilla render distance is the
-  usual way to have this pack and still run badly.
+If it says you are not whitelisted
+----------------------------------
+Send Ethan your exact Minecraft username. He has to add you before you can
+join. Capital letters do not matter but spelling does.
+
+
+Voice chat
+----------
+Already installed. Press V in game to open its menu and pick your microphone.
+Do that before your first session rather than during one.
+
+People near you can hear you. People far away cannot. In caves your voice
+echoes - that is intentional.
+
+
+Things that will make you sad if you ignore them
+------------------------------------------------
+* Do NOT add or delete mods yourself. The pack re-syncs every launch and will
+  undo it. If your mods differ from everyone else's, the server just refuses
+  to let you in, and the error message blames a random mod instead of saying
+  what is actually wrong.
+
+* Do NOT raise render distance. It is set to 8 on purpose. A mod called
+  Distant Horizons draws everything past that much more cheaply, so turning
+  render distance up makes the game slower and NOT prettier.
+
+* 8 GB of memory is already set. Do not raise it. More memory makes Minecraft
+  stutter more, not less.
+
+
+Want shaders?  (optional, looks great, costs frames)
+----------------------------------------------------
+1. Download Complementary Unbound:
+   https://modrinth.com/shader/complementary-unbound
+2. In Prism, right-click the instance -> "Folder".
+3. Put the downloaded .zip inside the "shaderpacks" folder.
+4. In game: Options -> Video Settings -> Shader Packs -> pick it.
+
+If your frames drop too much, use "MakeUp Ultra Fast" instead, or turn shaders
+back off. Nothing breaks either way.
