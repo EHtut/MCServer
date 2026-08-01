@@ -36,12 +36,9 @@
     }
   },
   "shaderpacks": {
-    "_comment": ["Shader packs are a different Modrinth project type: they resolve against the 'iris' loader, not", "'neoforge', and install to shaderpacks/ rather than mods/. Shipping them in the pack means nobody", "has to find and download one - they just pick from the list in Video Settings.", "Iris and Euphoria Patches are already in the mod list; Euphoria is what gives Complementary its", "Distant Horizons support.", "None is enabled by default - a shader is a per-machine performance decision, and four people have", "four different GPUs."],
+    "_comment": ["ONE shader ships, not four. Ethan's ruling 2026-08-01: 'i don't want to add a whole new mod for them,", "just pull the top performance one.' No new mod was needed - Iris is already in the pack, so a shader is", "just a file in shaderpacks/.", "Shader packs resolve against the 'iris' loader, not 'neoforge', and packwiz places a file in the directory", "its metafile lives in - so writing pack/shaderpacks/<slug>.pw.toml is the whole mechanism.", "NOT enabled by default: a shader is a per-machine performance decision and four people have four GPUs.", "Turn it on in Options -> Video Settings -> Shader Packs.", "Dropped for budget/simplicity: bsl-shaders, solas-shader, bliss-shader."],
     "packs": [
-      ["complementary-reimagined", "The all-rounder and the safest default. Euphoria Patches (in the pack) gives it Distant Horizons support, which most shaders lack"],
-      ["bsl-shaders", "The classic. Bright, colourful, well-optimised - the gentlest on frames of the four"],
-      ["solas-shader", "Soft, warm, stylised. Cheaper than it looks"],
-      ["bliss-shader", "Chocapic-derived and the most dramatic of the four - strong shadows and volumetric light, which suits the horror layer. Also the heaviest; expect to lose frames"]
+      ["complementary-reimagined", "The single shipped shader. Chosen on performance: the best frames-per-quality of the four Ethan picked, and Euphoria Patches (already in the mod list) gives it Distant Horizons support, which most shaders lack."]
     ]
   },
   "categories": {
@@ -341,7 +338,6 @@
         ["yungs-cave-biomes", "Underground biome variety", "major"],
         ["yungs-better-caves", "Overhauled cave generation, underground lakes and lava oceans. Same author as Cave Biomes and designed to work with it", "major"],
         ["underground-worlds", "Underground biomes AND underground dungeons. The most direct vessel for the buried-tech device - dungeons are where the salvage goes", "major"],
-        ["spelunkery", "Cave overhaul with tool progression and mining strategy. Makes descending a deliberate activity with its own tech tree, which is what the buried-tech ruling needs to be worth doing", "major"],
         ["the-undergarden", "An entire forgotten dimension deep underground. Thematically it IS the lost world beneath", "major"],
         ["ct-overhaul-village", "ChoiceTheorem's Overhauled Villages. Replaced Epic Structures: Villages (9.6M downloads vs 194k) - on a surface that is now PEACEFUL and medieval, villages become the centre of play, so this layer had to be the well-trodden one", "major"],
         ["ardas-sculks", "Overhauls the Ancient City and adds its portal. The Ancient City is already Minecraft's buried-civilisation set piece; this makes it the gateway", "major"],
@@ -391,7 +387,6 @@
         ["easy-anvils", "Anvils without the too-expensive wall", "major"],
         ["easy-magic", "Enchanting table QoL", "minor"],
         ["carry-on", "Pick up a chest WITH its contents, a machine, or a mob, and walk off with it. The most kinetic storage verb there is, and it needs no UI to understand", "major"],
-        ["carryon-aeronautics-compat", "Patches Carry On to work with Create Aeronautics contraptions", "minor"],
         ["storagedrawers", "Bulk storage with contents visible on the block face - storage you can read by looking at it", "major"],
         ["waystones", "Fast travel between discovered points. Essential for four players", "core"],
         ["trading-post", "Trade with every villager in a village at once. With a peaceful medieval surface, villages are now central to play and vanilla trading does not scale to four people", "major"],
@@ -561,6 +556,7 @@
       ["aether", "F6. Dimension sprawl. Kept only the two dimensions that serve a pillar directly - The Undergarden (buried-tech) and Cataclysm (combat)."],
       ["ars-elemancy", "F12. Hard-requires 'ars_elemental' [0.7.0.9,), which is CurseForge-only - its own manifest links to CurseForge. Found at second boot. Ars keeps Additions, Creo, Controle, Unification, Ars'n'Spells, Polymorphia, Structurize, Artillery, Technic, Lumos and the lectern fix."],
       ["better-library", "F15. NullPointerException in JsonVillagerLoader during construction. Its shipped config is copy-paste boilerplate (FPS limits, render distance, favoriteServers) in a LIBRARY mod - a maintenance signal as much as a bug."],
+      ["carryon-aeronautics-compat", "F22. Mixin PickupHandlerMixin fails injection against Carry On 2.2.6.13 ('Scanned 0 target(s)'), crashing the server tick loop the first time any player right-clicks a block. Declares no dependency on either carryon or aeronautics, so no manifest check could flag it."],
       ["cataclysm-tools", "F9. Tools from boss materials, mostly stat lines."],
       ["chunk-loaders", "F3. Duplicate of Create: Power Loader, which is kinetic and Create-native. This one is a generic utility block doing the same verb."],
       ["create-better-villagers", "F5. Transitive dependency of Steamworks Realm; also collided with Epic Structures: Villages, which was chosen precisely because it replaces other village mods."],
@@ -580,6 +576,7 @@
       ["mythic-upgrades", "F9. Gem-based gear upgrades are pure numbers. R4 cut Simply Swords and Medieval Craft for the same reason; Apotheosis already supplies affixed loot for progression."],
       ["no_moon.jar", "F20. Throws on EVERY PLAYER TICK: 'Cannot get config value before config is loaded' in net.mcreator.nomoon.procedures.PlayerTickNewProcedure, reached from Player.tick. The player is disconnected within a second of spawning. Identical defect class to jadens-nether-expansion - both are MCreator-generated mods reading config before it exists."],
       ["nullscape", "F6. Dimension sprawl - an End overhaul serving no pillar."],
+      ["spelunkery", "F21. All 111 of its Moonlight dynamic-resource overrides fail every boot (26 worldgen, 43 loot tables, 42 recipes; zero succeed). Unfixable: Supplementaries pins moonlight >=3.1.3, which postdates Spelunkery's newest build, and downgrading would hard-fail Supplementaries. Ethan's call to cut, 2026-08-01. The depth pillar is served by the surface-ores datapack, Underground Worlds, Arda's Sculks and The Undergarden regardless."],
       ["structory-towers", "F13. Modrinth tags it 1.21.1 + neoforge, but the jar is a multi-version build (26.2) carrying neoforge.mods.toml, mods.toml AND fabric.mod.json plus 1.21.5/1.21.11 overlay folders. NeoForge rejects it outright: 'not a valid mod file'. Same class as zoniex. Base Structory stays and works."],
       ["the-bumblezone", "F6. Dimension sprawl - no connection to any pillar."],
       ["underground-village,-stoneholm", "F15. Its required library better_lib crashes the dedicated server during mod construction (NPE in JsonVillagerLoader - dereferences a null JSON). Re-added for the underground-city idea, dropped again on evidence. The buried city is still served by Underground Worlds' dungeons, Arda's Sculks' Ancient City overhaul, and The Undergarden."]

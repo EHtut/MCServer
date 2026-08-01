@@ -58,6 +58,49 @@ CUTS: dict[str, str] = {
     "epic-fight-sword-soaring": "F14. RuntimeException: Attempted to load class net/minecraft/client/gui/screens/Screen for invalid dist DEDICATED_SERVER. Painful loss - this was the wuxia specialisation layer Ethan chose to make melee about movesets rather than stat lines. Epic Fight itself still supplies movesets, stances and combos.",
     "kenny": "F14. Same DEDICATED_SERVER crash. One stalker of six, and the least distinctive; The Knocker, Obsessed, The Skinwalker Hunt, Distant Friends and Weeping Angels remain.",
 
+    # --- F22: right-click a block, the server dies -------------------------
+    # A Carry On <-> Create: Aeronautics compat shim whose mixin no longer
+    # matches Carry On 2.2.6.13:
+    #
+    #   Critical injection failure: Redirector CarryOnAeroCompat$distanceTo
+    #   in carryonaerocompat.mixins.json:PickupHandlerMixin
+    #   failed injection check, (0/1) succeeded. Scanned 0 target(s).
+    #
+    # "Scanned 0 target(s)" means the method it redirects is simply not there
+    # any more. The mixin is applied lazily, when Carry On's CommonEvents
+    # .onBlockClick first loads the class - so the server survives boot, accepts
+    # players, and then dies in the tick loop the moment anyone right-clicks a
+    # block. Ethan hit it within a minute of joining a brand new world.
+    #
+    # Nothing in this repo could have predicted it. The jar declares exactly one
+    # dependency - minecraft [1.21.1]. A compat mod that names neither of the
+    # two mods it sits between cannot be version-checked against them, and a
+    # lazily-applied mixin cannot be caught at boot. Only playing finds this.
+    #
+    # Carry On and Aeronautics both keep working; what is lost is whatever the
+    # shim mediated between them.
+    "carryon-aeronautics-compat": "F22. Mixin PickupHandlerMixin fails injection against Carry On 2.2.6.13 ('Scanned 0 target(s)'), crashing the server tick loop the first time any player right-clicks a block. Declares no dependency on either carryon or aeronautics, so no manifest check could flag it.",
+
+    # --- F21: in the pack, doing nothing, and unfixable -------------------
+    # Its whole server-side contribution is delivered through Moonlight's
+    # dynamic-resource API, and every single one of those deliveries fails.
+    # Not most - all 111, every boot, 888 across eight measured sessions, zero
+    # successes. 26 worldgen overrides, 43 loot tables, 42 recipes, all dropped
+    # with NoSuchElementException before they reach the game.
+    #
+    # It cannot be fixed by version selection. Spelunkery's newest build is
+    # 2026-06-18; Supplementaries hard-requires moonlight [1.21-3.1.3,] and
+    # 3.1.3 shipped 2026-07-23. There is no Moonlight that satisfies
+    # Supplementaries and still predates the API change Spelunkery was built
+    # against, and a downgrade would hard-fail Supplementaries at load.
+    #
+    # Found by a log sweep, not by anything that looks at manifests: nothing in
+    # the resolution or dependency checks can see a mod that loads correctly and
+    # then silently delivers none of its content. Worth remembering as its own
+    # failure class - "resolves, boots, does nothing" is invisible to every
+    # check this repo had before someone read the logs.
+    "spelunkery": "F21. All 111 of its Moonlight dynamic-resource overrides fail every boot (26 worldgen, 43 loot tables, 42 recipes; zero succeed). Unfixable: Supplementaries pins moonlight >=3.1.3, which postdates Spelunkery's newest build, and downgrading would hard-fail Supplementaries. Ethan's call to cut, 2026-08-01. The depth pillar is served by the surface-ores datapack, Underground Worlds, Arda's Sculks and The Undergarden regardless.",
+
     "no_moon.jar": "F20. Throws on EVERY PLAYER TICK: 'Cannot get config value before config is loaded' in net.mcreator.nomoon.procedures.PlayerTickNewProcedure, reached from Player.tick. The player is disconnected within a second of spawning. Identical defect class to jadens-nether-expansion - both are MCreator-generated mods reading config before it exists.",
 
     # --- F19: prevents ANY player from joining -----------------------------

@@ -281,11 +281,6 @@ hash = "838dbcb90c93bab58691e82c95045bd97c3e096e3a2680a00cf063e56ce35ce3"
 metafile = true
 
 [[files]]
-file = "mods/carryon-aeronautics-compat.pw.toml"
-hash = "5dd4552f1e29c6db54ea43a7c56e298de7f8e467bd5a61a211f9c3362b5528b2"
-metafile = true
-
-[[files]]
 file = "mods/cataclysm-dimension.pw.toml"
 hash = "a736ec571e08dbcc566b4bb7fe1af7f6895c78108fb736f852feaae23d6246d0"
 metafile = true
@@ -358,6 +353,11 @@ metafile = true
 [[files]]
 file = "mods/comforts.pw.toml"
 hash = "36f2f6e74b7dbeccb504572d47006582207544fa234a095093b97adfc7ecd5ac"
+metafile = true
+
+[[files]]
+file = "shaderpacks/complementary-reimagined.pw.toml"
+hash = "ea258ed5bf495d9017eeadc3cbf9bd67b1e672d843826bc077135548b5bc699e"
 metafile = true
 
 [[files]]
@@ -1758,11 +1758,6 @@ metafile = true
 [[files]]
 file = "mods/spawn-mod.pw.toml"
 hash = "45f07b742198a4b8b8de46f618527ecef483bbba87d557c18cfbd8ac5e6750f8"
-metafile = true
-
-[[files]]
-file = "mods/spelunkery.pw.toml"
-hash = "1fc642b3e1bf9af0a30b55054d606d993e9354439fa284c39d0ea854104b992a"
 metafile = true
 
 [[files]]

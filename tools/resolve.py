@@ -188,11 +188,18 @@ def cmd_check(slugs: list[str]) -> int:
 PINS: dict[str, str] = {}
 
 
-def resolve_one(slug: str) -> dict:
+def resolve_one(slug: str, loader: str = LOADER) -> dict:
+    """Resolve one project. `loader` is 'neoforge' for mods, 'iris' for shaders.
+
+    Shader packs are a different Modrinth project type: they advertise the
+    'iris' loader and install to shaderpacks/, not mods/. Everything else about
+    the lookup - pins, version picking, hashes - is identical, so the facet is
+    the only thing that varies.
+    """
     p = project(slug)
     if p is None:
         return {"slug": slug, "status": "NOT_FOUND"}
-    vs = versions(slug)
+    vs = versions(slug, loader=loader)
 
     # A pinned mod takes its exact version, not the newest.
     #
@@ -274,22 +281,40 @@ def load_modlist(path: str) -> list[dict]:
     return entries
 
 
+def load_shaderpacks(path: str) -> list[dict]:
+    """Shader packs from the manifest's separate `shaderpacks` block.
+
+    Kept apart from `categories` because they resolve against a different
+    loader and install to a different directory - folding them into the mod
+    list would mean every consumer having to re-derive which is which.
+    """
+    src = json.loads(pathlib.Path(path).read_text(encoding="utf-8"))
+    packs = (src.get("shaderpacks") or {}).get("packs") or []
+    return [{"slug": r[0], "category": "shaderpack", "why": r[1], "tier": "shader"}
+            for r in packs]
+
+
 def cmd_resolve(path: str) -> int:
     entries = load_modlist(path)
+    shaders = load_shaderpacks(path)
+    if shaders:
+        print(f"({len(shaders)} shader pack(s), resolved against loader=iris)")
     out = []
     counts: dict[str, int] = {}
-    for i, e in enumerate(entries, 1):
+    for i, e in enumerate(entries + shaders, 1):
         slug = e["slug"]
+        is_shader = e["category"] == "shaderpack"
         try:
-            r = resolve_one(slug)
+            r = resolve_one(slug, loader="iris" if is_shader else LOADER)
         except Exception as exc:  # a single bad slug must not lose 400 lookups
             r = {"slug": slug, "status": "ERROR", "error": str(exc)}
         r["category"] = e["category"]
         r["why"] = e["why"]
         r["tier"] = e["tier"]
+        r["kind"] = "shaderpack" if is_shader else "mod"
         counts[r["status"]] = counts.get(r["status"], 0) + 1
         out.append(r)
-        print(f"[{i:>3}/{len(entries)}] {r['status']:<20} {slug}")
+        print(f"[{i:>3}/{len(entries) + len(shaders)}] {r['status']:<20} {slug}")
         time.sleep(SLEEP)
 
     CACHE.mkdir(parents=True, exist_ok=True)

@@ -110,10 +110,18 @@ def write_mod(r: dict) -> pathlib.Path:
     # Slugs can contain characters that are legal on Modrinth but awkward in a
     # filename - the Alex's Mobs port is literally "alexs-mobs(1.21.1)".
     safe = "".join(ch if (ch.isalnum() or ch in "-_.") else "-" for ch in slug)
-    dest = PACK / "mods" / f"{safe}.pw.toml"
+
+    # packwiz installs a file to the directory its METAFILE sits in, so a shader
+    # pack is placed simply by writing its metafile under shaderpacks/. It is
+    # always client-side: a dedicated server has nothing to shade.
+    is_shader = r.get("kind") == "shaderpack"
+    sub, side = ("shaderpacks", "client") if is_shader else ("mods", side_of(r))
+
+    dest = PACK / sub / f"{safe}.pw.toml"
+    dest.parent.mkdir(parents=True, exist_ok=True)
     body = f'''name = "{esc(r.get('title') or slug)}"
 filename = "{esc(r['filename'])}"
-side = "{side_of(r)}"
+side = "{side}"
 
 [download]
 url = "{esc(r['url'])}"
@@ -143,7 +151,7 @@ def main() -> int:
         written[write_mod(r)] = r
 
     # Purge metafiles that no longer correspond to a manifest entry.
-    stale = [p for p in (PACK / "mods").glob("*.pw.toml") if p not in written]
+    stale = [p for p in PACK.glob("*/*.pw.toml") if p not in written]
     for p in stale:
         p.unlink()
     if stale:
