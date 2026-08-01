@@ -102,6 +102,26 @@ if [[ -d "$REPO_ROOT/pack/config" ]]; then
   say "applied pack config overrides"
 fi
 
+# KubeJS scripts - the buried-tech gating. Reloadable in-game with /kubejs reload.
+if [[ -d "$REPO_ROOT/pack/kubejs" ]]; then
+  mkdir -p "$INSTANCE_DIR/kubejs"
+  cp -rf "$REPO_ROOT/pack/kubejs/." "$INSTANCE_DIR/kubejs/"
+  say "applied KubeJS scripts"
+fi
+
+# World datapacks - the depth extension. Read WHEN THE WORLD IS CREATED, so they
+# must be in place before first generation.
+if [[ -d "$REPO_ROOT/pack/datapacks" ]]; then
+  mkdir -p "$INSTANCE_DIR/world/datapacks"
+  cp -rf "$REPO_ROOT/pack/datapacks/." "$INSTANCE_DIR/world/datapacks/"
+  say "installed world datapacks: $(ls -m "$REPO_ROOT/pack/datapacks")"
+  if [[ -f "$INSTANCE_DIR/world/level.dat" ]]; then
+    warn "A world ALREADY EXISTS. Worldgen datapacks (the depth extension) only"
+    warn "affect chunks generated from now on - existing terrain keeps its old"
+    warn "shape and leaves a seam. Delete the world to apply it cleanly."
+  fi
+fi
+
 for f in ops whitelist; do
   if [[ ! -f "$INSTANCE_DIR/$f.json" && -f "$SRC_CFG/$f.example.json" ]]; then
     cp "$SRC_CFG/$f.example.json" "$INSTANCE_DIR/$f.json"

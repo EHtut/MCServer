@@ -7,8 +7,8 @@
 
 ## Summary
 
-- **389 / 450** mod slots used
-- **360** stable releases, **29** beta/alpha
+- **402 / 450** mod slots used
+- **372** stable releases, **30** beta/alpha
 - **6** entries carry a known hazard (see below)
 
 ---
@@ -110,6 +110,7 @@ They are the first place to look when something breaks.
 | `sparkweave` | `0.510.0+NeoForge` | beta |
 | `terrablender` | `4.1.0.8` | beta |
 | `the-undergarden` | `0.9.6` | beta |
+| `trade-cycling` | `neoforge-1.21.1-1.0.18` | beta |
 
 ---
 

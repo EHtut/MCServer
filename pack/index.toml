@@ -91,6 +91,11 @@ hash = "187eafde5974beee1263538b462b7b8fe2fc8948c5d413980d9796d55928580b"
 metafile = true
 
 [[files]]
+file = "mods/ardas-sculks.pw.toml"
+hash = "b5cd1dce18b14832f6301ba92ea7ee9e845c360d454e0e8182a0024a1972ceb5"
+metafile = true
+
+[[files]]
 file = "mods/armor-of-the-ages.pw.toml"
 hash = "2a9dc78e509807224bd0be9a044b099ed59ec849286e5834e34cb8c655e5b83d"
 metafile = true
@@ -203,6 +208,11 @@ metafile = true
 [[files]]
 file = "mods/better-archeology.pw.toml"
 hash = "b3c09f5948d5ce7b121b3191d124a7a9fc6c482ad98af673e29f1554c9b64705"
+metafile = true
+
+[[files]]
+file = "mods/better-library.pw.toml"
+hash = "1054e81ab64a42507cddb2161cb066518a4e352edaa6b3e889d267cd16a52589"
 metafile = true
 
 [[files]]
@@ -386,6 +396,11 @@ hash = "8e671fbd3a5460a61073cced391ec08efc6b67d765e49015eea45a1f1db159a0"
 metafile = true
 
 [[files]]
+file = "mods/cosy-critters.pw.toml"
+hash = "b3035edda00323cd2439177ee1e8df738a9ceae12428a4fc7233293269323672"
+metafile = true
+
+[[files]]
 file = "mods/craftable-gunpowder-balanced.pw.toml"
 hash = "bd01fd94448594fe59089b93f5879e91ca15439001d2515aef98f0b506fd01a2"
 metafile = true
@@ -438,6 +453,11 @@ metafile = true
 [[files]]
 file = "mods/create-deco.pw.toml"
 hash = "67a405e6307f900d168deaa954a4309c3b44a6025e4efd7b8e774b6f9d3a69cd"
+metafile = true
+
+[[files]]
+file = "mods/create-deep-dark.pw.toml"
+hash = "59ca697b09cd2339e6bbd524828fed73fa842083846e950a555aa081fedb6c63"
 metafile = true
 
 [[files]]
@@ -588,6 +608,11 @@ metafile = true
 [[files]]
 file = "mods/cryptid.pw.toml"
 hash = "6bf7916e90d89fb80937686f1ce9764dc83a026f427221896ced21250d89ecf1"
+metafile = true
+
+[[files]]
+file = "mods/ct-overhaul-village.pw.toml"
+hash = "f86855a3645203b1d477cdb6a55b7b1e0bed7cc744207b37bb5d59bc5891af56"
 metafile = true
 
 [[files]]
@@ -796,11 +821,6 @@ hash = "276a01bd8812a9bd3619952524c976829e4fc93c2824e0af963cdfa2c407b331"
 metafile = true
 
 [[files]]
-file = "mods/epic-structures-villages.pw.toml"
-hash = "d94b05443204733046eacf966dbc05dbd082baf056e74903156328b3014471db"
-metafile = true
-
-[[files]]
 file = "mods/every-compat.pw.toml"
 hash = "f91c58dd28057838313e9bc2a23a8abab71fb9db7b9fdb63742267ae7fc51ed1"
 metafile = true
@@ -838,6 +858,11 @@ metafile = true
 [[files]]
 file = "mods/ferrite-core.pw.toml"
 hash = "73360e397134d238ee8fd21d33fd7f9275e9441f74f8f1b6ed92278877c0b9f1"
+metafile = true
+
+[[files]]
+file = "mods/field-guide.pw.toml"
+hash = "bf83aea90bac9ee9e84de040c2fae8057ba31b11fed44b9c4641ad5241e7c556"
 metafile = true
 
 [[files]]
@@ -1011,6 +1036,11 @@ hash = "5c48752080d1a6354225b4556ff7fb2627afc989036f1c0b196015d5fb90ad8e"
 metafile = true
 
 [[files]]
+file = "mods/immersive-overlays.pw.toml"
+hash = "9d12b552f50a61b91ba0ab0a4e7f3fd80dd0d2ac5f0bf8a4cd3af538c0a98f88"
+metafile = true
+
+[[files]]
 file = "mods/immersive-paintings.pw.toml"
 hash = "75b43f1a86593360f10703b7625da4e0a3c435bf13bf8b5b75fa383a0338dade"
 metafile = true
@@ -1053,6 +1083,11 @@ metafile = true
 [[files]]
 file = "mods/item-borders.pw.toml"
 hash = "709a01e949975ef624c4fbeabb1d8a2339eb50709d2b3e1e84732ca31f341c4d"
+metafile = true
+
+[[files]]
+file = "mods/item-descriptions.pw.toml"
+hash = "e5347f876614ddeaff10c2e7417f946ac5ef56c56acf7838d166d1cd5a8d9d1c"
 metafile = true
 
 [[files]]
@@ -1531,6 +1566,11 @@ hash = "c0b066684294c33972d562e0cb08ea17b2d31bcf86cd1d6c63b8e968f0eac7a2"
 metafile = true
 
 [[files]]
+file = "mods/respawning-animals.pw.toml"
+hash = "68294507359c310e2d25b4bccf160c173264c2301439be978242994c9fcb6cdc"
+metafile = true
+
+[[files]]
 file = "mods/revervox.pw.toml"
 hash = "228a16ce127dca7cefab4a4a2ba7dc47db6befa7c4082746f2ac21cb2b17231b"
 metafile = true
@@ -1582,7 +1622,7 @@ metafile = true
 
 [[files]]
 file = "mods/seasonhud.pw.toml"
-hash = "2b54ab4814d1ba38eb2aefd64762cd193bcc6e2869bcf483904b36c218b55601"
+hash = "c7929a9b349aa542cfb3d825ab8229b359ae02633f0f31614983d337ca24b1a4"
 metafile = true
 
 [[files]]
@@ -1676,6 +1716,11 @@ hash = "355c3fab900f72305d2dda8f5e5fd7d80ef133dcea6dfdf474ca03873b544299"
 metafile = true
 
 [[files]]
+file = "mods/spawn-mod.pw.toml"
+hash = "45f07b742198a4b8b8de46f618527ecef483bbba87d557c18cfbd8ac5e6750f8"
+metafile = true
+
+[[files]]
 file = "mods/spelunkery.pw.toml"
 hash = "1fc642b3e1bf9af0a30b55054d606d993e9354439fa284c39d0ea854104b992a"
 metafile = true
@@ -1721,6 +1766,11 @@ hash = "64a5ad1bbb2ca9e94053e4e6b7f0e5d762c2c7bea7674c168a6819e5782a99d6"
 metafile = true
 
 [[files]]
+file = "mods/teallib.pw.toml"
+hash = "99f89e803723e4684bff03fe6bf7c1dae431e198ed50ef06f624d0d6397568ab"
+metafile = true
+
+[[files]]
 file = "mods/terrablender.pw.toml"
 hash = "15962183bec2468058c70e87aa32e902a08489b0f86741088cdc9aa958ba4931"
 metafile = true
@@ -1761,6 +1811,16 @@ hash = "75ae1758ad2f9e85fc4c54767e41b872142d39b86c07b015e212f8097d56995d"
 metafile = true
 
 [[files]]
+file = "mods/trade-cycling.pw.toml"
+hash = "1ce973c231d9d6a7e788f5a2eb0797a0f5b8beef318d70f97931309ff7ef9abe"
+metafile = true
+
+[[files]]
+file = "mods/trading-post.pw.toml"
+hash = "72c0db4d726a16d80c2337cc9dc4d220ba8298deb5db5d9d58082d15a245ea3f"
+metafile = true
+
+[[files]]
 file = "mods/trash-cans.pw.toml"
 hash = "a43bccc1cdad8e0ce5167f379c98935f7ea8117ac0bda2218b372defbc9fc985"
 metafile = true
@@ -1768,6 +1828,11 @@ metafile = true
 [[files]]
 file = "mods/tslatentitystatus.pw.toml"
 hash = "bea86b2dafe903607fb42809da2ee7c31140be970e8181d6cb06733fa6c4cc60"
+metafile = true
+
+[[files]]
+file = "mods/underground-village--stoneholm.pw.toml"
+hash = "2f7758c4210f63c9fc8d05729dbf18c5ca80ffe78bec65ea80d0f736bc5c0f51"
 metafile = true
 
 [[files]]

@@ -4,19 +4,19 @@
 > `tools/modlist.json` + the resolution cache. Do not hand-edit -
 > change `tools/modlist.json` and regenerate.
 
-**389 mods** for Minecraft 1.21.1 / neoforge, 1,481 MB total.
+**402 mods** for Minecraft 1.21.1 / neoforge, 1,569 MB total.
 
 | side | count | meaning |
 |---|---:|---|
-| both | 314 | installed on the server *and* every client |
-| client | 45 | client-only; the server never loads them |
-| server | 30 | server-only; players do not need them |
+| both | 322 | installed on the server *and* every client |
+| client | 48 | client-only; the server never loads them |
+| server | 32 | server-only; players do not need them |
 
 Every entry is pinned to an exact file and sha512 in `pack/mods/*.pw.toml`.
 The **Why** column is the reason that mod is in the pack, not a description
 of what it does - if a mod cannot justify a slot, it should not have one.
 
-## create (45)
+## create (46)
 
 Pillar 1: Create and its addon family - the industrial spine. Addons WIDEN Create rather than bolting a competing tech mod alongside it. TECH CEILING (Ethan, 2026-07-31): steam and early electricity. Oil, diesel, concrete and sci-fi digital storage are out of period; electricity survives as a late-game marvel rather than a baseline.
 
@@ -29,6 +29,7 @@ Pillar 1: Create and its addon family - the industrial spine. Addons WIDEN Creat
 | [Create: Compatible Storage](https://modrinth.com/mod/create-compatible-storage) | `2.11.0-neoforge` | both | major | Fixes Quark chests on contraptions - and Quark is in the pack |
 | [Create: Connected](https://modrinth.com/mod/create-connected) | `1.3.2-mc1.21.1` | both | major | The QoL blocks Create itself lacks; highly configurable |
 | [Create Deco](https://modrinth.com/mod/create-deco) | `2.1.3` | both | major | Industrial decoration; makes Create bases look intentional |
+| [Create: Deep Dark](https://modrinth.com/mod/create-deep-dark) | `3.0.2` | both | major | Create end-game items gated behind the Deep Dark. Literally encodes 'the deeper you go, the more advanced the tech' into the industry pillar's own progression |
 | [Create: Enchantment Industry](https://modrinth.com/mod/create-enchantment-industry) | `2.4.2` | both | major | Automatable enchanting - the bridge from industry into magic |
 | [Create Jetpack](https://modrinth.com/mod/create-jetpack) | `5.2.1` | both | major | Flight from a pressurised-air backtank, not an energy cell. Rocketeer, not Iron Man |
 | [Create: Meta Logistics](https://modrinth.com/mod/create-meta-logistics) | `0.4.6` | both | major | Remote and unloaded storage networks in Create's own idiom. Replaces AE2's FUNCTION without importing its science fiction |
@@ -199,14 +200,18 @@ Pillar 3b: horror. Built from stalkers, atmosphere and escalating pressure rathe
 | [Scorchful](https://modrinth.com/mod/scorchful) | `0.15.2+1.21.1-neoforge` *alpha* | both | minor | Heat as survival pressure |
 | [Spawn Animations](https://modrinth.com/mod/spawn-animations) | `1.11.5+mod` | both | minor | Mobs claw out of the ground instead of popping in |
 
-## world-structures (43)
+## world-structures (50)
 
 Worldgen and structures, chosen as ONE coherent set: BWG for biomes, the YUNG suite for vanilla structure overhauls, and a small number of dungeon and settlement mods. Deliberately not stacking competing terrain generators.
 
 | Mod | Version | Side | Tier | Why |
 |---|---|---|---|---|
+| [Better Library](https://modrinth.com/mod/better-library) | `1.0.110` | both | core | Required by Stoneholm |
+| [Respawning Animals](https://modrinth.com/mod/respawning-animals) | `v21.1.2-1.21.1-NeoForge` | server | core | Animals spawn and despawn like monsters do. Near-mandatory here: with nothing hostile on the surface, hunted animals would never be replaced and the world would slowly empty |
+| [Arda's Sculks (Ancient City Portal / Deep Dark Dimension)](https://modrinth.com/mod/ardas-sculks) | `1.4.3.5_1` | both | major | Overhauls the Ancient City and adds its portal. The Ancient City is already Minecraft's buried-civilisation set piece; this makes it the gateway |
+| [Cosy Critters & Creepy Crawlies](https://modrinth.com/mod/cosy-critters) | `v0.3.3+1.21.1-neoforge` | client | major | Birds, bugs and atmospheric small life. Ambient presence on a surface that no longer has monsters to fill the silence |
+| [ChoiceTheorem's Overhauled Village](https://modrinth.com/mod/ct-overhaul-village) | `3.6.3` | server | major | ChoiceTheorem's Overhauled Villages. Replaced Epic Structures: Villages (9.6M downloads vs 194k) - on a surface that is now PEACEFUL and medieval, villages become the centre of play, so this layer had to be the well-trodden one |
 | [Dungeons and Taverns](https://modrinth.com/mod/dungeons-and-taverns) | `v4.4.4+mod` | both | major | Dungeons, taverns and settlements |
-| [Epic Structures: Villages](https://modrinth.com/mod/epic-structures-villages) | `1.3.2` | both | major | Completely replaces vanilla villages with sprawling medieval cities. Chosen OVER Towns and Towers, which was cut - two mods overhauling villages is a collision, not a variety |
 | [Friends&Foes (Forge/NeoForge)](https://modrinth.com/mod/friends-and-foes-forge) | `neoforge-4.0.26+mc1.21.1` | both | major | The mob-vote losers, well implemented |
 | [Lootr](https://modrinth.com/mod/lootr) | `1.21.1-1.11.37.122` | both | major | Loot chests instanced PER PLAYER. Ends the four-player race to the treasure; everyone rolls the same chest independently |
 | [Medieval Buildings](https://modrinth.com/mod/medieval-buildings) | `1.1.1` | both | major | Medieval structures with hidden enemies and treasure. The core of the world-dressing ruling |
@@ -215,10 +220,12 @@ Worldgen and structures, chosen as ONE coherent set: BWG for biomes, the YUNG su
 | [Oh The Biomes We've Gone](https://modrinth.com/mod/oh-the-biomes-weve-gone) | `2.6.0-NeoForge` | both | major | The biome layer - 50+ biomes, TerraBlender-based |
 | [Quark](https://modrinth.com/mod/quark) | `4.1-482` | both | major | Hundreds of small vanilla+ additions, individually toggleable |
 | [Serene Seasons](https://modrinth.com/mod/serene-seasons) | `10.1.0.3` *beta* | both | major | Seasons with shifting colour and temperature. NOTE: this makes crops seasonal, so it is a real gameplay change on top of Farmer's Delight, not decoration |
+| [Spawn](https://modrinth.com/mod/spawn-mod) | `4.0.7` | both | major | Overworld wilderness overhaul - many animals, ambience, biome life. A surface with no hostiles needs to be FULL of something, or peaceful just reads as empty |
 | [Spelunkery](https://modrinth.com/mod/spelunkery) | `1.21.1-0.4.3` | both | major | Cave overhaul with tool progression and mining strategy. Makes descending a deliberate activity with its own tech tree, which is what the buried-tech ruling needs to be worth doing |
 | [Structory](https://modrinth.com/mod/structory) | `1.3.17` | both | major | Small atmospheric structures, very high quality |
 | [Supplementaries](https://modrinth.com/mod/supplementaries) | `1.21.1-3.8.5` | both | major | Signs, sconces, flags and dozens of small useful blocks |
 | [The Undergarden](https://modrinth.com/mod/the-undergarden) | `0.9.6` *beta* | both | major | An entire forgotten dimension deep underground. Thematically it IS the lost world beneath |
+| [Underground Village, Stoneholm](https://modrinth.com/mod/underground-village,-stoneholm) | `2.0` | both | major | Underground villages - the seed of the buried city. Cut earlier as collateral in the Steamworks dependency chain; re-added standalone because depth stratification gives it a purpose |
 | [Underground Worlds](https://modrinth.com/mod/underground-worlds) | `3.0.2-1.21.1` | both | major | Underground biomes AND underground dungeons. The most direct vessel for the buried-tech device - dungeons are where the salvage goes |
 | [When Dungeons Arise](https://modrinth.com/mod/when-dungeons-arise) | `2.1.68` | server | major | Large hand-built dungeons |
 | [YUNG's Better Caves](https://modrinth.com/mod/yungs-better-caves) | `1.21.1-NeoForge-3.1.4` | server | major | Overhauled cave generation, underground lakes and lava oceans. Same author as Cave Biomes and designed to work with it |
@@ -236,6 +243,7 @@ Worldgen and structures, chosen as ONE coherent set: BWG for biomes, the YUNG su
 | [Battle Towers](https://modrinth.com/mod/battle-towers) | `1.3.0+mod` | both | minor | Climbable combat towers |
 | [Critters and Companions](https://modrinth.com/mod/critters-and-companions) | `2.6.2` | both | minor | Small creatures and pets |
 | [Explorify](https://modrinth.com/mod/explorify) | `v1.6.5` | both | minor | Vanilla-faithful structure variety |
+| [Field Guide](https://modrinth.com/mod/field-guide) | `1.13.6-1.21.1-neoforge` | both | minor | Discover animals and monsters with a spyglass and record them. Gives the peaceful surface something to DO between descents |
 | [Hopo Better Ruined Portals](https://modrinth.com/mod/hopo-better-ruined-portals) | `1.4.4b` | both | minor | Ruined portals worth looking at |
 | [Hybrid Aquatic](https://modrinth.com/mod/hybrid-aquatic) | `1.6.8-neoforge` | both | minor | Ocean life worth diving for |
 | [Improved Pillager Outpost](https://modrinth.com/mod/improved-pillager-outpost) | `5` | both | minor | Outposts that are actually a fight |
@@ -244,12 +252,12 @@ Worldgen and structures, chosen as ONE coherent set: BWG for biomes, the YUNG su
 | [Medieval Buildings [Nether Edition]](https://modrinth.com/mod/medieval-buildings-nether-edition) | `1.0.2` | both | minor | Medieval structures for the Nether |
 | [Nether Depths Upgrade](https://modrinth.com/mod/nether-depths-upgrade) | `3.1.8` | both | minor | Lava-sea flora and fauna |
 | [Philips Ruins](https://modrinth.com/mod/philips-ruins) | `1.21.1-2.0` | both | minor | Ancient ruins scattered through the world |
-| [SeasonHud](https://modrinth.com/mod/seasonhud) | `1.21.1-2.0.7` | both | minor | Shows the current season on the HUD - without it, seasonal farming is guesswork |
+| [SeasonHud](https://modrinth.com/mod/seasonhud) | `1.21.1-2.0.8` | both | minor | Shows the current season on the HUD - without it, seasonal farming is guesswork |
 | [When Dungeons Arise: Seven Seas](https://modrinth.com/mod/when-dungeons-arise-seven-seas) | `1.0.4` | server | minor | Naval dungeon set |
 | [YUNG's Bridges](https://modrinth.com/mod/yungs-bridges) | `1.21.1-NeoForge-5.1.1` | server | minor | Natural bridges |
 | [YUNG's Extras](https://modrinth.com/mod/yungs-extras) | `1.21.1-NeoForge-5.1.1` | server | minor | Extra vanilla+ structures |
 
-## qol (52)
+## qol (54)
 
 Quality of life. At 400 mods this is not garnish - it is what stops the pack being unplayable. Recipe lookup, tooltips, sorting, waypoints and death recovery carry the whole experience.
 
@@ -279,6 +287,8 @@ Quality of life. At 400 mods this is not garnish - it is what stops the pack bei
 | [Inventory Profiles Next](https://modrinth.com/mod/inventory-profiles-next) | `neoforge-1.21.1-2.2.5` | client | major | Inventory sorting and profiles |
 | [Nature's Compass](https://modrinth.com/mod/natures-compass) | `1.21.1-3.4.0-neoforge` | both | major | Find biomes without wandering for an hour |
 | [Storage Drawers](https://modrinth.com/mod/storagedrawers) | `1.21.1-13.11.4` | both | major | Bulk storage with contents visible on the block face - storage you can read by looking at it |
+| [Trade Cycling](https://modrinth.com/mod/trade-cycling) | `neoforge-1.21.1-1.0.18` *beta* | both | major | Refresh villager trades without breaking and replacing workstations - removes the single most tedious ritual in modded Minecraft |
+| [Trading Post](https://modrinth.com/mod/trading-post) | `v21.1.1-1.21.1-NeoForge` | both | major | Trade with every villager in a village at once. With a peaceful medieval surface, villages are now central to play and vanilla trading does not scale to four people |
 | [VeinMiner](https://modrinth.com/mod/veinminer) | `2.11.2` | both | major | Vein mining |
 | [3D Skin Layers](https://modrinth.com/mod/3dskinlayers) | `1.11.2` | client | minor | 3D skin layers |
 | [Advancement Plaques](https://modrinth.com/mod/advancement-plaques) | `1.6.8` | client | minor | Better advancement popups |
@@ -429,7 +439,7 @@ APIs and shared code. Listed explicitly rather than left to transitive resolutio
 | [Prickle](https://modrinth.com/mod/prickle) | `21.1.11` | both | minor | Config library |
 | [Searchables](https://modrinth.com/mod/searchables) | `1.0.2` | client | minor | Search-field library |
 
-## auto-deps (53)
+## auto-deps (56)
 
 Required dependencies discovered by resolving the pack's declared dependency graph (tools/resolve.py deps). These were being pulled in implicitly; listing them explicitly means a dependency appearing or disappearing is a reviewable diff rather than a surprise at boot. Fabric API and QSL were correctly excluded - multiloader jars declare them even though no NeoForge build needs them.
 
@@ -457,7 +467,9 @@ Required dependencies discovered by resolving the pack's declared dependency gra
 | [Fusion (Connected Textures)](https://modrinth.com/mod/fusion-connected-textures) | `1.3.12-neoforge-mc1.21.1` | client | core | Required by rechiseled |
 | [GeOre](https://modrinth.com/mod/geore) | `6.2.3` *beta* | both | core | Required by geore-nouveau |
 | [Iceberg](https://modrinth.com/mod/iceberg) | `1.3.2` | both | core | Required by advancement-plaques, item-borders, legendary-tooltips |
+| [Immersive Overlays](https://modrinth.com/mod/immersive-overlays) | `1.7.3+1.21.1-neoforge` | client | core | Required by field-guide |
 | [Iron's Lib](https://modrinth.com/mod/irons-lib) | `1.21.1-2.1.0` | both | core | Required by irons_spellbooks. Also undeclared on Modrinth |
+| [Item Descriptions](https://modrinth.com/mod/item-descriptions) | `2.8.0+1.21.1-neoforge` | client | core | Required by field-guide |
 | [Jupiter](https://modrinth.com/mod/jupiter) | `2.3.7-1.21.1-neoforge` | both | core | Required by iceandfire-ce |
 | [Knight Lib](https://modrinth.com/mod/knight-lib) | `1.6.1` | both | core | Required by knightquest. Also undeclared on Modrinth |
 | [KotlinLangForge](https://modrinth.com/mod/kotlin-lang-forge) | `2.12.2-k2.4.10-3.0+neoforge` | both | core | Required by veinminer |
@@ -482,6 +494,7 @@ Required dependencies discovered by resolving the pack's declared dependency gra
 | [Sparkweave Engine](https://modrinth.com/mod/sparkweave) | `0.510.0+NeoForge` *beta* | both | core | Sparkweave Engine - required by velvet-api, which Scorchful needs |
 | [SuperMartijn642's Config Lib](https://modrinth.com/mod/supermartijn642s-config-lib) | `1.1.8-neoforge-mc1.21` | both | core | Required by chunk-loaders, moving-elevators, rechiseled, trash-cans |
 | [SuperMartijn642's Core Lib](https://modrinth.com/mod/supermartijn642s-core-lib) | `1.1.22-neoforge-mc1.21` | both | core | Required by chunk-loaders, moving-elevators, rechiseled, trash-cans |
+| [Teal Lib](https://modrinth.com/mod/teallib) | `1.3.teal` | both | core | Required by spawn-mod |
 | [Thermoo](https://modrinth.com/mod/thermoo) | `4.8.1-neoforge` *alpha* | both | core | Required by frostiful, scorchful |
 | [Uranus](https://modrinth.com/mod/uranus) | `2.4.1` | both | core | Required by iceandfire-ce |
 | [Velvet](https://modrinth.com/mod/velvet-api) | `0.5.1+NeoForge` | client | core | Required by scorchful |

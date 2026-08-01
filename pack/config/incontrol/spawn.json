@@ -1,0 +1,16 @@
+[
+  {
+    "dimension": "minecraft:overworld",
+    "hostile": true,
+    "miny": 40,
+    "result": "deny"
+  },
+  {
+    "dimension": "minecraft:overworld",
+    "hostile": true,
+    "miny": 0,
+    "maxy": 39,
+    "maxcount": 40,
+    "result": "default"
+  }
+]

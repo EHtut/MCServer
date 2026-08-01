@@ -158,6 +158,35 @@ if (Test-Path $packCfg) {
     Say "applied pack config overrides"
 }
 
+# KubeJS scripts - the buried-tech gating lives here. Server scripts reload with
+# /kubejs reload, so this is safe to re-copy over a live instance.
+$packKube = Join-Path $RepoRoot "pack\kubejs"
+if (Test-Path $packKube) {
+    $destKube = Join-Path $InstanceDir "kubejs"
+    New-Item -ItemType Directory -Force -Path $destKube | Out-Null
+    Copy-Item "$packKube\*" $destKube -Recurse -Force
+    Say "applied KubeJS scripts"
+}
+
+# World datapacks - the depth extension. These are read WHEN THE WORLD IS
+# CREATED, so they must be in place before first generation. Copying them into
+# an existing world does nothing for terrain that already generated.
+$packData = Join-Path $RepoRoot "pack\datapacks"
+if (Test-Path $packData) {
+    $worldDir = Join-Path $InstanceDir "world"
+    $destData = Join-Path $worldDir "datapacks"
+    New-Item -ItemType Directory -Force -Path $destData | Out-Null
+    Copy-Item "$packData\*" $destData -Recurse -Force
+    $packNames = (Get-ChildItem $packData -Directory | Select-Object -ExpandProperty Name) -join ", "
+    Say "installed world datapacks: $packNames"
+    if (Test-Path (Join-Path $worldDir "level.dat")) {
+        Warn "A world ALREADY EXISTS. Datapacks that change worldgen (the depth"
+        Warn "extension) only affect chunks generated from now on - already-generated"
+        Warn "terrain keeps the old shape, leaving a seam. Delete the world to apply"
+        Warn "it cleanly."
+    }
+}
+
 foreach ($f in @("ops.json", "whitelist.json")) {
     $dst = Join-Path $InstanceDir $f
     $src = Join-Path $srcCfg ($f -replace '\.json$', '.example.json')
