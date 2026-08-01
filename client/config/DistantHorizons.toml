@@ -513,7 +513,7 @@ _version = 4
 			# DEFAULT: Default lod renderer 
 			# DEBUG_TRIANGLE: Debug testing renderer 
 			# DISABLED: Disable rendering
-			rendererMode = "DEFAULT"
+			rendererMode = "DISABLED"
 			#
 			# Should specialized colors/rendering modes be used? 
 			# 
@@ -658,7 +658,7 @@ _version = 4
 		#  outside the vanilla render distance? 
 		# Depending on the generator mode, this will import existing chunks 
 		# and/or generating missing chunks.
-		enableDistantGeneration = true
+		enableDistantGeneration = false
 		#
 		# How detailed should LODs be generated outside the vanilla render distance? 
 		# 
@@ -764,7 +764,7 @@ _version = 4
 	[common.multiThreading]
 		#
 		# How many threads should be used by Distant Horizons?
-		numberOfThreads = 16
+		numberOfThreads = 4
 		#
 		# A value between 1.0 and 0.0 that represents the percentage 
 		# of time each thread can run before going idle. 
@@ -772,7 +772,7 @@ _version = 4
 		# This can be used to reduce CPU usage if the thread count 
 		# is already set to 1 for the given option, or more finely 
 		# tune CPU performance.
-		threadRunTimeRatio = "1.0"
+		threadRunTimeRatio = "0.5"
 		#
 		# What Java thread priority should DH's primary thread pools run with? 
 		# 
