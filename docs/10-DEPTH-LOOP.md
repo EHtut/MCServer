@@ -280,18 +280,106 @@ before anything else regardless of what is being worked on.
 
 ---
 
-## 5. Still open
+## 5. The serverside constraint ✅
+
+Ethan, 2026-08-01:
+
+> how much of this can stay serverside so im not minting a new mod they need to
+> download?
+
+**All of it, with one caveat.** This is a hard constraint on the design, not a
+preference — the four players are explicitly not tech savvy and the install has
+to stay one click.
+
+| stage | mechanism | client download |
+|---|---|---|
+| D0 tally | KubeJS `server_scripts` | none |
+| D1 rising surface | In Control config + KubeJS | none |
+| D2 Vaults | datapack in `world/datapacks/` | none |
+| D4 Nemesis | KubeJS + L2Hostility + `/bossbar` | none |
+| D3 deep resource | components on an existing item | none **if repurposed** |
+
+Datapacks under `world/datapacks/` are server-only; clients never receive them.
+The Vaults cost nothing to download specifically because they are built from
+SecurityCraft blocks the pack **already** ships to both sides — that is a reason
+to prefer existing blocks over anything bespoke.
+
+**D3 is the only place the constraint bites.** A genuinely new item needs a mod.
+It does not need to be new: pick an existing item and rename it through
+components (`item_name`, `lore`, `custom_model_data`), which loot tables can set
+serverside in 1.21. A "Vault Casing" that is mechanically unique and *looks* like
+a copper nugget costs nothing. A bespoke texture would need a resource pack, and
+a resource pack is a download — so the rule is: **repurpose, never invent.**
+
+## 6. Answered ✅
+
+**Tally exclusions.** Environmental deaths (fall, lava, drowning) do not create a
+nemesis. PvP never does. **Creepers are excluded from nemesis selection** — but
+see the open question below, because Ethan also asked for a creeper horde and
+those two wants may conflict.
+
+**Vault key: both.** A SecurityCraft keycard *and* a crafted breaching charge.
+Two routes in: one looted (find the key), one built (bring the tools). That
+suits four players with different play styles, and it means a group that never
+finds a card is not locked out.
+
+**Cycle length scales with performance.**
+
+> the number of days decrease inversely on how long they survived?
+
+So the better the group does, the sooner the next invasion. The cycle tightens
+as they get stronger, which is the correct direction — it keeps pressure
+constant against rising power instead of trailing behind it.
+
+```
+next_cycle_days = clamp(BASE * (survival_target / actual_survival_time), FLOOR, BASE)
+```
+
+Needs a floor, or a competent group eventually gets a permanent invasion. Start
+BASE = 30, FLOOR = 10. Deaths during the invasion should push the other way —
+a group that barely won gets more breathing room, not less.
+
+**Portals at depth: dropped.** ✅ Ethan: *"If it makes vaults redundant then no."*
+The Vaults are the destination the portals were reaching for, so the request is
+satisfied rather than abandoned. Recorded here so it is not re-raised later as an
+oversight.
+
+## 7. Still open
 
 - ~~In Control phase conditions~~ — **resolved**, read from the jar. `phases`
   (plural) on rules, `mindaycount`/`maxdaycount` available but world-clock based,
   `number`/`changenumber` is the online-only counter to use instead.
-- **Which mobs count for the tally.** Environmental deaths (fall, lava, drowning)
-  should presumably not create a nemesis. Player deaths in PvP definitely
-  should not.
-- **What the Vault's key actually is** — SecurityCraft keycard, a crafted
-  breaching charge, or both.
-- **Cycle length after the first invasion.** 30 days is a good *first* number
-  because it lets a base exist before the first raid. It may want to shorten, or
-  to scale with how comfortably the group won.
-- **Portals at depth** (originally requested, never built) — the Vaults may make
-  this redundant, or may be the natural place to put one.
+- ~~Which mobs count for the tally~~ — **answered**, §6.
+- ~~What the Vault's key is~~ — **answered**, both.
+- ~~Cycle length~~ — **answered**, inverse to survival time.
+- ~~Portals at depth~~ — **dropped**, the Vaults supersede them.
+
+### ⚠️ The creeper horde vs "death never costs the base"
+
+Ethan, on the tally exclusions:
+
+> no creepers, i honestly don't like creepers to begin with. I do need a horde of
+> them blowing up my stuff
+
+Creepers being excluded from *nemesis selection* is settled. The horde is not,
+because taken literally it **contradicts the one rule this whole design is built
+on** (§2): *death costs the run, it never costs the base.* A creeper horde
+reaching the base does exactly the thing that rule exists to prevent, and it is
+the thing most likely to make someone stop playing on a four-person server where
+one person built the factory.
+
+Three readings, and they need separating before D4:
+
+1. **Creeper adds, but the base is protected.** They spawn at the invasion
+   perimeter and threaten *players*, not structures — `mobGriefing` off for the
+   duration, or explosions damage-only. Keeps the pressure, keeps the rule.
+2. **Creeper adds that genuinely can breach the base.** Real stakes, real risk
+   of losing hours of building. Legitimate, but it is a deliberate reversal of
+   §2 and should be written down as such rather than arrived at by accident.
+3. **It was dry.** "I do need a horde of them blowing up my stuff" read as
+   sarcasm — i.e. no creeper horde at all.
+
+Default to (1) unless Ethan says otherwise: it satisfies the stated want
+(creepers are a threat during invasions) without quietly discarding a ratified
+principle. This is the single decision most likely to be regretted after the
+fact, so it should be explicit.
