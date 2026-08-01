@@ -84,6 +84,61 @@ resetting on death already implements the run-reset half.
 
 ---
 
+## 2b. What the depths ARE ✅ — the organizing principle
+
+Ethan, 2026-08-01:
+
+> the reason for venturing down is partly for need partly for rare and resources
+> that wouldn't make sense to exist in a fantasy world. Gems, gunpowder, modern
+> technology, etc.
+
+**This is the spine the depth pillar was missing, and it does more work than
+anything else in this document.**
+
+`06-BURIED-TECH.md` described four strata as flavour and the audit found nothing
+implementing them, because "it gets more hostile as you descend" is a difficulty
+curve, not a reason. This is a reason: **the deeper you go, the less the material
+belongs to the world above it.** Descending is not grinding for better numbers,
+it is pulling up things that should not exist.
+
+### The gradient, restated as a rule
+
+| band | what belongs there | why |
+|---|---|---|
+| **Surface** | wood, stone, iron, copper | what a preindustrial world is built from |
+| **y 0…−64** | gems, unusual metals | valuable, still explicable to a medieval mind |
+| **y −64…−128** | gunpowder, modern technology, the Vaults | **no fantasy explanation exists** |
+
+That gives a filter for every future question about the pack, which the theme
+audit never had: *would this make sense in a fantasy world?* If yes, it can be
+surface. If no, it is buried, and the depth is proportional to how badly it does
+not fit.
+
+### What it retroactively explains
+
+- **Diamond at y −123** stopped being an accident of the depth extension and
+  became correct — a gem, and gems are a middle-band material pushed deep.
+- **Gunpowder Ore moving to the Abyssal band** (§D3) is no longer just an
+  economic lever. Gunpowder is the substance that makes guns possible, so it
+  belongs exactly where guns do.
+- **TaCZ and SecurityCraft in the Vaults** — modern technology, the deepest
+  category, behind a locked door.
+- **The horror layer becomes literal.** "This world isn't right" is not
+  atmosphere; the wrongness is buried, and rare surface anomalies (§3b) are it
+  leaking upward.
+
+### The one thing it demands
+
+If the depths are where the anomalous lives, **the surface has to be clean of
+it.** That is a real constraint and it needs auditing: anything gunpowder-
+adjacent, gem-bearing or technological that currently generates or crafts above
+y 0 is undermining the premise. The `liposcraftablegunpowder` surface path (§D3)
+is the clearest example — kept deliberately as a slow, Nether-gated trickle so
+nobody is ever hard-locked, but it is an exception to the rule rather than a
+neutral fact, and it should stay expensive.
+
+**Planned as D6:** an audit of surface-obtainable materials against this rule.
+
 ## 3. The three systems
 
 ### 3a. The Nemesis — the invasion, personalised ✅

@@ -7,9 +7,9 @@ answered items are kept below with their resolutions so the reasoning survives.
 
 | | |
 |---|---|
-| **A3** | Which existing item becomes the deep-only resource. Wants no other source in the pack so the item type itself is the gate; SecurityCraft's unobtainable items are the pool. |
-| **NEW-1** | Add `enchantments-encore` for more enchantment variety, or tune Apotheosis first and decide after? Apotheosis is already a full affix/enchantment system and has never been configured. |
-| **NEW-2** | Epic Knights pavises: 11 shields render as the missing-model cube (the jar ships 3 blockstates for 11 variants). Not fixable by datapack - it is missing assets. Accept, or cut the shields specifically? |
+| **NEW-1** | Add `enchantments-encore` for more enchantment variety, or tune Apotheosis first and decide after? Apotheosis is already a full affix/rarity system and has never been configured. Recommend: tune first. |
+
+Everything else is answered. The build queue (D0-D6) is in `10-DEPTH-LOOP.md`.
 
 ---
 
