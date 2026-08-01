@@ -576,6 +576,11 @@ hash = "350357b34feae2f0971d114ba856e4915e508efec110eea5ebdeac419d515e08"
 metafile = true
 
 [[files]]
+file = "mods/createbetterfps.pw.toml"
+hash = "28e720db43464fe32b9ce591fb02b824ebf691c578fb694f87a98421d3207022"
+metafile = true
+
+[[files]]
 file = "mods/creativecore.pw.toml"
 hash = "d1dd0981cbd7ae9601c9c4603f88826b68a0c7e76fc12ef6bc80f08188d7dfb8"
 metafile = true
@@ -673,6 +678,11 @@ metafile = true
 [[files]]
 file = "mods/dragonlib.pw.toml"
 hash = "f943c276fcebd5542c4b3dda60634728e1a70212f15dc9af8f0b7b9bb40199db"
+metafile = true
+
+[[files]]
+file = "mods/dripsounds.pw.toml"
+hash = "3298439919588dd564e9174af6cfc8496b253706f78407c881b4216e999b5234"
 metafile = true
 
 [[files]]
@@ -816,6 +826,16 @@ hash = "276a01bd8812a9bd3619952524c976829e4fc93c2824e0af963cdfa2c407b331"
 metafile = true
 
 [[files]]
+file = "mods/esf.pw.toml"
+hash = "c59b4ddb08c9f5e86ca1bce7fb0b5bf6d47afa1f3fd44e4adac28f3fcc88c756"
+metafile = true
+
+[[files]]
+file = "mods/euphoria-patches.pw.toml"
+hash = "c5bb130a9bc6f565c90f5ceeec03bee73a4eaae801a7e44364941dff8b8502d4"
+metafile = true
+
+[[files]]
 file = "mods/every-compat.pw.toml"
 hash = "f91c58dd28057838313e9bc2a23a8abab71fb9db7b9fdb63742267ae7fc51ed1"
 metafile = true
@@ -833,6 +853,11 @@ metafile = true
 [[files]]
 file = "mods/extended-wrenches.pw.toml"
 hash = "59cfcbd44968549b7dc2f6e13b691d50c9c65af6bad966b47e097c7c937e6cfc"
+metafile = true
+
+[[files]]
+file = "mods/extreme_sound_muffler.pw.toml"
+hash = "00ec91db9928c4da54bb3843eb8eba7c918aa65ffdc90b69f93bd52e41387eb1"
 metafile = true
 
 [[files]]
@@ -861,11 +886,6 @@ hash = "bf83aea90bac9ee9e84de040c2fae8057ba31b11fed44b9c4641ad5241e7c556"
 metafile = true
 
 [[files]]
-file = "mods/figura-v5-support.pw.toml"
-hash = "5454feb615a93635c7f4b82fa77e3fbe2033cfda6ac736112b65dbb3b8f5f9d1"
-metafile = true
-
-[[files]]
 file = "mods/figura.pw.toml"
 hash = "eedcb7fff4e1e6e1e9b81920521277596b0907b0de377f06dc306d2d6624c69d"
 metafile = true
@@ -883,6 +903,11 @@ metafile = true
 [[files]]
 file = "mods/first-person-model.pw.toml"
 hash = "4188848019233432861e98a5cc72aebed8c68a8a0909007967ab11827f8a6508"
+metafile = true
+
+[[files]]
+file = "mods/flerovium.pw.toml"
+hash = "9ab20de2d63037f055d6b614013389e0198068bab536dfd62eebd913e5222fe1"
 metafile = true
 
 [[files]]
@@ -1381,6 +1406,11 @@ hash = "02aa4dcb8fa24cffcd2182c66683c2a476a95abf53002373f953a49737a587e3"
 metafile = true
 
 [[files]]
+file = "mods/mru.pw.toml"
+hash = "f46675d8f996e2661c1c7e58243cd27ce34fb5fa66b445b14119c10431eb4d93"
+metafile = true
+
+[[files]]
 file = "mods/mutant-monsters.pw.toml"
 hash = "e672245ac368cb42b521a0be668fed61a5b5129d25eec7b8db7722e8f49e2292"
 metafile = true
@@ -1452,7 +1482,7 @@ metafile = true
 
 [[files]]
 file = "mods/oh-the-trees-youll-grow.pw.toml"
-hash = "b586f666162c916d768532cbb98f390aa66f4998ca9ab0999bc4a9b7de5bb83f"
+hash = "5a59ebe515dbf2b637ac23bedeb33e545675668a0a454c5d6edd4d207a458844"
 metafile = true
 
 [[files]]
@@ -1466,8 +1496,18 @@ hash = "84cb0dcad9ac46d22adba4fb7924951affa6ac5e46027a3b25fa9a0db8d91b2b"
 metafile = true
 
 [[files]]
+file = "mods/particle-core.pw.toml"
+hash = "7333c29c224d843384e26b2c7d9af1d31dada870d776fb1ad8f3d8c3040b313d"
+metafile = true
+
+[[files]]
 file = "mods/patchouli.pw.toml"
 hash = "d7f360ebb9f009d6dc0b368cd8fa399bdff70c0f6ef931687b2a35137f72715d"
+metafile = true
+
+[[files]]
+file = "mods/pf-neoforge.pw.toml"
+hash = "1ef7ce6d5fe6e584914680f5463508996f0dd1c2bdbc051b8b3b050c85e134ff"
 metafile = true
 
 [[files]]
@@ -1541,6 +1581,11 @@ hash = "55fcb8b7508262d7e384f81dc86c0cf0c28ec98194d2dd842208b96291931c0c"
 metafile = true
 
 [[files]]
+file = "mods/reeses-sodium-options.pw.toml"
+hash = "0f465bf38b13f887dbde506c859c9b5439ee9151ae5f3a98078b9f6c3a2c89ad"
+metafile = true
+
+[[files]]
 file = "mods/relics-mod.pw.toml"
 hash = "373d6893cd8876f79d1a07c0d2c60a044b78e6be3a3818c42bff5630256b3d11"
 metafile = true
@@ -1588,6 +1633,11 @@ metafile = true
 [[files]]
 file = "mods/rrls.pw.toml"
 hash = "624e7455a378da6bce5b9fdd97e27c4125472cdac0173c73a8406f2067ef07a9"
+metafile = true
+
+[[files]]
+file = "mods/rsls.pw.toml"
+hash = "230ae32b073840a8138adcc41ec5055250dc53654075b6a60e7cf20e1e39c1e6"
 metafile = true
 
 [[files]]
@@ -1672,7 +1722,12 @@ metafile = true
 
 [[files]]
 file = "mods/smartbrainlib.pw.toml"
-hash = "27c6365bdc19eff05f3231bff86a4f09b2d584fed40de92d67c00b4cbd52862a"
+hash = "6e7ce9c2aee5bb72d2698eb89035c9b2458d20daa0782e1a03cfba7a6647621e"
+metafile = true
+
+[[files]]
+file = "mods/sodium-extra.pw.toml"
+hash = "c490445e40a84c9e19bd3d3a7c8e8b9709b8cea0346a307eb7fb8a32a72a9504"
 metafile = true
 
 [[files]]
@@ -1693,6 +1748,11 @@ metafile = true
 [[files]]
 file = "mods/sound-physics-remastered.pw.toml"
 hash = "12856ac024f902e6fb5e5884a21b44036737eed33f7388cf51fffa03e891d3c0"
+metafile = true
+
+[[files]]
+file = "mods/sound.pw.toml"
+hash = "4063a3c0f2f9a6544a870f0b90679441d7333652875dafbe3db255fc67f72c82"
 metafile = true
 
 [[files]]
@@ -1733,6 +1793,11 @@ metafile = true
 [[files]]
 file = "mods/structory.pw.toml"
 hash = "3c4da8a221086153d491104bba4fd8796dac92d5c3e0b2dc111a6c5d53b65484"
+metafile = true
+
+[[files]]
+file = "mods/subtle-effects.pw.toml"
+hash = "8eaab8f312c3a1a72e7d9e9123bbfef2a7dcac7dd7d8f9eab72fb7c0d25b021e"
 metafile = true
 
 [[files]]

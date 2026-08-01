@@ -48,6 +48,24 @@ def esc(s: str) -> str:
     )
 
 
+# Mods whose Modrinth sidedness is WRONG, forced to the correct value.
+#
+# Author-supplied metadata, and libraries get mismarked constantly - typically as
+# server-only because that is where their function lives, even though a
+# both-sides mod needs them present on the client to load at all. The symptom is
+# a client that refuses to start with "requires X", where X is installed on the
+# server and looks fine there.
+#
+# Each entry is a mod that a client-side dependency check proved wrong.
+SIDE_OVERRIDES: dict[str, str] = {
+    # Marked server-only on Modrinth; Occultism (both sides) requires it on the
+    # client too. Harmless to ship - an AI library simply does nothing there.
+    "smartbrainlib": "both",
+    # Marked server-only; Oh The Biomes We've Gone requires it client-side.
+    "oh-the-trees-youll-grow": "both",
+}
+
+
 def side_of(r: dict) -> str:
     """Map Modrinth's two-axis sidedness onto packwiz's single 'side' field.
 
@@ -57,6 +75,9 @@ def side_of(r: dict) -> str:
     is safest as 'both', because a mod wrongly marked client-only silently fails
     to load on the server and the failure looks like a mod bug, not a pack bug.
     """
+    forced = SIDE_OVERRIDES.get(r.get("slug", ""))
+    if forced:
+        return forced
     c = r.get("client_side")
     s = r.get("server_side")
     if s == "unsupported" and c != "unsupported":

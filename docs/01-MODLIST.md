@@ -4,12 +4,12 @@
 > `tools/modlist.json` + the resolution cache. Do not hand-edit -
 > change `tools/modlist.json` and regenerate.
 
-**402 mods** for Minecraft 1.21.1 / neoforge, 1,569 MB total.
+**413 mods** for Minecraft 1.21.1 / neoforge, 1,591 MB total.
 
 | side | count | meaning |
 |---|---:|---|
-| both | 322 | installed on the server *and* every client |
-| client | 48 | client-only; the server never loads them |
+| both | 323 | installed on the server *and* every client |
+| client | 58 | client-only; the server never loads them |
 | server | 32 | server-only; players do not need them |
 
 Every entry is pinned to an exact file and sha512 in `pack/mods/*.pw.toml`.
@@ -200,13 +200,12 @@ Pillar 3b: horror. Built from stalkers, atmosphere and escalating pressure rathe
 | [Scorchful](https://modrinth.com/mod/scorchful) | `0.15.2+1.21.1-neoforge` *alpha* | both | minor | Heat as survival pressure |
 | [Spawn Animations](https://modrinth.com/mod/spawn-animations) | `1.11.5+mod` | both | minor | Mobs claw out of the ground instead of popping in |
 
-## world-structures (50)
+## world-structures (48)
 
 Worldgen and structures, chosen as ONE coherent set: BWG for biomes, the YUNG suite for vanilla structure overhauls, and a small number of dungeon and settlement mods. Deliberately not stacking competing terrain generators.
 
 | Mod | Version | Side | Tier | Why |
 |---|---|---|---|---|
-| [Better Library](https://modrinth.com/mod/better-library) | `1.0.110` | both | core | Required by Stoneholm |
 | [Respawning Animals](https://modrinth.com/mod/respawning-animals) | `v21.1.2-1.21.1-NeoForge` | server | core | Animals spawn and despawn like monsters do. Near-mandatory here: with nothing hostile on the surface, hunted animals would never be replaced and the world would slowly empty |
 | [Arda's Sculks (Ancient City Portal / Deep Dark Dimension)](https://modrinth.com/mod/ardas-sculks) | `1.4.3.5_1` | both | major | Overhauls the Ancient City and adds its portal. The Ancient City is already Minecraft's buried-civilisation set piece; this makes it the gateway |
 | [Cosy Critters & Creepy Crawlies](https://modrinth.com/mod/cosy-critters) | `v0.3.3+1.21.1-neoforge` | client | major | Birds, bugs and atmospheric small life. Ambient presence on a surface that no longer has monsters to fill the silence |
@@ -225,7 +224,6 @@ Worldgen and structures, chosen as ONE coherent set: BWG for biomes, the YUNG su
 | [Structory](https://modrinth.com/mod/structory) | `1.3.17` | both | major | Small atmospheric structures, very high quality |
 | [Supplementaries](https://modrinth.com/mod/supplementaries) | `1.21.1-3.8.5` | both | major | Signs, sconces, flags and dozens of small useful blocks |
 | [The Undergarden](https://modrinth.com/mod/the-undergarden) | `0.9.6` *beta* | both | major | An entire forgotten dimension deep underground. Thematically it IS the lost world beneath |
-| [Underground Village, Stoneholm](https://modrinth.com/mod/underground-village,-stoneholm) | `2.0` | both | major | Underground villages - the seed of the buried city. Cut earlier as collateral in the Steamworks dependency chain; re-added standalone because depth stratification gives it a purpose |
 | [Underground Worlds](https://modrinth.com/mod/underground-worlds) | `3.0.2-1.21.1` | both | major | Underground biomes AND underground dungeons. The most direct vessel for the buried-tech device - dungeons are where the salvage goes |
 | [When Dungeons Arise](https://modrinth.com/mod/when-dungeons-arise) | `2.1.68` | server | major | Large hand-built dungeons |
 | [YUNG's Better Caves](https://modrinth.com/mod/yungs-better-caves) | `1.21.1-NeoForge-3.1.4` | server | major | Overhauled cave generation, underground lakes and lava oceans. Same author as Cave Biomes and designed to work with it |
@@ -257,7 +255,7 @@ Worldgen and structures, chosen as ONE coherent set: BWG for biomes, the YUNG su
 | [YUNG's Bridges](https://modrinth.com/mod/yungs-bridges) | `1.21.1-NeoForge-5.1.1` | server | minor | Natural bridges |
 | [YUNG's Extras](https://modrinth.com/mod/yungs-extras) | `1.21.1-NeoForge-5.1.1` | server | minor | Extra vanilla+ structures |
 
-## qol (54)
+## qol (60)
 
 Quality of life. At 400 mods this is not garnish - it is what stops the pack being unplayable. Recipe lookup, tooltips, sorting, waypoints and death recovery carry the whole experience.
 
@@ -271,6 +269,7 @@ Quality of life. At 400 mods this is not garnish - it is what stops the pack bei
 | [Jade 🔍](https://modrinth.com/mod/jade) | `15.10.5+neoforge` | both | core | Block and entity inspection |
 | [Mouse Tweaks](https://modrinth.com/mod/mouse-tweaks) | `1.21-2.26.1-neoforge` | client | core | Inventory mouse handling |
 | [Polymorph](https://modrinth.com/mod/polymorph) | `1.1.0+1.21.1` | both | core | Resolves conflicting recipes. At 400 mods, collisions are certain |
+| [Raise Sound Limit Simplified](https://modrinth.com/mod/rsls) | `1.1.16+neoforge` | client | core | Raise Sound Limit Simplified. NEAR-MANDATORY HERE: vanilla caps concurrent sound sources, and Sound Physics + AmbientSounds + footsteps + 170 new SFX will exceed it - the symptom is sounds silently dropping out mid-fight, which reads as a bug in whatever was making them |
 | [Simple Voice Chat](https://modrinth.com/mod/simple-voice-chat) | `neoforge-1.21.1-2.6.21` | both | core | Proximity voice. For four people on a horror server, the highest-value mod in the pack - and half the horror layer depends on it |
 | [Waystones](https://modrinth.com/mod/waystones) | `21.1.39+neoforge-1.21.1` | both | core | Fast travel between discovered points. Essential for four players |
 | [Xaero's Minimap](https://modrinth.com/mod/xaeros-minimap) | `neoforge-1.21.1-26.4.2` | both | core | Minimap |
@@ -286,6 +285,8 @@ Quality of life. At 400 mods this is not garnish - it is what stops the pack bei
 | [Figura](https://modrinth.com/mod/figura) | `0.1.6+1.21.1` | client | major | Custom scripted player avatars. Client-side, so it costs the server nothing and each player controls their own presence |
 | [Inventory Profiles Next](https://modrinth.com/mod/inventory-profiles-next) | `neoforge-1.21.1-2.2.5` | client | major | Inventory sorting and profiles |
 | [Nature's Compass](https://modrinth.com/mod/natures-compass) | `1.21.1-3.4.0-neoforge` | both | major | Find biomes without wandering for an hour |
+| [Presence Footsteps (NeoForge)](https://modrinth.com/mod/pf-neoforge) | `1.21.1-1.12.0-beta.1` *beta* | client | major | Presence Footsteps - footstep audio that varies by the surface you are actually standing on. With Sound Physics reverberating it, this is most of what 'the world sounds real' means |
+| [Sounds](https://modrinth.com/mod/sound) | `2.4.22+lts+1.21.1-neoforge` | client | major | Sounds - 170+ replacement and new sound effects. The SFX layer under the ambience |
 | [Storage Drawers](https://modrinth.com/mod/storagedrawers) | `1.21.1-13.11.4` | both | major | Bulk storage with contents visible on the block face - storage you can read by looking at it |
 | [Trade Cycling](https://modrinth.com/mod/trade-cycling) | `neoforge-1.21.1-1.0.18` *beta* | both | major | Refresh villager trades without breaking and replacing workstations - removes the single most tedious ritual in modded Minecraft |
 | [Trading Post](https://modrinth.com/mod/trading-post) | `v21.1.1-1.21.1-NeoForge` | both | major | Trade with every villager in a village at once. With a peaceful medieval surface, villages are now central to play and vanilla trading does not scale to four people |
@@ -296,12 +297,14 @@ Quality of life. At 400 mods this is not garnish - it is what stops the pack bei
 | [Boat Item View](https://modrinth.com/mod/boat-item-view) | `1.21-1.21.1-0.0.6-neoforge` | client | minor | See held items in boats |
 | [Carry On + Create Aeronautics Compat](https://modrinth.com/mod/carryon-aeronautics-compat) | `1.1.1` | server | minor | Patches Carry On to work with Create Aeronautics contraptions |
 | [Chat Heads](https://modrinth.com/mod/chat-heads) | `0.15.3` | client | minor | Faces in chat - small, disproportionately social |
+| [Drip Sounds](https://modrinth.com/mod/dripsounds) | `0.5.2+1.21.8-neoforge` | client | minor | Water drips land and settle audibly. Small, and it is what makes a cave sound like a cave |
 | [Easy Magic](https://modrinth.com/mod/easy-magic) | `v21.1.4-1.21.1-NeoForge` | both | minor | Enchanting table QoL |
 | [Elytra Slot](https://modrinth.com/mod/elytra-slot) | `9.0.2+1.21.1` | both | minor | Elytra in an accessory slot |
 | [EMI Loot](https://modrinth.com/mod/emi-loot) | `0.7.9+1.21+neoforge` | both | minor | Loot table viewing in EMI |
 | [EMIffect](https://modrinth.com/mod/emiffect) | `2.1.6+mc1.21.1` | client | minor | Status effect information in EMI |
+| [[ESF] Entity Sound Features](https://modrinth.com/mod/esf) | `0.8.1-neoforge-1.21` | client | minor | Entity Sound Features - per-entity sound variation, so mobs stop sounding identical |
+| [Extreme sound muffler](https://modrinth.com/mod/extreme_sound_muffler) | `3.56-1.21.1` | both | minor | Selectively muffle individual sounds. With this much audio, the escape valve for whichever one turns out to be maddening |
 | [Fancy Toasts \| Better Advancements](https://modrinth.com/mod/fancy-toasts) | `1.4.7-neoforge-1.21.1` | client | minor | Overhauls the toast system |
-| [Figura v5 support](https://modrinth.com/mod/figura-v5-support) | `1.2.2` | client | minor | Compatibility layer for Figura v5 avatars |
 | [Figura ExtraBone](https://modrinth.com/mod/figura_extrabone) | `0.0.3-neoforge+1.21.1` | client | minor | Model extensions for Figura |
 | [Figura ExtraFight](https://modrinth.com/mod/figura_extrafight) | `0.0.41-neoforge+1.21.1` | client | minor | Hooks Figura avatars into Epic Fight's animation system, so custom models actually fight properly |
 | [Forgiving Void](https://modrinth.com/mod/forgiving-void) | `21.1.7+neoforge-1.21.1` | server | minor | The void becomes survivable instead of run-ending |
@@ -314,6 +317,7 @@ Quality of life. At 400 mods this is not garnish - it is what stops the pack bei
 | [Make Bubbles Pop](https://modrinth.com/mod/make_bubbles_pop) | `0.4.0-beta.1-neoforge` *beta* | client | minor | Better bubble particles |
 | [No Chat Reports](https://modrinth.com/mod/no-chat-reports) | `NeoForge-1.21.1-v2.9.1` | both | minor | Removes chat reporting on a private server |
 | [Remove Reloading Screen](https://modrinth.com/mod/rrls) | `5.0.11+mc1.21.1-forge` *beta* | client | minor | Removes the reloading screen |
+| [Subtle Effects](https://modrinth.com/mod/subtle-effects) | `1.14.3` | both | minor | Extra particles and small sounds for events that vanilla leaves silent |
 | [Tips](https://modrinth.com/mod/tips) | `21.1.3` | both | minor | Loading-screen tips - a place to teach the pack's own systems |
 | [VeinMiner Enchantment](https://modrinth.com/mod/veinminer-enchantment) | `2.11.2` | both | minor | Gates vein mining behind an enchantment so it is earned |
 | [XaeroPlus](https://modrinth.com/mod/xaeroplus) | `2.35.0+neoforge-1.21.1` | client | minor | Xaero feature extensions |
@@ -362,7 +366,7 @@ Farmer's Delight and its ecosystem. This exists because Create: Central Kitchen 
 | [[Let's Do] Vinery](https://modrinth.com/mod/lets-do-vinery) | `1.5.3` *beta* | both | minor | Wine-making with real depth |
 | [[Let's Do] WilderNature](https://modrinth.com/mod/lets-do-wildernature) | `1.1.4` | both | minor | Hunting, bounties and trophies |
 
-## performance (16)
+## performance (22)
 
 Split deliberately: server-side mods cut tick time for everyone, client-side mods keep four very different machines playable. A 400-mod pack without this layer is a slideshow. Note that Sodium and Embeddium are alternatives, not companions - the pack ships Sodium and keeps Embeddium documented as the fallback.
 
@@ -376,11 +380,17 @@ Split deliberately: server-side mods cut tick time for everyone, client-side mod
 | [ModernFix](https://modrinth.com/mod/modernfix) | `5.27.20+mc1.21.1` | both | core | Broad startup and memory fixes; also cuts load time substantially |
 | [Packet Fixer](https://modrinth.com/mod/packet-fixer) | `3.3.1` | both | core | Fixes packet, NBT and timeout problems. Genuinely necessary on packs this large |
 | [Sodium](https://modrinth.com/mod/sodium) | `mc1.21.1-0.8.12-neoforge` | client | core | Client renderer; Sodium 0.6+ supports NeoForge |
+| [Sodium Extra](https://modrinth.com/mod/sodium-extra) | `mc1.21.1-0.9.3+neoforge` | client | core | The options Sodium deliberately omits - fog control, particle limits, per-feature toggles. The main dial for trading visuals against frames |
 | [spark](https://modrinth.com/mod/spark) | `1.10.124-neoforge-1.21.1` | both | core | The profiler. When the server lags, this is how the cause gets found instead of guessed |
 | [Alternate Current](https://modrinth.com/mod/alternate-current) | `neoforge-mc1.21-1.9.0` | server | major | Far faster redstone dust implementation |
+| [CreateBetterFps](https://modrinth.com/mod/createbetterfps) | `1.1.4` | client | major | Up to 50% better framerate on Create contraptions WHEN A SHADERPACK IS ON. That is precisely this pack: a Create server, with shaders, rendered next to a running dedicated server |
+| [Euphoria Patches](https://modrinth.com/mod/euphoria-patches) | `1.9.3-r5.8.1-neoforge` | client | major | Euphoria Patches - extends Complementary Shaders, and is what gives Complementary its Distant Horizons support. Needed for shaders and DH to coexist |
+| [Flerovium](https://modrinth.com/mod/flerovium) | `1.1.2` | client | major | General render optimisation with no visual cost |
 | [Iris Shaders](https://modrinth.com/mod/iris) | `1.8.12+1.21.1-neoforge` | client | major | Shader support on top of Sodium |
 | [More Culling](https://modrinth.com/mod/moreculling) | `1.0.7` | client | major | More aggressive culling |
+| [Particle Core](https://modrinth.com/mod/particle-core) | `0.3.3+1.21+neoforge` | client | major | Particle culling and per-type limits. The horror and magic layers emit enormous particle volumes |
 | [Put A Plug In it! (PAPI)](https://modrinth.com/mod/put-a-plug-in-it!) | `1.21.1-neoforge-1.1.1` | both | major | Fixes memory leaks and reduces memory usage |
+| [Reese's Sodium Options](https://modrinth.com/mod/reeses-sodium-options) | `mc1.21.1-2.2.3+neoforge` | client | major | A usable options menu for the above. Four people will each need a different settings profile on different hardware |
 | [Saturn](https://modrinth.com/mod/saturn) | `mc1.21.1-0.1.5` | both | major | Memory optimisation |
 | [Chunks fade in](https://modrinth.com/mod/chunks-fade-in) | `v3.0.25-1.21-neoforge` | client | minor | Cosmetic chunk fade; masks load stutter |
 | [Dynamic FPS](https://modrinth.com/mod/dynamic-fps) | `3.11.4` | client | minor | Throttles FPS when the window is unfocused |
@@ -439,7 +449,7 @@ APIs and shared code. Listed explicitly rather than left to transitive resolutio
 | [Prickle](https://modrinth.com/mod/prickle) | `21.1.11` | both | minor | Config library |
 | [Searchables](https://modrinth.com/mod/searchables) | `1.0.2` | client | minor | Search-field library |
 
-## auto-deps (56)
+## auto-deps (57)
 
 Required dependencies discovered by resolving the pack's declared dependency graph (tools/resolve.py deps). These were being pulled in implicitly; listing them explicitly means a dependency appearing or disappearing is a reviewable diff rather than a surprise at boot. Fabric API and QSL were correctly excluded - multiloader jars declare them even though no NeoForge build needs them.
 
@@ -480,6 +490,7 @@ Required dependencies discovered by resolving the pack's declared dependency gra
 | [Lithostitched](https://modrinth.com/mod/lithostitched) | `1.7.13-neoforge-21.1` | server | core | Required by hybrid-aquatic, tectonic |
 | [Mysterious Mountain Lib](https://modrinth.com/mod/mmlib) | `1.2.15-1.21.1` | both | core | Required by corn-delight |
 | [MonoLib](https://modrinth.com/mod/monolib) | `neoforge-1.21.1-4.1.0` | both | core | Required by dis-enchanting-table |
+| [MRU](https://modrinth.com/mod/mru) | `1.0.31+1.21.1-neoforge` | both | core | Required by the Sounds mod |
 | [NexusLib](https://modrinth.com/mod/nexuslib) | `1.1.5` | both | core | Required by bountiful-fares |
 | [Oh The Trees You'll Grow](https://modrinth.com/mod/oh-the-trees-youll-grow) | `1.21.1-5.3.2-NeoForge` | server | core | Required by oh-the-biomes-weve-gone |
 | [oωo (owo-lib)](https://modrinth.com/mod/owo-lib) | `0.12.15.5-beta.1+1.21` *beta* | both | core | Required by accessories, accessories-compat-layer, aether, simple-hats |

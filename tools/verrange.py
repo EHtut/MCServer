@@ -40,12 +40,46 @@ def strip_mc_prefix(a: str, b: str) -> tuple[str, str]:
     return a, b
 
 
+_PRERELEASE = re.compile(r"[-+]?\b(alpha|beta|rc|pre|snapshot|dev)[._-]?(\d*)", re.I)
+_PRE_RANK = {"dev": 0, "snapshot": 1, "alpha": 2, "beta": 3, "pre": 4, "rc": 5}
+
+
+def split_prerelease(v: str) -> tuple[str, tuple[int, int] | None]:
+    """Separate "0.8.12-alpha.2" into ("0.8.12", (alpha, 2)).
+
+    Needed because a prerelease sorts BELOW the release of the same number, and
+    a digit-scraping comparison gets this exactly backwards: it reads
+    "0.8.12-alpha.2" as [0,8,12,2] and "0.8.12" as [0,8,12,0], making the alpha
+    look NEWER. That misjudged Sable's "incompatible with Sodium below
+    0.8.12-alpha.2" and reported a conflict against Sodium 0.8.12 release, which
+    actually satisfies it.
+    """
+    m = _PRERELEASE.search(v)
+    if not m:
+        return v, None
+    base = v[:m.start()].rstrip("-+._")
+    return (base or v), (_PRE_RANK.get(m.group(1).lower(), 0), int(m.group(2) or 0))
+
+
 def cmp(a: str, b: str) -> int:
     a, b = strip_mc_prefix(a, b)
-    pa, pb = parts(a), parts(b)
+    a_base, a_pre = split_prerelease(a)
+    b_base, b_pre = split_prerelease(b)
+
+    pa, pb = parts(a_base), parts(b_base)
     pa = pa + [0] * (len(pb) - len(pa))
     pb = pb + [0] * (len(pa) - len(pb))
-    return (pa > pb) - (pa < pb)
+    if pa != pb:
+        return (pa > pb) - (pa < pb)
+
+    # Same numbers: a release outranks any prerelease of it.
+    if a_pre is None and b_pre is None:
+        return 0
+    if a_pre is None:
+        return 1
+    if b_pre is None:
+        return -1
+    return (a_pre > b_pre) - (a_pre < b_pre)
 
 
 def in_range(version: str, spec: str) -> bool:

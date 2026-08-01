@@ -7,8 +7,8 @@
 
 ## Summary
 
-- **402 / 450** mod slots used
-- **372** stable releases, **30** beta/alpha
+- **413 / 450** mod slots used
+- **382** stable releases, **31** beta/alpha
 - **6** entries carry a known hazard (see below)
 
 ---
@@ -102,6 +102,7 @@ They are the first place to look when something breaks.
 | `lets-do-vinery` | `1.5.3` | beta |
 | `make_bubbles_pop` | `0.4.0-beta.1-neoforge` | beta |
 | `owo-lib` | `0.12.15.5-beta.1+1.21` | beta |
+| `pf-neoforge` | `1.21.1-1.12.0-beta.1` | beta |
 | `playeranimator` | `2.0.4+1.21.1-forge` | beta |
 | `rrls` | `5.0.11+mc1.21.1-forge` | beta |
 | `serene-seasons` | `10.1.0.3` | beta |
