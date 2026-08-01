@@ -4,13 +4,13 @@
 > `tools/modlist.json` + the resolution cache. Do not hand-edit -
 > change `tools/modlist.json` and regenerate.
 
-**396 mods** for Minecraft 1.21.1 / neoforge, 1,506 MB total.
+**399 mods** for Minecraft 1.21.1 / neoforge, 1,508 MB total.
 
 | side | count | meaning |
 |---|---:|---|
-| both | 320 | installed on the server *and* every client |
+| both | 324 | installed on the server *and* every client |
 | client | 45 | client-only; the server never loads them |
-| server | 31 | server-only; players do not need them |
+| server | 30 | server-only; players do not need them |
 
 Every entry is pinned to an exact file and sha512 in `pack/mods/*.pw.toml`.
 The **Why** column is the reason that mod is in the pack, not a description
@@ -371,10 +371,10 @@ Split deliberately: server-side mods cut tick time for everyone, client-side mod
 | [Chunky](https://modrinth.com/mod/chunky) | `1.4.23` | both | core | Chunk pre-generation - eliminates exploration lag spikes |
 | [Entity Culling](https://modrinth.com/mod/entityculling) | `1.10.5` | client | core | Skips rendering hidden entities |
 | [ImmediatelyFast](https://modrinth.com/mod/immediatelyfast) | `1.6.11+1.21.1-neoforge` | client | core | Batches immediate-mode rendering |
+| [Lithium](https://modrinth.com/mod/lithium) | `mc1.21.1-0.15.4-neoforge` | both | core | General tick optimisation. Replaces Radium, which Create REFUSES to run alongside - Create's own manifest says: 'Radium is an unofficial port of Lithium, Lithium is now natively available for NeoForge and does not suffer from the same issues radium does, use Lithium instead.' Found at first boot, not by guesswork |
 | [Load My F***ing Tags](https://modrinth.com/mod/lmft) | `1.1.1+1.21.9` | server | core | Load My F***ing Tags - stops one bad tag breaking the pack |
 | [ModernFix](https://modrinth.com/mod/modernfix) | `5.27.20+mc1.21.1` | both | core | Broad startup and memory fixes; also cuts load time substantially |
 | [Packet Fixer](https://modrinth.com/mod/packet-fixer) | `3.3.1` | both | core | Fixes packet, NBT and timeout problems. Genuinely necessary on packs this large |
-| [Radium](https://modrinth.com/mod/radium) | `0.13.1` *beta* | server | core | Lithium port for NeoForge - general tick optimisation |
 | [Sodium](https://modrinth.com/mod/sodium) | `mc1.21.1-0.8.12-neoforge` | client | core | Client renderer; Sodium 0.6+ supports NeoForge |
 | [spark](https://modrinth.com/mod/spark) | `1.10.124-neoforge-1.21.1` | both | core | The profiler. When the server lags, this is how the cause gets found instead of guessed |
 | [Alternate Current](https://modrinth.com/mod/alternate-current) | `neoforge-mc1.21-1.9.0` | server | major | Far faster redstone dust implementation |
@@ -439,7 +439,7 @@ APIs and shared code. Listed explicitly rather than left to transitive resolutio
 | [Prickle](https://modrinth.com/mod/prickle) | `21.1.11` | both | minor | Config library |
 | [Searchables](https://modrinth.com/mod/searchables) | `1.0.2` | client | minor | Search-field library |
 
-## auto-deps (50)
+## auto-deps (53)
 
 Required dependencies discovered by resolving the pack's declared dependency graph (tools/resolve.py deps). These were being pulled in implicitly; listing them explicitly means a dependency appearing or disappearing is a reviewable diff rather than a surprise at boot. Fabric API and QSL were correctly excluded - multiloader jars declare them even though no NeoForge build needs them.
 
@@ -467,7 +467,9 @@ Required dependencies discovered by resolving the pack's declared dependency gra
 | [Fusion (Connected Textures)](https://modrinth.com/mod/fusion-connected-textures) | `1.3.12-neoforge-mc1.21.1` | client | core | Required by rechiseled |
 | [GeOre](https://modrinth.com/mod/geore) | `6.2.3` *beta* | both | core | Required by geore-nouveau |
 | [Iceberg](https://modrinth.com/mod/iceberg) | `1.3.2` | both | core | Required by advancement-plaques, item-borders, legendary-tooltips |
+| [Iron's Lib](https://modrinth.com/mod/irons-lib) | `1.21.1-2.1.0` | both | core | Required by irons_spellbooks. Also undeclared on Modrinth |
 | [Jupiter](https://modrinth.com/mod/jupiter) | `2.3.7-1.21.1-neoforge` | both | core | Required by iceandfire-ce |
+| [Knight Lib](https://modrinth.com/mod/knight-lib) | `1.6.1` | both | core | Required by knightquest. Also undeclared on Modrinth |
 | [KotlinLangForge](https://modrinth.com/mod/kotlin-lang-forge) | `2.12.2-k2.4.10-3.0+neoforge` | both | core | Required by veinminer |
 | [L2 Complements](https://modrinth.com/mod/l2-complements) | `3.1.3` | both | core | Required by l2hostility |
 | [L2 Library](https://modrinth.com/mod/l2library) | `3.0.8` *beta* | both | core | Required by l2hostility |
@@ -486,6 +488,7 @@ Required dependencies discovered by resolving the pack's declared dependency gra
 | [Rhino](https://modrinth.com/mod/rhino) | `2101.2.7-build.85+Rhino-1.21` | both | core | Required by kubejs |
 | [Ritchie's Projectile Library](https://modrinth.com/mod/rpl) | `2.1.2` | both | core | Ritchie's Projectile Library - required by create-big-cannons |
 | [Sable](https://modrinth.com/mod/sable) | `2.0.3+mc1.21.1` | both | core | Required by create-aeronautics |
+| [ShatterLib \| OctoLib](https://modrinth.com/mod/shatterbyte-lib) | `0.6.2` | both | core | OctoLib - required by relics and reliquified_ars_nouveau. NOT declared in Modrinth's dependency data; found by reading the jar manifests |
 | [Sparkweave Engine](https://modrinth.com/mod/sparkweave) | `0.510.0+NeoForge` *beta* | both | core | Sparkweave Engine - required by velvet-api, which Scorchful needs |
 | [SuperMartijn642's Config Lib](https://modrinth.com/mod/supermartijn642s-config-lib) | `1.1.8-neoforge-mc1.21` | both | core | Required by chunk-loaders, moving-elevators, rechiseled, trash-cans |
 | [SuperMartijn642's Core Lib](https://modrinth.com/mod/supermartijn642s-core-lib) | `1.1.22-neoforge-mc1.21` | both | core | Required by chunk-loaders, moving-elevators, rechiseled, trash-cans |

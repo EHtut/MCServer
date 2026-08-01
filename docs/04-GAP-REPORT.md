@@ -7,8 +7,8 @@
 
 ## Summary
 
-- **396 / 450** mod slots used
-- **366** stable releases, **30** beta/alpha
+- **399 / 450** mod slots used
+- **370** stable releases, **29** beta/alpha
 - **6** entries carry a known hazard (see below)
 
 ---
@@ -103,7 +103,6 @@ They are the first place to look when something breaks.
 | `make_bubbles_pop` | `0.4.0-beta.1-neoforge` | beta |
 | `owo-lib` | `0.12.15.5-beta.1+1.21` | beta |
 | `playeranimator` | `2.0.4+1.21.1-forge` | beta |
-| `radium` | `0.13.1` | beta |
 | `rrls` | `5.0.11+mc1.21.1-forge` | beta |
 | `serene-seasons` | `10.1.0.3` | beta |
 | `skills` | `0.18.3` | beta |

@@ -55,14 +55,24 @@ if ($env:JAVA_HOME) { $javaCandidates += (Join-Path $env:JAVA_HOME "bin\java.exe
 $javaCandidates += "java"
 foreach ($candidate in $javaCandidates) {
     if (-not $candidate) { continue }
+    # `java -version` writes to STDERR, not stdout. Under Windows PowerShell 5.1
+    # with $ErrorActionPreference = 'Stop', redirecting a native command's stderr
+    # raises a terminating NativeCommandError - which would make a perfectly good
+    # JDK look absent. Drop to 'Continue' for the duration of the probe.
+    $prevEAP = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
     try {
-        $out = & $candidate -version 2>&1 | Out-String
-        if ($out -match '"(\d+)') {
-            $major = [int]$Matches[1]
-            if ($major -ge 21) { $javaOk = $true; $javaCmd = $candidate; break }
-            else { Warn "found Java $major at '$candidate' - too old" }
-        }
-    } catch { }
+        $out = (& $candidate -version 2>&1 | Out-String)
+    } catch {
+        $out = ""
+    } finally {
+        $ErrorActionPreference = $prevEAP
+    }
+    if ($out -match '(?:version\s+")(\d+)') {
+        $major = [int]$Matches[1]
+        if ($major -ge 21) { $javaOk = $true; $javaCmd = $candidate; break }
+        Warn "found Java $major at '$candidate' - too old"
+    }
 }
 if (-not $javaOk) {
     Die @"

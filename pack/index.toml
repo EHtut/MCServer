@@ -1081,6 +1081,11 @@ hash = "f67aa60c765593a8c70f78296a460349c6aef5f4a16d173eae02e8803b545ad4"
 metafile = true
 
 [[files]]
+file = "mods/irons-lib.pw.toml"
+hash = "1b84f2dda2014252ffb0b792f4850fa3b3b396a49f39cac7b11c8cb88bf1a1e4"
+metafile = true
+
+[[files]]
 file = "mods/irons-spells-n-spellbooks.pw.toml"
 hash = "76f6ec0d8429c4e25430c356563bc3d51b6baf6fc500469f5ec75eb2ae7039a1"
 metafile = true
@@ -1123,6 +1128,11 @@ metafile = true
 [[files]]
 file = "mods/kenny.pw.toml"
 hash = "b0a904c73b80777c0c2b533f1bc936f18e30186984980b26f9c77d6ad39ef2e6"
+metafile = true
+
+[[files]]
+file = "mods/knight-lib.pw.toml"
+hash = "608ca3128f7ce83bc199a1687c0843c23999de0a29d6669be374e4588f5fde69"
 metafile = true
 
 [[files]]
@@ -1218,6 +1228,11 @@ metafile = true
 [[files]]
 file = "mods/lionfish-api.pw.toml"
 hash = "64acab1580ca6edd8b1dd185e914aeee7aa551a88a7cd7f0f9370a82aaadfef6"
+metafile = true
+
+[[files]]
+file = "mods/lithium.pw.toml"
+hash = "51e129832b04acd57da470fc41725bad5e101b6a6b1d4901fd8ea7a92b14e13d"
 metafile = true
 
 [[files]]
@@ -1531,11 +1546,6 @@ hash = "726970c838cd6d724366956c2469b5a36dbe574abbd087317513359dfd1dd89e"
 metafile = true
 
 [[files]]
-file = "mods/radium.pw.toml"
-hash = "e2d9083e10e4e6a200258b9412c7ecd40addc87de14620105a93f484fe4a3fd3"
-metafile = true
-
-[[files]]
 file = "mods/rechiseled-create.pw.toml"
 hash = "f7758221468760a7d22b31f97e822f5a66fa1fa21d2c8b4b3bb21ca01faff3cd"
 metafile = true
@@ -1643,6 +1653,11 @@ metafile = true
 [[files]]
 file = "mods/shadow-of-the-soul.pw.toml"
 hash = "859d05a870ff1ab5905bc59db40e8cc6ba1487ca188111fad9e5cd2317af60c0"
+metafile = true
+
+[[files]]
+file = "mods/shatterbyte-lib.pw.toml"
+hash = "3f552bbdc42f07fd7d5695ced1d27d774af63cff5460be45817939e5f8e4f9de"
 metafile = true
 
 [[files]]

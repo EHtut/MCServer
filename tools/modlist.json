@@ -121,6 +121,9 @@
         ["mmlib", "Required by corn-delight", "core"],
         ["nexuslib", "Required by bountiful-fares", "core"],
         ["rhino", "Required by kubejs", "core"],
+        ["shatterbyte-lib", "OctoLib - required by relics and reliquified_ars_nouveau. NOT declared in Modrinth's dependency data; found by reading the jar manifests", "core"],
+        ["knight-lib", "Required by knightquest. Also undeclared on Modrinth", "core"],
+        ["irons-lib", "Required by irons_spellbooks. Also undeclared on Modrinth", "core"],
         ["sparkweave", "Sparkweave Engine - required by velvet-api, which Scorchful needs", "core"],
         ["epic-fight-invincible-lib", "Required by Epic Fight - Sword Soaring", "core"]
       ]
@@ -462,7 +465,7 @@
       "desc": "Split deliberately: server-side mods cut tick time for everyone, client-side mods keep four very different machines playable. A 400-mod pack without this layer is a slideshow. Note that Sodium and Embeddium are alternatives, not companions - the pack ships Sodium and keeps Embeddium documented as the fallback.",
       "mods": [
         ["modernfix", "Broad startup and memory fixes; also cuts load time substantially", "core"],
-        ["radium", "Lithium port for NeoForge - general tick optimisation", "core"],
+        ["lithium", "General tick optimisation. Replaces Radium, which Create REFUSES to run alongside - Create's own manifest says: 'Radium is an unofficial port of Lithium, Lithium is now natively available for NeoForge and does not suffer from the same issues radium does, use Lithium instead.' Found at first boot, not by guesswork", "core"],
         ["saturn", "Memory optimisation", "major"],
         ["alternate-current", "Far faster redstone dust implementation", "major"],
         ["lmft", "Load My F***ing Tags - stops one bad tag breaking the pack", "core"],
