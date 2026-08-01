@@ -1,6 +1,6 @@
 name = "Epic Fight Progressive Difficulty"
 filename = "efprogressivediff-1.2.1-neoforge-1.21.1.jar"
-side = "server"
+side = "both"
 
 [download]
 url = "https://cdn.modrinth.com/data/7IrEY7fQ/versions/8riRPldS/efprogressivediff-1.2.1-neoforge-1.21.1.jar"

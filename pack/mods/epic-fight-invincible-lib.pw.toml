@@ -1,6 +1,6 @@
 name = "Epic Fight - Invincible Lib"
 filename = "invincible-21.15.8.2-mc1.21.1-neoforge.jar"
-side = "server"
+side = "both"
 
 [download]
 url = "https://cdn.modrinth.com/data/cdaWrTra/versions/kQ8bnlol/invincible-21.15.8.2-mc1.21.1-neoforge.jar"

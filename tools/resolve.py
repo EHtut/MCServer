@@ -78,11 +78,11 @@ def project(slug: str) -> dict | None:
         raise
 
 
-def versions(slug: str, filtered: bool = True) -> list:
+def versions(slug: str, filtered: bool = True, loader: str = LOADER) -> list:
     q = ""
     if filtered:
         q = "?" + urllib.parse.urlencode({
-            "loaders": json.dumps([LOADER]),
+            "loaders": json.dumps([loader]),
             "game_versions": json.dumps([GAME_VERSION]),
         })
     try:

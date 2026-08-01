@@ -80,10 +80,24 @@ def side_of(r: dict) -> str:
         return forced
     c = r.get("client_side")
     s = r.get("server_side")
+
+    # Client-only is safe to honour: the server never needs a renderer.
     if s == "unsupported" and c != "unsupported":
         return "client"
-    if c == "unsupported" and s != "unsupported":
-        return "server"
+
+    # SERVER-ONLY IS NOT HONOURED. Everything else ships to BOTH sides.
+    #
+    # A mod that registers a network channel must exist on both ends or the
+    # server refuses the connection with "this channel is missing on the client
+    # side" - naming a mod the player has never heard of and giving no hint that
+    # the real problem is the pack's sidedness. Modrinth's server_side flag is
+    # author-supplied and frequently means "this is where it does its work",
+    # not "the client must not have it".
+    #
+    # Shipping a server mod to a client costs a few MB and it sits inert. The
+    # other way costs an unjoinable server, so the asymmetry is not close.
+    # Two of these (smartbrainlib, oh-the-trees-youll-grow) had already been
+    # caught by hand; that was treating symptoms.
     return "both"
 
 

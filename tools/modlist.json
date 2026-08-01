@@ -28,6 +28,15 @@
       ["zoniex", "MISLABELLED ON MODRINTH. Tagged 1.21.1 + neoforge, but the jar contains only a legacy Forge mods.toml declaring mc=[1.20.1]. Proven by reading the jar (tools/check_jars.py), not guessed. It would not have loaded."]
     ]
   },
+  "shaderpacks": {
+    "_comment": ["Shader packs are a different Modrinth project type: they resolve against the 'iris' loader, not", "'neoforge', and install to shaderpacks/ rather than mods/. Shipping them in the pack means nobody", "has to find and download one - they just pick from the list in Video Settings.", "Iris and Euphoria Patches are already in the mod list; Euphoria is what gives Complementary its", "Distant Horizons support.", "None is enabled by default - a shader is a per-machine performance decision, and four people have", "four different GPUs."],
+    "packs": [
+      ["complementary-reimagined", "The all-rounder and the safest default. Euphoria Patches (in the pack) gives it Distant Horizons support, which most shaders lack"],
+      ["bsl-shaders", "The classic. Bright, colourful, well-optimised - the gentlest on frames of the four"],
+      ["solas-shader", "Soft, warm, stylised. Cheaper than it looks"],
+      ["bliss-shader", "Chocapic-derived and the most dramatic of the four - strong shadows and volumetric light, which suits the horror layer. Also the heaviest; expect to lose frames"]
+    ]
+  },
   "categories": {
     "core-libs": {
       "desc": "APIs and shared code. Listed explicitly rather than left to transitive resolution so a dependency change shows up as a visible diff.",
@@ -349,7 +358,6 @@
         ["explorify", "Vanilla-faithful structure variety", "minor"],
         ["hopo-better-ruined-portals", "Ruined portals worth looking at", "minor"],
         ["improved-pillager-outpost", "Outposts that are actually a fight", "minor"],
-        ["jadens-nether-expansion", "Nether content expansion", "minor"],
         ["nether-depths-upgrade", "Lava-sea flora and fauna", "minor"],
         ["naturalist", "47 animals with real behaviours - the world feels inhabited", "major"],
         ["critters-and-companions", "Small creatures and pets", "minor"],
@@ -561,6 +569,7 @@
       ["figura-v5-support", "F16. Figura 0.1.6 declares it incompatible with the reason 'This addon's features are already included in this Figura version!'. Adding it was my error; the mod's own manifest is the authority."],
       ["gravestone-mod", "F2. Duplicate of Corpse. Kept Corpse - retrieving your own body from where it fell suits the horror layer better than a tidy headstone."],
       ["illager-invasion", "F12. Needs 'extensibleenums', CurseForge-only. Costs one mob roster out of many."],
+      ["jadens-nether-expansion", "F17. Crashes the client every tick: IllegalStateException 'Cannot get config value before config is loaded' in JNEClientEvents.onClientTickPost. Only BETA builds exist for 1.21.1 (2.4.0-BETA.1 through .7), so there is no stable version to fall back to. Proven by crash-2026-07-31_22.16.18-client.txt, not guessed."],
       ["kenny", "F14. Same DEDICATED_SERVER crash. One stalker of six, and the least distinctive; The Knocker, Obsessed, The Skinwalker Hunt, Distant Friends and Weeping Angels remain."],
       ["mythic-upgrades", "F9. Gem-based gear upgrades are pure numbers. R4 cut Simply Swords and Medieval Craft for the same reason; Apotheosis already supplies affixed loot for progression."],
       ["nullscape", "F6. Dimension sprawl - an End overhaul serving no pillar."],
