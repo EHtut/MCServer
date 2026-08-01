@@ -8,8 +8,22 @@ answered items are kept below with their resolutions so the reasoning survives.
 | | |
 |---|---|
 | **A3** | Which existing item becomes the deep-only resource. Wants no other source in the pack so the item type itself is the gate; SecurityCraft's unobtainable items are the pool. |
-| **B4** | Epic Knights - 11 pavises render as the missing-model cube, 18 weapons get no Epic Fight movesets. (Answered under this number was B5; B4 itself is still open.) Recommend: accept, revisit if noticeable in play. |
-| **NEW** | Is **Iron's Spells n Spellbooks** still wanted? "Main magic should be ars" implies not - but it is a whole magic pillar with 4 dependent mods, so it is a much bigger cut than cataclysm-spellbooks was. |
+| **NEW-1** | Add `enchantments-encore` for more enchantment variety, or tune Apotheosis first and decide after? Apotheosis is already a full affix/enchantment system and has never been configured. |
+| **NEW-2** | Epic Knights pavises: 11 shields render as the missing-model cube (the jar ships 3 blockstates for 11 variants). Not fixable by datapack - it is missing assets. Accept, or cut the shields specifically? |
+
+---
+
+## RESOLVED THIS ROUND
+
+- **B4 Epic Knights weapons** - keep. The 18 missing movesets are a datapack fix
+  (`data/epicfight/capabilities/weapons/`), planned as D5. Likely a
+  `minecraft:axe` vs `epicfight:axe` namespace error.
+- **Iron's Spells n Spellbooks** - KEEP. "no cut iron's spells".
+- **All melee should have movesets** - achievable by datapack, no new mod, D5.
+- **"Epic Knights gets weak really fast"** - a progression-tuning gap, not a mod
+  gap. Apotheosis already provides the rarity curve; bind it to depth.
+
+---
 
 ---
 

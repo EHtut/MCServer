@@ -401,6 +401,78 @@ before anything else regardless of what is being worked on.
 
 ---
 
+## 4b. Progression — what "deeper means better" actually pays out ✅
+
+Ethan, 2026-08-01:
+
+> The ideal is going deeper means getting better loot. But also it could be
+> getting rare materials and items needed for progression at great cost.
+> ... Idealy i'd like all melee to have custom movesets even. I think the issue
+> with epic knights is it gets weak really fast? lets add an enchanment mod and
+> then we can make those enchantment books drops.
+
+Three asks. **Two need no new mod, and the third probably does not either.**
+
+### 4b-i. All melee gets movesets — datapack, verified
+
+Epic Fight reads weapon capabilities from **`data/epicfight/capabilities/weapons/*.json`**,
+so a datapack can give any weapon in the pack a moveset. Format confirmed by
+reading the jar (47 shipped capabilities):
+
+```json
+{ "type": "epicfight:longsword",
+  "attributes": { "common": { "impact": 2.5, "max_strikes": 2 } } }
+```
+
+This is very likely also the fix for the 18 Epic Knights weapons that currently
+have none. The live error is:
+
+```
+Can't find weapon type: minecraft:axe   (magistuarmory:silver_morgenstern)
+```
+
+`minecraft:axe` is not an Epic Fight weapon type — **it looks like a namespace
+error for `epicfight:axe`.** Whatever supplies those entries is using the wrong
+prefix, and a datapack override can simply restate them correctly. Note Epic
+Knights itself ships **zero** epicfight data files, so the source is elsewhere
+(Epic Fight's own compat data, or one of the `ef*compat` mods) — confirm before
+building.
+
+Planned as **D5**: a generated datapack assigning a capability to every melee
+item in the pack, mapped by item type. Serverside, no download.
+
+### 4b-ii. "Epic Knights gets weak really fast" — a progression gap, not a mod gap
+
+The pack already contains the answer and has never tuned it. **Apotheosis** is a
+full loot-and-affix system: affixed gear with rarity tiers, an Enchantment
+Library, raised enchantment ceilings, gems and sockets — plus ApothicAttributes,
+ApothicEnchanting and ApothicSpawners. Its entire premise is *better loot from
+harder sources*, which is the ask, unconfigured.
+
+So the fix for gear going stale is not a new mod, it is **binding Apotheosis's
+rarity curve to depth**: common affixes shallow, the good tiers only in the
+Abyssal band and Vault chests.
+
+**Adding a new-enchantment mod is optional flavour, not the mechanism.** If more
+enchantment variety is wanted on top, `enchantments-encore` is the viable 1.21.1
+NeoForge candidate found (180k downloads). Recommend deciding that separately and
+after seeing Apotheosis actually tuned — adding a mod to fix a tuning problem is
+how this pack got to 400 in the first place.
+
+### 4b-iii. The payout ladder
+
+Ethan named both halves — better loot **and** rare progression materials at great
+cost. They are different rewards and should sit at different depths:
+
+| band | pays out |
+|---|---|
+| y 0…−64 | ordinary affixed loot, keycards, ammo components |
+| y −64…−128 | high-tier Apotheosis affixes, enchanted books, the deep-only resource |
+| Vaults | SecurityCraft reinforced blocks (base defence), TaCZ rifles, the best affix tiers |
+
+The reinforced blocks are the "needed for progression at great cost" half, and
+they are what makes the invasion survivable — see §2.
+
 ## 5. The serverside constraint ✅
 
 Ethan, 2026-08-01:
