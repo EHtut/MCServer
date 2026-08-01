@@ -3,13 +3,15 @@
 **Most of this was answered 2026-08-01.** What remains is at the top; the
 answered items are kept below with their resolutions so the reasoning survives.
 
-## STILL OPEN
+## NOTHING OPEN
 
-| | |
-|---|---|
-| **NEW-1** | Add `enchantments-encore` for more enchantment variety, or tune Apotheosis first and decide after? Apotheosis is already a full affix/rarity system and has never been configured. Recommend: tune first. |
+Every decision from the 2026-07-31/08-01 audit and design sessions is answered.
+The build queue lives in `10-DEPTH-LOOP.md` §4.
 
-Everything else is answered. The build queue (D0-D6) is in `10-DEPTH-LOOP.md`.
+**Last resolved:** no new enchantment mod. Apotheosis is already a full affix and
+rarity system and has never been configured; binding its curve to depth is the
+same work either way, and adding a mod to solve a tuning problem is how this pack
+reached 400 in the first place.
 
 ---
 
@@ -22,8 +24,6 @@ Everything else is answered. The build queue (D0-D6) is in `10-DEPTH-LOOP.md`.
 - **All melee should have movesets** - achievable by datapack, no new mod, D5.
 - **"Epic Knights gets weak really fast"** - a progression-tuning gap, not a mod
   gap. Apotheosis already provides the rarity curve; bind it to depth.
-
----
 
 ---
 

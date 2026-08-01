@@ -441,6 +441,41 @@ Depends on D0 (data) and D1 (the clock).
 *Verify:* a debug command that force-triggers the invasion regardless of day,
 so it can be tested without waiting 10 hours of playtime.
 
+### D5 — Movesets for all melee
+
+A generated datapack writing `data/epicfight/capabilities/weapons/*.json` for
+every melee item in the pack, mapped by item type. Format verified in §4b-i.
+First job is finding what currently emits the broken `minecraft:axe` entries,
+since that is 18 weapons fixed for free if it is only a namespace error.
+
+*Verify:* the `Can't find weapon type` warnings go to zero; swing one of the 18
+in game and see a moveset.
+
+### D6 — The surface audit
+
+§2b says the depths hold what does not belong in a fantasy world. That is only
+true if the surface is clean of it. Audit every surface-obtainable material
+against the rule and push the violations down.
+
+Known exception: `liposcraftablegunpowder`, kept as a slow Nether-gated trickle
+so nobody is ever hard-locked. It should stay expensive.
+
+### D7 — Bind Apotheosis's rarity curve to depth ✅
+
+Ethan's ruling: tune Apotheosis, do not add an enchantment mod.
+
+Apotheosis is a complete loot system — affix rarity tiers, an Enchantment
+Library, raised enchantment ceilings, gems and sockets — and it has never been
+configured. Its premise *is* "better loot from harder sources"; it simply is not
+attached to anything. Bind the rarity gradient to y-level so common affixes sit
+shallow and the good tiers only appear in the Abyssal band and Vault chests.
+
+This is also the fix for "Epic Knights gets weak really fast" — the gear is fine,
+there was no progression curve behind it.
+
+*Verify:* affix rarity distribution differs measurably between a surface chest
+and a Vault chest.
+
 ### Sequence
 
 ```
@@ -448,11 +483,16 @@ D0 tally ───────────────────────�
                                            ├──► D4 Nemesis invasion
 D1 rising surface ─────────────────────────┘
 
-D2 Vaults ──► D3 deep resource
+D2 Vaults ──► D3 gunpowder gate ──► D7 Apotheosis curve
+
+D5 movesets     (independent)
+D6 surface audit (independent, but D3 and D7 create work for it)
 ```
 
-D0 and D2 can be built in parallel; neither blocks the other. D0 should ship
-before anything else regardless of what is being worked on.
+D0, D2, D5 and D6 can all start in parallel; none blocks another. **D0 should
+ship before anything else regardless of what is being worked on** — its value is
+entirely in being early, because a nemesis picked from an empty tally is not a
+nemesis.
 
 ---
 
