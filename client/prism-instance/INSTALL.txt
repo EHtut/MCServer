@@ -71,8 +71,16 @@ Things that will make you sad if you ignore them
   Distant Horizons draws everything past that much more cheaply, so turning
   render distance up makes the game slower and NOT prettier.
 
-* 8 GB of memory is already set. Do not raise it. More memory makes Minecraft
-  stutter more, not less.
+* This pack wants a computer with 16 GB of memory. 10 GB of it is already
+  reserved for Minecraft and the settings are already correct - you do not need
+  to change anything.
+
+  If your computer has 8 GB total: right-click the instance -> Edit ->
+  Settings -> Memory, and set the maximum to 5000. Then turn Distant Horizons
+  off in Options -> Video Settings. It will still run, just with less view.
+
+  If Minecraft freezes on "Loading terrain" and then says it ran out of
+  memory, that is this, and that is the fix.
 
 
 Want shaders?  (optional, looks great, costs frames)

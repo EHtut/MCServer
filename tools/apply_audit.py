@@ -63,19 +63,26 @@ CUTS: dict[str, str] = {
     # --- F19: prevents ANY player from joining -----------------------------
     "luckperms": "F19. Server could not place any player in the world: IllegalStateException 'Capability has not been initialised' in LuckPerms' UserCapabilityImpl, reached via Balm asking PermissionAPI for a permission during PlayerList.placeNewPlayer. Players connected and were dropped within a second. A permissions plugin was never worth this on a four-person whitelisted server.",
 
-    # --- F18: breaks the mod-channel handshake, nobody can join ------------
-    # Sable installs its own UDP networking channel and wraps NeoForge's. The
-    # client log shows it closing that channel microseconds before NeoForge
-    # reports eight mods' channels as "missing on the client side" - while those
-    # mods are byte-identical and loaded on BOTH sides, which no ordinary
-    # mismatch can produce. Sable's own crash header asks you to rule it out
-    # before blaming other mods; that is the tell.
+    # --- F18: REVERSED. The diagnosis was wrong; both mods are restored. ----
     #
-    # Sable exists ONLY as a dependency of Create: Aeronautics, so the airships
-    # go with it. Ethan asked for Aeronautics by name, so this is a real loss -
-    # but an unjoinable server is not a trade.
-    "create-aeronautics": "F18. Its required library Sable breaks NeoForge's mod-channel handshake, making the server reject every client with 'channel missing on the client side' for eight unrelated mods. Removed to get people online; revisit if Sable is fixed upstream.",
-    "sable": "F18. The actual culprit. Only present as a Create: Aeronautics dependency.",
+    # The original finding blamed Sable for the "channel missing on the client
+    # side" screens: it installs its own UDP channel and wraps NeoForge's, and
+    # the client log showed it closing that channel microseconds before the
+    # mismatch was reported. That was correlation. The eight named mods were
+    # byte-identical and loaded on both sides, which no real mismatch can
+    # produce - and rather than treat that as evidence AGAINST a pack fault, I
+    # treated it as evidence for an exotic one.
+    #
+    # The actual causes were found later and were unrelated: LuckPerms (F19)
+    # and no_moon (F20) each dropped players server-side, and Ethan identified
+    # the rest himself - he was clicking connect before the client had settled.
+    # Sable was convicted on a log line that merely sat near the symptom.
+    #
+    # The lesson is worth more than the mods: a mod whose crash header asks to
+    # be ruled out first is not thereby guilty, and "I cannot explain this
+    # evidence" is a reason to keep looking, not to pick the nearest suspect.
+    # Aeronautics was something Ethan asked for by name and it cost him hours
+    # of the pack's best feature for nothing.
 
     # --- F17: crashes the CLIENT, proven by a crash report -----------------
     "jadens-nether-expansion": "F17. Crashes the client every tick: IllegalStateException 'Cannot get config value before config is loaded' in JNEClientEvents.onClientTickPost. Only BETA builds exist for 1.21.1 (2.4.0-BETA.1 through .7), so there is no stable version to fall back to. Proven by crash-2026-07-31_22.16.18-client.txt, not guessed.",

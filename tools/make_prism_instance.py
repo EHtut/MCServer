@@ -39,6 +39,31 @@ MC_VERSION = "1.21.1"
 NEOFORGE_VERSION = "21.1.247"
 INSTANCE_NAME = "Cogs and Cadavers"
 
+# 8192 was the original value and it was NOT enough: 410 mods plus Distant
+# Horizons exhausted the heap during terrain load, which presents as a freeze at
+# "Loading terrain" and then "Minecraft has run out of memory" - not as anything
+# that names memory while it is happening.
+#
+# 10G rather than the 12G on the host machine: friends' RAM is unknown, and a
+# -Xmx larger than physical memory does not fail at launch, it just swaps until
+# something dies. 10G assumes a 16G machine, which is stated in INSTALL.txt.
+MAX_HEAP = 10240
+
+# Prism leaves the collector unconfigured. An unconfigured G1 on a heap this
+# size produces multi-second stop-the-world pauses that are indistinguishable
+# from a hang while chunks are loading.
+JVM_ARGS = ("-XX:+UseG1GC -XX:MaxGCPauseMillis=50 -XX:+UnlockExperimentalVMOptions "
+            "-XX:G1NewSizePercent=20 -XX:G1ReservePercent=20 -XX:G1HeapRegionSize=32M "
+            "-XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC")
+
+# Client config shipped with the instance, copied into .minecraft/config/.
+#
+# Distant Horizons' LOD data is held in memory and scales with the SQUARE of the
+# render radius, so the difference between 128 and 256 is a factor of four - and
+# it is the single largest allocation in the pack. Shipping a known-good value
+# stops every friend rediscovering the same out-of-memory crash.
+CLIENT_CONFIG = pathlib.Path(__file__).resolve().parent.parent / "client" / "config"
+
 
 # --- minimal NBT writer -----------------------------------------------------
 # servers.dat is UNCOMPRESSED NBT. Only three tag types are needed, so a full
@@ -101,7 +126,10 @@ iconKey=default
 
 OverrideMemory=true
 MinMemAlloc=4096
-MaxMemAlloc=8192
+MaxMemAlloc={MAX_HEAP}
+
+OverrideJavaArgs=true
+JvmArgs={JVM_ARGS}
 
 OverrideCommands=true
 PreLaunchCommand="$INST_JAVA" -jar packwiz-installer-bootstrap.jar {PACK_URL}
@@ -199,8 +227,16 @@ Things that will make you sad if you ignore them
   Distant Horizons draws everything past that much more cheaply, so turning
   render distance up makes the game slower and NOT prettier.
 
-* 8 GB of memory is already set. Do not raise it. More memory makes Minecraft
-  stutter more, not less.
+* This pack wants a computer with 16 GB of memory. 10 GB of it is already
+  reserved for Minecraft and the settings are already correct - you do not need
+  to change anything.
+
+  If your computer has 8 GB total: right-click the instance -> Edit ->
+  Settings -> Memory, and set the maximum to 5000. Then turn Distant Horizons
+  off in Options -> Video Settings. It will still run, just with less view.
+
+  If Minecraft freezes on "Loading terrain" and then says it ran out of
+  memory, that is this, and that is the fix.
 
 
 Want shaders?  (optional, looks great, costs frames)
@@ -229,6 +265,16 @@ back off. Nothing breaks either way.
         z.writestr(".minecraft/servers.dat",
                    servers_dat([("Cogs & Cadavers", args.game)]))
         z.write(cache, ".minecraft/packwiz-installer-bootstrap.jar")
+
+        # Client configs that must not be left at their defaults. packwiz syncs
+        # MODS, never CONFIG, so anything here is shipped once at install and is
+        # the player's to change afterwards.
+        shipped = 0
+        for cfg in sorted(CLIENT_CONFIG.rglob("*")) if CLIENT_CONFIG.is_dir() else []:
+            if cfg.is_file():
+                z.write(cfg, f".minecraft/config/{cfg.relative_to(CLIENT_CONFIG).as_posix()}")
+                shipped += 1
+        print(f"  client configs shipped: {shipped}")
 
     # Keep the repo copy of the instance template in sync for review.
     tpl = repo / "client" / "prism-instance"

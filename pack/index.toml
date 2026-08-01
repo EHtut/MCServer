@@ -406,6 +406,11 @@ hash = "9429e94f2f8810910071d178a115491ce1309be2202eaae981f107f8ccc4d017"
 metafile = true
 
 [[files]]
+file = "mods/create-aeronautics.pw.toml"
+hash = "5fab8d2e412683dfd72f08cf6750e51b03cb43192e8eb783e962ba28d20978bc"
+metafile = true
+
+[[files]]
 file = "mods/create-ars-nouveau.pw.toml"
 hash = "4b452e8b483ef181fd5d23b098dbf356225bd0e1b4505eba606715e1947dd709"
 metafile = true
@@ -1623,6 +1628,11 @@ metafile = true
 [[files]]
 file = "mods/runiclib.pw.toml"
 hash = "ea53e1f266236ded756baa6ae49292583fa5f21c5c3134dfef821b11a7f169fb"
+metafile = true
+
+[[files]]
+file = "mods/sable.pw.toml"
+hash = "674aaf0dc67f808f0054cfc7bbe041d6725fcbbe97644a85ffbd946a22d35666"
 metafile = true
 
 [[files]]
