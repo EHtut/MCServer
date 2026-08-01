@@ -58,6 +58,31 @@ CUTS: dict[str, str] = {
     "epic-fight-sword-soaring": "F14. RuntimeException: Attempted to load class net/minecraft/client/gui/screens/Screen for invalid dist DEDICATED_SERVER. Painful loss - this was the wuxia specialisation layer Ethan chose to make melee about movesets rather than stat lines. Epic Fight itself still supplies movesets, stances and combos.",
     "kenny": "F14. Same DEDICATED_SERVER crash. One stalker of six, and the least distinctive; The Knocker, Obsessed, The Skinwalker Hunt, Distant Friends and Weeping Angels remain.",
 
+    # --- F25: present, loading, delivering nothing --------------------------
+    # The class the Spelunkery cut exposed. None of these fail loudly; each
+    # loads clean and quietly hands back most or all of its content. Found by
+    # counting per-boot log lines and then confirming against the jars.
+    "delightful-creators": "F25. Ships 164 asset entries - 50 item models, 53 block textures, and ZERO blockstates and ZERO block models. All 19 of its soup/stew/sauce fluid blocks render as the missing-model cube; that is 304 warnings per boot (19 blocks x 16 fluid levels). Jar-verified, not inferred. Its items and recipes work, so what remains is a food mod whose blocks cannot be looked at.",
+    "farmers-knives": "F25. Delivers 3 of 53 knives (brass, warden, zinc). 50 recipes fail every boot because their material mods - mythicmetals (25), twilightforest (4), advancednetherite (4), gobber2 (3), betterend (3) and others - are not installed, and 2 more are lost to a stale 'fabric:any_mod_loaded' condition key in a native NeoForge build. ~6% of the mod is reachable.",
+
+    # --- F26: a difficulty system that overwrites the other two ------------
+    # Not a mod - a 2,849-function command datapack shipped in a jar. Every
+    # second, for every vanilla hostile within 32 blocks of a player, it runs
+    # `data merge entity @s {... attributes:[...]}`. `data merge` merges
+    # compounds but REPLACES lists wholesale, and `attributes` is exactly where
+    # L2Hostility's level modifiers and Apotheosis's affix modifiers live. So it
+    # does not stack with them, it erases them and pins flat base values.
+    #
+    # It also only knows 18 vanilla mobs. Born in Chaos, Rotten Creatures,
+    # Cataclysm, Mutant Monsters and Alex's Mobs stay on L2Hostility's curve -
+    # so vanilla and modded mobs run on two unrelated difficulty curves in the
+    # same world. And its NBT is pre-1.20.5 (`tag:{Enchantments:[...]}`), which
+    # no longer parses in 1.21.1.
+    #
+    # L2Hostility is the 'major' pick and the one that was actually configured;
+    # this is the redundant half, and it is the destructive one.
+    "hostile-mobs-improve-over-time": "F26. A command datapack that overwrites the entity `attributes` list every second, erasing L2Hostility level modifiers and Apotheosis affixes rather than stacking with them. Covers only 18 vanilla mobs, so vanilla and modded hostiles end up on two unrelated difficulty curves. Ships pre-1.20.5 NBT that no longer parses.",
+
     # --- F23: the underground was being carved twice -----------------------
     # Better Caves is purely a WorldCarver implementation - it removes
     # minecraft:cave and cave_extra_underground and adds its own. That was the

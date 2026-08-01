@@ -1,0 +1,6 @@
+{
+  "pack": {
+    "pack_format": 48,
+    "description": "Re-emits mod tags with optional entries so a reference to an absent mod cannot discard the whole tag."
+  }
+}

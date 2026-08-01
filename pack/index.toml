@@ -651,11 +651,6 @@ hash = "8fa452b9f04851f6c190c5e77caa0b81023e9f99b2c969ca28e92bca48748f02"
 metafile = true
 
 [[files]]
-file = "mods/delightful-creators.pw.toml"
-hash = "f77747f2492fd97202d853b78dd58f17b8c4d56ea66f1e04b1c6ad83f6ab30ec"
-metafile = true
-
-[[files]]
 file = "mods/diligentstalker.pw.toml"
 hash = "5e3dd7e1c5785ccb22f27e6858f0e850fdb0a7133a5ba23df8ecce9817b991af"
 metafile = true
@@ -871,11 +866,6 @@ hash = "9aab64fbec4cc794817026caf84e7d0dff14ba3892da94aa0e00d23c84560499"
 metafile = true
 
 [[files]]
-file = "mods/farmers-knives.pw.toml"
-hash = "59fd6c384d7b84bc8ddf53738034acf1d1fe33ee855521d0dec1af9f6b855aa0"
-metafile = true
-
-[[files]]
 file = "mods/ferrite-core.pw.toml"
 hash = "73360e397134d238ee8fd21d33fd7f9275e9441f74f8f1b6ed92278877c0b9f1"
 metafile = true
@@ -1008,11 +998,6 @@ metafile = true
 [[files]]
 file = "mods/horror-messages.pw.toml"
 hash = "c55f7bc687e9edcf07a1085095b633b9a65016d39d07ed48fdbc697352df1393"
-metafile = true
-
-[[files]]
-file = "mods/hostile-mobs-improve-over-time.pw.toml"
-hash = "6221154a0872c156032adccca907d603fc3b35b757cd926ae6913adb12bed9cb"
 metafile = true
 
 [[files]]
