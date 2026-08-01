@@ -50,6 +50,14 @@ CUTS: dict[str, str] = {
     "easy-shulker-boxes": "F12. Needs 'iteminteractions', CurseForge-only.",
     "ars-elemancy": "F12. Hard-requires 'ars_elemental' [0.7.0.9,), which is CurseForge-only - its own manifest links to CurseForge. Found at second boot. Ars keeps Additions, Creo, Controle, Unification, Ars'n'Spells, Polymorphia, Structurize, Artillery, Technic, Lumos and the lectern fix.",
 
+    # --- F14: crash on DEDICATED_SERVER (only a real boot finds these) ------
+    # Published as both-sides, but their common code touches client-only classes
+    # (Screen, PoseStack, ItemRenderer). Fine on a client; on a dedicated server
+    # those classes do not exist and construction throws. Upstream bugs, not
+    # packaging errors - no manifest check can predict them.
+    "epic-fight-sword-soaring": "F14. RuntimeException: Attempted to load class net/minecraft/client/gui/screens/Screen for invalid dist DEDICATED_SERVER. Painful loss - this was the wuxia specialisation layer Ethan chose to make melee about movesets rather than stat lines. Epic Fight itself still supplies movesets, stances and combos.",
+    "kenny": "F14. Same DEDICATED_SERVER crash. One stalker of six, and the least distinctive; The Knocker, Obsessed, The Skinwalker Hunt, Distant Friends and Weeping Angels remain.",
+
     # --- F13: mistagged multi-version jars, proven by reading them ----------
     "structory-towers": "F13. Modrinth tags it 1.21.1 + neoforge, but the jar is a multi-version build (26.2) carrying neoforge.mods.toml, mods.toml AND fabric.mod.json plus 1.21.5/1.21.11 overlay folders. NeoForge rejects it outright: 'not a valid mod file'. Same class as zoniex. Base Structory stays and works.",
 

@@ -781,11 +781,6 @@ hash = "7a9b65bb00c4d4bc26a9a34422ea9beeaa1bd32e8ed2def6d2bf660c7e625c3a"
 metafile = true
 
 [[files]]
-file = "mods/epic-fight-sword-soaring.pw.toml"
-hash = "acb6cc48a15556907f10214a151f3a40bb992d81a1fb30d091a28dd8d3b64c99"
-metafile = true
-
-[[files]]
 file = "mods/epic-fight-x-irons-spells-enhanced-animation.pw.toml"
 hash = "c6d9a1bb1bbb87942e7f1015c9cb0a7cb05617e876b1ded8f01ccc1f443defa5"
 metafile = true
@@ -1088,11 +1083,6 @@ metafile = true
 [[files]]
 file = "mods/justenoughbreeding.pw.toml"
 hash = "97bfd3ab26e1336b77e9f78daf3f82dce9ad03a1adf9dc4f563f620e91d5fd6a"
-metafile = true
-
-[[files]]
-file = "mods/kenny.pw.toml"
-hash = "b0a904c73b80777c0c2b533f1bc936f18e30186984980b26f9c77d6ad39ef2e6"
 metafile = true
 
 [[files]]

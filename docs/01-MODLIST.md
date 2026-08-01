@@ -4,11 +4,11 @@
 > `tools/modlist.json` + the resolution cache. Do not hand-edit -
 > change `tools/modlist.json` and regenerate.
 
-**391 mods** for Minecraft 1.21.1 / neoforge, 1,502 MB total.
+**389 mods** for Minecraft 1.21.1 / neoforge, 1,481 MB total.
 
 | side | count | meaning |
 |---|---:|---|
-| both | 316 | installed on the server *and* every client |
+| both | 314 | installed on the server *and* every client |
 | client | 45 | client-only; the server never loads them |
 | server | 30 | server-only; players do not need them |
 
@@ -116,7 +116,7 @@ Pillar 2: Ars Nouveau as the magic spine plus a deliberately chosen set of addon
 | [Werewolves](https://modrinth.com/mod/werewolves) | `1.21-2.0.3.3` | both | minor | Vampirism's sister mod |
 | [XP Tome](https://modrinth.com/mod/xp-tome) | `v2.4` | both | minor | Bankable XP |
 
-## combat-guns (30)
+## combat-guns (29)
 
 Pillar 3a: the brother's track, rebuilt to the period ruling. PERIOD (Ethan, 2026-07-31): preindustrial-to-fantasy, with TaCZ as the ONE sanctioned anachronism - one deliberate exception reads as intentional, four read as an accident. Modern warfare, tactical gear and electronic security are out. PRESENTATION RULING: melee is chosen for MOVESETS AND ANIMATION, not stat lines - a weapon that Epic Fight cannot animate is a differently-coloured sword and does not earn a slot. EASE RULING (delegated to Claude): one system per verb. One dodge, one parry, one camera - nobody should have to bind twelve keys to fight.
 
@@ -126,7 +126,6 @@ Pillar 3a: the brother's track, rebuilt to the period ruling. PERIOD (Ethan, 202
 | [Bosses of Mass Destruction Forge](https://modrinth.com/mod/bosses-of-mass-destruction-forge) | `1.3.3` | both | major | Set-piece boss fights |
 | [Epic Fight](https://modrinth.com/mod/epic-fight) | `21.17.3.1-mc1.21.1-neoforge` | both | major | Souls-like combat: weapon-specific movesets, stances, combos, its own dodge and battle camera. The animation ENGINE the whole melee pillar is built on |
 | [Epic Fight Progressive Difficulty](https://modrinth.com/mod/epic-fight-progressive-difficulty) | `1.2.1` | server | major | Scales mobs' Epic Fight attributes to player progression, so the combat system stays meaningful past the early game |
-| [Epic Fight - Sword Soaring](https://modrinth.com/mod/epic-fight-sword-soaring) | `21.14.2.5-mc1.21.1-neoforge` | both | major | Wuxia martial-arts skills, learnable techniques, aerial combat. The specialisation layer - this is what makes melee feel different rather than merely re-textured |
 | [Epic Fight x Iron's Spells: Enhanced Animation](https://modrinth.com/mod/epic-fight-x-irons-spells-enhanced-animation) | `3.1.0` | both | major | Iron's Spells casting animated in Epic Fight's style, so magic and melee read as one system instead of two |
 | [Epic Knights: Shields Armor and Weapons](https://modrinth.com/mod/epic-knights-shields-armor-and-weapons) | `10.12` | both | major | The definitive medieval arms and armour set, and it carries Epic Fight support |
 | [Hostile Mobs Improve Over Time](https://modrinth.com/mod/hostile-mobs-improve-over-time) | `1.10.1b+mod` | both | major | Mobs get stronger the longer the world runs. A time-based difficulty curve, and an obvious future DM lever |
@@ -153,7 +152,7 @@ Pillar 3a: the brother's track, rebuilt to the period ruling. PERIOD (Ethan, 202
 | [TslatEntityStatus](https://modrinth.com/mod/tslatentitystatus) | `1.8.3` | both | minor | Entity health readouts; matters when fights last minutes |
 | [Valarian Conquest](https://modrinth.com/mod/valarian-conquest) | `4.2.1.1` | both | minor | Combat and exploration enhancement for the overworld |
 
-## horror (41)
+## horror (40)
 
 Pillar 3b: horror. Built from stalkers, atmosphere and escalating pressure rather than jump-scares, so it stays frightening over a long server. Several entries are configurable ambient systems rather than mobs - exactly the surface a future dungeon master would drive. STALKER RULING (Ethan, 2026-07-31): all six hunting entities stay, staggered in config so at most one or two can be active at a time - see docs/06-BURIED-TECH.md and pack/config. Six simultaneous stalkers is comedy, not horror; the config IS the feature. THE BROKEN SCRIPT WAS CUT ON SAFETY, NOT PERIOD: the author states the mod WILL grief the world, WILL destroy buildings, can ban you from your own save and writes files to the desktop. Disqualifying for a shared long-running world.
 
@@ -171,7 +170,6 @@ Pillar 3b: horror. Built from stalkers, atmosphere and escalating pressure rathe
 | [Enhanced Celestials](https://modrinth.com/mod/enhanced-celestials) | `6.0.2.5-neoforge` | both | major | Blood moons and lunar events - scheduled, world-wide dread |
 | [EnhancedVisuals](https://modrinth.com/mod/enhancedvisuals) | `1.8.29` | both | major | Screen damage, blur and blood. Turns being hurt into an experience |
 | [Fungal Infection:Spore](https://modrinth.com/mod/fungal-infectionspore) | `2.2.0j` | both | major | A spreading fungal infection. The closest 1.21.1 has to Scape and Run: Parasites |
-| [Kenny [HORROR]](https://modrinth.com/mod/kenny) | `6.0.0` | both | major | A silent stalker that grows more aggressive each day |
 | [Mimicked](https://modrinth.com/mod/mimicked) | `2.0.0` | client | major | Voice-mimicking horror atmosphere |
 | [Mutant Monsters](https://modrinth.com/mod/mutant-monsters) | `v21.1.1-1.21.1-NeoForge` | both | major | Mutant variants of vanilla mobs |
 | [no_moon.jar](https://modrinth.com/mod/no_moon.jar) | `1.4.4` | both | major | Slowly drives the world into chaos over time |
