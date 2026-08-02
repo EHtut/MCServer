@@ -66,11 +66,6 @@ hash = "7b9ae92dca84c311f8eec343a501c542db4f89a0a6217d91cf570fa4a0d35023"
 metafile = true
 
 [[files]]
-file = "mods/ars-n-spells.pw.toml"
-hash = "0a047ee0e73ba63b73b7b646c906dad98823aad16c3d1f9c2c08efcc22f6367d"
-metafile = true
-
-[[files]]
 file = "mods/ars-nouveau.pw.toml"
 hash = "78fcc6d6cae18101c352aa3eb9f7b3aae578b20a37fdd6d057c06137a1863829"
 metafile = true
@@ -118,6 +113,11 @@ metafile = true
 [[files]]
 file = "mods/better-archeology.pw.toml"
 hash = "b3c09f5948d5ce7b121b3191d124a7a9fc6c482ad98af673e29f1554c9b64705"
+metafile = true
+
+[[files]]
+file = "mods/better-combat.pw.toml"
+hash = "438170e7e704a1b8ed67bf0521dc5d77cdeeaabf6f729dba9f8dfdad75330acf"
 metafile = true
 
 [[files]]
@@ -223,6 +223,11 @@ metafile = true
 [[files]]
 file = "mods/cobweb.pw.toml"
 hash = "23f681379a3e647a59f0749d25f2ce0725d4afafeed41871c5c87f2658d13a72"
+metafile = true
+
+[[files]]
+file = "mods/combat-roll.pw.toml"
+hash = "9bb81c87fca7a6429a10e18ad8665fb9accd758f53737f1a5543787be8308e51"
 metafile = true
 
 [[files]]
@@ -526,26 +531,6 @@ hash = "cf7390cf06a861f7661222773371b429fce4fdd359240ca3c0eff20835471c0c"
 metafile = true
 
 [[files]]
-file = "mods/epic-fight-invincible-lib.pw.toml"
-hash = "679c9265f9a002834ec0972c8b2b95701e31870d3183e3de80b6963b302be08a"
-metafile = true
-
-[[files]]
-file = "mods/epic-fight-progressive-difficulty.pw.toml"
-hash = "3ff437d5c36307d181dcb3d169c05a5ae04b6193a02bcc322a8117879f28d60d"
-metafile = true
-
-[[files]]
-file = "mods/epic-fight-x-irons-spells-enhanced-animation.pw.toml"
-hash = "c6d9a1bb1bbb87942e7f1015c9cb0a7cb05617e876b1ded8f01ccc1f443defa5"
-metafile = true
-
-[[files]]
-file = "mods/epic-fight.pw.toml"
-hash = "8f25f6d5023d533e0d70b0375c36c176445251f431a9c8ebd63cf7f63e4c31da"
-metafile = true
-
-[[files]]
 file = "mods/epic-knights-shields-armor-and-weapons.pw.toml"
 hash = "276a01bd8812a9bd3619952524c976829e4fc93c2824e0af963cdfa2c407b331"
 metafile = true
@@ -633,6 +618,11 @@ metafile = true
 [[files]]
 file = "mods/framedblocks.pw.toml"
 hash = "20eee73cffcd55bfe041b16bbc3adc64c38859bf928486bf1db1368b6dba2058"
+metafile = true
+
+[[files]]
+file = "resourcepacks/fresh-animations.pw.toml"
+hash = "6a1556a0e4fcb411b33efafc3382b4abd9a6e671f140dc0d42e9aad2808e24f3"
 metafile = true
 
 [[files]]
@@ -758,16 +748,6 @@ metafile = true
 [[files]]
 file = "mods/iris.pw.toml"
 hash = "db1c1e6382878b78e994dba1b9026935f8d1c5ca685c89d2437858e0a0dcab58"
-metafile = true
-
-[[files]]
-file = "mods/irons-lib.pw.toml"
-hash = "1b84f2dda2014252ffb0b792f4850fa3b3b396a49f39cac7b11c8cb88bf1a1e4"
-metafile = true
-
-[[files]]
-file = "mods/irons-spells-n-spellbooks.pw.toml"
-hash = "76f6ec0d8429c4e25430c356563bc3d51b6baf6fc500469f5ec75eb2ae7039a1"
 metafile = true
 
 [[files]]
@@ -1328,6 +1308,11 @@ metafile = true
 [[files]]
 file = "mods/trading-post.pw.toml"
 hash = "72c0db4d726a16d80c2337cc9dc4d220ba8298deb5db5d9d58082d15a245ea3f"
+metafile = true
+
+[[files]]
+file = "resourcepacks/tras-fresh-player.pw.toml"
+hash = "32fe0fe8941110f8fba07ce7768faa1797de6b28e961ab65b483c380fc0a365a"
 metafile = true
 
 [[files]]

@@ -143,19 +143,21 @@ def cmd_start() -> int:
         print("  Starting now would put two servers on one world. Stop first.")
         return 1
     print("  0 java processes - starting")
-    # DETACH PROPERLY. Without this the child inherits our stdio handles, so
-    # whatever called serverctl blocks until the SERVER exits - the tool appears
-    # to hang forever even though the server booted in five seconds. Found by
-    # the tool's own first real use.
+    # CREATE_NEW_CONSOLE, and deliberately NOT DetachedProcess/DEVNULL.
+    #
+    # Two failures, in order, both found by running it:
+    #   inheriting our stdio  -> the caller blocks until the SERVER exits, so the
+    #                            tool looks hung while the server booted fine
+    #   DETACHED_PROCESS      -> the child has NO console, start.ps1's Write-Host
+    #                            throws, and ErrorActionPreference=Stop kills the
+    #                            script before Java is ever launched. Silent: no
+    #                            log, no crash report, no process.
+    # Its own console satisfies Write-Host and still frees our handles.
     subprocess.Popen(
         ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass",
          "-File", str(START_PS1)],
         cwd=str(INSTANCE),
-        stdin=subprocess.DEVNULL,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        creationflags=getattr(subprocess, "DETACHED_PROCESS", 0)
-        | getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+        creationflags=getattr(subprocess, "CREATE_NEW_CONSOLE", 0),
         close_fds=True)
     if not wait_for(rcon_open, timeout=420, every=5):
         print(f"  TIMEOUT: rcon never opened. java processes = {len(java_pids())}")

@@ -156,6 +156,11 @@ Shaders (expensive - try this on a good graphics card only):
 Textures (cheap - most machines are fine):
   Options -> Resource Packs -> move "Faithful 32x" to the RIGHT -> Done
 
+Animations (moderate cost - try one at a time):
+  Same screen. "Fresh Animations" animates every MOB; "Fresh Moves" animates
+  the PLAYER. They are independent, so run either or both.
+  These are the first things to drop if the game gets choppy in a crowd.
+
 IF THE GAME MISBEHAVES, TURN THE SHADER OFF FIRST. It is by far the most
 expensive thing here and nothing breaks without it. Suspect it immediately on:
   - frames dropping through the floor

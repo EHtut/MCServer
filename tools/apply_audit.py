@@ -64,6 +64,15 @@ CUTS: dict[str, str] = {
     # these cut actually hurt. We need to ensure my brother stays entertained
     # with bosses, mobs, horror, and alot of weaponry." They are deliberately
     # absent from CUTS - do not re-add them without asking.
+    # --- F45: Epic Fight -> Better Combat, and Iron's Spells out ----------
+    "epic-fight": "F45. Cut for its MODE TOGGLE, which is the mod rather than a setting. Ethan's brother: 'its a pain to switch back and forth... he doesn't even use it'. A player who will not switch modes receives nothing from Epic Fight while paying all of its costs, and the pack was carrying a 246-file capability datapack to keep its weapons working.\n\n        Replaced by Better Combat, which has no mode, auto-assigns a weapon preset by item id for any modded weapon, and renders correctly in first person - which also settles the shoulder-in-the-screen complaint Epic Fight has no setting to fix.\n\n        Epic Knights survives: it declares Epic Fight OPTIONAL, so its 236 weapons and armour are unaffected.",
+    "epic-fight-x-irons-spells-enhanced-animation": "F45. 227 Iron's Spells cast animations, bridging two mods that are both being cut. Required Iron's Spells, and was the only thing that did.",
+    "epic-fight-progressive-difficulty": "F45. Difficulty scaling tied to Epic Fight progression. No content of its own.",
+    "epic-fight-invincible-lib": "F45. Epic Fight addon - 16 skills, 4 items, 12 capabilities. Nothing else depends on it.",
+    "irons-spells-n-spellbooks": "F45. Ethan: 'i really don't use irons spells'. Required by exactly ONE mod - efiscompat - which is cut with Epic Fight in the same pass, so nothing is left needing it. Ars Nouveau remains the magic spine, which was always the ruling.",
+    "ars-n-spells": "F45. The Ars Nouveau <-> Iron's Spells bridge. Pointless once Iron's Spells is gone.",
+    "irons-lib": "F45. Iron's Spells' own library, orphaned by the above.",
+
     # --- F44: the curio menu crash -----------------------------------------
     "accessories": "F44. THE CURIO MENU CRASH. Accessories' compat layer cancels Curios' core mixins (MixinInventory, MixinLivingEntity - visible as 'mixinsquared-canceller' lines at boot) and substitutes its own inventory handling. Server and client then disagree on the curio slot count, and ClientboundContainerSetContentPacket dies with 'Index 61 out of bounds for length 61' inside AbstractContainerMenu.initializeContents, dropping the player from the server.\n\n        Cut because it earns nothing here: curios is REQUIRED by 12 mods and is load-bearing, while accessories is required by NOTHING except its own compat layer. The manifest justified it as 'several 1.21.1 mods moved to it' - a plausible forecast that is false of this pack, where the number of mods using it is zero.\n\n        No data is lost: nothing can be stored in an Accessories slot when no mod uses Accessories.",
     "accessories-compat-layer": "F44. The other half. Its entire job is bridging Curios and Accessories, so it is pointless once Accessories is gone - and it is the component that actually cancels the Curios mixins. Required by nothing.",
