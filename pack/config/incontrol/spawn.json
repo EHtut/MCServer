@@ -16,6 +16,11 @@
   },
   {
     "dimension": "minecraft:overworld",
+    "seesky": false,
+    "result": "default"
+  },
+  {
+    "dimension": "minecraft:overworld",
     "hostile": true,
     "minheight": 40,
     "result": "deny"
@@ -31,7 +36,6 @@
       "grim_and_bleak",
       "revervox_mod",
       "frostiful",
-      "irons_spellbooks",
       "friendsandfoes"
     ],
     "result": "deny"

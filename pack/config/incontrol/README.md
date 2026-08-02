@@ -19,12 +19,38 @@ ambient natural spawning.
 | 0 | **Mob spawners always work**, any depth. Someone placed that spawner on purpose. |
 | 1 | **Structure-generated spawns always work** — the mobs a structure creates as it generates. |
 | 2 | **Anything inside a structure's bounds is left to vanilla**, any depth. Dangerous places stay dangerous. |
-| 3 | No `Enemy` mob spawns in the OPEN overworld at y ≥ 40. Any time, any light level. |
-| 4 | No mob from the pure-monster mods at y ≥ 40. |
-| 5 | No named night-horror mobs at y ≥ 40 from mods with a mixed roster, so bosses and tameables survive. |
-| 6 | Between y 0 and 39, hostiles spawn normally but are capped at 40 concurrent — uneasy, not swarming. |
+| 3 | **Anything that cannot see the sky is left to vanilla, at ANY height.** Caves are caves whether they are at y 12 or y 190. |
+| 4 | No `Enemy` mob spawns under OPEN SKY at y ≥ 40. Any time, any light level. |
+| 5 | No mob from the pure-monster mods under open sky at y ≥ 40. |
+| 6 | No named night-horror mobs under open sky at y ≥ 40, so bosses and tameables survive. |
+| 7 | Between y 0 and 39, hostiles spawn normally but are capped at 40 concurrent — uneasy, not swarming. |
 
 Below y 0 nothing is restricted: the deep is meant to be dangerous.
+
+### Rule 3 — "y 40" was never what the design meant
+
+Ethan, 2026-08-02: his brother, high up, *"says he's not encountering any
+enemies"*.
+
+The rule was doing exactly what it said, and what it said was wrong. **y 40 is an
+ABSOLUTE height, not a measure of being underground.** In a world with tall
+terrain that has an obvious consequence nobody had stated: a cave at y 90 inside
+a mountain was every bit as safe as an open meadow. Whole cave systems were inert
+because of where the mountain happened to put them.
+
+The design never meant "above y 40". It meant **"in the open"**. `seesky` is that
+distinction directly — In Control backs it with `canSeeSkyFromBelowWater` — so
+rule 3 hands every enclosed spawn back to vanilla regardless of altitude, and the
+height denies below it now only ever apply to open sky.
+
+Stated as one sentence: **the sky is safe; the dark is not, wherever it is.**
+
+**Known consequence, deliberate:** a spawn point under any solid block cannot see
+the sky, so dense forest canopy and deep overhangs count as "enclosed" and can
+spawn at night. That gives woods some teeth after dark while open fields stay
+quiet. If it proves too much, the fix is to add `"maxheight": 60` to rule 3 so it
+only covers genuinely low ground — but try it first; a forest that is safer than
+a cave but less safe than a meadow is arguably the right shape.
 
 ### Rules 0 and 1 exist because a dungeon was dead
 
