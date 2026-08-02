@@ -1,0 +1,17 @@
+{
+  "name": "Dying",
+  "category": "patchouli:the_world",
+  "icon": "minecraft:skeleton_skull",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "You Keep Going",
+      "text": "There is $(o)no death screen$(). You die, and a moment later you are awake at your bed.$(br2)Your things do not come with you. They stay in a $(l)corpse$() where you fell, holding everything you had."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Cost Is The Walk",
+      "text": "Dying never costs you your gear and never costs you your base. It costs you $(o)the trip back$().$(br2)That is the whole point. Dying nine hundred blocks down is a real loss of an evening, and dying in your wheat field is nothing at all. The danger scales with how far you went."
+    }
+  ]
+}

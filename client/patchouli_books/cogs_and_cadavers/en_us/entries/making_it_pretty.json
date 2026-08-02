@@ -1,0 +1,22 @@
+{
+  "name": "Making It Look Good",
+  "category": "patchouli:playing",
+  "icon": "minecraft:glowstone",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Already Installed, Switched Off",
+      "text": "Shaders and a texture pack came with the game. Nothing to download.$(br2)They ship $(o)off$() because this install is tuned for the slowest computer in the group. If yours has room, turn them on."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Turning Them On",
+      "text": "$(l)Shaders$() - expensive, good graphics card only:$(br)Options -> Video Settings -> Shader Packs, then switch shaders on. BSL is already selected.$(br2)$(l)Textures$() - cheap, most machines cope:$(br)Options -> Resource Packs, move $(o)Faithful 32x$() to the right."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "If It Runs Badly",
+      "text": "Turn the $(o)shader$() off first, every time. It is by far the most expensive thing here and nothing breaks without it.$(br2)Suspect it immediately if frames collapse, the world renders with strange stripes or flickering, or menus and text go missing."
+    }
+  ]
+}

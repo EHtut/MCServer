@@ -1,0 +1,6 @@
+{
+  "name": "Playing",
+  "description": "Controls, combat and making the game look good.",
+  "icon": "minecraft:iron_sword",
+  "sortnum": 2
+}

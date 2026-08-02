@@ -1,0 +1,17 @@
+{
+  "name": "Gunpowder And Guns",
+  "category": "patchouli:the_depths",
+  "icon": "minecraft:gunpowder",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "It Is Not Up Here",
+      "text": "Gunpowder ore does not generate near the surface. It sits between $(l)y -128$() and $(l)y -64$(), in the deepest band of the world.$(br2)Creepers still drop it. But if you want $(o)enough$() gunpowder to feed a firearm, you are going mining, and you are going deep."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Why It Is Gated",
+      "text": "Guns are not an early game option in this world - they are what you earn by surviving the bottom of it.$(br2)That is the trade the depths offer everywhere: the thing you want is under the thing that wants you."
+    }
+  ]
+}

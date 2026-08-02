@@ -1,0 +1,23 @@
+{
+  "name": "The Surface Is Safe",
+  "category": "patchouli:the_world",
+  "icon": "minecraft:grass_block",
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "No Monsters Up Here",
+      "text": "Nothing hostile spawns in the open overworld above $(l)y 40$(). Not at night, not in the dark, not in a cave mouth on a hillside.$(br2)This is deliberate. The surface is for animals, farms, villages and building. If you want to be afraid, you have to go looking for it."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Three Exceptions",
+      "text": "$(li)$(l)Structures$() are exempt. A dungeon, fort, outpost or camp spawns monsters normally, at any depth. Dangerous places stay dangerous.$(br)$(li)$(l)Pillager patrols$() roam anywhere. They are not covered by the rule and never will be - they use a different spawning system entirely.$(br)$(li)$(l)The stalkers$() come when they want to. See the last page."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Below y 40",
+      "text": "Between $(l)y 0$() and $(l)y 39$() monsters spawn normally, but no more than forty at once. Uneasy, not swarming.$(br2)Below $(l)y 0$() nothing is held back at all. The deep is meant to be the most dangerous place in the world, and it is."
+    }
+  ]
+}

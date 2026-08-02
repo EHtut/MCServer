@@ -1,0 +1,17 @@
+{
+  "name": "Things That Are Not Bugs",
+  "category": "patchouli:the_world",
+  "icon": "minecraft:soul_lantern",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "It Is Supposed To Do That",
+      "text": "Some of what happens here reads like a broken game. It is not.$(br2)$(li)Whispering and voices in certain forests$(br)$(li)Knocking on doors at night$(br)$(li)A figure at the treeline that is gone when you look again$(br)$(li)Someone wearing a face you recognise"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Stalkers",
+      "text": "A handful of things in this world hunt $(o)you$() specifically, on their own schedule, and the surface rules do not hold them back.$(br2)They are rare on purpose. If one has decided about you, you will know.$(br2)$(italic)Not everything that walks like a player is one.$()"
+    }
+  ]
+}

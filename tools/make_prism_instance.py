@@ -86,6 +86,12 @@ WIN_WIDTH, WIN_HEIGHT = 1280, 720
 # stops every friend rediscovering the same out-of-memory crash.
 CLIENT_CONFIG = pathlib.Path(__file__).resolve().parent.parent / "client" / "config"
 
+# The in-game guidebook. Patchouli's BookFolderLoader scans <gamedir>/
+# patchouli_books/ and loads any subfolder holding a book.json - no resource
+# pack, no mod jar. It is a loose game file, so packwiz will never carry it and
+# the instance zip is the only route to the other players.
+CLIENT_BOOKS = pathlib.Path(__file__).resolve().parent.parent / "client" / "patchouli_books"
+
 
 # --- minimal NBT writer -----------------------------------------------------
 # servers.dat is UNCOMPRESSED NBT. Only three tag types are needed, so a full
@@ -464,6 +470,15 @@ Options -> Controls if you hate it.
                         else cfg.read_bytes())
                 z.writestr(f".minecraft/config/{rel}", body)
                 shipped += 1
+
+        books = 0
+        for f in sorted(CLIENT_BOOKS.rglob("*")) if CLIENT_BOOKS.is_dir() else []:
+            if f.is_file():
+                z.write(f, f".minecraft/patchouli_books/"
+                           f"{f.relative_to(CLIENT_BOOKS).as_posix()}")
+                books += 1
+        if books:
+            print(f"  guidebook files shipped: {books}")
         print(f"  client configs shipped: {shipped}")
 
     # Keep the repo copy of the instance template in sync for review.

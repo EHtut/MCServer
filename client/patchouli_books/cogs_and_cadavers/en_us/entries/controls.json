@@ -1,0 +1,18 @@
+{
+  "name": "Controls",
+  "category": "patchouli:playing",
+  "icon": "minecraft:lever",
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Not Vanilla",
+      "text": "$(li)$(l)Sneak$() is $(o)LEFT CTRL$()$(br)$(li)$(l)Sprint$() is $(o)LEFT SHIFT$()$(br2)These are swapped from Minecraft's defaults on purpose. If you hate it, $(l)Options -> Controls$() and put them back - it is your game."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Combat",
+      "text": "Weapons have real movesets. A sword, an axe and a spear do not just deal different numbers, they $(o)swing differently$() and combo differently.$(br2)Try holding a weapon and attacking repeatedly rather than clicking once. Different weapons reward different rhythms."
+    }
+  ]
+}

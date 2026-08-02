@@ -1,0 +1,18 @@
+{
+  "name": "Why Go Down",
+  "category": "patchouli:the_depths",
+  "icon": "minecraft:diamond",
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "What The Surface Lacks",
+      "text": "Everything above ground is wood, stone, crops and magic. The things that $(o)do not belong$() in a world like this are buried in it.$(br2)Gems. Gunpowder. Machinery nobody up here could have built. The further down you dig, the less the world explains itself."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Deeper, The Stranger",
+      "text": "Depth is the progression. Not a tech tree, not a quest list - just how far down you are willing to go, and what you can survive once you are there.$(br2)Bring light, bring food, and expect the walk home to be the hard part."
+    }
+  ]
+}
