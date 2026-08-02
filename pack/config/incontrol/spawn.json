@@ -1,6 +1,11 @@
 [
   {
     "dimension": "minecraft:overworld",
+    "hasstructure": true,
+    "result": "default"
+  },
+  {
+    "dimension": "minecraft:overworld",
     "hostile": true,
     "minheight": 40,
     "result": "deny"

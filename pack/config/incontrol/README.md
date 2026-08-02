@@ -6,12 +6,33 @@ JSON files cannot carry comments, so the reasoning lives here.
 
 | Rule | Effect |
 |---|---|
-| 1 | **No `Enemy` mob spawns in the overworld at y ≥ 40.** Any time, any light level. |
+| 0 | **Inside ANY structure, spawning is left entirely to vanilla** — at any depth, for every mob. Dangerous places stay dangerous. |
+| 1 | **No `Enemy` mob spawns in the open overworld at y ≥ 40.** Any time, any light level. |
 | 2 | **No mob from the pure-horror mods at y ≥ 40** — the rosters that exist only to be monsters. |
 | 3 | **No named night-horror mobs at y ≥ 40** from mods with a mixed roster, so their bosses and tameables survive. |
 | 4 | Between y 0 and 39, hostiles spawn normally but are capped at 40 concurrent, so the shallow band is uneasy rather than swarming. |
 
 Below y 0 nothing is restricted: the deep is meant to be dangerous.
+
+## Rule 0 — "structures yes, open world no"
+
+Ethan, 2026-08-02: *"can we do it so dangerous structures still spawn mobs but
+overworld general cannot?"*
+
+`hasstructure` is a boolean meaning **is this spawn inside any structure at all**
+(In Control backs it with `isInAnyStructure`). It needs no list of structure
+names, so it cannot rot as mods are added or removed — which is the failure the
+rest of this file is about.
+
+It uses `"result": "default"` and **not** `"allow"`. `default` means *no opinion,
+let vanilla decide*, and because In Control stops at the first matching rule, it
+exempts structures from rules 1–3 while leaving their spawning exactly as the
+structure's author intended. `allow` would instead FORCE spawns through, ignoring
+light level and vanilla placement checks, and would over-populate every dungeon.
+
+The consequence to be aware of: villages are structures too, so a village at
+night can now see hostile spawns. That is vanilla behaviour and arguably correct
+for "spots of civilization", but it is a real change.
 
 ## ⚠️ `hostile` IS NOT A CATEGORY. This is the bug that cost a night of play.
 
@@ -65,6 +86,21 @@ mod's whole roster is monsters, named `mob` denies where it is not.
   own event schedulers rather than the vanilla spawn cycle, so In Control never
   sees them anyway — the same property that made Vampirism and Werewolves
   ungovernable and got them cut.
+
+## In Control NEVER SEES PILLAGER PATROLS
+
+A live vanilla Pillager was found at y=65 on a fresh world, which rule 1 should
+have denied — Pillager does implement `Enemy`. The nearest illager structure was
+962 blocks away, so it was not a camp.
+
+The reason is in the jar: In Control's `spawntype` recognises exactly three
+values — **NATURAL, SPAWNER, STRUCTURE**. Vanilla pillager patrols spawn with
+`MobSpawnType.PATROL`, which is none of those, so the patrol spawner is a route
+In Control does not evaluate at all. No spawn rule here can stop patrols.
+
+That is the same class of bypass that got Vampirism and Werewolves cut, and it
+means a wandering patrol can still arrive anywhere on the surface. If they need
+to go, it takes a mod or a mixin that disables the patrol spawner — not this file.
 
 ## A rule cannot remove what WORLDGEN placed
 
