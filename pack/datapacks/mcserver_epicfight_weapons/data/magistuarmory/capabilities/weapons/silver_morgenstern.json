@@ -1,0 +1,9 @@
+{
+  "type": "epicfight:axe",
+  "attributes": {
+    "common": {
+      "impact": 1.9,
+      "max_strikes": 2
+    }
+  }
+}
