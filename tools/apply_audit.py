@@ -63,6 +63,16 @@ CUTS: dict[str, str] = {
     # these cut actually hurt. We need to ensure my brother stays entertained
     # with bosses, mobs, horror, and alot of weaponry." They are deliberately
     # absent from CUTS - do not re-add them without asking.
+    # --- F41/F42: the invisible-GUI pair, and the last HUD element --------
+    # Found by BISECTION after seven wrong single-mod theories (Sable,
+    # Apotheosis, EMI, Iris, ImmediatelyFast, RRLS...). None of them ever
+    # threw an exception, which is exactly why reading logs kept failing:
+    # a mod that silently swallows draw calls is indistinguishable from one
+    # that is working. Only bisection could see it.
+    "enhancedvisuals": "F41. One of the two mods that made every menu invisible - found by bisection after seven wrong single-mod theories. With Enhanced Visuals and Legendary Tooltips both disabled the GUI returns; with either of Iris, ImmediatelyFast or RRLS disabled alone it does not. Enhanced Visuals runs fullscreen post-process overlays (damage blur, splash, blood), which is exactly the pipeline that can consume GUI draw calls without throwing. Nothing ever appeared in a log, because from the game's side the draw calls WERE handled.\n\n        Cut rather than narrowed to one of the two: both are cosmetic, Ethan's brother was waiting, and neither is worth another launch cycle to acquit.",
+    "legendary-tooltips": "F41. The other half of the invisible-GUI pair. It replaces the tooltip renderer outright. Same reasoning - cosmetic, and not worth another test round to determine which of the two was the culprit. Either can be re-added later, one at a time, if wanted.",
+    "jade": "F42. THE targeting indicator Ethan kept objecting to - 'the indicator of who you're attacking', still present after TSLA Entity Status was cut. Jade draws a readout of whatever block or entity you are looking at, permanently, at the top of the screen. Same ruling as the minimap: the HUD stays minimal, and a horror layer works better when you do not get a nameplate for the thing in the dark.",
+
     # --- F40: the actual tutorial ----------------------------------------
     "cryptid": "F40. THE tutorial that has been breaking the GUI - identified by Ethan in play, then confirmed in the jar: Cryptid is a PURE DATAPACK mod (0 java classes, 1,018 mcfunction files) shipping data/cryptid/function/tick/player/tutorial/starttutorial.mcfunction, driven every tick from playertick.mcfunction. It emits a clickable 'skip tutorial: CLICK' tellraw on join and leaves the client's menus unusable.\n\n        I MISATTRIBUTED THIS. I grepped every jar for the string 'skip tutorial', found 'button.apotheosis.skip_tutorial' in Apotheosis's lang file, and stopped there. The observed symptom was a CHAT message carrying a click event - a datapack tellraw - while Apotheosis's is a GUI button label. Different mechanism entirely. Matching the string instead of the mechanism cost Apotheosis its place in the pack (F38) and cost hours of unplayable evening.\n\n        Being function-driven, Cryptid also bypasses In Control completely, so it was already the horror mod most likely to fire on a surface the design says should be quiet.",
 

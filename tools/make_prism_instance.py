@@ -347,14 +347,22 @@ is strong and you want the view, ask Ethan to turn it on for you.
 
 Want shaders?  (optional, looks great, costs frames)
 ----------------------------------------------------
-1. Download Complementary Unbound:
-   https://modrinth.com/shader/complementary-unbound
-2. In Prism, right-click the instance -> "Folder".
-3. Put the downloaded .zip inside the "shaderpacks" folder.
-4. In game: Options -> Video Settings -> Shader Packs -> pick it.
+Nothing to download - Complementary Reimagined already arrived with the pack.
+It ships switched OFF, because a shader is a per-machine decision and this
+instance is tuned for the slowest computer in the group.
 
-If your frames drop too much, use "MakeUp Ultra Fast" instead, or turn shaders
-back off. Nothing breaks either way.
+To turn it on:  Options -> Video Settings -> Shader Packs -> pick
+"ComplementaryReimagined" -> Apply.
+
+Turn it straight back off if you get any of these - shaders are the first
+thing to suspect, and nothing breaks either way:
+  - frames drop through the floor
+  - the world renders with strange stripes, blocks or flickering
+  - menus or text go missing
+
+(Credit: Complementary Shaders - Reimagined by Complementary Development,
+ https://www.complementary.dev/ . It is downloaded from Modrinth at launch,
+ not redistributed here.)
 """
 
     stage_files = {

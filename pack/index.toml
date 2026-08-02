@@ -516,11 +516,6 @@ hash = "ac4cbc46bfffd2dcfac4eac2f03d93418abecdf38b2a266e57579c315987ac77"
 metafile = true
 
 [[files]]
-file = "mods/enhancedvisuals.pw.toml"
-hash = "ecac28eba39ea2e65b7583f394f9551de0fd1c655e67720e9c98e9d752fb25be"
-metafile = true
-
-[[files]]
 file = "mods/entity-model-features.pw.toml"
 hash = "4fa25309ea7f4f7770ce6588f39711e891d39f70ae0906b842647273a9ce0448"
 metafile = true
@@ -796,11 +791,6 @@ hash = "9163b758163681f75e2048c798be880c50392684b127d7d87f42ea588deceb62"
 metafile = true
 
 [[files]]
-file = "mods/jade.pw.toml"
-hash = "b6e0a61fea06f8d6d8e1672cf07b682625c4b74efd548d5093cd9c1fed167eec"
-metafile = true
-
-[[files]]
 file = "mods/jupiter.pw.toml"
 hash = "3f44721c554a06b9e922c6102bed6402fed57d6d340de0299ee4237544724c48"
 metafile = true
@@ -853,11 +843,6 @@ metafile = true
 [[files]]
 file = "mods/legendary-monsters.pw.toml"
 hash = "1ee600f7d8adbb9fd09b5d9d651becebfeff534933cb14bc55fae04886cbe4c0"
-metafile = true
-
-[[files]]
-file = "mods/legendary-tooltips.pw.toml"
-hash = "9ca14134538c66b6d8ef74107f6b15ba9487ec632d984427e84ad38aa47afa60"
 metafile = true
 
 [[files]]
