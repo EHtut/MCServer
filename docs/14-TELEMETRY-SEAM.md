@@ -73,7 +73,37 @@ Ethan approved all of the following (2026-08-02).
 | `player.biome` | `from`, `to`, `dwell_seconds` | **what they avoid.** A biome entered and left in 20s is a retreat. |
 | `player.build` | `chunk_x`,`chunk_z`, `dim`, `count`, `top_blocks` | where their base is, without logging every block |
 | `player.advancement` | `id` | progression, cheaply |
+| `session.together` | `players`, `seconds`, `range` | who actually plays *with* whom — see the chat ruling below |
 | `world.generation` | `world`, `seed_note` | a regen — a story beat, not a reset |
+
+### Chat is NOT recorded — and that decides more than it looks like
+
+Ethan, 2026-08-02: *"most communication is done through vc and chat is
+unreliable."*
+
+That is not merely "low value". It makes chat a **biased sample**: the things
+people bother to *type* when they are already talking are the atypical ones. A
+DM modelling this group from chat would be over-weighting its least
+representative channel, and would do so invisibly.
+
+It compounds with a limit found separately: **no mod captions other players'
+voice.** All ~40 Simple Voice Chat addons for 1.21.1 were enumerated; the only
+speech-to-text goes the wrong way (your own mic into your own chat) and requires
+each player to hand-install a VOSK or Whisper model, which breaks the one-click
+install this pack is built around.
+
+So the honest position is: **the DM will be permanently deaf to most of what
+this group says.** That is a fixed constraint, not a gap to close later.
+
+The consequence is that behaviour has to carry the weight speech cannot. Every
+plan agreed in voice still leaves residue — two people walking to the same place
+and staying there. `session.together` samples pairwise proximity every 10s
+within 24 blocks and flushes every 5 minutes. 24 blocks is roughly "in sight and
+working on the same thing", close enough to exclude two people who merely share
+a biome.
+
+Anything the DM would have learned from *hearing* them has to be inferred from
+where they go, what they avoid, what they build, and who they do it beside.
 
 ### Two volume decisions, made deliberately
 

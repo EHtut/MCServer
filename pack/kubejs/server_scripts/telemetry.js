@@ -166,8 +166,24 @@
   const SAMPLE_TICKS = 200          // 10s - cheap, and fine for depth/biome
   const BUILD_FLUSH_TICKS = 6000    // 5min - the volume decision, see the doc
 
+  // Ethan, 2026-08-02: "most communication is done through vc and chat is
+  // unreliable". Chat is therefore NOT recorded - it is a biased sample, since
+  // the things people bother to TYPE are the atypical ones, and a DM modelling
+  // this group from chat would over-weight its least representative channel.
+  //
+  // The consequence: the DM is permanently deaf to most of what is actually
+  // said. So the behaviour that coordination LEAVES BEHIND has to carry the
+  // weight instead. A plan agreed in voice still shows up as two players moving
+  // to the same place and staying there, and that is capturable.
+  //
+  // 24 blocks is roughly "in sight and working on the same thing" - close
+  // enough to exclude two people who merely share a biome.
+  const TOGETHER_RANGE = 24
+  const TOGETHER_FLUSH_TICKS = 6000
+
   const state = {}                  // username -> tracking state
   const builds = {}                 // username -> { "dim|cx,cz": {n, blocks:{}} }
+  const together = {}               // "a|b" -> samples spent within range
 
   function stateOf(name) {
     if (!state[name]) {
@@ -207,6 +223,42 @@
           s.biome = b
           s.biomeSince = tick
         }
+      })
+
+      // Co-location. The behavioural residue of everything agreed in voice
+      // chat, which is the channel the DM cannot hear. Counted in samples here
+      // and converted to seconds at flush, so the arithmetic stays integer.
+      const online = server.players
+      for (let i = 0; i < online.length; i++) {
+        for (let j = i + 1; j < online.length; j++) {
+          const a = online[i], bb = online[j]
+          try {
+            if (String(a.level.dimension) !== String(bb.level.dimension)) continue
+            const dx = a.x - bb.x, dy = a.y - bb.y, dz = a.z - bb.z
+            if (dx * dx + dy * dy + dz * dz > TOGETHER_RANGE * TOGETHER_RANGE) continue
+            // Sorted so "a|b" and "b|a" are the same bucket.
+            const pair = [a.username, bb.username].sort().join('|')
+            together[pair] = (together[pair] || 0) + 1
+          } catch (e) {
+            // pairwise runs every 10s; a per-error log would flood. Once only.
+            if (!global.__telemetryPairWarned) {
+              global.__telemetryPairWarned = true
+              console.error('[telemetry] co-location unreadable: ' + e)
+            }
+          }
+        }
+      }
+    }
+
+    if (tick % TOGETHER_FLUSH_TICKS === 0) {
+      Object.keys(together).forEach(pair => {
+        const names = pair.split('|')
+        emit('session.together', null, {
+          players: names,
+          seconds: together[pair] * (SAMPLE_TICKS / 20),
+          range: TOGETHER_RANGE,
+        })
+        delete together[pair]
       })
     }
 
