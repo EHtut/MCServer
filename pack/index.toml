@@ -206,6 +206,11 @@ hash = "838dbcb90c93bab58691e82c95045bd97c3e096e3a2680a00cf063e56ce35ce3"
 metafile = true
 
 [[files]]
+file = "mods/cataclysm-dimension.pw.toml"
+hash = "a736ec571e08dbcc566b4bb7fe1af7f6895c78108fb736f852feaae23d6246d0"
+metafile = true
+
+[[files]]
 file = "mods/cerbons-api.pw.toml"
 hash = "479dab388743fb59d3399d2d87a0a7dc0819a4184b74f734fa9cc1eecdd6f6f6"
 metafile = true
@@ -676,6 +681,11 @@ hash = "80d4a4bcd1971eaed260201636aa87c8b37e939f1beffbbc33da563a3ba42cd2"
 metafile = true
 
 [[files]]
+file = "mods/fungal-infectionspore.pw.toml"
+hash = "bb744f621497a5483ac3df5678443ac8cf057aa14ba7e5fcc8fd277ec9e6cb5d"
+metafile = true
+
+[[files]]
 file = "mods/fusion-connected-textures.pw.toml"
 hash = "9ed1eaf83cba3c914765631afb2dbea9291ca4314d092304ab23826b1a727c0b"
 metafile = true
@@ -708,6 +718,11 @@ metafile = true
 [[files]]
 file = "mods/goety.pw.toml"
 hash = "d74bb165b999594235390d0284d2c6f75af5df65c44592a510a4df6ceb74fc21"
+metafile = true
+
+[[files]]
+file = "mods/grim-and-bleak.pw.toml"
+hash = "d42dec80bfb5a534ac0b6971ca80b3310aab9d9a49f6a9f78419ebfddf1b43ab"
 metafile = true
 
 [[files]]
@@ -1323,6 +1338,11 @@ metafile = true
 [[files]]
 file = "mods/the-knocker.pw.toml"
 hash = "a96d14bcc58f21a1b1af5e0147543ea224342f7e636106c1a73c0818fd69eeb6"
+metafile = true
+
+[[files]]
+file = "mods/the-undergarden.pw.toml"
+hash = "cf08653612ce37b29ebabf07c5dfce80c493927d4cb7760d68a361738fb54d1d"
 metafile = true
 
 [[files]]

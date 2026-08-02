@@ -219,7 +219,8 @@
         ["first-person-model", "See your own body - no keybind, pure presentation", "minor"],
         ["not-enough-animations", "Third-person animation coverage for everything Epic Fight does not touch", "minor"],
         ["better-third-person", "Over-the-shoulder camera for exploration. The ONE camera mod - Epic Fight supplies the battle camera itself", "minor"],
-        ["valarian-conquest", "Combat and exploration enhancement for the overworld", "minor"]
+        ["valarian-conquest", "Combat and exploration enhancement for the overworld", "minor"],
+        ["cataclysm-dimension", "Extra Cataclysm dimension content", "minor"]
       ]
     },
     "horror": {
@@ -243,7 +244,9 @@
         ["in-control", "Precise control over what spawns, where and when. The tuning knob the whole horror layer depends on", "core"],
         ["frostiful", "Cold as survival pressure", "minor"],
         ["scorchful", "Heat as survival pressure", "minor"],
-        ["corpse", "Your body stays where you died - a walk back into the dark to retrieve it", "major"]
+        ["corpse", "Your body stays where you died - a walk back into the dark to retrieve it", "major"],
+        ["grim-and-bleak", "Ambience-led horror with its own dimension", "minor"],
+        ["fungal-infectionspore", "A spreading fungal infection. The closest 1.21.1 has to Scape and Run: Parasites", "major"]
       ]
     },
     "world-structures": {
@@ -275,7 +278,8 @@
         ["nether-depths-upgrade", "Lava-sea flora and fauna", "minor"],
         ["naturalist", "47 animals with real behaviours - the world feels inhabited", "major"],
         ["friends-and-foes-forge", "The mob-vote losers, well implemented", "major"],
-        ["mowzies-mobs", "A handful of exceptional set-piece creatures", "major"]
+        ["mowzies-mobs", "A handful of exceptional set-piece creatures", "major"],
+        ["the-undergarden", "An entire forgotten dimension deep underground. Thematically it IS the lost world beneath", "major"]
       ]
     },
     "qol": {
@@ -452,7 +456,6 @@
       ["butchery", "F36. Large and functional, cut on Ethan's call 2026-08-02 to get the server actually playable. Explicitly re-addable later - these are choices, not defects."],
       ["camerapture", "F33. A whole mod load, and a whole interaction surface, for a handful of blocks. Ethan's cut 2026-08-02: the pack was unplayable at 400 mods and this tail is where the count comes from."],
       ["carryon-aeronautics-compat", "F22. @Redirect in PickupHandlerMixin targets a Vec3.distanceTo call that Carry On 2.2.6.13 refactored away ('Scanned 0 target(s)'); with defaultRequire=1 that throws, killing the server tick loop the first time any player right-clicks a block. The target class and method both still exist - the missing thing is the injection point inside the method body, which no class- or method-level check can see."],
-      ["cataclysm-dimension", "F36. Large and functional, cut on Ethan's call 2026-08-02 to get the server actually playable. Explicitly re-addable later - these are choices, not defects."],
       ["cataclysm-spellbooks", "F28. 26 of 65 recipes fail every boot and 20 of its own items never register. Cut on Ethan's ruling that Ars Nouveau is the magic pillar - it already provides craftable, authored, shareable spellbooks."],
       ["cataclysm-tools", "F9. Tools from boss materials, mostly stat lines."],
       ["charm-of-undying", "F33. A whole mod load, and a whole interaction surface, for a handful of blocks. Ethan's cut 2026-08-02: the pack was unplayable at 400 mods and this tail is where the count comes from."],
@@ -501,11 +504,9 @@
       ["fancy-toasts", "F32. Duplicate advancement-toast verb; Advancement Plaques intercepts first and wins."],
       ["farmers-knives", "F25. Delivers 3 of 53 knives (brass, warden, zinc). 50 recipes fail every boot because their material mods - mythicmetals (25), twilightforest (4), advancednetherite (4), gobber2 (3), betterend (3) and others - are not installed, and 2 more are lost to a stale 'fabric:any_mod_loaded' condition key in a native NeoForge build. ~6% of the mod is reachable."],
       ["figura-v5-support", "F16. Figura 0.1.6 declares it incompatible with the reason 'This addon's features are already included in this Figura version!'. Adding it was my error; the mod's own manifest is the authority."],
-      ["fungal-infectionspore", "F36. Large and functional, cut on Ethan's call 2026-08-02 to get the server actually playable. Explicitly re-addable later - these are choices, not defects."],
       ["geore", "F24. Adds 24 geode types to every overworld biome including allthemodium, unobtainium, vibranium, osmium and uranium - against the preindustrial-to-fantasy ruling (R2). Present only as a dependency of geore-nouveau."],
       ["geore-nouveau", "F24. The only reason geore was in the pack; rated 'minor' in the manifest. Ars Nouveau keeps Additions, Creo, Controle, Unification, Ars'n'Spells, Polymorphia, Structurize, Artillery, Technic, Ocultas, Lumos and the lectern fix."],
       ["gravestone-mod", "F2. Duplicate of Corpse. Kept Corpse - retrieving your own body from where it fell suits the horror layer better than a tidy headstone."],
-      ["grim-and-bleak", "F36. Large and functional, cut on Ethan's call 2026-08-02 to get the server actually playable. Explicitly re-addable later - these are choices, not defects."],
       ["horror-messages", "F31. Its lang file contains 0 keys. Server-Side Horror owns the chat-scare verb with a configurable surface."],
       ["hostile-mobs-improve-over-time", "F26. A command datapack that overwrites the entity `attributes` list every second, erasing L2Hostility level modifiers and Apotheosis affixes rather than stacking with them. Covers only 18 vanilla mobs, so vanilla and modded hostiles end up on two unrelated difficulty curves. Ships pre-1.20.5 NBT that no longer parses."],
       ["hybrid-aquatic", "F34. 136 entities and 413 biome modifiers - the largest population addition in the pack - with 11 direct name collisions against spawn and naturalist, on a pack that wants SPARSE wildlife."],
@@ -560,7 +561,6 @@
       ["thaumon", "F32. 137 decorative blocks themed after Thaumcraft, which is not installed, on top of five other decoration mods."],
       ["the-bumblezone", "F6. Dimension sprawl - no connection to any pillar."],
       ["the-skinwalker-hunt", "F35. Delivers via natural spawn, so the y>=40 hostile deny relocates it underground - where 'it watches you from across a field' has no meaning. Restorable later with an In Control exemption rule if the stalker layer is rebuilt."],
-      ["the-undergarden", "F36. Large and functional, cut on Ethan's call 2026-08-02 to get the server actually playable. Explicitly re-addable later - these are choices, not defects."],
       ["trash-cans", "F33. A whole mod load, and a whole interaction surface, for a handful of blocks. Ethan's cut 2026-08-02: the pack was unplayable at 400 mods and this tail is where the count comes from."],
       ["underground-village,-stoneholm", "F15. Its required library better_lib crashes the dedicated server during mod construction (NPE in JsonVillagerLoader - dereferences a null JSON). Re-added for the underground-city idea, dropped again on evidence. The buried city is still served by Underground Worlds' dungeons, Arda's Sculks' Ancient City overhaul, and The Undergarden."],
       ["vampirism", "F30. Spawns hunters and vampires through its own faction scheduler, not the vanilla spawn cycle, so In Control's height rules cannot govern it at all - Ethan met a hunter at spawn on a fresh world. No config path keeps the mod and honours the surface rule."],

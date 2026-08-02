@@ -229,8 +229,32 @@ it suits "this world isn't right" better than spectacle does.
 
 **One boss, collective nemesis** ✅ — the group's most-died-to mob, scaled by the
 group's *total* deaths to it. Four simultaneous bosses is chaos; one shared
-nemesis reads instantly and stays personal. Per-player staggered bosses remain
-the fallback if it feels too impersonal in play.
+nemesis reads instantly and stays personal.
+
+### ⚠️ REOPENED 2026-08-02 — hordes, not a boss
+
+Ethan: *"my brother said he prefers hordes over bosses."*
+
+That contradicts this section as designed, and the brother is half the audience —
+the combat/guns/horror half this pillar largely exists for.
+
+**Proposed reconciliation: keep the nemesis SELECTION, change the DELIVERY.**
+
+> You died to skeletons forty times. Here are forty skeletons.
+
+Not one enormous skeleton. Everything the design already earned survives — it is
+still personal, still drawn from the group's real history, still escalating with
+the tally — and the L2Hostility dial tunes the **horde's level** rather than a
+single mob's health pool.
+
+It is arguably the better version of the original idea. "Dialed to 11" reads more
+naturally as *how many* than as *how big*, and a wall of your own nemesis is a
+clearer statement than one inflated instance of it.
+
+Also note the restored **Spore** is itself a horde mod — a spreading infection
+rather than a boss — so it already serves this preference.
+
+**Needs Ethan's call before D4 is built.**
 
 **Respawn rule ✅ — spectator during invasions, instant everywhere else.**
 

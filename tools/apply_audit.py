@@ -58,6 +58,11 @@ CUTS: dict[str, str] = {
     "epic-fight-sword-soaring": "F14. RuntimeException: Attempted to load class net/minecraft/client/gui/screens/Screen for invalid dist DEDICATED_SERVER. Painful loss - this was the wuxia specialisation layer Ethan chose to make melee about movesets rather than stat lines. Epic Fight itself still supplies movesets, stances and combos.",
     "kenny": "F14. Same DEDICATED_SERVER crash. One stalker of six, and the least distinctive; The Knocker, Obsessed, The Skinwalker Hunt, Distant Friends and Weeping Angels remain.",
 
+    # RESTORED 2026-08-02 by Ethan after the bloat cut: the-undergarden,
+    # cataclysm-dimension, grim-and-bleak, fungal-infectionspore. "Some of
+    # these cut actually hurt. We need to ensure my brother stays entertained
+    # with bosses, mobs, horror, and alot of weaponry." They are deliberately
+    # absent from CUTS - do not re-add them without asking.
     # --- F31-F36: the 2026-08-02 bloat cut -------------------------------
     # Ethan, after an evening the pack spent unplayable: "146 is a healthy
     # amount to actually get the server fully started... We can add them back
@@ -173,11 +178,7 @@ CUTS: dict[str, str] = {
     "lets-do-bloomingnature": "F36. Large and functional, cut on Ethan's call 2026-08-02 to get the server actually playable. Explicitly re-addable later - these are choices, not defects.",
     "lets-do-meadow": "F36. Large and functional, cut on Ethan's call 2026-08-02 to get the server actually playable. Explicitly re-addable later - these are choices, not defects.",
     "lets-do-vinery": "F36. Large and functional, cut on Ethan's call 2026-08-02 to get the server actually playable. Explicitly re-addable later - these are choices, not defects.",
-    "the-undergarden": "F36. Large and functional, cut on Ethan's call 2026-08-02 to get the server actually playable. Explicitly re-addable later - these are choices, not defects.",
-    "cataclysm-dimension": "F36. Large and functional, cut on Ethan's call 2026-08-02 to get the server actually playable. Explicitly re-addable later - these are choices, not defects.",
-    "grim-and-bleak": "F36. Large and functional, cut on Ethan's call 2026-08-02 to get the server actually playable. Explicitly re-addable later - these are choices, not defects.",
     "deeperdarker": "F36. Large and functional, cut on Ethan's call 2026-08-02 to get the server actually playable. Explicitly re-addable later - these are choices, not defects.",
-    "fungal-infectionspore": "F36. Large and functional, cut on Ethan's call 2026-08-02 to get the server actually playable. Explicitly re-addable later - these are choices, not defects.",
     "dynamictrees": "F36. Cut with the rest of the large-optional tier, and it was already flagged risky: 26 warnings per boot plus 6 KubeJS tag failures, and its Every Compat integration is partly broken.",
 
     # --- F29: the highest spawn weights in the pack, and a corruption history
