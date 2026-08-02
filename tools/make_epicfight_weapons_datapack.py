@@ -2,9 +2,6 @@
 
 THE BUG THIS FIXES
 
-Ethan, 2026-08-02: "the spore? weapons don't have animations". He is right, and
-the reason is structural rather than a Spore bug.
-
 Epic Fight assigns a weapon capability automatically only by VANILLA ITEM CLASS.
 CommonItemCapabilityProvider registers presets against exactly these:
 
@@ -14,13 +11,14 @@ CommonItemCapabilityProvider registers presets against exactly these:
 A mod whose weapons extend one of those inherits movesets for free - which is
 why most of the pack works and nobody noticed. A mod that writes its own Item
 subclass gets NOTHING, silently, and its weapons fall back to the vanilla arm
-swing. Spore is the second kind: its whole jar references SwordItem exactly
-once, and not from a weapon.
+swing.
 
 There is no error for this. A weapon with no capability is indistinguishable in
 every log from a weapon whose animation you have not triggered yet - the same
 shape of silent failure as the In Control height keys and the kill-heat
 category call. The only detector is a human noticing the swing looks wrong.
+Ethan found it on Spore ("the spore? weapons don't have animations"); Spore was
+subsequently cut as F43, but the class of bug is pack-wide and unaudited.
 
 THE FIX
 
@@ -33,26 +31,17 @@ That is not a guess - Epic Knights ships 236 of them under
 data/magistuarmory/capabilities/weapons/, which is what proves the convention
 for a third-party namespace.
 
-WHY THESE SEVEN ITEMS AND NOT ELEVEN
+TELLING A WEAPON FROM A CRAFTING MATERIAL
 
-Spore has 228 items; 11 read as weapon-ish by name. Four of those are crafting
-materials and must NOT get a moveset - giving one a capability makes a reagent
-swing like a dagger. They separate cleanly on evidence, not on name:
+Do it on evidence, never on the item's name. Giving a reagent a capability
+makes it swing like a dagger. The Spore pass established the test:
 
-    item                model            used as ingredient    verdict
-    claw                generated                        11    material
-    fleshy_claw         generated                        12    material
-    claw_fragment       generated                         4    material
-    sickle_fragment     generated                         1    material
-    armads              handheldweapon2                   0    WEAPON
-    greatsword          handheldweapon1                   0    WEAPON
-    infected_spear      handheldweaponthrow               0    WEAPON
-    knife               handheld                          0    WEAPON
-    scythe              handheldweapon3                   0    WEAPON
-    sickle              handheldweapon3                   0    WEAPON
-    combat_pickaxe      handheldweapon2                   0    WEAPON
+    a WEAPON    has a handheld* model parent, and appears only as a recipe RESULT
+    a MATERIAL  has the `generated` model parent (a flat inventory sprite), and
+                appears as a recipe INGREDIENT
 
-A `generated` parent is a flat sprite - an inventory icon, not something held.
+Four of Spore's eleven weapon-sounding items were materials by that test, and
+naming alone would have caught none of them.
 
 Run:  python tools/make_epicfight_weapons_datapack.py
 """
@@ -77,6 +66,9 @@ PACK_FORMAT = 48
 # needs to carry attributes (see the Epic Knights override below).
 #
 # namespace -> item -> preset | body
+# Spore was cut as F43 (the modern lab at spawn), so its seven entries were
+# removed here the same day. A capability file for an item that no longer
+# exists is exactly the kind of orphaned reference that broke ServerCore.
 WEAPONS: dict[str, dict[str, object]] = {
     # --- Epic Knights: fixing THEIR typo -----------------------------------
     # Not a Spore problem, found in the same reload. Epic Knights ships
@@ -96,32 +88,6 @@ WEAPONS: dict[str, dict[str, object]] = {
             "type": "epicfight:axe",
             "attributes": {"common": {"impact": 1.9, "max_strikes": 2}},
         },
-    },
-
-    "spore": {
-        # "Infected Battleaxe". Two-handed heavy - axe is the only heavy-chop set.
-        "armads": "epicfight:axe",
-
-        "greatsword": "epicfight:greatsword",
-
-        # Model parent is handheldweaponthrow, i.e. it is throwable. Epic Fight's
-        # spear set keeps the thrust-and-throw read.
-        "infected_spear": "epicfight:spear",
-
-        "knife": "epicfight:dagger",
-
-        # No scythe preset exists. Longsword is the closest honest fit: two-handed
-        # with wide sweeps. Change this one line to epicfight:tachi if the sweeps
-        # read too slow for a scythe.
-        "scythe": "epicfight:longsword",
-
-        # Short and curved - the dagger set, same as the knife.
-        "sickle": "epicfight:dagger",
-
-        # It IS a pickaxe and Epic Fight animates pickaxes, so its identity is
-        # preserved. If "Combat Pickaxe" should fight rather than mine, this is a
-        # one-word change to epicfight:axe.
-        "combat_pickaxe": "epicfight:pickaxe",
     },
 }
 

@@ -59,10 +59,14 @@ CUTS: dict[str, str] = {
     "kenny": "F14. Same DEDICATED_SERVER crash. One stalker of six, and the least distinctive; The Knocker, Obsessed, The Skinwalker Hunt, Distant Friends and Weeping Angels remain.",
 
     # RESTORED 2026-08-02 by Ethan after the bloat cut: the-undergarden,
-    # cataclysm-dimension, grim-and-bleak, fungal-infectionspore. "Some of
+    # cataclysm-dimension, grim-and-bleak. (fungal-infectionspore was also
+    # restored, then cut again the same day as F43 - see the lab at spawn.) "Some of
     # these cut actually hurt. We need to ensure my brother stays entertained
     # with bosses, mobs, horror, and alot of weaponry." They are deliberately
     # absent from CUTS - do not re-add them without asking.
+    # --- F43: Spore, and the lab at spawn ---------------------------------
+    "fungal-infectionspore": "F43. Ethan, 2026-08-02: 'i kinda think we should get rid of spore... it breaks alot. for one there's a modern day lab at the spawn.'\n\n        The lab is the argument. The buried-tech thesis puts modern technology at the BOTTOM of the world as the reward for descending; Spore generates a modern laboratory at spawn, which inverts the pack's central progression on the first screen a new player sees. No config gates its structure generation.\n\n        It was restored by Ethan after the bloat cut and is being cut again knowingly - the horror roster keeps Grim and Bleak, The Knocker, The Obsessed, Distant Friends, Weeping Angels, Born in Chaos and Cataclysm, so the pillar survives losing it.\n\n        Nothing depends on it (checked all 229 server jars) and it pulls in no libraries of its own, so this is a clean one-mod removal.",
+
     # --- F41/F42: the invisible-GUI pair, and the last HUD element --------
     # Found by BISECTION after seven wrong single-mod theories (Sable,
     # Apotheosis, EMI, Iris, ImmediatelyFast, RRLS...). None of them ever

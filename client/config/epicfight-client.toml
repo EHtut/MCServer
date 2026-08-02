@@ -22,7 +22,7 @@ provider = "NULL"
 	# Default: 30
 	# Range: 0 ~ 30
 	max_hit_projectiles = 10
-	first_person_model = true
+	first_person_model = false
 	enable_player_vanilla_model = true
 	enable_cosmetics = true
 	enable_pov_action = true

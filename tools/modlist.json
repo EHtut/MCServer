@@ -42,15 +42,7 @@
     ]
   },
   "resourcepacks": {
-    "_comment": ["Same mechanism as shaderpacks - a separate Modrinth project type resolved against the 'minecraft'",
-      "loader, delivered by writing pack/resourcepacks/<slug>.pw.toml. Client-side only; a dedicated server",
-      "never renders a texture.",
-      "Faithful 32x and NOT Bare Bones: this is a Create + Ars pack, and Bare Bones flattens everything to the",
-      "trailer style, which fights Create's deliberately detailed machinery and the horror mods' art. Faithful",
-      "only doubles the resolution of VANILLA textures and leaves modded art alone, so it upgrades the world",
-      "without making half the pack look wrong.",
-      "Costs texture memory (10.5 MB pack, 4x the texels of 16x). If the low-spec box struggles WITH shaders",
-      "on as well, drop this first - it is the cheaper of the two to give up."],
+    "_comment": ["Same mechanism as shaderpacks - a separate Modrinth project type resolved against the 'minecraft'", "loader, delivered by writing pack/resourcepacks/<slug>.pw.toml. Client-side only; a dedicated server", "never renders a texture.", "Faithful 32x and NOT Bare Bones: this is a Create + Ars pack, and Bare Bones flattens everything to the", "trailer style, which fights Create's deliberately detailed machinery and the horror mods' art. Faithful", "only doubles the resolution of VANILLA textures and leaves modded art alone, so it upgrades the world", "without making half the pack look wrong.", "Costs texture memory (10.5 MB pack, 4x the texels of 16x). If the low-spec box struggles WITH shaders", "on as well, drop this first - it is the cheaper of the two to give up."],
     "packs": [
       ["faithful-32x", "The shipped texture pack. Vanilla-faithful at 2x resolution, so it never fights modded art styles; 4.1M downloads and a current 1.21.1 build."]
     ]
@@ -252,8 +244,7 @@
         ["frostiful", "Cold as survival pressure", "minor"],
         ["scorchful", "Heat as survival pressure", "minor"],
         ["corpse", "Your body stays where you died - a walk back into the dark to retrieve it", "major"],
-        ["grim-and-bleak", "Ambience-led horror with its own dimension", "minor"],
-        ["fungal-infectionspore", "A spreading fungal infection. The closest 1.21.1 has to Scape and Run: Parasites", "major"]
+        ["grim-and-bleak", "Ambience-led horror with its own dimension", "minor"]
       ]
     },
     "world-structures": {
@@ -512,6 +503,7 @@
       ["fancy-toasts", "F32. Duplicate advancement-toast verb; Advancement Plaques intercepts first and wins."],
       ["farmers-knives", "F25. Delivers 3 of 53 knives (brass, warden, zinc). 50 recipes fail every boot because their material mods - mythicmetals (25), twilightforest (4), advancednetherite (4), gobber2 (3), betterend (3) and others - are not installed, and 2 more are lost to a stale 'fabric:any_mod_loaded' condition key in a native NeoForge build. ~6% of the mod is reachable."],
       ["figura-v5-support", "F16. Figura 0.1.6 declares it incompatible with the reason 'This addon's features are already included in this Figura version!'. Adding it was my error; the mod's own manifest is the authority."],
+      ["fungal-infectionspore", "F43. Ethan, 2026-08-02: 'i kinda think we should get rid of spore... it breaks alot. for one there's a modern day lab at the spawn.'\n\n        The lab is the argument. The buried-tech thesis puts modern technology at the BOTTOM of the world as the reward for descending; Spore generates a modern laboratory at spawn, which inverts the pack's central progression on the first screen a new player sees. No config gates its structure generation.\n\n        It was restored by Ethan after the bloat cut and is being cut again knowingly - the horror roster keeps Grim and Bleak, The Knocker, The Obsessed, Distant Friends, Weeping Angels, Born in Chaos and Cataclysm, so the pillar survives losing it.\n\n        Nothing depends on it (checked all 229 server jars) and it pulls in no libraries of its own, so this is a clean one-mod removal."],
       ["geore", "F24. Adds 24 geode types to every overworld biome including allthemodium, unobtainium, vibranium, osmium and uranium - against the preindustrial-to-fantasy ruling (R2). Present only as a dependency of geore-nouveau."],
       ["geore-nouveau", "F24. The only reason geore was in the pack; rated 'minor' in the manifest. Ars Nouveau keeps Additions, Creo, Controle, Unification, Ars'n'Spells, Polymorphia, Structurize, Artillery, Technic, Ocultas, Lumos and the lectern fix."],
       ["gravestone-mod", "F2. Duplicate of Corpse. Kept Corpse - retrieving your own body from where it fell suits the horror layer better than a tidy headstone."],
