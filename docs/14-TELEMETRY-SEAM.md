@@ -222,11 +222,28 @@ today's guesses into tomorrow's data.
 3. **`world.py`**.
 4. The action layer, separately and later.
 
-## Open questions for Ethan
+## Questions, all now answered
 
-1. **Sink path** — is `C:\MCServer\telemetry\` right, or does your memory
-   architecture want it somewhere else? Trivial to change now, annoying later.
-2. **Rotation** — daily files, or one growing file? Daily is easier to ship and
-   to prune; one file is easier to tail.
-3. **Chat** — record it? It is the richest signal about what players *care*
-   about, and also the most personal. Your call, not mine.
+1. **Sink path** — `C:\MCServer\telemetry\`. Not a preference: KubeJS refuses
+   any path outside the game directory, and the sink must sit outside the world
+   save, so only Python can write there. See the transport section.
+2. **Rotation** — daily files, `events-YYYY-MM-DD.jsonl`. Easier to ship, prune
+   and reason about than one growing file.
+3. **Chat** — **not recorded.** See the ruling above. It is a biased sample, and
+   the DM's deafness to voice is a fixed constraint rather than a gap to close.
+
+## Status
+
+| piece | state |
+|---|---|
+| `telemetry.js` producer | **live** — 4/4 scripts, 0 errors |
+| `logq.py` reader + ingest | **live** — 213 events, incl. backfill from 07-31 |
+| sink | `C:\MCServer\telemetry\events-*.jsonl` |
+| `world.py` | not built |
+| action layer | not built, deliberately separate |
+
+Observed firing at least once: `player.death`, `kill`, `join`, `leave`, `depth`,
+`biome`, `advancement`. **Not yet observed:** `player.build` (5-minute flush,
+needs blocks placed) and `session.together` (5-minute flush, needs two players
+within 24 blocks). Both are deployed, neither is demonstrated — that distinction
+is the whole reason this table exists.
