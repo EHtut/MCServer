@@ -63,6 +63,23 @@ CUTS: dict[str, str] = {
     # these cut actually hurt. We need to ensure my brother stays entertained
     # with bosses, mobs, horror, and alot of weaponry." They are deliberately
     # absent from CUTS - do not re-add them without asking.
+    # --- F38/F39: Apotheosis, and the HUD gets minimal --------------------
+    # Ethan, 2026-08-02, after the tutorial crashed the whole group on join:
+    #   "apotheosis needs to go. period."
+    #   "it feels very gamey with the minimap and the indicator of who
+    #    you're attacking. GUI should be minimal."
+    "apotheosis": "F38. Ethan's call, 2026-08-02: \"apotheosis needs to go. period.\" Its World Tier tutorial screen fires on first join in every new world, and with the pack regenerating repeatedly during testing it fired every time - crashing the whole group on the join that was supposed to be the first playable session. There is no config key to suppress it (world_tiers exposes only 'Enable Manual World Tier Changes'). A gameplay system that cannot be prevented from interrupting a join is not worth its affix curve.\n\n        NOTE: this retires D7 in docs/10-DEPTH-LOOP.md, which planned to bind Apotheosis's rarity tiers to depth as the progression answer to \"Epic Knights gets weak really fast\". That problem is now unsolved again and needs a different mechanism.",
+    "apothic-attributes": "F38. Apotheosis addon - goes with it.",
+    "apothic-enchanting": "F38. Apotheosis addon - goes with it.",
+    "apothic-spawners": "F38. Apotheosis addon - goes with it.",
+    "xaeros-minimap": "F39. \"it feels very gamey with the minimap... GUI should be minimal.\" A permanent corner overlay with a live radar is the single least diegetic element in the pack, and it works directly against a horror layer whose whole premise is not knowing what is near you.",
+    "xaeros-world-map": "F39. Same ruling - a full-screen fog-of-war map is a game UI, not a world.",
+    "xaeroplus": "F39. Extension of the Xaero's maps, which are cut.",
+    "tslatentitystatus": "F39. The attack indicator - it renders a live 3D model and a health readout of whatever you are looking at, every frame. Named directly by Ethan as the other 'gamey' element. Jade already covers block/entity identification more quietly.",
+
+    # --- F37: a config fix packwiz cannot deliver -------------------------
+    "underground-worlds": "F37. THE invisible-GUI bug. It declares four biome ResourceKeys (spider_cave, underground_desert, underground_jungle, underground_tundra) into the VANILLA registry set while supplying their values only as datapack JSON, so VanillaRegistries.createLookup() throws 'Errors during registry creation' for every caller. Patchouli calls it on EVERY HUD render to resolve a book item, so holding Ars Nouveau's Worn Notebook - which a fresh world hands you on spawn - killed the entire GUI layer: no inventory, no pause screen. It also broke Mutant Monsters' datagen as collateral.\n\n        A config workaround exists (generate_biome = false on all four) and was applied. But packwiz syncs MODS, NEVER CONFIG - so that fix only reaches a player who re-imports the instance zip, and a friend who simply relaunches Prism gets correct mods with stale config and a dead GUI. Cutting the mod is the only fix packwiz can actually deliver.\n\n        Cheap to lose on top of that: the workaround had already disabled its four biomes, so the pack was carrying a mod whose main contribution was switched off. The depth pillar keeps Arda's Sculks, Deeper Darker, The Undergarden and YUNG's dungeons.",
+
     # --- F31-F36: the 2026-08-02 bloat cut -------------------------------
     # Ethan, after an evening the pack spent unplayable: "146 is a healthy
     # amount to actually get the server fully started... We can add them back

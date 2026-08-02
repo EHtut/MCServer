@@ -36,26 +36,6 @@ hash = "f3d66527c4f82b44d9409f643332bc15f91b85f033afe147e3d8b421c0ea6d1e"
 metafile = true
 
 [[files]]
-file = "mods/apotheosis.pw.toml"
-hash = "b3fd9ed67784f143014d3d53826614eef8cc22f1d0ed3e339a4d848aff4c11bd"
-metafile = true
-
-[[files]]
-file = "mods/apothic-attributes.pw.toml"
-hash = "6d41410afc14800f59efe4ed0d085cd32b1b2a47d17dfe47382d7ac44c8c3e99"
-metafile = true
-
-[[files]]
-file = "mods/apothic-enchanting.pw.toml"
-hash = "87045cf0333e6728cfcfb2c026c794436097e573c607906d4a830134b41b6384"
-metafile = true
-
-[[files]]
-file = "mods/apothic-spawners.pw.toml"
-hash = "e3cf8a1207e85580723e384bf59688be26b80373b49c1d64972528cdc0dcac6d"
-metafile = true
-
-[[files]]
 file = "mods/appleskin.pw.toml"
 hash = "716d930feff599bf9ce732e05979fbae8025dc8a3c13ccf4f1cb207a70883bc6"
 metafile = true
@@ -1371,16 +1351,6 @@ hash = "72c0db4d726a16d80c2337cc9dc4d220ba8298deb5db5d9d58082d15a245ea3f"
 metafile = true
 
 [[files]]
-file = "mods/tslatentitystatus.pw.toml"
-hash = "bea86b2dafe903607fb42809da2ee7c31140be970e8181d6cb06733fa6c4cc60"
-metafile = true
-
-[[files]]
-file = "mods/underground-worlds.pw.toml"
-hash = "2845809022b97ebcd7257b94e33c16b72be9d4e316f472c8dad2c0487cb255aa"
-metafile = true
-
-[[files]]
 file = "mods/uranus.pw.toml"
 hash = "c16ee91eeb20999c83deedbf93ce3787bb9bfefad56abd242d90a94dc0534ca0"
 metafile = true
@@ -1423,21 +1393,6 @@ metafile = true
 [[files]]
 file = "mods/when-dungeons-arise.pw.toml"
 hash = "485906ff55a5d6ad06070abb80663d6adadc3e4b32f8b52240d8596e7aaef9fa"
-metafile = true
-
-[[files]]
-file = "mods/xaeroplus.pw.toml"
-hash = "f68dc2b6cbe166346f6bf0067dd77447418b513e209ae0b50f9a4215c3e99e90"
-metafile = true
-
-[[files]]
-file = "mods/xaeros-minimap.pw.toml"
-hash = "4c336c9a00838ff5b5bbf6cd8ae35927186fdfa42258ca15513835e1b12ced2f"
-metafile = true
-
-[[files]]
-file = "mods/xaeros-world-map.pw.toml"
-hash = "7481488cc878ce36f7cd69acfff4ffcdc24470916692a54798239331934c9a58"
 metafile = true
 
 [[files]]
