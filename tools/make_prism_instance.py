@@ -25,6 +25,8 @@ why this is a script and not a set of hand-edited files.
 from __future__ import annotations
 
 import argparse
+import json
+import re
 import pathlib
 import shutil
 import struct
@@ -98,6 +100,39 @@ def _tag_string(name: str, value: str) -> bytes:
     return b"\x08" + _str(name) + _str(value)
 
 
+def iris_properties(src: pathlib.Path) -> bytes:
+    """Ship iris.properties with shaders OFF and a shaderPack name that EXISTS.
+
+    The name is read from the resolver's output rather than typed here. Typing it
+    has failed twice already: once as "ComplementaryReimagined_r5.8.1 +
+    EuphoriaPatches_1.9.3", a folder Euphoria generates locally so no other
+    machine has it, and it would go stale again the first time a shader updates.
+    Iris silently falls back to no shader when the pack is missing, so the bug
+    is invisible - the player just never gets shaders and nothing says why.
+
+    BSL is preferred when present: Ethan's own pick ("i personally use BSL for my
+    shaders"). It is PRE-SELECTED but NOT enabled, so turning shaders on is one
+    click and lands on the intended pack rather than whatever Iris picks first.
+    """
+    text = src.read_text(encoding="utf-8")
+
+    pick = None
+    cache = pathlib.Path(__file__).resolve().parent / ".cache" / "resolved.json"
+    if cache.is_file():
+        packs = [r for r in json.loads(cache.read_text(encoding="utf-8"))
+                 if r.get("kind") == "shaderpack" and r.get("filename")]
+        # Ethan's preference first, otherwise whatever single shader is shipped.
+        pick = next((r["filename"] for r in packs if "bsl" in r["slug"].lower()),
+                    packs[0]["filename"] if packs else None)
+
+    text = re.sub(r"(?m)^enableShaders=.*$", "enableShaders=false", text)
+    if pick:
+        text = re.sub(r"(?m)^shaderPack=.*$", f"shaderPack={pick}", text)
+    else:
+        print("  !! no shaderpack in resolved.json - shaderPack left as-is")
+    return text.encode("utf-8")
+
+
 def servers_dat(entries: list[tuple[str, str]]) -> bytes:
     """entries: [(display name, address)] -> uncompressed servers.dat bytes."""
     out = b"\x0a" + _str("")                      # root TAG_Compound, no name
@@ -143,15 +178,27 @@ mipmapLevels:2
 menuBackgroundBlurriness:0
 glintStrength:0.0
 renderClouds:"false"
-resourcePacks:["vanilla","fabric","file/Faithful 32x - 1.21.1.zip"]
+key_key.sneak:key.keyboard.left.control
+key_key.sprint:key.keyboard.left.shift
+resourcePacks:["vanilla","fabric"]
 incompatibleResourcePacks:[]
 """
-# resourcePacks names the file packwiz DELIVERS, exactly - "Faithful 32x -
-# 1.21.1.zip", spaces and all. Minecraft silently drops an entry it cannot
-# find, so a stale name here is invisible: the pack just never applies and
-# nothing is logged. Same failure the shaderPack key already had.
-# Verify with:  python tools/resolve.py resolve tools/modlist.json
-# then read the filename out of tools/.cache/resolved.json.
+# SNEAK ON CTRL, SPRINT ON SHIFT - Ethan's ruling 2026-08-02, and it is what he
+# had already rebound by hand on his own machine. Shipping it means nobody else
+# has to discover the preference or rebind it after every re-import.
+#
+# resourcePacks deliberately does NOT list Faithful 32x. Both the shader and the
+# texture pack now ship OFF by default (Ethan, same ruling) - they are still
+# DELIVERED by packwiz, so enabling either is two clicks in the options screen
+# and no download. Off is the right default for a pack baselined to the slowest
+# machine in the group, and it keeps the first launch after an import as cheap
+# as possible.
+#
+# When something IS listed here it must name the file packwiz delivers exactly -
+# "Faithful 32x - 1.21.1.zip", spaces and all. Minecraft silently drops an entry
+# it cannot resolve, so a stale name is invisible: the pack just never applies
+# and nothing is logged. The shaderPack key had precisely that bug; it is now
+# derived from the resolver at build time instead (see iris_properties below).
 
 
 def main() -> int:
@@ -353,31 +400,42 @@ is strong and you want the view, ask Ethan to turn it on for you.
   "javaw.exe", set it to High performance. Then restart the game.
 
 
-Shaders and textures are ON already
------------------------------------
-Both arrive with the pack. Nothing to download, nothing to install.
+Want it to look better?  (shaders + textures are INSTALLED but OFF)
+------------------------------------------------------------------
+Three packs already arrived with the game. Nothing to download, nothing to
+install, nothing to move into a folder. They ship switched OFF because this
+instance is tuned for the slowest computer in the group - turn them on only if
+your machine has room.
 
-  Complementary Reimagined  - the lighting, shadows and water
-  Faithful 32x              - double-resolution textures
+Shaders (expensive - try this on a good graphics card only):
+  Options -> Video Settings -> Shader Packs
+  BSL is already selected. Just switch shaders on.
+  Also there: Complementary Reimagined, which is the lighter of the two and
+  the better choice if you use the far-distance terrain rendering.
 
-IF THE GAME RUNS BADLY, TURN OFF THE SHADER FIRST. It is by far the more
-expensive of the two, and nothing breaks without it:
+Textures (cheap - most machines are fine):
+  Options -> Resource Packs -> move "Faithful 32x" to the RIGHT -> Done
 
-  Options -> Video Settings -> Shader Packs -> "Shaders: Disabled" -> Done
-
-Turn it off straight away if you see any of these - the shader is the first
-thing to suspect, every time:
-  - frames drop through the floor
+IF THE GAME MISBEHAVES, TURN THE SHADER OFF FIRST. It is by far the most
+expensive thing here and nothing breaks without it. Suspect it immediately on:
+  - frames dropping through the floor
   - strange stripes, flickering, or blocks rendering wrong
-  - menus or text go missing
+  - menus or text going missing
 
-Still slow with shaders off? Then drop the textures too:
-  Options -> Resource Packs -> move "Faithful 32x" to the left -> Done
 
-(Credit: Complementary Shaders - Reimagined by Complementary Development,
- https://www.complementary.dev/ , and Faithful 32x by the Faithful Team,
- https://faithfulpack.net/ . Both are downloaded from Modrinth when the game
- launches; neither is redistributed here.)
+Controls that are NOT vanilla
+-----------------------------
+  Sneak  = LEFT CTRL
+  Sprint = LEFT SHIFT
+
+That is swapped from Minecraft's default on purpose. Rebind them in
+Options -> Controls if you hate it.
+
+
+(Credit: BSL Shaders by CaptTatsu; Complementary Shaders - Reimagined by
+ Complementary Development, https://www.complementary.dev/ ; Faithful 32x by
+ the Faithful Team, https://faithfulpack.net/ . All are downloaded from
+ Modrinth when the game launches; none are redistributed here.)
 """
 
     stage_files = {
@@ -401,7 +459,10 @@ Still slow with shaders off? Then drop the textures too:
         shipped = 0
         for cfg in sorted(CLIENT_CONFIG.rglob("*")) if CLIENT_CONFIG.is_dir() else []:
             if cfg.is_file():
-                z.write(cfg, f".minecraft/config/{cfg.relative_to(CLIENT_CONFIG).as_posix()}")
+                rel = cfg.relative_to(CLIENT_CONFIG).as_posix()
+                body = (iris_properties(cfg) if rel == "iris.properties"
+                        else cfg.read_bytes())
+                z.writestr(f".minecraft/config/{rel}", body)
                 shipped += 1
         print(f"  client configs shipped: {shipped}")
 

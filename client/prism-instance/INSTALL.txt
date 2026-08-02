@@ -140,28 +140,39 @@ is strong and you want the view, ask Ethan to turn it on for you.
   "javaw.exe", set it to High performance. Then restart the game.
 
 
-Shaders and textures are ON already
------------------------------------
-Both arrive with the pack. Nothing to download, nothing to install.
+Want it to look better?  (shaders + textures are INSTALLED but OFF)
+------------------------------------------------------------------
+Three packs already arrived with the game. Nothing to download, nothing to
+install, nothing to move into a folder. They ship switched OFF because this
+instance is tuned for the slowest computer in the group - turn them on only if
+your machine has room.
 
-  Complementary Reimagined  - the lighting, shadows and water
-  Faithful 32x              - double-resolution textures
+Shaders (expensive - try this on a good graphics card only):
+  Options -> Video Settings -> Shader Packs
+  BSL is already selected. Just switch shaders on.
+  Also there: Complementary Reimagined, which is the lighter of the two and
+  the better choice if you use the far-distance terrain rendering.
 
-IF THE GAME RUNS BADLY, TURN OFF THE SHADER FIRST. It is by far the more
-expensive of the two, and nothing breaks without it:
+Textures (cheap - most machines are fine):
+  Options -> Resource Packs -> move "Faithful 32x" to the RIGHT -> Done
 
-  Options -> Video Settings -> Shader Packs -> "Shaders: Disabled" -> Done
-
-Turn it off straight away if you see any of these - the shader is the first
-thing to suspect, every time:
-  - frames drop through the floor
+IF THE GAME MISBEHAVES, TURN THE SHADER OFF FIRST. It is by far the most
+expensive thing here and nothing breaks without it. Suspect it immediately on:
+  - frames dropping through the floor
   - strange stripes, flickering, or blocks rendering wrong
-  - menus or text go missing
+  - menus or text going missing
 
-Still slow with shaders off? Then drop the textures too:
-  Options -> Resource Packs -> move "Faithful 32x" to the left -> Done
 
-(Credit: Complementary Shaders - Reimagined by Complementary Development,
- https://www.complementary.dev/ , and Faithful 32x by the Faithful Team,
- https://faithfulpack.net/ . Both are downloaded from Modrinth when the game
- launches; neither is redistributed here.)
+Controls that are NOT vanilla
+-----------------------------
+  Sneak  = LEFT CTRL
+  Sprint = LEFT SHIFT
+
+That is swapped from Minecraft's default on purpose. Rebind them in
+Options -> Controls if you hate it.
+
+
+(Credit: BSL Shaders by CaptTatsu; Complementary Shaders - Reimagined by
+ Complementary Development, https://www.complementary.dev/ ; Faithful 32x by
+ the Faithful Team, https://faithfulpack.net/ . All are downloaded from
+ Modrinth when the game launches; none are redistributed here.)
