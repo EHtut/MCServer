@@ -2,8 +2,5 @@
   "name": "Cogs and Cadavers",
   "landing_text": "A world of cogs above and cadavers below.$(br2)The surface belongs to animals and to whatever people still live out here. Everything that wants you dead is $(o)underground$().$(br2)$(italic)Read the first chapter before your first night.$()",
   "version": 1,
-  "model": "patchouli:book_brown",
-  "i18n": false,
-  "creative_tab": "tools_and_utilities",
-  "book_texture": "patchouli:textures/gui/book_brown.png"
+  "i18n": false
 }

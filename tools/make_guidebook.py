@@ -41,6 +41,14 @@ import shutil
 BOOK_ID = "cogs_and_cadavers"
 OUT = pathlib.Path(__file__).resolve().parent.parent / "client" / "patchouli_books" / BOOK_ID
 
+# MINIMAL ON PURPOSE. The first version carried creative_tab and book_texture
+# and the book never registered - Patchouli logged NEITHER success NOR failure,
+# and `cogs_and_cadavers` appeared zero times in an 11.6 MB client debug log.
+#
+# With no error to read, the only honest move is to remove everything that is
+# not required and re-test. `name` and `landing_text` are the only mandatory
+# fields; creative_tab in particular takes a ResourceLocation and a bad one is a
+# silent skip, which fits the symptom exactly.
 BOOK = {
     "name": "Cogs and Cadavers",
     "landing_text": (
@@ -50,10 +58,7 @@ BOOK = {
         "$(italic)Read the first chapter before your first night.$()"
     ),
     "version": 1,
-    "model": "patchouli:book_brown",
     "i18n": False,
-    "creative_tab": "tools_and_utilities",
-    "book_texture": "patchouli:textures/gui/book_brown.png",
 }
 
 CATEGORIES = {
