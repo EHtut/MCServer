@@ -103,11 +103,66 @@ it is pulling up things that should not exist.
 
 ### The gradient, restated as a rule
 
-| band | what belongs there | why |
+Ethan sharpened this on 2026-08-01, after spawning into a new world surrounded by
+Ice and Fire fairies and a Vampirism hunter:
+
+> The world should be mostly inhabited by animals with spots of civilization.
+> fantastical beasts go below then modern tech even deeper. Fantastical beasts
+> too should really only be boss enemies
+
+So the axis is not only MATERIALS, it is INHABITANTS — and the two move together.
+
+| band | materials | who lives there |
 |---|---|---|
-| **Surface** | wood, stone, iron, copper | what a preindustrial world is built from |
-| **y 0…−64** | gems, unusual metals | valuable, still explicable to a medieval mind |
-| **y −64…−128** | gunpowder, modern technology, the Vaults | **no fantasy explanation exists** |
+| **Surface** | wood, stone, iron, copper | **animals, and spots of civilization.** Fantastical in *atmosphere*, not *population*. Rare horror anomalies only. |
+| **y 0…−64** | gems, unusual metals | deep hostiles; the fantastical begins |
+| **y −64…−128** | gunpowder, modern tech, the Vaults | the worst of it, and the Vaults |
+
+**Fantastical beasts are BOSS encounters, not wildlife.** A dragon is an event you
+seek out, not something you walk past. That is a stronger claim than "they live
+underground" and it rules out a large amount of what the pack currently spawns.
+
+⚠️ **The peaceful-surface rule does not implement this.** In Control denies
+`hostile` spawns above y40 — and a fairy is not hostile. Anything in the
+CREATURE, AMBIENT or MISC category walks straight through it, as does any mod
+with its own spawn scheduler rather than the vanilla cycle (Vampirism's faction
+system being the known case). The deny rule is necessary and nowhere near
+sufficient.
+
+### Density: sparse, and alive through SOUND ✅
+
+> "i would prefer less animals than an overabundance. think real life right? in
+> the wilderness you hear them skittering but you dont stumble into them
+> nonstop"
+
+This corrects an assumption that had been sitting in the project unexamined
+since the pack was assembled — that a surface with no hostile spawns would feel
+EMPTY, and therefore needed fauna mods to fill it (Respawning Animals, Spawn,
+Cosy Critters and Naturalist were all justified partly on those grounds).
+
+**Wrong axis.** A quiet wilderness is not an empty one. Aliveness comes from
+**audio**, not from mob count:
+
+| carries the feeling | does not |
+|---|---|
+| AmbientSounds, Sound Physics Remastered, Presence Footsteps, Entity Sound Features | more animals per chunk |
+
+So the design target is: **few creatures, heard often, met rarely.** Something
+skittering at the edge of hearing that you never quite find is doing more work
+than a herd you walk into.
+
+Two consequences worth acting on:
+- Animal spawn weights and mob caps should come DOWN, not up. ServerCore's caps
+  currently sum past 300 across ~30 categories — sized for a busy world.
+- The audio mods are now load-bearing rather than decorative. Note the Sound
+  Physics ray budget was cut hard for performance (32 → 8 rays, strict occlusion
+  on); if that flattens the ambience, the low-spec tuning and this design goal
+  are in direct tension and the tradeoff should be made deliberately.
+
+Civilization is a **separate axis** and Ethan does want it: villages should be
+findable and read as landmarks. Sparse wildlife does not mean a sparse world.
+
+Audited 2026-08-01; findings and the per-mod knobs land in §4b-iv.
 
 That gives a filter for every future question about the pack, which the theme
 audit never had: *would this make sense in a fantasy world?* If yes, it can be
