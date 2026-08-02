@@ -186,11 +186,14 @@ glintStrength:0.0
 renderClouds:"false"
 key_key.sneak:key.keyboard.left.control
 key_key.sprint:key.keyboard.left.shift
-key_key.epicfight.switch_mode:key.keyboard.z
 key_iris.keybind.reload:key.keyboard.minus
 resourcePacks:["vanilla","fabric"]
 incompatibleResourcePacks:[]
 """
+# The Epic Fight mode-toggle rebind that used to live here went with F45 -
+# Epic Fight is cut, so the line was dead weight (Minecraft drops unknown
+# keybinds on write anyway). Better Combat needs no keybind: it has no mode.
+#
 # THE R KEY IS A WAR ZONE. Twelve things bind to it out of the box, including
 # TaCZ's RELOAD - the one you press mid-firefight. Epic Fight's mode toggle was
 # one of the twelve, so switching stance and reloading a gun fought each other.
