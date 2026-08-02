@@ -4,35 +4,61 @@ JSON files cannot carry comments, so the reasoning lives here.
 
 ## What `spawn.json` does
 
+## THE PRINCIPLE: suppress AMBIENT spawning, never DELIBERATE placement
+
+Everything below is one idea. The peaceful surface is supposed to mean *monsters
+do not wander up out of nowhere* — it was never supposed to mean *a dungeon full
+of spawners is inert*.
+
+So the first three rules hand every **deliberate** spawn straight back to
+vanilla, and only then does the height deny apply to what is left, which is
+ambient natural spawning.
+
 | Rule | Effect |
 |---|---|
-| 0 | **Inside ANY structure, spawning is left entirely to vanilla** — at any depth, for every mob. Dangerous places stay dangerous. |
-| 1 | **No `Enemy` mob spawns in the open overworld at y ≥ 40.** Any time, any light level. |
-| 2 | **No mob from the pure-horror mods at y ≥ 40** — the rosters that exist only to be monsters. |
-| 3 | **No named night-horror mobs at y ≥ 40** from mods with a mixed roster, so their bosses and tameables survive. |
-| 4 | Between y 0 and 39, hostiles spawn normally but are capped at 40 concurrent, so the shallow band is uneasy rather than swarming. |
+| 0 | **Mob spawners always work**, any depth. Someone placed that spawner on purpose. |
+| 1 | **Structure-generated spawns always work** — the mobs a structure creates as it generates. |
+| 2 | **Anything inside a structure's bounds is left to vanilla**, any depth. Dangerous places stay dangerous. |
+| 3 | No `Enemy` mob spawns in the OPEN overworld at y ≥ 40. Any time, any light level. |
+| 4 | No mob from the pure-monster mods at y ≥ 40. |
+| 5 | No named night-horror mobs at y ≥ 40 from mods with a mixed roster, so bosses and tameables survive. |
+| 6 | Between y 0 and 39, hostiles spawn normally but are capped at 40 concurrent — uneasy, not swarming. |
 
 Below y 0 nothing is restricted: the deep is meant to be dangerous.
 
-## Rule 0 — "structures yes, open world no"
+### Rules 0 and 1 exist because a dungeon was dead
 
-Ethan, 2026-08-02: *"can we do it so dangerous structures still spawn mobs but
-overworld general cannot?"*
+Ethan, 2026-08-02: *"We spawned next to a dungeon that had spawners inside. they
+didn't spawn anything."*
 
-`hasstructure` is a boolean meaning **is this spawn inside any structure at all**
-(In Control backs it with `isInAnyStructure`). It needs no list of structure
-names, so it cannot rot as mods are added or removed — which is the failure the
-rest of this file is about.
+Rule 2 (`hasstructure`) was supposed to cover that and does not, for a reason
+worth writing down: **a vanilla dungeon is not a Structure.**
+`minecraft:monster_room` is a *configured feature* carved into terrain during
+worldgen, not an entry in `worldgen/structure`. `isInAnyStructure` therefore
+returns false inside one, the height deny applied, and every spawner above y 40
+in the world was inert.
 
-It uses `"result": "default"` and **not** `"allow"`. `default` means *no opinion,
-let vanilla decide*, and because In Control stops at the first matching rule, it
-exempts structures from rules 1–3 while leaving their spawning exactly as the
-structure's author intended. `allow` would instead FORCE spawns through, ignoring
-light level and vanilla placement checks, and would over-populate every dungeon.
+`spawntype` is the fix, and it is a better expression of the intent than
+`hasstructure` ever was. In Control understands exactly three values — verified
+against the jar: **NATURAL, SPAWNER, STRUCTURE**. Handing SPAWNER and STRUCTURE
+back to vanilla means the deny can only ever hit NATURAL ambient spawning, which
+is the only thing it was ever meant to hit.
+
+Note this also means `spawntype` cannot see **PATROL** — see the pillager section
+below. Patrols are neither ambient nor deliberate as far as In Control is
+concerned; they are simply invisible to it.
+
+### Why `default` and not `allow`
+
+`default` means *no opinion, let vanilla decide*, and because In Control stops at
+the first matching rule, it exempts the spawn from every later deny while leaving
+its behaviour exactly as the mod or structure author intended. `allow` would
+FORCE the spawn through, ignoring light level and vanilla placement checks, and
+would over-populate every dungeon it touched.
 
 The consequence to be aware of: villages are structures too, so a village at
-night can now see hostile spawns. That is vanilla behaviour and arguably correct
-for "spots of civilization", but it is a real change.
+night can see hostile spawns. That is vanilla behaviour and arguably correct for
+"spots of civilization", but it is a real change.
 
 ## ⚠️ `hostile` IS NOT A CATEGORY. This is the bug that cost a night of play.
 

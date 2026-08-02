@@ -1,6 +1,16 @@
 [
   {
     "dimension": "minecraft:overworld",
+    "spawntype": "SPAWNER",
+    "result": "default"
+  },
+  {
+    "dimension": "minecraft:overworld",
+    "spawntype": "STRUCTURE",
+    "result": "default"
+  },
+  {
+    "dimension": "minecraft:overworld",
     "hasstructure": true,
     "result": "default"
   },
@@ -20,7 +30,9 @@
       "sculks_of_arda",
       "grim_and_bleak",
       "revervox_mod",
-      "frostiful"
+      "frostiful",
+      "irons_spellbooks",
+      "friendsandfoes"
     ],
     "result": "deny"
   },

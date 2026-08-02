@@ -85,6 +85,7 @@
     "auto-deps": {
       "desc": "Required dependencies discovered by resolving the pack's declared dependency graph (tools/resolve.py deps). These were being pulled in implicitly; listing them explicitly means a dependency appearing or disappearing is a reviewable diff rather than a surprise at boot. Fabric API and QSL were correctly excluded - multiloader jars declare them even though no NeoForge build needs them.",
       "mods": [
+        ["coroutil", "Required by Weather, Storms & Tornadoes", "core"],
         ["owo-lib", "Required by accessories, accessories-compat-layer, aether, simple-hats", "core"],
         ["supermartijn642s-config-lib", "Required by chunk-loaders, moving-elevators, rechiseled, trash-cans", "core"],
         ["supermartijn642s-core-lib", "Required by chunk-loaders, moving-elevators, rechiseled, trash-cans", "core"],
@@ -268,7 +269,8 @@
         ["when-dungeons-arise-seven-seas", "Naval dungeon set", "minor"],
         ["battle-towers", "Climbable combat towers", "minor"],
         ["structory", "Small atmospheric structures, very high quality", "major"],
-        ["explorify", "Vanilla-faithful structure variety", "minor"],
+        ["weather-storms-tornadoes", "Ethan's ruling 2026-08-02: the surface should be survived, not fought - 'deeper is fight. upper is survive against weather events'. Scorchful already covers deserts (sandstorms) and Frostiful the cold (freezing wind); nothing covered the temperate plains where people actually build. Adds tornadoes, severe storms and wind there.", "major"],
+      ["explorify", "Vanilla-faithful structure variety", "minor"],
         ["hopo-better-ruined-portals", "Ruined portals worth looking at", "minor"],
         ["improved-pillager-outpost", "Outposts that are actually a fight", "minor"],
         ["nether-depths-upgrade", "Lava-sea flora and fauna", "minor"],

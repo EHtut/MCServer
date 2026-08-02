@@ -1366,6 +1366,11 @@ hash = "3f85dddbfdc9c87ffecc6633df88c31bbcadcd1a5ff4adc03e1b14de06cb97c0"
 metafile = true
 
 [[files]]
+file = "mods/weather-storms-tornadoes.pw.toml"
+hash = "54d07601a6be738af7115e07b29d75de786b5ffdc98681a383d6c66f1bd6a6c9"
+metafile = true
+
+[[files]]
 file = "mods/when-dungeons-arise-seven-seas.pw.toml"
 hash = "6817acd8f1a98c3e7c00e61507a9178fa9c7398b356f6e92704656a712157dcd"
 metafile = true
