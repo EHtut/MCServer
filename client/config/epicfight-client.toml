@@ -1,4 +1,4 @@
-#Login information for epic fight patron server. Do not change these values manually
+﻿#Login information for epic fight patron server. Do not change these values manually
 access_token = ""
 refresh_token = ""
 #Allowed Values: NULL, DISCORD, PATREON
@@ -22,7 +22,7 @@ provider = "NULL"
 	# Default: 30
 	# Range: 0 ~ 30
 	max_hit_projectiles = 10
-	first_person_model = false
+	first_person_model = true
 	enable_player_vanilla_model = true
 	enable_cosmetics = true
 	enable_pov_action = true
