@@ -1,0 +1,6 @@
+{
+  "pack": {
+    "pack_format": 48,
+    "description": "Pushes materials to the depth they belong at (docs/10-DEPTH-LOOP.md \u00a72b)."
+  }
+}

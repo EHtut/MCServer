@@ -97,6 +97,19 @@ def main() -> int:
             data = json.loads(z.read(n))
             before = data.get("values", [])
             data["values"] = [optional(e) for e in before]
+
+            # MUST be true, and the first version of this file got it wrong.
+            #
+            # Minecraft MERGES tags across datapacks unless a file sets
+            # "replace": true. The mod's own tag ships "replace": false, and this
+            # generator copied the whole object - so the repaired entries were
+            # simply appended to the broken plain-string ones, which still killed
+            # the tag exactly as before. The fix produced no error and no change,
+            # and the server went on logging the identical failure.
+            #
+            # Verified by rereading the emitted file after the first attempt:
+            # `replace = False`, inherited rather than chosen.
+            data["replace"] = True
             hard = sum(1 for e in before if isinstance(e, str) and not e.startswith("#"))
             dest = out / n[len("data/"):].replace("/", "/", 1)
             dest = out / "data" / n[len("data/"):]

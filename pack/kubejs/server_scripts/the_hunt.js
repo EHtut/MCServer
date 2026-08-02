@@ -91,7 +91,21 @@ ServerEvents.tick(event => {
     const heat = heatOf(player)
     if (heat <= 0) return
 
-    const now = player.level.time
+    // `player.level` is a FUNCTION, not a Level.
+    //
+    // Entity.level() is a public vanilla method named exactly `level`, and a
+    // class-declared method beats KubeJS's kjs$getLevel() interface default of
+    // the same JS name. So `player.level` returns the method object, and
+    // `player.level.time` reads a property off a Function: undefined, silently.
+    //
+    // That made `now` undefined and turned createEntity into a TypeError, so
+    // even after the getMobCategory fix let heat accrue, NO HUNTER COULD EVER
+    // SPAWN. Two bugs deep in one mechanic, each hiding the next.
+    //
+    // Also: Level has no readable `.time` at all - it is getGameTime().
+    const lvl = (typeof player.level === 'function') ? player.level() : player.level
+
+    const now = lvl.getGameTime()
     const last = player.persistentData.getLong(LAST_HUNT) || 0
     if (last > 0 && now - last < HUNT_COOLDOWN) return
 
@@ -101,7 +115,7 @@ ServerEvents.tick(event => {
     const id = HUNTERS[Math.floor(Math.random() * HUNTERS.length)]
     let hunter
     try {
-      hunter = player.level.createEntity(id)
+      hunter = lvl.createEntity(id)
     } catch (e) {
       console.warn(`[the-hunt] entity '${id}' could not be created: ${e}`)
       return
@@ -116,7 +130,7 @@ ServerEvents.tick(event => {
     const dist = SPAWN_MIN + Math.random() * (SPAWN_MAX - SPAWN_MIN)
     const x = player.x + Math.cos(angle) * dist
     const z = player.z + Math.sin(angle) * dist
-    const y = player.level.getHeight('MOTION_BLOCKING_NO_LEAVES', Math.floor(x), Math.floor(z))
+    const y = lvl.getHeight('MOTION_BLOCKING_NO_LEAVES', Math.floor(x), Math.floor(z))
 
     hunter.setPosition(x, y, z)
     hunter.spawn()
@@ -135,7 +149,16 @@ ServerEvents.tick(event => {
 //   either the MONSTER category check is failing or heat is not accumulating.
 //
 //   Inspect a player's heat directly:
-//     /data get entity <player> ForgeData.buried_heat
+//     /data get entity <player> KubeJSPersistentData.buried_heat
+//
+//   NOT ForgeData. `entity.persistentData` in KubeJS resolves to its own
+//   kjs$getPersistentData(), written under KubeJSPersistentData - so the old
+//   command reported nothing even when heat was accruing correctly.
+//   This is also load-bearing: NeoForge's persistent data only survives death
+//   via its PlayerPersisted subtag, while KubeJS's tag is copied wholesale on
+//   PlayerEvent.Clone. A heat value that resets on death is the intended
+//   behaviour here, but a nemesis TALLY that reset would be useless - both
+//   ride on this being the KubeJS tag.
 //
 //   If an entity id is wrong, the console warns and that hunt is skipped -
 //   nothing crashes, but the mechanic quietly does less than it appears to.
