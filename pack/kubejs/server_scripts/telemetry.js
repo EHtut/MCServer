@@ -40,6 +40,15 @@
 
 (function () {
   const V = 1
+
+  // Rate-limit flags live in this file's own scope, NOT on `global`.
+  //
+  // KubeJS refuses it outright: "'global' cannot be assigned to in client or
+  // server scripts". So the guard written to STOP a per-event error flooding
+  // the log was itself throwing on every single event - the exact failure it
+  // existed to prevent, wearing its own disguise.
+  var warnedPair = false
+  var warnedPlace = false
   const MARK = '[CC-TELEMETRY]'
 
   // Bumped by hand whenever the world is regenerated, so events stay attributable
@@ -258,8 +267,8 @@
             together[pair] = (together[pair] || 0) + 1
           } catch (e) {
             // pairwise runs every 10s; a per-error log would flood. Once only.
-            if (!global.__telemetryPairWarned) {
-              global.__telemetryPairWarned = true
+            if (!warnedPair) {
+              warnedPair = true
               console.error('[telemetry] co-location unreadable: ' + e)
             }
           }
@@ -319,8 +328,8 @@
     } catch (e) {
       // Placement fires constantly; a per-event error log would be a denial of
       // service on the log. Loud once, then silent.
-      if (!global.__telemetryPlaceWarned) {
-        global.__telemetryPlaceWarned = true
+      if (!warnedPlace) {
+        warnedPlace = true
         console.error('[telemetry] block placement not recordable: ' + e)
       }
     }

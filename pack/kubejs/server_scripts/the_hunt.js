@@ -1,3 +1,5 @@
+var huntCategoryWarned = false
+
 // ---------------------------------------------------------------------------
 // THE HUNT — killing draws attention.
 //
@@ -85,8 +87,8 @@ EntityEvents.death(event => {
     // But v2 over-corrected and logged on EVERY kill, which buried the server
     // log during ordinary play. Loud once, then silent: still impossible to
     // miss, no longer a denial-of-service on the log.
-    if (!global.__huntCategoryWarned) {
-      global.__huntCategoryWarned = true
+    if (!huntCategoryWarned) {
+      huntCategoryWarned = true
       console.error('[the_hunt] cannot read mob category, heat will NOT accrue '
                     + '(logged once per server start): ' + e)
     }
@@ -138,27 +140,31 @@ ServerEvents.tick(event => {
     if (Math.random() > chance) return
 
     const id = HUNTERS[Math.floor(Math.random() * HUNTERS.length)]
-    let hunter
-    try {
-      hunter = lvl.createEntity(id)
-    } catch (e) {
-      console.warn(`[the-hunt] entity '${id}' could not be created: ${e}`)
-      return
-    }
-    if (!hunter) {
-      console.warn(`[the-hunt] entity '${id}' is not registered - check HUNTERS`)
-      return
-    }
 
-    // Place it out of sight but within stalking range, on ground level.
+    // Spawn via COMMAND, not via a Level object.
+    //
+    // The previous version held `lvl` and called lvl.createEntity / lvl.getHeight.
+    // Getting a Level out of a player under Rhino is exactly what broke this file
+    // twice (player.level is a method that does not answer to typeof, and the
+    // fallback had no getGameTime), and when `lvl` was finally removed in favour
+    // of server.tickCount these two lines kept referencing it - a latent
+    // ReferenceError that would only have fired the first time a hunt actually
+    // triggered, i.e. long after anyone was watching.
+    //
+    // `execute at <player> run summon` needs no Level, no height query, and is
+    // the same runCommandSilent path already proven by the guidebook script.
     const angle = Math.random() * Math.PI * 2
     const dist = SPAWN_MIN + Math.random() * (SPAWN_MAX - SPAWN_MIN)
-    const x = player.x + Math.cos(angle) * dist
-    const z = player.z + Math.sin(angle) * dist
-    const y = lvl.getHeight('MOTION_BLOCKING_NO_LEAVES', Math.floor(x), Math.floor(z))
+    const dx = Math.round(Math.cos(angle) * dist)
+    const dz = Math.round(Math.sin(angle) * dist)
 
-    hunter.setPosition(x, y, z)
-    hunter.spawn()
+    try {
+      server.runCommandSilent(
+        `execute at ${player.username} run summon ${id} ~${dx} ~ ~${dz}`)
+    } catch (e) {
+      console.warn(`[the-hunt] could not summon '${id}': ${e}`)
+      return
+    }
 
     player.persistentData.putLong(LAST_HUNT, now)
     console.info(`[the-hunt] heat ${heat} -> sent ${id} after ${player.username}`)
