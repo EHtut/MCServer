@@ -5,16 +5,16 @@ refresh_token = ""
 provider = "NULL"
 
 [ingame]
-	show_target_indicator = true
+	show_target_indicator = false
 	#Allowed Values: NONE, HURT, TARGET, TARGET_AND_HURT
-	health_bar_show_option = "HURT"
+	health_bar_show_option = "NONE"
 	show_epicfight_attributes = true
 	# Default: 0.0
 	# Range: 0.0 ~ 1.0
 	target_outline_color = 0.0
 	#Allowed Values: NONE, CROSSHAIR, HIGHLIGHT, CROSSHAIR_AND_HIGHLIGHT
 	mine_block_guide_option = "CROSSHAIR"
-	enable_target_entity_guide = true
+	enable_target_entity_guide = false
 	blood_effects = true
 	use_compute_shader = false
 	use_persistent_buffer = false

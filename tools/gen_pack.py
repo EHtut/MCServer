@@ -112,10 +112,12 @@ def write_mod(r: dict) -> pathlib.Path:
     safe = "".join(ch if (ch.isalnum() or ch in "-_.") else "-" for ch in slug)
 
     # packwiz installs a file to the directory its METAFILE sits in, so a shader
-    # pack is placed simply by writing its metafile under shaderpacks/. It is
-    # always client-side: a dedicated server has nothing to shade.
-    is_shader = r.get("kind") == "shaderpack"
-    sub, side = ("shaderpacks", "client") if is_shader else ("mods", side_of(r))
+    # or resource pack is placed simply by writing its metafile under the right
+    # directory. Both are always client-side: a dedicated server has nothing to
+    # shade and never renders a texture.
+    EXTRA_DIRS = {"shaderpack": "shaderpacks", "resourcepack": "resourcepacks"}
+    extra = EXTRA_DIRS.get(r.get("kind"))
+    sub, side = (extra, "client") if extra else ("mods", side_of(r))
 
     dest = PACK / sub / f"{safe}.pw.toml"
     dest.parent.mkdir(parents=True, exist_ok=True)

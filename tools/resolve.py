@@ -189,12 +189,13 @@ PINS: dict[str, str] = {}
 
 
 def resolve_one(slug: str, loader: str = LOADER) -> dict:
-    """Resolve one project. `loader` is 'neoforge' for mods, 'iris' for shaders.
+    """Resolve one project. `loader` is per-kind - see EXTRA_KINDS.
 
-    Shader packs are a different Modrinth project type: they advertise the
-    'iris' loader and install to shaderpacks/, not mods/. Everything else about
-    the lookup - pins, version picking, hashes - is identical, so the facet is
-    the only thing that varies.
+    Shader packs and resource packs are different Modrinth project types: they
+    advertise 'iris' and 'minecraft' respectively, and install to shaderpacks/
+    and resourcepacks/ rather than mods/. Everything else about the lookup -
+    pins, version picking, hashes - is identical, so the facet is the only
+    thing that varies.
     """
     p = project(slug)
     if p is None:
@@ -281,40 +282,56 @@ def load_modlist(path: str) -> list[dict]:
     return entries
 
 
-def load_shaderpacks(path: str) -> list[dict]:
-    """Shader packs from the manifest's separate `shaderpacks` block.
+# Non-mod payloads. Each is a separate Modrinth project type that advertises
+# its own loader and installs to its own directory; the lookup is otherwise
+# identical to a mod, so the loader facet and the destination are the only
+# things that vary. Adding a third kind means adding a row here and nothing else.
+#
+#   manifest block -> (kind, modrinth loader facet, install dir)
+EXTRA_KINDS: dict[str, tuple[str, str, str]] = {
+    "shaderpacks":   ("shaderpack",   "iris",      "shaderpacks"),
+    "resourcepacks": ("resourcepack", "minecraft", "resourcepacks"),
+}
+
+
+def load_extras(path: str) -> list[dict]:
+    """Shader packs and resource packs from their own manifest blocks.
 
     Kept apart from `categories` because they resolve against a different
     loader and install to a different directory - folding them into the mod
     list would mean every consumer having to re-derive which is which.
     """
     src = json.loads(pathlib.Path(path).read_text(encoding="utf-8"))
-    packs = (src.get("shaderpacks") or {}).get("packs") or []
-    return [{"slug": r[0], "category": "shaderpack", "why": r[1], "tier": "shader"}
-            for r in packs]
+    out: list[dict] = []
+    for block, (kind, _loader, _dir) in EXTRA_KINDS.items():
+        for r in (src.get(block) or {}).get("packs") or []:
+            out.append({"slug": r[0], "category": kind, "why": r[1], "tier": kind})
+    return out
 
 
 def cmd_resolve(path: str) -> int:
     entries = load_modlist(path)
-    shaders = load_shaderpacks(path)
-    if shaders:
-        print(f"({len(shaders)} shader pack(s), resolved against loader=iris)")
+    extras = load_extras(path)
+    by_kind = {k: l for _b, (k, l, _d) in EXTRA_KINDS.items()}
+    for kind in dict.fromkeys(e["category"] for e in extras):
+        n = sum(1 for e in extras if e["category"] == kind)
+        print(f"({n} {kind}(s), resolved against loader={by_kind[kind]})")
     out = []
     counts: dict[str, int] = {}
-    for i, e in enumerate(entries + shaders, 1):
+    for i, e in enumerate(entries + extras, 1):
         slug = e["slug"]
-        is_shader = e["category"] == "shaderpack"
+        kind = e["category"] if e["category"] in by_kind else "mod"
         try:
-            r = resolve_one(slug, loader="iris" if is_shader else LOADER)
+            r = resolve_one(slug, loader=by_kind.get(kind, LOADER))
         except Exception as exc:  # a single bad slug must not lose 400 lookups
             r = {"slug": slug, "status": "ERROR", "error": str(exc)}
         r["category"] = e["category"]
         r["why"] = e["why"]
         r["tier"] = e["tier"]
-        r["kind"] = "shaderpack" if is_shader else "mod"
+        r["kind"] = kind
         counts[r["status"]] = counts.get(r["status"], 0) + 1
         out.append(r)
-        print(f"[{i:>3}/{len(entries) + len(shaders)}] {r['status']:<20} {slug}")
+        print(f"[{i:>3}/{len(entries) + len(extras)}] {r['status']:<20} {slug}")
         time.sleep(SLEEP)
 
     CACHE.mkdir(parents=True, exist_ok=True)

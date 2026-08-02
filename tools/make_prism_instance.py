@@ -143,7 +143,15 @@ mipmapLevels:2
 menuBackgroundBlurriness:0
 glintStrength:0.0
 renderClouds:"false"
+resourcePacks:["vanilla","fabric","file/Faithful 32x - 1.21.1.zip"]
+incompatibleResourcePacks:[]
 """
+# resourcePacks names the file packwiz DELIVERS, exactly - "Faithful 32x -
+# 1.21.1.zip", spaces and all. Minecraft silently drops an entry it cannot
+# find, so a stale name here is invisible: the pack just never applies and
+# nothing is logged. Same failure the shaderPack key already had.
+# Verify with:  python tools/resolve.py resolve tools/modlist.json
+# then read the filename out of tools/.cache/resolved.json.
 
 
 def main() -> int:
@@ -345,24 +353,31 @@ is strong and you want the view, ask Ethan to turn it on for you.
   "javaw.exe", set it to High performance. Then restart the game.
 
 
-Want shaders?  (optional, looks great, costs frames)
-----------------------------------------------------
-Nothing to download - Complementary Reimagined already arrived with the pack.
-It ships switched OFF, because a shader is a per-machine decision and this
-instance is tuned for the slowest computer in the group.
+Shaders and textures are ON already
+-----------------------------------
+Both arrive with the pack. Nothing to download, nothing to install.
 
-To turn it on:  Options -> Video Settings -> Shader Packs -> pick
-"ComplementaryReimagined" -> Apply.
+  Complementary Reimagined  - the lighting, shadows and water
+  Faithful 32x              - double-resolution textures
 
-Turn it straight back off if you get any of these - shaders are the first
-thing to suspect, and nothing breaks either way:
+IF THE GAME RUNS BADLY, TURN OFF THE SHADER FIRST. It is by far the more
+expensive of the two, and nothing breaks without it:
+
+  Options -> Video Settings -> Shader Packs -> "Shaders: Disabled" -> Done
+
+Turn it off straight away if you see any of these - the shader is the first
+thing to suspect, every time:
   - frames drop through the floor
-  - the world renders with strange stripes, blocks or flickering
+  - strange stripes, flickering, or blocks rendering wrong
   - menus or text go missing
 
+Still slow with shaders off? Then drop the textures too:
+  Options -> Resource Packs -> move "Faithful 32x" to the left -> Done
+
 (Credit: Complementary Shaders - Reimagined by Complementary Development,
- https://www.complementary.dev/ . It is downloaded from Modrinth at launch,
- not redistributed here.)
+ https://www.complementary.dev/ , and Faithful 32x by the Faithful Team,
+ https://faithfulpack.net/ . Both are downloaded from Modrinth when the game
+ launches; neither is redistributed here.)
 """
 
     stage_files = {

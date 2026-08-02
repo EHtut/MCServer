@@ -36,9 +36,23 @@
     }
   },
   "shaderpacks": {
-    "_comment": ["ONE shader ships, not four. Ethan's ruling 2026-08-01: 'i don't want to add a whole new mod for them,", "just pull the top performance one.' No new mod was needed - Iris is already in the pack, so a shader is", "just a file in shaderpacks/.", "Shader packs resolve against the 'iris' loader, not 'neoforge', and packwiz places a file in the directory", "its metafile lives in - so writing pack/shaderpacks/<slug>.pw.toml is the whole mechanism.", "NOT enabled by default: a shader is a per-machine performance decision and four people have four GPUs.", "Turn it on in Options -> Video Settings -> Shader Packs.", "Dropped for budget/simplicity: bsl-shaders, solas-shader, bliss-shader."],
+    "_comment": ["ONE shader ships, not four. Ethan's ruling 2026-08-01: 'i don't want to add a whole new mod for them,", "just pull the top performance one.' No new mod was needed - Iris is already in the pack, so a shader is", "just a file in shaderpacks/.", "Shader packs resolve against the 'iris' loader, not 'neoforge', and packwiz places a file in the directory", "its metafile lives in - so writing pack/shaderpacks/<slug>.pw.toml is the whole mechanism.", "ENABLED by default as of 2026-08-02 (Ethan: 'lets ship the shaders'), overriding the earlier per-machine ruling. iris.properties ships enableShaders=true and names the DELIVERED ZIP - never the '+ EuphoriaPatches' folder name, which Euphoria generates locally and which therefore exists on exactly one machine.", "If rendering corrupts, shaders are the first suspect: Iris 1.8.14-beta + Sodium 0.8.12 have open reports.", "Dropped for budget/simplicity: bsl-shaders, solas-shader, bliss-shader."],
     "packs": [
       ["complementary-reimagined", "The single shipped shader. Chosen on performance: the best frames-per-quality of the four Ethan picked, and Euphoria Patches (already in the mod list) gives it Distant Horizons support, which most shaders lack."]
+    ]
+  },
+  "resourcepacks": {
+    "_comment": ["Same mechanism as shaderpacks - a separate Modrinth project type resolved against the 'minecraft'",
+      "loader, delivered by writing pack/resourcepacks/<slug>.pw.toml. Client-side only; a dedicated server",
+      "never renders a texture.",
+      "Faithful 32x and NOT Bare Bones: this is a Create + Ars pack, and Bare Bones flattens everything to the",
+      "trailer style, which fights Create's deliberately detailed machinery and the horror mods' art. Faithful",
+      "only doubles the resolution of VANILLA textures and leaves modded art alone, so it upgrades the world",
+      "without making half the pack look wrong.",
+      "Costs texture memory (10.5 MB pack, 4x the texels of 16x). If the low-spec box struggles WITH shaders",
+      "on as well, drop this first - it is the cheaper of the two to give up."],
+    "packs": [
+      ["faithful-32x", "The shipped texture pack. Vanilla-faithful at 2x resolution, so it never fights modded art styles; 4.1M downloads and a current 1.21.1 build."]
     ]
   },
   "categories": {
