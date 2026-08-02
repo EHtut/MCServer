@@ -81,3 +81,6 @@ desktop.ini
 *.swp
 
 tools/.cache/mcq-index.json
+
+# the DM's event sink - runtime data, lives outside the world on purpose
+C:/MCServer/telemetry/
