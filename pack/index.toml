@@ -1161,6 +1161,11 @@ hash = "fffc4ce08823b44a89f5117fc3feabfa4a5ec92abf3ce18debd6017e04331aaf"
 metafile = true
 
 [[files]]
+file = "mods/rpgtitles.pw.toml"
+hash = "2594045f30a583ce010cdd02882fe24ef9886add5582a0f2cff18b3577c8c14e"
+metafile = true
+
+[[files]]
 file = "mods/rpl.pw.toml"
 hash = "7815e5a589de0c02a62ae83590e1f75f4d0c269e48f2435ce2ac448976ddf49f"
 metafile = true

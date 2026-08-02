@@ -333,7 +333,8 @@
         ["betterf3", "Readable debug screen", "minor"],
         ["forgiving-void", "The void becomes survivable instead of run-ending", "minor"],
         ["enchantment-descriptions", "Duplicate; deduped at generation", "minor"],
-        ["legendary-tooltips", "Rare items feel rare", "minor"]
+        ["legendary-tooltips", "Rare items feel rare", "minor"],
+        ["rpgtitles", "Shows the biome name as a title when you enter one, and the dimension name when you switch. Chosen over BiomeInfo because BiomeInfo is a PERSISTENT on-screen HUD - the category Ethan cut as too gamey - while this fades. Server-side, so it works through vanilla title packets.", "minor"]
       ]
     },
     "building-deco": {
