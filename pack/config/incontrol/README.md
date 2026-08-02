@@ -27,7 +27,52 @@ ambient natural spawning.
 
 Below y 0 nothing is restricted: the deep is meant to be dangerous.
 
-### Rule 3 — "y 40" was never what the design meant
+### Rule 3 — the discriminator, and the one that cost half a base
+
+The intent has been right twice and the *mechanism* wrong twice. Worth writing
+both failures down, because the difference between them is subtle and expensive.
+
+**Attempt 1 — `minheight: 40` alone.** y 40 is an ABSOLUTE height, not a measure
+of being underground. In a world with tall terrain a cave at y 90 inside a
+mountain was as safe as an open meadow, and whole cave systems were inert purely
+because of where the mountain put them. Symptom: *"he's not encountering any
+enemies."*
+
+**Attempt 2 — `seesky: false`.** Correct idea, wrong key. `seesky` means
+**roofed**, not underground: tree canopy, overhangs, and the shadow of your own
+build all return false. In open flower fields with structures on them that is an
+enormous amount of newly spawnable ground. Symptom, the same evening:
+*"half my base is gone from waves of creepers every night."*
+
+The dial-back documented at the time (`maxheight: 60`) would in fact have saved
+the base — but it would also have re-killed the mountain caves that were the
+entire reason for the change. **The real error was shipping the permissive
+variant first.** When a change can damage something a player has built, ship the
+conservative version and loosen it, never the other way round.
+
+**Attempt 3 — `maxlight_sky: 0`, and why it is actually different.** In Control
+resolves this through `getBrightness(LightLayer.SKY, pos)`, verified in
+`GenericRuleEvaluator`. It asks *how much sky light reaches this block*, and the
+answer is 0 only where the sky is genuinely sealed off:
+
+| place | `seesky` | `maxlight_sky` | wanted |
+|---|---|---|---|
+| open field | true | 15 | no spawn |
+| under tree canopy | **false** | >0 (leaks around leaves) | no spawn |
+| under an overhang | **false** | >0 (propagates sideways) | no spawn |
+| beside a built wall | **false** | >0 | no spawn |
+| deep cave, any height | false | **0** | SPAWN |
+
+Sky light propagates and attenuates; it does not stop dead at the first solid
+block the way `seesky` does. That is exactly the difference between "roofed" and
+"underground", and it is why the canopy and base-shadow spawns disappear while
+mountain caves keep working.
+
+A lit base stays safe on top of this for the ordinary vanilla reason: hostile
+spawns also require block light 0. `maxlight_sky` only decides whether the
+*surface rule* applies; it never forces a spawn.
+
+### Historical: "y 40" was never what the design meant
 
 Ethan, 2026-08-02: his brother, high up, *"says he's not encountering any
 enemies"*.
