@@ -53,8 +53,6 @@
       "desc": "APIs and shared code. Listed explicitly rather than left to transitive resolution so a dependency change shows up as a visible diff.",
       "mods": [
         ["curios", "Accessory/trinket slots - a large share of the equipment mods target it", "core"],
-        ["accessories", "The other accessory API; several 1.21.1 mods moved to it", "core"],
-        ["accessories-compat-layer", "Unifies Curios and Accessories so both families coexist", "core"],
         ["architectury-api", "Multiloader shim a lot of ports depend on", "core"],
         ["balm", "Blay's library - Waystones, Comforts, Trash Cans", "core"],
         ["bookshelf-lib", "Darkhax's library", "core"],
@@ -431,6 +429,8 @@
     "_comment": ["Applied by tools/apply_audit.py; findings in docs/07-THEME-AUDIT.md.", "Cuts are data, not history: delete an entry from CUTS and re-run to restore."],
     "cuts": [
       ["abandoned-watchtowers", "F32. Explorify ships watchtowers at the IDENTICAL 48/24 spacing in the same biomes, inside a coherent 14-set package."],
+      ["accessories", "F44. THE CURIO MENU CRASH. Accessories' compat layer cancels Curios' core mixins (MixinInventory, MixinLivingEntity - visible as 'mixinsquared-canceller' lines at boot) and substitutes its own inventory handling. Server and client then disagree on the curio slot count, and ClientboundContainerSetContentPacket dies with 'Index 61 out of bounds for length 61' inside AbstractContainerMenu.initializeContents, dropping the player from the server.\n\n        Cut because it earns nothing here: curios is REQUIRED by 12 mods and is load-bearing, while accessories is required by NOTHING except its own compat layer. The manifest justified it as 'several 1.21.1 mods moved to it' - a plausible forecast that is false of this pack, where the number of mods using it is zero.\n\n        No data is lost: nothing can be stored in an Accessories slot when no mod uses Accessories."],
+      ["accessories-compat-layer", "F44. The other half. Its entire job is bridging Curios and Accessories, so it is pointless once Accessories is gone - and it is the component that actually cancels the Curios mixins. Required by nothing."],
       ["aces-spell-utils", "F31. Orphaned library - zero dependents anywhere; the mod that needed it was already cut."],
       ["advanced-netherite", "F9. More netherite tiers - pure numbers, no new behaviour."],
       ["aether", "F6. Dimension sprawl. Kept only the two dimensions that serve a pillar directly - The Undergarden (buried-tech) and Cataclysm (combat)."],
