@@ -7,6 +7,41 @@
   },
   {
     "dimension": "minecraft:overworld",
+    "minheight": 40,
+    "mod": [
+      "born_in_chaos_v1",
+      "born_in_chaos_fc",
+      "legendary_monsters",
+      "sculks_of_arda",
+      "grim_and_bleak",
+      "revervox_mod",
+      "frostiful"
+    ],
+    "result": "deny"
+  },
+  {
+    "dimension": "minecraft:overworld",
+    "minheight": 40,
+    "mob": [
+      "iceandfire:ghost",
+      "iceandfire:dread_beast",
+      "iceandfire:dread_ghoul",
+      "iceandfire:dread_horse",
+      "iceandfire:dread_knight",
+      "iceandfire:dread_lich",
+      "iceandfire:dread_queen",
+      "iceandfire:dread_scuttler",
+      "iceandfire:dread_thrall",
+      "valarian_conquest:archer",
+      "valarian_conquest:crossbowman",
+      "valarian_conquest:valarian_archer",
+      "valarian_conquest:soldier",
+      "valarian_conquest:troll"
+    ],
+    "result": "deny"
+  },
+  {
+    "dimension": "minecraft:overworld",
     "hostile": true,
     "maxcount": 40,
     "minheight": 0,
