@@ -1,0 +1,11 @@
+{
+  "name": "It Works",
+  "category": "patchouli:probe",
+  "icon": "minecraft:stone",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "The loader is fine. The problem is content."
+    }
+  ]
+}
