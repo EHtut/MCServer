@@ -63,6 +63,9 @@ CUTS: dict[str, str] = {
     # these cut actually hurt. We need to ensure my brother stays entertained
     # with bosses, mobs, horror, and alot of weaponry." They are deliberately
     # absent from CUTS - do not re-add them without asking.
+    # --- F40: the actual tutorial ----------------------------------------
+    "cryptid": "F40. THE tutorial that has been breaking the GUI - identified by Ethan in play, then confirmed in the jar: Cryptid is a PURE DATAPACK mod (0 java classes, 1,018 mcfunction files) shipping data/cryptid/function/tick/player/tutorial/starttutorial.mcfunction, driven every tick from playertick.mcfunction. It emits a clickable 'skip tutorial: CLICK' tellraw on join and leaves the client's menus unusable.\n\n        I MISATTRIBUTED THIS. I grepped every jar for the string 'skip tutorial', found 'button.apotheosis.skip_tutorial' in Apotheosis's lang file, and stopped there. The observed symptom was a CHAT message carrying a click event - a datapack tellraw - while Apotheosis's is a GUI button label. Different mechanism entirely. Matching the string instead of the mechanism cost Apotheosis its place in the pack (F38) and cost hours of unplayable evening.\n\n        Being function-driven, Cryptid also bypasses In Control completely, so it was already the horror mod most likely to fire on a surface the design says should be quiet.",
+
     # --- F38/F39: Apotheosis, and the HUD gets minimal --------------------
     # Ethan, 2026-08-02, after the tutorial crashed the whole group on join:
     #   "apotheosis needs to go. period."

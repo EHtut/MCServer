@@ -223,7 +223,6 @@
       "mods": [
         ["the-knocker", "An unpredictable human-like stalker that follows and visits", "major"],
         ["obsessed", "A stalker whose behaviour escalates with every encounter", "major"],
-        ["cryptid", "40 cryptids and 50 world events. The single largest horror content mod available", "major"],
         ["server-side-horror", "Fully configurable ambient horror, server-side. Pure DM surface: events without client mods", "major"],
         ["revervox", "Records and replays your friends' actual voices back at you. With proximity voice chat, the most effective horror mod in the pack", "major"],
         ["mimicked", "Voice-mimicking horror atmosphere", "major"],
@@ -478,6 +477,7 @@
       ["creeper-overhaul", "F35. Neutered by our own In Control rule - its content exists only above y40, which the design denies, so the pack pays the load cost for something no player can see. Creeper Overhaul is the sharpest case: all 16 biome variants became cave-only AND it removes the vanilla creeper spawn, so the surface has FEWER creepers than vanilla and none of the new ones."],
       ["crimson_curse", "F32. Same spreading-infection verb as Spore and loses badly: 0 registered blocks/items/entities against Spore's 96 entities and 111 blocks."],
       ["critters-and-companions", "F32. Fourth small-animal mod with direct name duplicates (otter, snail, dragonfly) against a stated sparse-wildlife rule."],
+      ["cryptid", "F40. THE tutorial that has been breaking the GUI - identified by Ethan in play, then confirmed in the jar: Cryptid is a PURE DATAPACK mod (0 java classes, 1,018 mcfunction files) shipping data/cryptid/function/tick/player/tutorial/starttutorial.mcfunction, driven every tick from playertick.mcfunction. It emits a clickable 'skip tutorial: CLICK' tellraw on join and leaves the client's menus unusable.\n\n        I MISATTRIBUTED THIS. I grepped every jar for the string 'skip tutorial', found 'button.apotheosis.skip_tutorial' in Apotheosis's lang file, and stopped there. The observed symptom was a CHAT message carrying a click event - a datapack tellraw - while Apotheosis's is a GUI button label. Different mechanism entirely. Matching the string instead of the mechanism cost Apotheosis its place in the pack (F38) and cost hours of unplayable evening.\n\n        Being function-driven, Cryptid also bypasses In Control completely, so it was already the horror mod most likely to fire on a surface the design says should be quiet."],
       ["deeperdarker", "F36. Large and functional, cut on Ethan's call 2026-08-02 to get the server actually playable. Explicitly re-addable later - these are choices, not defects."],
       ["delightful-creators", "F25. Ships 164 asset entries - 50 item models, 53 block textures, and ZERO blockstates and ZERO block models. All 19 of its soup/stew/sauce fluid blocks render as the missing-model cube; that is 304 warnings per boot (19 blocks x 16 fluid levels). Jar-verified, not inferred. Its items and recipes work, so what remains is a food mod whose blocks cannot be looked at."],
       ["diagonal-fences", "F12. Needs 'diagonalblocks', CurseForge-only."],
