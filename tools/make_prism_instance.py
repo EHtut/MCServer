@@ -186,9 +186,26 @@ glintStrength:0.0
 renderClouds:"false"
 key_key.sneak:key.keyboard.left.control
 key_key.sprint:key.keyboard.left.shift
+key_key.epicfight.switch_mode:key.keyboard.z
+key_iris.keybind.reload:key.keyboard.minus
 resourcePacks:["vanilla","fabric"]
 incompatibleResourcePacks:[]
 """
+# THE R KEY IS A WAR ZONE. Twelve things bind to it out of the box, including
+# TaCZ's RELOAD - the one you press mid-firefight. Epic Fight's mode toggle was
+# one of the twelve, so switching stance and reloading a gun fought each other.
+# Moved to Z at Ethan's request.
+#
+# `switch_mode` is Epic Fight's own id for what the game calls the stance
+# toggle - its description is "Switches between combat and mining modes". There
+# is no keybind literally named "stance"; this is it.
+#
+# Iris's reload ALSO defaults to R, which is the other half of the same jam. Its
+# keybind id is `iris.keybind.reload`, NOT `key.iris.reload` - the options.txt
+# line is therefore `key_iris.keybind.reload`, with no `key.` in the middle.
+# Searching for the wrong prefix returns nothing and looks like the keybind does
+# not exist. Iris's four ids are reload, shaderPackSelection, toggleShaders and
+# wireframe.
 # SNEAK ON CTRL, SPRINT ON SHIFT - Ethan's ruling 2026-08-02, and it is what he
 # had already rebound by hand on his own machine. Shipping it means nobody else
 # has to discover the preference or rebind it after every re-import.
