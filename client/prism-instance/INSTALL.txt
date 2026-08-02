@@ -77,16 +77,32 @@ Everything is set low on purpose, so the game runs on the weakest computer in
 the group. If yours is comfortable, turn these up - IN THIS ORDER. Change one,
 play for five minutes, then change the next.
 
-  1. Make the window bigger. Drag the corner, or press F11 for fullscreen.
-     This is the biggest one by far.
+  1. MEMORY - do this one first if your PC has more than 16 GB.
 
-  2. Options -> Video Settings -> Render Distance:      6  ->  10
+     Right-click the instance -> Edit -> Settings -> Memory.
+     Set BOTH boxes to the same number:
 
-  3. Options -> Video Settings -> Graphics:           Fast  ->  Fancy
+         16 GB of RAM  ->  6144   (the shipped default, leave it)
+         32 GB of RAM  ->  10240
+         64 GB of RAM  ->  12288
 
-  4. Options -> Video Settings -> Particles:       Minimal  ->  All
+     The default is deliberately low so the game runs on the weakest computer
+     in the group. On a big machine it is TOO low, and the symptom is the game
+     crashing with an out-of-memory message.
 
-  5. Options -> Video Settings -> Smooth Lighting:     OFF  ->  ON
+     Do not just set it as high as it will go. A heap far bigger than the game
+     needs makes things WORSE, not better.
+
+  2. Make the window bigger. Drag the corner, or press F11 for fullscreen.
+     This is the biggest one after memory.
+
+  3. Options -> Video Settings -> Render Distance:      6  ->  10
+
+  4. Options -> Video Settings -> Graphics:           Fast  ->  Fancy
+
+  5. Options -> Video Settings -> Particles:       Minimal  ->  All
+
+  6. Options -> Video Settings -> Smooth Lighting:     OFF  ->  ON
 
 If anything gets choppy, put it back. Nothing here can break the game, and
 none of it affects anybody else on the server.
