@@ -89,6 +89,45 @@ for the biome being left. Dwell time is what distinguishes "walked through" from
 
 ---
 
+## Transport — decided by a constraint, and better for it
+
+**KubeJS cannot write to the sink.** It enforces a sandbox and refuses any path
+outside the game directory: *"You can't access files outside Minecraft
+directory"* (verified in `KubeJSPaths`). `C:\MCServer\telemetry\` is outside it.
+
+Python is not sandboxed. So the split is:
+
+```
+KubeJS ──console.info──> server log ──logq.py──> C:\MCServer\telemetry\*.jsonl ──> the store
+                              ↑
+                     vanilla events too
+                     (deaths, joins, advancements)
+```
+
+KubeJS emits one line per event, marked so it is trivially separable:
+
+    [CC-TELEMETRY] {"type":"player.kill","player":"Rehykt",...}
+
+`logq.py` extracts those, extracts the vanilla events the log already carries,
+normalises both into the schema above, and writes the JSONL.
+
+This is better than having KubeJS write files even if it could:
+
+* **one transport, one parser.** `logq.py` has to read the log regardless, since
+  deaths and joins only exist there.
+* **append is free.** A JSON file written through `JsonIO` would need
+  read-modify-write per event, which is O(n) and corrupts under a crash.
+* **it survives KubeJS being broken.** Vanilla events keep flowing.
+* **the sink stays outside the world** without fighting the sandbox.
+
+The cost is log noise and a dependency on log rotation, both of which `logq.py`
+must handle anyway — including reading `.log.gz` archives and using
+`errors="replace"`, because the log contains binary bytes.
+
+**Sink path resolved:** `C:\MCServer\telemetry\`. It sits outside
+`instance\world\`, so a regen cannot touch it, and outside the KubeJS sandbox,
+which no longer matters because only Python writes there.
+
 ## Producers
 
 ### 1. KubeJS — the primary, and the only source for most of this

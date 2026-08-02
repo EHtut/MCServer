@@ -116,9 +116,21 @@ ServerEvents.tick(event => {
     // SPAWN. Two bugs deep in one mechanic, each hiding the next.
     //
     // Also: Level has no readable `.time` at all - it is getGameTime().
-    const lvl = (typeof player.level === 'function') ? player.level() : player.level
-
-    const now = lvl.getGameTime()
+    // ...and the fix for THAT was wrong too. Live play logged, every 30s:
+    //     the_hunt.js#121: Cannot find function getGameTime
+    // `typeof player.level === 'function'` reads FALSE under Rhino even though
+    // it is a method - the same "Rhino will not hand back a bare method
+    // reference" trap that broke the kill-heat category read two files ago - so
+    // the ternary took the other branch and getGameTime was not there either.
+    //
+    // Stop trying to reach a Level at all. `server.tickCount` is already proven
+    // to work in this exact scope: the line above this block uses it to gate the
+    // whole tick handler, so if it were wrong nothing here would ever run.
+    //
+    // Tradeoff, deliberate: tickCount resets on server restart, so a restart
+    // clears an in-flight hunt cooldown. That is harmless, and a verified value
+    // beats an elegant one.
+    const now = server.tickCount
     const last = player.persistentData.getLong(LAST_HUNT) || 0
     if (last > 0 && now - last < HUNT_COOLDOWN) return
 
