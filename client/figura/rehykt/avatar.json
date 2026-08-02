@@ -1,0 +1,9 @@
+{
+  "name": "Rehykt",
+  "authors": ["Ethan"],
+  "description": "Cogs and Cadavers - personal avatar. Script is model-agnostic: it adopts model.bbmodel and its animations at runtime, so the Blockbench half and the Lua half can be built independently.",
+  "version": "0.1.0",
+  "color": "6b8f3a",
+  "autoScripts": ["script"],
+  "autoAnims": false
+}
