@@ -143,10 +143,20 @@ def cmd_start() -> int:
         print("  Starting now would put two servers on one world. Stop first.")
         return 1
     print("  0 java processes - starting")
+    # DETACH PROPERLY. Without this the child inherits our stdio handles, so
+    # whatever called serverctl blocks until the SERVER exits - the tool appears
+    # to hang forever even though the server booted in five seconds. Found by
+    # the tool's own first real use.
     subprocess.Popen(
         ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass",
          "-File", str(START_PS1)],
-        cwd=str(INSTANCE))
+        cwd=str(INSTANCE),
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        creationflags=getattr(subprocess, "DETACHED_PROCESS", 0)
+        | getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+        close_fds=True)
     if not wait_for(rcon_open, timeout=420, every=5):
         print(f"  TIMEOUT: rcon never opened. java processes = {len(java_pids())}")
         return 1
