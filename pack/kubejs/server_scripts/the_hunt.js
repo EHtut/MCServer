@@ -61,22 +61,35 @@ EntityEvents.death(event => {
   try {
     // Category is the reliable signal across ~390 mods; an id list would rot.
     //
-    // This line used to call victim.getMobCategory(), WHICH DOES NOT EXIST.
-    // Verified against server-1.21.1-srg.jar: getCategory() lives on Mob and on
-    // EntityType; Entity has neither getMobCategory nor getCategory. So the call
-    // threw on EVERY kill, the catch set isMonster = false, and heat never once
-    // incremented - which also meant the tick loop always returned at
-    // `heat <= 0`, so no hunter ever spawned. The mechanic was dead from the day
-    // it was written and the script still loaded with zero errors.
-    const cat = victim.getCategory ? victim.getCategory()
-              : (victim.getType ? victim.getType().getCategory() : null)
-    isMonster = String(cat).toUpperCase().includes('MONSTER')
+    // THIRD attempt at this line, and the first one against a verified binding.
+    //   v1: victim.getMobCategory()          - exists on nothing.
+    //   v2: victim.getCategory() with a fallback to
+    //       victim.getType().getCategory()   - threw on EVERY kill in live play:
+    //         "Cannot find function getCategory in object spawn:ant"
+    //
+    // v2 failed because Rhino does not hand back a bare Java method reference,
+    // so `victim.getCategory ? ...` read FALSY even where the method exists, and
+    // every kill fell through to the EntityType branch - where getCategory is
+    // genuinely not bound. The guard chose the broken path by construction.
+    //
+    // isMonster() is KubeJS's own purpose-built accessor and is mixed into EVERY
+    // entity. Verified in kubejs-neoforge-2101.7.2-build.368 -> EntityKJS.class,
+    // whose constant pool carries isMonster / monster / getCategory / MobCategory
+    // together. Call it directly - do not probe for it first.
+    isMonster = victim.isMonster()
   } catch (e) {
-    // NEVER swallow this again. The silent catch is the whole reason this went
+    // NEVER swallow this again. The silent catch is the whole reason v1 went
     // unnoticed: "the call threw" and "that mob was not hostile" produced the
-    // identical result, so there was nothing to see. If it breaks again it now
-    // says so, on every kill, until someone fixes it.
-    console.error('[the_hunt] cannot read mob category, heat will NOT accrue: ' + e)
+    // identical result, so there was nothing to see.
+    //
+    // But v2 over-corrected and logged on EVERY kill, which buried the server
+    // log during ordinary play. Loud once, then silent: still impossible to
+    // miss, no longer a denial-of-service on the log.
+    if (!global.__huntCategoryWarned) {
+      global.__huntCategoryWarned = true
+      console.error('[the_hunt] cannot read mob category, heat will NOT accrue '
+                    + '(logged once per server start): ' + e)
+    }
   }
   if (!isMonster) return
 
