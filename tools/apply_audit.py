@@ -58,6 +58,43 @@ CUTS: dict[str, str] = {
     "epic-fight-sword-soaring": "F14. RuntimeException: Attempted to load class net/minecraft/client/gui/screens/Screen for invalid dist DEDICATED_SERVER. Painful loss - this was the wuxia specialisation layer Ethan chose to make melee about movesets rather than stat lines. Epic Fight itself still supplies movesets, stances and combos.",
     "kenny": "F14. Same DEDICATED_SERVER crash. One stalker of six, and the least distinctive; The Knocker, Obsessed, The Skinwalker Hunt, Distant Friends and Weeping Angels remain.",
 
+    # --- F29: the highest spawn weights in the pack, and a corruption history
+    # Ethan, 2026-08-01: "ARPHEX? is that the bug mod? Cut it. now. That mod
+    # corrupted my last world."
+    #
+    # The audit independently reached the same mod from the other direction:
+    # 59 `neoforge:add_spawns` entries plus 75 worldgen features, including
+    # `insane_mode_spawns` at WEIGHT 200 and `random_ar_ph_ex` at WEIGHT 150
+    # across `#minecraft:is_overworld`. For scale, the next highest weight
+    # anywhere in the pack is ~60, and a vanilla sheep is 12. It was the single
+    # largest contributor to the surface not feeling like Ethan's design.
+    #
+    # A prior-world corruption is its own reason and does not need corroborating,
+    # but it is worth noting that a mod with 75 worldgen features and spawn
+    # weights triple everything else is exactly the shape that does that.
+    "arphex": "F29. Ethan's call - it corrupted a previous world. Independently the worst offender against the surface rule: 59 add_spawns + 75 worldgen features, with insane_mode_spawns at weight 200 and random_ar_ph_ex at weight 150 across the whole overworld, triple the next highest in the pack.",
+
+    # --- F30: faction schedulers In Control cannot reach ---------------------
+    # Ethan met a vampire hunter at spawn on a brand-new world. The audit found
+    # why: Vampirism and Werewolves declare ZERO `neoforge:add_spawns` and run
+    # their own faction schedulers instead of the vanilla spawn cycle.
+    #
+    # That matters more than the individual mobs. In Control hooks
+    # MobSpawnEvent$PositionCheck, so it governs the natural spawn cycle and
+    # nothing else - a mod that spawns its own entities directly is invisible to
+    # every height rule the depth design depends on. There is no config-level fix
+    # available to us that keeps the mods and honours "the surface is animals and
+    # settlements".
+    #
+    # Cost: two full progression paths (vampire and werewolf lines, their skill
+    # trees, and Vampirism's villages). Ars Nouveau remains the magic pillar per
+    # Ethan's earlier ruling, and Iron's Spells, Goety, Occultism and Theurgy all
+    # stay - so magic is not thinned, only the two faction mods go.
+    #
+    # teamlapenlib ships inside Vampirism as a nested jar and leaves with it.
+    "vampirism": "F30. Spawns hunters and vampires through its own faction scheduler, not the vanilla spawn cycle, so In Control's height rules cannot govern it at all - Ethan met a hunter at spawn on a fresh world. No config path keeps the mod and honours the surface rule.",
+    "werewolves": "F30. Same faction-scheduler mechanism as Vampirism, zero add_spawns, unreachable by In Control. Cut alongside it.",
+
     # --- F27: two systems answering one input -------------------------------
     # epicfight-common.toml has initialMode = 1, so Epic Fight battle mode is the
     # default for every player and it owns shield right-click with its own Guard

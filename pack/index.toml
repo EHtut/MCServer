@@ -101,11 +101,6 @@ hash = "2a9dc78e509807224bd0be9a044b099ed59ec849286e5834e34cb8c655e5b83d"
 metafile = true
 
 [[files]]
-file = "mods/arphex.pw.toml"
-hash = "c8c4a22ac6593f4a430842069b6d1736beff6a6d279e71b5c7797201808f1020"
-metafile = true
-
-[[files]]
 file = "mods/ars-additions.pw.toml"
 hash = "08f46822b355882721807489cbf64a7e8ac03efc1476136e60acbc8dd7dc2880"
 metafile = true
@@ -1851,11 +1846,6 @@ hash = "28a5b63f5db878a2b7ba6a07a94502a3910be4a3f1f53ce1f835f7042f587603"
 metafile = true
 
 [[files]]
-file = "mods/vampirism.pw.toml"
-hash = "13818f3e8b154ae30007269b894bb854358fda820ae382a07b9ceb5817a05c00"
-metafile = true
-
-[[files]]
 file = "mods/veinminer-enchantment.pw.toml"
 hash = "9677ea6c4274a147bc2fe7d1b2d35c18c091902fd4b135e1e54e2c646ff85164"
 metafile = true
@@ -1883,11 +1873,6 @@ metafile = true
 [[files]]
 file = "mods/weeping-angels.pw.toml"
 hash = "ad47d4b9aefebb84201e73b0af412dd6c952fdf8fe963ea90d649f7e9c518b8f"
-metafile = true
-
-[[files]]
-file = "mods/werewolves.pw.toml"
-hash = "e60cb37ec5b9d07ec09e2963d57cc7b50627968456fdbf0fc4cd5ec3cf72712b"
 metafile = true
 
 [[files]]

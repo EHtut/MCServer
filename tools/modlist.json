@@ -230,8 +230,6 @@
         ["more-totems-of-undying", "Mob-themed totems", "minor"],
         ["charm-of-undying", "Totem in an accessory slot", "minor"],
         ["iceandfire-ce", "Dragons as a late-game target", "major"],
-        ["vampirism", "Become or hunt vampires - magic that feeds the horror pillar", "major"],
-        ["werewolves", "Vampirism's sister mod", "minor"],
         ["apotheosis", "Affixed loot, enchantment overhaul, bosses - deepens magic and combat together", "major"],
         ["apothic-attributes", "Attribute backend for Apotheosis", "core"],
         ["thaumon", "Thaumcraft-flavoured decoration for magic builds", "minor"],
@@ -285,7 +283,6 @@
         ["whispering-spirits", "Atmospheric spirits - ambient dread rather than a monster", "major"],
         ["shadow-of-the-soul", "A Fear Level system that reacts to player behaviour. Explicitly stateful, and a natural DM input", "major"],
         ["grim-and-bleak", "Ambience-led horror with its own dimension", "minor"],
-        ["arphex", "Phobia-grade arthropod horror and supernatural bosses", "risky"],
         ["fungal-infectionspore", "A spreading fungal infection. The closest 1.21.1 has to Scape and Run: Parasites", "major"],
         ["crimson_curse", "A Nether-born virus that escapes into the Overworld and spreads", "major"],
         ["abandoned-watchtowers", "Abandoned watchtowers in forests - atmosphere in worldgen", "minor"],
@@ -546,6 +543,7 @@
     "cuts": [
       ["advanced-netherite", "F9. More netherite tiers - pure numbers, no new behaviour."],
       ["aether", "F6. Dimension sprawl. Kept only the two dimensions that serve a pillar directly - The Undergarden (buried-tech) and Cataclysm (combat)."],
+      ["arphex", "F29. Ethan's call - it corrupted a previous world. Independently the worst offender against the surface rule: 59 add_spawns + 75 worldgen features, with insane_mode_spawns at weight 200 and random_ar_ph_ex at weight 150 across the whole overworld, triple the next highest in the pack."],
       ["ars-elemancy", "F12. Hard-requires 'ars_elemental' [0.7.0.9,), which is CurseForge-only - its own manifest links to CurseForge. Found at second boot. Ars keeps Additions, Creo, Controle, Unification, Ars'n'Spells, Polymorphia, Structurize, Artillery, Technic, Lumos and the lectern fix."],
       ["better-library", "F15. NullPointerException in JsonVillagerLoader during construction. Its shipped config is copy-paste boilerplate (FPS limits, render distance, favoriteServers) in a LIBRARY mod - a maintenance signal as much as a bug."],
       ["carryon-aeronautics-compat", "F22. @Redirect in PickupHandlerMixin targets a Vec3.distanceTo call that Carry On 2.2.6.13 refactored away ('Scanned 0 target(s)'); with defaultRequire=1 that throws, killing the server tick loop the first time any player right-clicks a block. The target class and method both still exist - the missing thing is the injection point inside the method body, which no class- or method-level check can see."],
@@ -579,6 +577,8 @@
       ["structory-towers", "F13. Modrinth tags it 1.21.1 + neoforge, but the jar is a multi-version build (26.2) carrying neoforge.mods.toml, mods.toml AND fabric.mod.json plus 1.21.5/1.21.11 overlay folders. NeoForge rejects it outright: 'not a valid mod file'. Same class as zoniex. Base Structory stays and works."],
       ["the-bumblezone", "F6. Dimension sprawl - no connection to any pillar."],
       ["underground-village,-stoneholm", "F15. Its required library better_lib crashes the dedicated server during mod construction (NPE in JsonVillagerLoader - dereferences a null JSON). Re-added for the underground-city idea, dropped again on evidence. The buried city is still served by Underground Worlds' dungeons, Arda's Sculks' Ancient City overhaul, and The Undergarden."],
+      ["vampirism", "F30. Spawns hunters and vampires through its own faction scheduler, not the vanilla spawn cycle, so In Control's height rules cannot govern it at all - Ethan met a hunter at spawn on a fresh world. No config path keeps the mod and honours the surface rule."],
+      ["werewolves", "F30. Same faction-scheduler mechanism as Vampirism, zero add_spawns, unreachable by In Control. Cut alongside it."],
       ["yungs-better-caves", "F23. Removes only the legacy carvers while the 1.18+ noise-router caves it cannot see keep generating, so the underground is carved twice - fragmented ore veins, structures broken open, little solid stone. Also hardcodes bottom_y=-63 and so contributes nothing to the extended -64..-128 band. Cave Biomes, Underground Worlds, Galosphere, Deeper Dark and Arda's Sculks are unaffected."]
     ]
   }
