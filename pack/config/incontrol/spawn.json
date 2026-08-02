@@ -11,11 +11,6 @@
   },
   {
     "dimension": "minecraft:overworld",
-    "hasstructure": true,
-    "result": "default"
-  },
-  {
-    "dimension": "minecraft:overworld",
     "maxlight_sky": 0,
     "result": "default"
   },

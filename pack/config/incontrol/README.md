@@ -27,6 +27,39 @@ ambient natural spawning.
 
 Below y 0 nothing is restricted: the deep is meant to be dangerous.
 
+### `hasstructure` is REMOVED, and it was the actual cause
+
+`/ctrl debug` settled this with numbers instead of theory. Over one sample:
+
+    Rule (hasstructure)  173 hits   <- dominant
+    Rule (maxlight_sky)   89 hits
+    Rule (surface deny)    5 hits   <- almost never reached
+
+and it was passing things like `enderman y:66`, `baby_skeleton y:94`,
+`zombie y:36` — open surface, in the open world.
+
+`hasstructure` is true anywhere inside **any structure's bounding box**, and
+those boxes are large. With Dungeons Arise, CTOV, Valarian Conquest and Explorify
+all generating densely, they blanket much of the map — so the rule was silently
+switching the surface deny OFF nearly everywhere. That, not `seesky`, is what
+produced waves of creepers around a base.
+
+It is gone, and nothing is lost, because the two rules above it are the precise
+version of what it was trying to say:
+
+* `spawntype: SPAWNER` — a dungeon's spawner works, always
+* `spawntype: STRUCTURE` — mobs a structure creates as it generates
+* and a dark sealed dungeon interior is caught by `maxlight_sky: 0` anyway
+
+An open-air fort courtyard at y 70 no longer spawns ambient hostiles. Its
+spawners and its garrison still do. That is the intended reading of "dangerous
+places stay dangerous" — the danger is what was PLACED there, not the postcode.
+
+**The general lesson: a boolean that sounds narrow can be enormous in practice.**
+`hasstructure` reads like "inside a dungeon" and means "inside any structure's
+bounding box", which in a heavily-structured world is most of the surface. Debug
+counts exposed in one minute what reasoning had not in two attempts.
+
 ### Rule 3 — the discriminator, and the one that cost half a base
 
 The intent has been right twice and the *mechanism* wrong twice. Worth writing
