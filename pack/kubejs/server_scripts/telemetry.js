@@ -228,16 +228,33 @@
       // Co-location. The behavioural residue of everything agreed in voice
       // chat, which is the channel the DM cannot hear. Counted in samples here
       // and converted to seconds at flush, so the arithmetic stays integer.
-      const online = server.players
-      for (let i = 0; i < online.length; i++) {
-        for (let j = i + 1; j < online.length; j++) {
-          const a = online[i], bb = online[j]
+      // `var`, NOT `const`, and this is a Rhino rule rather than a style choice.
+      //
+      // A `const` declared inside a NESTED BLOCK of a repeatedly-invoked
+      // callback is re-declared on every invocation and throws:
+      //     TypeError: redeclaration of var online
+      // Renaming it changed nothing - the second attempt threw
+      // "redeclaration of var tmOnline" - which is what proved it is the
+      // DECLARATION KIND, not the identifier.
+      //
+      // The consts at the top of this callback (`server`, `tick`) are fine, as
+      // are consts inside a forEach callback, because those get a fresh function
+      // scope each call. Only consts inside a bare `{ }` block here are hoisted
+      // into a scope that persists between ticks. `var` is function-scoped and
+      // simply reassigns.
+      //
+      // It threw 330 times before anyone looked, so session.together has never
+      // once fired. The error was in the log the entire time.
+      var tmOnline = server.players
+      for (var i = 0; i < tmOnline.length; i++) {
+        for (var j = i + 1; j < tmOnline.length; j++) {
+          var a = tmOnline[i], bb = tmOnline[j]
           try {
             if (String(a.level.dimension) !== String(bb.level.dimension)) continue
-            const dx = a.x - bb.x, dy = a.y - bb.y, dz = a.z - bb.z
+            var dx = a.x - bb.x, dy = a.y - bb.y, dz = a.z - bb.z
             if (dx * dx + dy * dy + dz * dz > TOGETHER_RANGE * TOGETHER_RANGE) continue
             // Sorted so "a|b" and "b|a" are the same bucket.
-            const pair = [a.username, bb.username].sort().join('|')
+            var pair = [a.username, bb.username].sort().join('|')
             together[pair] = (together[pair] || 0) + 1
           } catch (e) {
             // pairwise runs every 10s; a per-error log would flood. Once only.
