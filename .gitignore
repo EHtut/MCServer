@@ -79,3 +79,5 @@ desktop.ini
 .idea/
 .vscode/
 *.swp
+
+tools/.cache/mcq-index.json
