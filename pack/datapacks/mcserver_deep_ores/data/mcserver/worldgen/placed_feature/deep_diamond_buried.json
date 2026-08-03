@@ -1,9 +1,9 @@
 {
- "feature": "gunpowderore:gun_powder_ore",
+ "feature": "minecraft:ore_diamond_buried",
  "placement": [
   {
    "type": "minecraft:count",
-   "count": 2
+   "count": 4
   },
   {
    "type": "minecraft:in_square"

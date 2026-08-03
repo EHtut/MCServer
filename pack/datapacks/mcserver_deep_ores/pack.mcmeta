@@ -1,0 +1,6 @@
+{
+ "pack": {
+  "pack_format": 48,
+  "description": "MCServer: the -128..-64 band pays in VALUE. Surface ore made depth optional; measured, it also made depth pointless - real ore down there ran 5-7x thinner than y16-47 and most of what was left was gunpowder ore."
+ }
+}

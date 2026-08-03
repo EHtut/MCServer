@@ -1,9 +1,9 @@
 {
- "feature": "gunpowderore:gun_powder_ore",
+ "feature": "minecraft:ore_redstone",
  "placement": [
   {
    "type": "minecraft:count",
-   "count": 2
+   "count": 8
   },
   {
    "type": "minecraft:in_square"

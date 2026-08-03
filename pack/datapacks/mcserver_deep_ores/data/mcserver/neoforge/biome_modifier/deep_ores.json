@@ -1,0 +1,14 @@
+{
+ "type": "neoforge:add_features",
+ "biomes": "#minecraft:is_overworld",
+ "features": [
+  "mcserver:deep_diamond_buried",
+  "mcserver:deep_diamond_large",
+  "mcserver:deep_redstone",
+  "mcserver:deep_lapis",
+  "mcserver:deep_gold",
+  "mcserver:deep_iron",
+  "mcserver:deep_emerald"
+ ],
+ "step": "underground_ores"
+}
