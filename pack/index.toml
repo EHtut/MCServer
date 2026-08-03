@@ -96,6 +96,11 @@ hash = "f54cf71372645810ce22b0ba68e706139565437150e4cfd22bde4c14606099c4"
 metafile = true
 
 [[files]]
+file = "mods/automaticons.pw.toml"
+hash = "b0db803088e2cec285fb3d9cc593be03d5d48d54285ec482716ca8430537de30"
+metafile = true
+
+[[files]]
 file = "mods/balm.pw.toml"
 hash = "f4ed8dbabc400434daa13b37041055261f3a74af387e4aea8ba8ca12ef142b4c"
 metafile = true
@@ -173,6 +178,11 @@ metafile = true
 [[files]]
 file = "mods/caelus.pw.toml"
 hash = "992b0dca9683f225fc774d779762d18a009f2d82b9d051e7c0b55a33a95d9238"
+metafile = true
+
+[[files]]
+file = "mods/camerapture.pw.toml"
+hash = "a5202c7c26a0de8a614c52bdfdc61b540b7a6b4dbad4a7497480aea03fcf65ac"
 metafile = true
 
 [[files]]
@@ -1343,6 +1353,16 @@ metafile = true
 [[files]]
 file = "mods/voice-chat-recording.pw.toml"
 hash = "0b544987dcc0f8995d940a5d692f42283f86971be7520c65be25869feca9b992"
+metafile = true
+
+[[files]]
+file = "mods/waterframes.pw.toml"
+hash = "59e15d108b41b10145596a3ef899ad20ef8c8885504eef10cd89225aef87daef"
+metafile = true
+
+[[files]]
+file = "mods/watermedia.pw.toml"
+hash = "9c14d2011a343872dfa72aee64ef7beb2f9f9e47867807b4b03726cfa8e429b7"
 metafile = true
 
 [[files]]

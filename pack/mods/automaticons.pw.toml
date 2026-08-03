@@ -1,0 +1,13 @@
+name = "Automaticons"
+filename = "automaticons-1.8.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/JAWG0K7l/versions/N0Cit01P/automaticons-1.8.jar"
+hash-format = "sha512"
+hash = "fc612f4e64940385c604fd21112ee30b7e481bbf2e77303e226e60ed6a63809d2d636e12c698436868c392a05958b29dea2f88dd4641b7c06606968db972c6d9"
+
+[update]
+[update.modrinth]
+mod-id = "JAWG0K7l"
+version = "N0Cit01P"
