@@ -41,21 +41,6 @@ hash = "b5cd1dce18b14832f6301ba92ea7ee9e845c360d454e0e8182a0024a1972ceb5"
 metafile = true
 
 [[files]]
-file = "mods/ars-additions.pw.toml"
-hash = "08f46822b355882721807489cbf64a7e8ac03efc1476136e60acbc8dd7dc2880"
-metafile = true
-
-[[files]]
-file = "mods/ars-artillery.pw.toml"
-hash = "44964e4af6b636c1d02392fc96d7010eb5a6cf58a29337e41ec024ec2680b9a7"
-metafile = true
-
-[[files]]
-file = "mods/ars-controle.pw.toml"
-hash = "210d21ee8f8faee2fd2b6ffdabe1c7b9789c9d25917233c283cef8c9c37bc6f8"
-metafile = true
-
-[[files]]
 file = "mods/ars-creo.pw.toml"
 hash = "e735b472ad5c38359636d5abb84ed1baeb461f72aa19c324c349543823a16188"
 metafile = true
@@ -68,16 +53,6 @@ metafile = true
 [[files]]
 file = "mods/ars-nouveau.pw.toml"
 hash = "78fcc6d6cae18101c352aa3eb9f7b3aae578b20a37fdd6d057c06137a1863829"
-metafile = true
-
-[[files]]
-file = "mods/ars-structurize.pw.toml"
-hash = "fcbc92ec9ef84d31aea4ff0798d15fb202b2f8e9bfa4358d9e76a25fa4e68ae2"
-metafile = true
-
-[[files]]
-file = "mods/ars-unification.pw.toml"
-hash = "5ef7fc2128f00ff8bed97f0d4544688aca6e63d9a26915f41d7e6c953d83560d"
 metafile = true
 
 [[files]]
@@ -188,11 +163,6 @@ metafile = true
 [[files]]
 file = "mods/carry-on.pw.toml"
 hash = "838dbcb90c93bab58691e82c95045bd97c3e096e3a2680a00cf063e56ce35ce3"
-metafile = true
-
-[[files]]
-file = "mods/cataclysm-dimension.pw.toml"
-hash = "a736ec571e08dbcc566b4bb7fe1af7f6895c78108fb736f852feaae23d6246d0"
 metafile = true
 
 [[files]]
@@ -946,11 +916,6 @@ hash = "f46675d8f996e2661c1c7e58243cd27ce34fb5fa66b445b14119c10431eb4d93"
 metafile = true
 
 [[files]]
-file = "mods/mystical-agriculture.pw.toml"
-hash = "7c5825e2929ec81880b96d8b2407a8d834323f5fd36311746ad80d51a140ac2d"
-metafile = true
-
-[[files]]
 file = "mods/naturalist.pw.toml"
 hash = "f1363fb2ffcc4f617935af07f94a611adaa5d1e40cffdf303e9a546740a7411d"
 metafile = true
@@ -988,11 +953,6 @@ metafile = true
 [[files]]
 file = "mods/obsessed.pw.toml"
 hash = "47aa8ec5f78c4334a6074b3cbb0fead82cfd82294d366c07e1b41933a36f8a39"
-metafile = true
-
-[[files]]
-file = "mods/occultism.pw.toml"
-hash = "515eab98cd442fd700ab76d41ca8b208638deba694bf09722b874f8b881602f0"
 metafile = true
 
 [[files]]
@@ -1088,11 +1048,6 @@ metafile = true
 [[files]]
 file = "mods/relics-mod.pw.toml"
 hash = "373d6893cd8876f79d1a07c0d2c60a044b78e6be3a3818c42bff5630256b3d11"
-metafile = true
-
-[[files]]
-file = "mods/reliquified-ars-nouveau.pw.toml"
-hash = "6d718861ccd271301e54dba5c461e5b9105abaafc7c85e3b119dd2fc71b161b8"
 metafile = true
 
 [[files]]
@@ -1291,11 +1246,6 @@ hash = "a96d14bcc58f21a1b1af5e0147543ea224342f7e636106c1a73c0818fd69eeb6"
 metafile = true
 
 [[files]]
-file = "mods/the-undergarden.pw.toml"
-hash = "cf08653612ce37b29ebabf07c5dfce80c493927d4cb7760d68a361738fb54d1d"
-metafile = true
-
-[[files]]
 file = "mods/thermoo.pw.toml"
 hash = "8c1348b1d5c9bfa48f6a60eb842039d707af76e34c37f6e44ec18aa46cb9c0a2"
 metafile = true
@@ -1336,16 +1286,6 @@ hash = "28a5b63f5db878a2b7ba6a07a94502a3910be4a3f1f53ce1f835f7042f587603"
 metafile = true
 
 [[files]]
-file = "mods/veinminer-enchantment.pw.toml"
-hash = "9677ea6c4274a147bc2fe7d1b2d35c18c091902fd4b135e1e54e2c646ff85164"
-metafile = true
-
-[[files]]
-file = "mods/veinminer.pw.toml"
-hash = "03a9564d7cdb16578f46c6f58dcc261968bb440c243ad90229d8ce58aaccc0d3"
-metafile = true
-
-[[files]]
 file = "mods/velvet-api.pw.toml"
 hash = "689739dbc65768a51d31729598352c5cac3fd9369203bea125d745112bba23b0"
 metafile = true
@@ -1363,11 +1303,6 @@ metafile = true
 [[files]]
 file = "mods/watermedia.pw.toml"
 hash = "9c14d2011a343872dfa72aee64ef7beb2f9f9e47867807b4b03726cfa8e429b7"
-metafile = true
-
-[[files]]
-file = "mods/waystones.pw.toml"
-hash = "3f85dddbfdc9c87ffecc6633df88c31bbcadcd1a5ff4adc03e1b14de06cb97c0"
 metafile = true
 
 [[files]]
