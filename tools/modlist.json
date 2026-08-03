@@ -834,6 +834,46 @@
           "sable",
           "Required by create-aeronautics",
           "core"
+        ],
+        [
+          "spell-power",
+          "Spell Power Attributes - required by spell-engine and skill-tree. Modrinth never declared it; check_deps read it out of the jar",
+          "core"
+        ],
+        [
+          "ranged-weapon-api",
+          "Required by archers. Same undeclared-dependency case",
+          "core"
+        ],
+        [
+          "bundle-api",
+          "Required by archers",
+          "core"
+        ],
+        [
+          "wizards",
+          "Base class mod behind elemental-wizards-rpg",
+          "core"
+        ],
+        [
+          "formations",
+          "Base mod behind formations-nether",
+          "core"
+        ],
+        [
+          "accessories",
+          "Required by spell-engine. ADDED WITHOUT accessories-compat-layer ON PURPOSE - F44 traced the curio-menu crash (Index 61 out of bounds, slot-count desync) to the COMPAT LAYER cancelling Curios' core mixins, not to Accessories itself. If the crash returns, this is the first suspect",
+          "core"
+        ],
+        [
+          "runes",
+          "Required by wizards",
+          "core"
+        ],
+        [
+          "structure-pool-api",
+          "Required by wizards",
+          "core"
         ]
       ]
     },
@@ -1374,6 +1414,36 @@
           "mowzies-mobs",
           "A handful of exceptional set-piece creatures",
           "major"
+        ],
+        [
+          "jurassic-reborn",
+          "97 prehistoric creatures. THE surface threat - fair, natural danger you can learn, track and outrun. Needs only citadel+geckolib, both present",
+          "major"
+        ],
+        [
+          "shineals-prehistoric-expansion",
+          "Mythology and prehistoric creatures reclaiming the overworld. Complements Jurassic Reborn rather than overlapping; no dependencies",
+          "major"
+        ],
+        [
+          "yungs-better-nether-fortresses",
+          "The Nether as a real place. Veldora canon: the Nether is a WOUND - an alternative you should not visit. YungsApi already present",
+          "major"
+        ],
+        [
+          "infernal-expansion-redux",
+          "Nether mobs and biomes - makes the wound hostile",
+          "major"
+        ],
+        [
+          "formations-nether",
+          "Nether terrain drama",
+          "minor"
+        ],
+        [
+          "tectonic",
+          "Bigger mountains, deeper caves - Ethan's ask. Needs lithostitched, already present. WARNING: overrides minecraft:overworld noise settings, collides with mcserver_depth - see docs/16-THE-REFORGE.md D1",
+          "major"
         ]
       ]
     },
@@ -1844,6 +1914,71 @@
           "watermedia",
           "Required media backend for waterframes",
           "core"
+        ]
+      ]
+    },
+    "classes": {
+      "desc": "Ethan chose CLASSES over races 2026-08-03 - the only 1.21.1 NeoForge race mod is a 6.4k-download alpha, while this family is fully supported. Three players taking three classes gives the distinct identity races were wanted for, and it fits Veldora: what you BECOME matters in a world where you cannot die but can be diminished. NOTE: more-rpg-library and several classes ship as 'beta' - that is the author's convention across a family with 400k-1.4M downloads, but the boot gate is what actually clears it.",
+      "mods": [
+        [
+          "spell-engine",
+          "The framework every class in this family builds on",
+          "core"
+        ],
+        [
+          "more-rpg-library",
+          "Shared library for the More RPG Classes series",
+          "core"
+        ],
+        [
+          "azurelib-armor",
+          "Armor/animation lib required by Berserker",
+          "core"
+        ],
+        [
+          "archers",
+          "Base archer class",
+          "major"
+        ],
+        [
+          "archers-expansion",
+          "Extends the archer with real content",
+          "major"
+        ],
+        [
+          "berserker-rpg-class",
+          "Melee rage class - the frontline for a 3-player group",
+          "major"
+        ],
+        [
+          "witcher-rpg-class",
+          "Hybrid melee/sign class",
+          "major"
+        ],
+        [
+          "elemental-wizards-rpg",
+          "Caster class",
+          "major"
+        ],
+        [
+          "forcemaster-rpg-class",
+          "Telekinetic control class",
+          "minor"
+        ],
+        [
+          "skills",
+          "Puffish skill framework - the progression spine",
+          "major"
+        ],
+        [
+          "skill-tree",
+          "Skill tree implementation",
+          "major"
+        ],
+        [
+          "more-rpg-classes-skill-tree",
+          "Wires the classes into the skill tree",
+          "major"
         ]
       ]
     }

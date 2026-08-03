@@ -1,0 +1,13 @@
+name = "Elemental Wizards (More RPG Classes)"
+filename = "elemental_wizards_rpg-neoforge-3.0.1+1.21.1.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/PeZ4h4i0/versions/PShGF8Yo/elemental_wizards_rpg-neoforge-3.0.1%2B1.21.1.jar"
+hash-format = "sha512"
+hash = "2f5f1c2b11ca7df4876c86549ee3490d0a200a08d75a4c604ebef1853cba0e095b47e7d06803cb2abdddacae214ea10970cae7708703f5b3e8f01268b03f8226"
+
+[update]
+[update.modrinth]
+mod-id = "PeZ4h4i0"
+version = "PShGF8Yo"
