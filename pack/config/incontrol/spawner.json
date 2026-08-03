@@ -89,5 +89,92 @@
       "maxlocal": 28,
       "maxtotal": 160
     }
+  },
+  {
+    "mob": [
+      "minecraft:zombie",
+      "minecraft:skeleton",
+      "minecraft:cave_spider",
+      "minecraft:creeper",
+      "grim_and_bleak:ghoul"
+    ],
+    "amount": {
+      "minimum": 1,
+      "maximum": 3,
+      "groupdistance": 10
+    },
+    "attempts": 8,
+    "persecond": 0.25,
+    "conditions": {
+      "dimension": "minecraft:overworld",
+      "mindaycount": 75,
+      "mindist": 16,
+      "maxdist": 56,
+      "minheight": -128,
+      "maxheight": 39,
+      "sturdy": true,
+      "validspawn": true,
+      "maxthis": 6,
+      "maxlocal": 18,
+      "maxtotal": 90
+    }
+  },
+  {
+    "mob": [
+      "grim_and_bleak:ghoul",
+      "grim_and_bleak:flesh_eater",
+      "grim_and_bleak:howler",
+      "the_knocker:knocker",
+      "minecraft:skeleton"
+    ],
+    "amount": {
+      "minimum": 2,
+      "maximum": 4,
+      "groupdistance": 10
+    },
+    "attempts": 8,
+    "persecond": 0.3,
+    "conditions": {
+      "dimension": "minecraft:overworld",
+      "mindaycount": 175,
+      "mindist": 16,
+      "maxdist": 56,
+      "minheight": -128,
+      "maxheight": 39,
+      "sturdy": true,
+      "validspawn": true,
+      "maxthis": 6,
+      "maxlocal": 20,
+      "maxtotal": 110
+    }
+  },
+  {
+    "mob": [
+      "grim_and_bleak:night_abomination",
+      "grim_and_bleak:damned_templar",
+      "iceandfire:dread_thrall",
+      "legendary_monsters:ambusher",
+      "revervox_mod:revervox"
+    ],
+    "amount": {
+      "minimum": 2,
+      "maximum": 5,
+      "groupdistance": 10
+    },
+    "attempts": 8,
+    "persecond": 0.35,
+    "conditions": {
+      "dimension": "minecraft:overworld",
+      "mindaycount": 350,
+      "mindist": 16,
+      "maxdist": 56,
+      "minheight": -128,
+      "maxheight": 39,
+      "sturdy": true,
+      "validspawn": true,
+      "maxthis": 6,
+      "maxlocal": 22,
+      "maxtotal": 130
+    }
   }
 ]
