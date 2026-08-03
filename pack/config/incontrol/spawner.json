@@ -1,0 +1,93 @@
+[
+  {
+    "mob": [
+      "minecraft:zombie",
+      "minecraft:skeleton",
+      "minecraft:spider",
+      "minecraft:cave_spider",
+      "minecraft:creeper"
+    ],
+    "amount": {
+      "minimum": 1,
+      "maximum": 3,
+      "groupdistance": 6
+    },
+    "attempts": 6,
+    "persecond": 0.3,
+    "conditions": {
+      "dimension": "minecraft:overworld",
+      "mindist": 16,
+      "maxdist": 48,
+      "minheight": 0,
+      "maxheight": 39,
+      "sturdy": true,
+      "validspawn": true,
+      "maxthis": 10,
+      "maxlocal": 20,
+      "maxtotal": 120
+    }
+  },
+  {
+    "mob": [
+      "minecraft:zombie",
+      "minecraft:skeleton",
+      "minecraft:cave_spider",
+      "minecraft:creeper",
+      "grim_and_bleak:ghoul",
+      "grim_and_bleak:flesh_eater",
+      "the_knocker:knocker"
+    ],
+    "amount": {
+      "minimum": 2,
+      "maximum": 4,
+      "groupdistance": 8
+    },
+    "attempts": 8,
+    "persecond": 0.4,
+    "conditions": {
+      "dimension": "minecraft:overworld",
+      "mindist": 16,
+      "maxdist": 56,
+      "minheight": -60,
+      "maxheight": -1,
+      "sturdy": true,
+      "validspawn": true,
+      "maxthis": 8,
+      "maxlocal": 24,
+      "maxtotal": 140
+    }
+  },
+  {
+    "mob": [
+      "grim_and_bleak:ghoul",
+      "grim_and_bleak:flesh_eater",
+      "grim_and_bleak:howler",
+      "grim_and_bleak:night_abomination",
+      "grim_and_bleak:damned_templar",
+      "the_knocker:knocker",
+      "revervox_mod:revervox",
+      "iceandfire:dread_thrall",
+      "legendary_monsters:ambusher",
+      "minecraft:skeleton"
+    ],
+    "amount": {
+      "minimum": 2,
+      "maximum": 5,
+      "groupdistance": 10
+    },
+    "attempts": 10,
+    "persecond": 0.5,
+    "conditions": {
+      "dimension": "minecraft:overworld",
+      "mindist": 14,
+      "maxdist": 60,
+      "minheight": -128,
+      "maxheight": -61,
+      "sturdy": true,
+      "validspawn": true,
+      "maxthis": 6,
+      "maxlocal": 28,
+      "maxtotal": 160
+    }
+  }
+]
