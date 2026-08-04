@@ -125,7 +125,38 @@ or fly a fresh chunk).
 
 ## 5. Chunk D — worldgen (pre-regen, config only)
 
-### D1. ⚠️ Tectonic vs the depth floor — a real collision
+### D1. ✅ DONE + VERIFIED — Tectonic merged with the depth floor
+
+Took Tectonic's noise_settings (its router, splines and surface rule) and
+re-applied `min_y: -128`, `height: 448`. Tectonic writes 26 files into the
+`minecraft:` namespace, overriding vanilla density functions in place, so the
+copied router resolves to Tectonic's terrain automatically.
+
+**Three things were needed, and the third is the one that hides:**
+
+1. Merge the settings (done).
+2. **Reorder the datapacks.** Tectonic registers its pack LAST — position 19 of
+   20, after every `file/` world pack — so it was overriding `mcserver_depth`,
+   not the other way round. The assumption that world datapacks always load
+   after mod datapacks is FALSE when a mod appends itself explicitly. Fixed with
+   `/datapack disable` then `/datapack enable "file/mcserver_depth" after
+   "tectonic"` (and the two packs that follow it).
+3. **RESTART.** `/datapack enable` reloads recipes, loot and tags but does NOT
+   rebuild the chunk generator — worldgen registries are built once at world
+   load. Chunks generated between the reorder and the restart still came out
+   with Tectonic's floor. This is exactly the "config is right and the world
+   still came out wrong" case genq exists to catch.
+
+*Verified:* bedrock appears at −128…−113 **only**, and solid terrain now reaches
+y208–223 where the pre-Tectonic sample was 100% air above y143. Mountains roughly
++75 blocks taller.
+
+🚨 **THIS MUST BE REDONE AFTER THE REGEN.** A fresh world rebuilds the pack order
+from scratch and will put the `file/` packs before `tectonic` again. The regen
+procedure has to re-issue the reorder and then restart, or the whole depth floor
+silently reverts to −64.
+
+### D1-old. ⚠️ Tectonic vs the depth floor — the original analysis
 **Tectonic overrides `minecraft:overworld` noise settings. So does
 `mcserver_depth`.** Stacking both means whichever loads last wins, silently.
 
