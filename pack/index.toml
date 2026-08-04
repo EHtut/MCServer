@@ -961,11 +961,6 @@ hash = "688a2fcd58d20df93c57e571b054b3c582932a795a255dc13c65b055dc1880b1"
 metafile = true
 
 [[files]]
-file = "mods/more-rpg-classes-skill-tree.pw.toml"
-hash = "610fccf4cc33e05856bc8829067d1ca00ebcf928c91d78090e7e6c58e79338bc"
-metafile = true
-
-[[files]]
 file = "mods/more-rpg-library.pw.toml"
 hash = "db57f8afe58c206e7516e147a572393ef283cf06056bda9f07102e27d47ac2e7"
 metafile = true

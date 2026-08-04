@@ -1979,11 +1979,6 @@
           "skill-tree",
           "Skill tree implementation",
           "major"
-        ],
-        [
-          "more-rpg-classes-skill-tree",
-          "Wires the classes into the skill tree",
-          "major"
         ]
       ]
     }
