@@ -874,6 +874,11 @@
           "structure-pool-api",
           "Required by wizards",
           "core"
+        ],
+        [
+          "jei",
+          "REQUIRED by jurassicreborn. Its mods.toml says 'mandatory = false', but that is the legacy FORGE key - NeoForge reads 'type', and an ABSENT type defaults to REQUIRED. The client refused to launch: \"Mod ID: 'jei', Requested by: 'jurassicreborn', Expected range: '[15,)', Actual version: '[MISSING]'\". EMI stays as the primary recipe viewer; the two coexist",
+          "core"
         ]
       ]
     },
