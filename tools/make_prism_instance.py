@@ -55,7 +55,15 @@ INSTANCE_NAME = "Cogs and Cadavers"
 # resident, and a 16G machine also running Windows, a browser and Discord then
 # pages. The symptom is stutter and hitching, never an out-of-memory dialog, so
 # nobody ever traces it back to the heap being too BIG.
-MAX_HEAP = 6144
+# RAISED 6144 -> 10240 (Ethan, 2026-08-03): "no one can find the memory
+# increase". A default nobody changes is the real default, and 6144 was
+# starving a 290-mod pack with Distant Horizons - which presents as STUTTER,
+# never as an error, so nobody knows to go looking.
+#
+# 10240 not 12288: NeoForge takes ~2-2.5G of non-heap on top of -Xmx, so 10G
+# lands at ~12.5G total and still fits the 16 GB floor with headroom. 12288
+# would be ~14.8G of 16G and swap on the weakest machine in the group.
+MAX_HEAP = 10240
 
 # Xms == Xmx. A heap that resizes does it exactly while the world is loading.
 MIN_HEAP = MAX_HEAP
@@ -368,7 +376,7 @@ play for five minutes, then change the next.
      Right-click the instance -> Edit -> Settings -> Memory.
      Set BOTH boxes to the same number:
 
-         16 GB of RAM  ->  6144   (the shipped default, leave it)
+         16 GB of RAM  ->  10240  (the shipped default, leave it)
          32 GB of RAM  ->  10240
          64 GB of RAM  ->  12288
 
