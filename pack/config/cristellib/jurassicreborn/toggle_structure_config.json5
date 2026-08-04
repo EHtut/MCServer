@@ -1,0 +1,33 @@
+/*
+This config makes it possible to switch off any structure.
+Set to false to disable.
+
+=====
+Created by Cristel Lib
+*/
+{
+	"abandoned_paddock": {
+		"abandoned_paddock": false
+	},
+	"amber_mine": {
+		"amber_mine": false
+	},
+	"desert_digsite": {
+		"desert_digsite": false
+	},
+	"ice_fossil_digsite": {
+		"ice_fossil_digsite": false
+	},
+	"isla_sorna_lab": {
+		"isla_sorna_lab": false
+	},
+	"jp_san_diego": {
+		"jp_san_diego": false
+	},
+	"raptor_paddock": {
+		"raptor_paddock": false
+	},
+	"visitor_centre": {
+		"visitor_centre": false
+	}
+}
