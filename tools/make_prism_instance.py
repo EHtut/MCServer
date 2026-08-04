@@ -194,7 +194,7 @@ glintStrength:0.0
 renderClouds:"false"
 key_key.sneak:key.keyboard.left.control
 key_key.sprint:key.keyboard.left.shift
-key_iris.keybind.reload:key.keyboard.minus
+key_iris.keybind.reload:key.keyboard.f13
 resourcePacks:["vanilla","fabric"]
 incompatibleResourcePacks:[]
 """
