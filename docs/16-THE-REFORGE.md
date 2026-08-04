@@ -255,3 +255,48 @@ A freeze/backup ──► B cut ──► C add ──► D worldgen config ─�
 B and C could technically merge into one boot, and should not: a failed boot with
 19 changes has 19 suspects. The cut is the higher-risk half because of orphaned
 configs, so it boots alone.
+
+
+---
+
+## 11. 🚨 GATE BOTH SIDES — learned the hard way, 2026-08-03
+
+`check_deps.py` was run against `C:/MCServer/instance/mods` for `side=SERVER`
+and reported a clean set. The server booted in 3.4s. **The client refused to
+start:**
+
+```
+Mod ID: 'jei', Requested by: 'jurassicreborn',
+Expected range: '[15,)', Actual version: '[MISSING]'
+```
+
+Two independent mistakes, and both are worth keeping:
+
+1. **`mandatory` is the LEGACY FORGE key.** jurassicreborn's mods.toml says
+   `mandatory = false`, which reads as "optional" and is ignored by NeoForge.
+   NeoForge reads **`type`**, and an **absent `type` defaults to REQUIRED** —
+   already documented in this repo's CLAUDE.md. The first scan flagged it
+   correctly and it was talked out of that reading. Trust the documented rule
+   over a familiar-looking key.
+
+2. **The gate only covered one side.** The dependency is declared
+   `side = "CLIENT"`, so a `side=SERVER` check cannot see it *by design*, and
+   the server jars folder does not even contain the 54 client-only mods. A pack
+   whose client set is 60 mods larger than its server set needs both gates.
+
+**The procedure, both sides, every time:**
+
+```
+python tools/install_mods.py --side server --dest C:/MCServer/instance/mods --prune
+python tools/check_deps.py C:/MCServer/instance/mods
+
+python tools/install_mods.py --side client --dest C:/MCServer/clientmods
+python tools/check_deps.py C:/MCServer/clientmods --side=CLIENT
+```
+
+⚠️ Argument order matters: **path first, then `--side=`**. Passing the flag
+first makes it the path and prints "no jars in --side=CLIENT", which looks like
+an empty result rather than a usage error.
+
+`C:/MCServer/clientmods` is worth keeping around — `install_mods` skips by hash,
+so re-gating after a pack change costs only the new files.
