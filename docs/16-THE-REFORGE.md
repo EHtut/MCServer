@@ -313,6 +313,7 @@ disk and inert until the server cycles. Ethan asked for no restart mid-session.
 | Jurassic Park's 8 structures disabled | `cristellib/jurassicreborn/toggle_structure_config.json5` | staged |
 | Pillager outposts 32→72 spacing, freq 0.2→0.12 | `vanilla_structures/placement_structure_config.json5` | staged |
 | Revervox ambient voice far rarer | `revervox_mod-server.toml` | staged, **direction unconfirmed** |
+| Voice range 640 → 256 (2x baseline, not 5x) | `voicechat-server.properties` | staged |
 
 ### ⚠️ Revervox — verify the direction on the first session after the restart
 Ethan: the random voice playback fires "every 30 sec", wants it rare.
