@@ -300,3 +300,39 @@ an empty result rather than a usage error.
 
 `C:/MCServer/clientmods` is worth keeping around — `install_mods` skips by hash,
 so re-gating after a pack change costs only the new files.
+
+---
+
+## 12. Queued — applies on the next restart
+
+Worldgen and several configs are read once at world load, so these are staged on
+disk and inert until the server cycles. Ethan asked for no restart mid-session.
+
+| change | file | status |
+|---|---|---|
+| Jurassic Park's 8 structures disabled | `cristellib/jurassicreborn/toggle_structure_config.json5` | staged |
+| Pillager outposts 32→72 spacing, freq 0.2→0.12 | `vanilla_structures/placement_structure_config.json5` | staged |
+| Revervox ambient voice far rarer | `revervox_mod-server.toml` | staged, **direction unconfirmed** |
+
+### ⚠️ Revervox — verify the direction on the first session after the restart
+Ethan: the random voice playback fires "every 30 sec", wants it rare.
+
+`CommonEventBus` rolls `nextInt` against `FAKE_BAT_EVENT_CHANCE` and
+`FAKE_REVERVOX_BEHIND_EVENT_CHANCE` on a `BatEventTime` timer — so the ambient
+scares are *fake* events, not real mob spawns, and `batEventChance` is the knob.
+
+Set `batEventChance` 1.0 → **0.15** and `revervoxBatSpawnChance` 5 → **60**.
+
+The mod ships no descriptive comments, only Default/Range, and the consumer does
+not make the polarity obvious from the constant pool alone. `batEventChance` is a
+double on 0.1–20.0 with a 1.0 default, which reads as a rate multiplier where
+lower is rarer; `revervoxBatSpawnChance` is an int on 2–500 with a 5 default,
+which reads as a 1-in-N roll where higher is rarer. **Both are assumptions.**
+
+This is the same trap as `bettermineshafts`, where halving `spacing` made
+mineshafts RARER because density actually lived in `frequency`. The effect here
+is loud and immediate, so one session settles it: if the voices get MORE
+frequent, the polarity is inverted — revert from
+`revervox_mod-server.toml.prequeue.bak` and invert both.
+
+Nuclear option if it stays annoying: `enableBatEvent = false`.
