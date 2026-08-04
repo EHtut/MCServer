@@ -35,7 +35,12 @@
       "minecraft:creeper",
       "grim_and_bleak:ghoul",
       "grim_and_bleak:flesh_eater",
-      "the_knocker:knocker"
+      "the_knocker:knocker",
+      "rottencreatures:undead_miner",
+      "rottencreatures:skeleton_lackey",
+      "rottencreatures:zombie_lackey",
+      "born_in_chaos_v1:decaying_zombie",
+      "born_in_chaos_v1:decrepit_skeleton"
     ],
     "amount": {
       "minimum": 2,
@@ -68,7 +73,14 @@
       "revervox_mod:revervox",
       "iceandfire:dread_thrall",
       "legendary_monsters:ambusher",
-      "minecraft:skeleton"
+      "minecraft:skeleton",
+      "rottencreatures:burned",
+      "rottencreatures:immortal",
+      "rottencreatures:frostbitten",
+      "born_in_chaos_v1:restless_spirit",
+      "born_in_chaos_v1:seared_spirit",
+      "born_in_chaos_v1:nightmare_stalker",
+      "born_in_chaos_v1:bone_imp"
     ],
     "amount": {
       "minimum": 2,
@@ -96,7 +108,12 @@
       "minecraft:skeleton",
       "minecraft:cave_spider",
       "minecraft:creeper",
-      "grim_and_bleak:ghoul"
+      "grim_and_bleak:ghoul",
+      "rottencreatures:undead_miner",
+      "rottencreatures:skeleton_lackey",
+      "rottencreatures:zombie_lackey",
+      "born_in_chaos_v1:decaying_zombie",
+      "born_in_chaos_v1:decrepit_skeleton"
     ],
     "amount": {
       "minimum": 1,
@@ -125,7 +142,12 @@
       "grim_and_bleak:flesh_eater",
       "grim_and_bleak:howler",
       "the_knocker:knocker",
-      "minecraft:skeleton"
+      "minecraft:skeleton",
+      "rottencreatures:undead_miner",
+      "rottencreatures:skeleton_lackey",
+      "rottencreatures:zombie_lackey",
+      "born_in_chaos_v1:decaying_zombie",
+      "born_in_chaos_v1:decrepit_skeleton"
     ],
     "amount": {
       "minimum": 2,
@@ -154,7 +176,14 @@
       "grim_and_bleak:damned_templar",
       "iceandfire:dread_thrall",
       "legendary_monsters:ambusher",
-      "revervox_mod:revervox"
+      "revervox_mod:revervox",
+      "rottencreatures:burned",
+      "rottencreatures:immortal",
+      "rottencreatures:frostbitten",
+      "born_in_chaos_v1:restless_spirit",
+      "born_in_chaos_v1:seared_spirit",
+      "born_in_chaos_v1:nightmare_stalker",
+      "born_in_chaos_v1:bone_imp"
     ],
     "amount": {
       "minimum": 2,

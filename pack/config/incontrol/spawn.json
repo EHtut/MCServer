@@ -16,6 +16,14 @@
   },
   {
     "dimension": "minecraft:overworld",
+    "mod": [
+      "jurassicreborn",
+      "shineals_prehistoric_expansion"
+    ],
+    "result": "default"
+  },
+  {
+    "dimension": "minecraft:overworld",
     "hostile": true,
     "minheight": 40,
     "result": "deny"
@@ -31,7 +39,10 @@
       "grim_and_bleak",
       "revervox_mod",
       "frostiful",
-      "friendsandfoes"
+      "friendsandfoes",
+      "rottencreatures",
+      "born_in_chaos_fg",
+      "infernalexp"
     ],
     "result": "deny"
   },
