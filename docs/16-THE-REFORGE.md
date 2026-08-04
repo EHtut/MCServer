@@ -337,3 +337,25 @@ frequent, the polarity is inverted — revert from
 `revervox_mod-server.toml.prequeue.bak` and invert both.
 
 Nuclear option if it stays annoying: `enableBatEvent = false`.
+
+
+---
+
+## 13. Gamerules that must be re-applied after any regen
+
+Gamerules live in `level.dat`, not in `config/` or a datapack, so a world regen
+silently resets them to vanilla defaults. Nothing errors; the rule just quietly
+goes back to stock.
+
+```
+gamerule playersSleepingPercentage 50    # Ethan 2026-08-03: half the group
+gamerule doImmediateRespawn true         # "they cannot die, but they can be broken"
+```
+
+`playersSleepingPercentage` is a threshold the sleeping count must REACH, so at
+50 with three players online **two** must sleep — one of three is 33%. Drop it to
+~33 if a single player should be able to skip the night.
+
+`doImmediateRespawn` is load-bearing for the fiction: with Corpse it produces
+exactly the canon in `docs/15-LORE.md` — you get up, you are whole, and
+everything you carried is lying where you fell.
