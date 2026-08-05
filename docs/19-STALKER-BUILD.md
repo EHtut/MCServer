@@ -154,6 +154,40 @@ within tolerance of 8% / 18% / 28%. **Measured, not reasoned.**
 **Build:** six `*_SPAWNING_ENABLED = false` in
 `borninconfiguration-general.toml`, tracked into `pack/config/`.
 
+### ⚠️ C4 RE-AUDITED 2026-08-05 — the first pass was a FALSE PASS
+
+The original audit called `isAlive()` **in the same tick as `spawn()`** and
+reported 6/6. That cannot see the failure it was looking for. `/summon` later
+proved the mod does not *block* creation at all — it prints `Summoned new
+Krampus` and the entity is **gone moments later**, because the toggle REMOVES the
+mob shortly after it appears rather than refusing to make it.
+
+Re-measured at **t+20, t+100 and t+200 ticks** against a no-toggle control
+(`lord_pumpkinhead`): all three alive at every checkpoint.
+
+**C4 stands — but for a different reason than first recorded.** The toggle acts
+inside `finalizeSpawn`, which `/summon` runs and a KubeJS `createEntity().spawn()`
+does not. So:
+- `/summon <disabled mob>` — **blocked** (admin convenience lost; acceptable)
+- KubeJS spawn — **works and persists**, which is what C5–C7 actually use
+
+**Two consequences that had to be fixed in `stalker.js`:**
+
+1. 🚨 **Skipping `finalizeSpawn` means skipping the mod's configured stats.**
+   Proven by H1: a chaff mob reads its raw code default through the KubeJS path
+   and its *configured* value through `/summon`. Every stalker now carries an
+   **explicit stat block** rather than inheriting whatever the class declares —
+   which also removes a silent drift the day Born in Chaos updates.
+2. `setPersistenceRequired(boolean)` **does not exist** here — it throws. NBT
+   (`mergeNbt({PersistenceRequired: 1})`) is the route, and it is now tried
+   FIRST rather than sitting behind a call known to fail. Without it a stalker
+   despawns on its own and the illusion dies quietly.
+
+**The measurement rule this produced:** any liveness check on a mob's *stats* or
+*survival* must go through the game's own spawn path and must be sampled **over
+time**, never at t+0. A same-tick check and a config-bypassing spawn will each,
+independently, tell you a comfortable lie.
+
 **Audit gate — this is the risk the design has been carrying since pass two:**
 - `/summon` and a KubeJS spawn of a disabled entity **still work**
 - if summoning is also gated, C5 changes shape entirely — **find out here, not
