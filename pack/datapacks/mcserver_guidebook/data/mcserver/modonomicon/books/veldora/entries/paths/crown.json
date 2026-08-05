@@ -1,0 +1,30 @@
+{
+ "category": "mcserver:paths",
+ "name": "The Crown",
+ "description": "Command",
+ "icon": "goety:necro_staff",
+ "x": 4,
+ "y": 1,
+ "pages": [
+  {
+   "type": "modonomicon:text",
+   "title": "What It Gives",
+   "text": "Numbers. The only path where power is measured in bodies rather than gear, and the only one that can hold ground in two places at once.\n\nIt denies you self-sufficiency. A leader without a retinue is the weakest thing in the room."
+  },
+  {
+   "type": "modonomicon:text",
+   "title": "The Bargain",
+   "text": "Adventurers cannot die. They can only be broken.\n\nServants can die.\n\nYou are the only one who can send something ahead of you into the dark. On the Sealed Floor, where being broken is the whole cost, spending the expendable IS the power.\n\nWhether that is noticed is not known."
+  },
+  {
+   "type": "modonomicon:text",
+   "title": "Your First Hour",
+   "text": "1. Gather GRAVE DUST from the restless dead.\n2. Build toward a focus that raises a servant.\n3. A retinue is upkeep. Do not raise more than you can hold.\n4. Not every servant has to be dead - villagers can be hired and golems can be built."
+  }
+ ],
+ "parents": [
+  {
+   "entry": "mcserver:choosing"
+  }
+ ]
+}

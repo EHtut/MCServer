@@ -2,13 +2,29 @@
  "category": "mcserver:paths",
  "name": "The Forge",
  "description": "Industry",
- "icon": "minecraft:blast_furnace",
+ "icon": "create:cogwheel",
  "x": 0,
- "y": 0,
+ "y": 1,
  "pages": [
   {
    "type": "modonomicon:text",
-   "text": "Probe entry. If you are reading this, the book loads."
+   "title": "What It Gives",
+   "text": "Throughput. Anything you can make, you can make thousands of. It is the only power that works while you are asleep.\n\nIt denies you your body. A Forge player who meets something in the dark is a civilian."
+  },
+  {
+   "type": "modonomicon:text",
+   "title": "Your First Hour",
+   "text": "1. Smelt and combine until you have ANDESITE ALLOY. Everything starts there.\n2. Build a WATER WHEEL on flowing water. That is your first power.\n3. Make a MILLSTONE and a MECHANICAL PRESS.\n4. Press iron into SHEETS. Sheets are the gate to almost everything else."
+  },
+  {
+   "type": "modonomicon:text",
+   "title": "Then",
+   "text": "Shafts and cogs carry rotation. Speed and stress are the only two numbers that matter - a machine stops because you ran out of one of them. A gearbox turns a corner. A windmill beats a water wheel if you build it big enough.\n\nThe ceiling here is steam and early electricity. No oil, no diesel. Aim at a STEAM ENGINE and you have arrived."
+  }
+ ],
+ "parents": [
+  {
+   "entry": "mcserver:choosing"
   }
  ]
 }

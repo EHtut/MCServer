@@ -1,0 +1,25 @@
+{
+ "category": "mcserver:paths",
+ "name": "The Blade",
+ "description": "Martial",
+ "icon": "minecraft:iron_sword",
+ "x": 3,
+ "y": 1,
+ "pages": [
+  {
+   "type": "modonomicon:text",
+   "title": "What It Gives",
+   "text": "The only power carried on your person. It cannot be raided, needs no fuel, and works the instant you get up.\n\nIt denies you reach. No automation, no throughput, nothing to trade."
+  },
+  {
+   "type": "modonomicon:text",
+   "title": "Your First Hour",
+   "text": "1. Every weapon type swings differently. Find one that suits you and stay with it - mastery here is real.\n2. Learn the dodge roll. It is the difference between the bands.\n3. Take a CLASS when you can, and open a skill tree.\n4. Mobs gain levels with depth and days. You have to as well."
+  }
+ ],
+ "parents": [
+  {
+   "entry": "mcserver:choosing"
+  }
+ ]
+}

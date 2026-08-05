@@ -1,0 +1,25 @@
+{
+ "category": "mcserver:descent",
+ "name": "How to Descend",
+ "description": "Practical",
+ "icon": "minecraft:lantern",
+ "x": 1,
+ "y": 0,
+ "pages": [
+  {
+   "type": "modonomicon:text",
+   "title": "An Expedition, Not a Home",
+   "text": "Prepare above. Go down with a loadout. Take what you came for. Come back up.\n\nDying costs the run, never the base. Your body stays where it fell and everything you carried is still on it."
+  },
+  {
+   "type": "modonomicon:text",
+   "title": "What to Bring",
+   "text": "Light you do not have to place. Food. A way out that is not the way in.\n\nThe deep band pays in VALUE - diamond, redstone, gold, lapis. The shallow band pays in VOLUME. Know which one you came for before you leave."
+  }
+ ],
+ "parents": [
+  {
+   "entry": "mcserver:strata"
+  }
+ ]
+}

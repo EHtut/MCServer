@@ -1,0 +1,20 @@
+{
+ "category": "mcserver:paths",
+ "name": "Choosing",
+ "description": "Type /path",
+ "icon": "minecraft:compass",
+ "x": 0,
+ "y": 0,
+ "pages": [
+  {
+   "type": "modonomicon:text",
+   "title": "Declare One",
+   "text": "Type /path to see them. Type /path forge - or art, salvage, blade, crown, wall - to walk one.\n\nOnce declared, hostile kills pay you in that path's materials. Kills near the surface pay little. Kills on the Sealed Floor pay properly."
+  },
+  {
+   "type": "modonomicon:text",
+   "title": "Why Choose",
+   "text": "Each path is strong at something and genuinely weak at something else. With four of you, weakness is what makes the others worth talking to.\n\nYou are not locked in. But a group where everyone walks the same path is a group doing one thing slowly."
+  }
+ ]
+}

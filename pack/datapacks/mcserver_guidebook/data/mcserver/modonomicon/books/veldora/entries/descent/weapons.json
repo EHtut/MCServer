@@ -1,0 +1,25 @@
+{
+ "category": "mcserver:descent",
+ "name": "We Cannot Father Them",
+ "description": "The old weapons",
+ "icon": "minecraft:iron_ingot",
+ "x": 1,
+ "y": 1,
+ "pages": [
+  {
+   "type": "modonomicon:text",
+   "title": "You Cannot Make One",
+   "text": "Smiths have tried. Guilds have funded it. Three ages had a serious go and every one produced something that did nothing, or killed the smith.\n\nA rifle is an argument between forty parts, and every part is the answer to a question we no longer know how to ask."
+  },
+  {
+   "type": "modonomicon:text",
+   "title": "But You Can Feed It",
+   "text": "A cartridge is a small cruelty: a pinch of the black residue, a cup of soft metal, a stone to throw, and a shape you can copy off a spent one with calipers.\n\nYou find the weapon. Then you spend the rest of your life feeding it.\n\nLook in dungeon chests. Look deep."
+  }
+ ],
+ "parents": [
+  {
+   "entry": "mcserver:residue"
+  }
+ ]
+}

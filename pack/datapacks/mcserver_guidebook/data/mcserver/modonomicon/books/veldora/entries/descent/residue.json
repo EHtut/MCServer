@@ -1,0 +1,20 @@
+{
+ "category": "mcserver:descent",
+ "name": "The Black Residue",
+ "description": "Gunpowder that is not natural",
+ "icon": "minecraft:gunpowder",
+ "x": 0,
+ "y": 1,
+ "pages": [
+  {
+   "type": "modonomicon:text",
+   "title": "Not a Mineral",
+   "text": "It does not occur. It is left over, found only where they made it, in seams that follow no geology and every so often follow something that was obviously a floor plan.\n\nYou will not find it above minus sixty-four. There is none to find."
+  }
+ ],
+ "parents": [
+  {
+   "entry": "mcserver:strata"
+  }
+ ]
+}

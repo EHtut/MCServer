@@ -1,0 +1,25 @@
+{
+ "category": "mcserver:paths",
+ "name": "The Salvage",
+ "description": "The old weapons",
+ "icon": "minecraft:gunpowder",
+ "x": 2,
+ "y": 1,
+ "pages": [
+  {
+   "type": "modonomicon:text",
+   "title": "What It Gives",
+   "text": "Lethality at range that no medieval gear matches.\n\nIt denies you independence. You cannot make a gun."
+  },
+  {
+   "type": "modonomicon:text",
+   "title": "Your First Hour",
+   "text": "1. Go down. Dungeon chests are where the old weapons are.\n2. Mine GUNPOWDER ORE below minus sixty-four. Nowhere else has it.\n3. Build a GUN SMITH TABLE and hand-load cartridges.\n4. The weapon you found decides which ammunition you need. Not the other way round."
+  }
+ ],
+ "parents": [
+  {
+   "entry": "mcserver:choosing"
+  }
+ ]
+}

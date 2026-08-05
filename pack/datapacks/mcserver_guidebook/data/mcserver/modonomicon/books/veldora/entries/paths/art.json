@@ -1,0 +1,30 @@
+{
+ "category": "mcserver:paths",
+ "name": "The Art",
+ "description": "Magic",
+ "icon": "ars_nouveau:novice_spell_book",
+ "x": 1,
+ "y": 1,
+ "pages": [
+  {
+   "type": "modonomicon:text",
+   "title": "What It Gives",
+   "text": "Verbs nothing else has. Light, flight, transmutation, and automation without machinery.\n\nIt is slow to start, and its deepest branch sits on the horror seam by design."
+  },
+  {
+   "type": "modonomicon:text",
+   "title": "Your First Hour",
+   "text": "1. Type /guide and take the Tattered Tome.\n2. Make a NOVICE SPELL BOOK.\n3. Grow SOURCE BERRIES. Source is your fuel and you will always want more.\n4. Build a SCRIBE'S TABLE and learn your first glyphs. Form, then effect."
+  },
+  {
+   "type": "modonomicon:text",
+   "title": "Why It Matters Below",
+   "text": "The Art is the best answer to the Sealed Floor. Light you carry rather than place, and ways down and back that do not need a staircase."
+  }
+ ],
+ "parents": [
+  {
+   "entry": "mcserver:choosing"
+  }
+ ]
+}

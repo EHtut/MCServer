@@ -1,0 +1,30 @@
+{
+ "category": "mcserver:descent",
+ "name": "The Four Bands",
+ "description": "Read this before digging",
+ "icon": "minecraft:iron_pickaxe",
+ "x": 0,
+ "y": 0,
+ "pages": [
+  {
+   "type": "modonomicon:text",
+   "title": "The Turf",
+   "text": "Sky down to about sixty. Fields, herds, weather. Ore is up here too - the surface was seeded on purpose, so going deeper is a choice rather than a requirement."
+  },
+  {
+   "type": "modonomicon:text",
+   "title": "The Old Diggings",
+   "text": "Sixty down to nothing. Ordinary work by ordinary people. Coal, copper, iron, tin.\n\nThis is the richest band for BULK. If you want volume, dig here. Nothing here is a secret."
+  },
+  {
+   "type": "modonomicon:text",
+   "title": "The Deep Works",
+   "text": "Nothing down to minus sixty. Corners become square. Shafts run the wrong way for ore, sized for something that was not a person, or was a person shaped wrong.\n\nThe watching starts here. Everyone notices; nobody agrees on when."
+  },
+  {
+   "type": "modonomicon:text",
+   "title": "The Sealed Floor",
+   "text": "Minus sixty to the bottom. Reinforced - not sturdy, reinforced - by people who expected to be attacked.\n\nDiamond, redstone, gold and lapis are densest here. So is the black residue. So are the Vaults."
+  }
+ ]
+}

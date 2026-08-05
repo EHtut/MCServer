@@ -35,7 +35,33 @@
 //     a player runs at theirs, and /give is then refused for non-ops.
 
 (function () {
-  const BOOK = 'modonomicon:modonomicon[modonomicon:book_id="mcserver:veldora"]'
+  // Every guidebook the pack ships. Ethan, 2026-08-04: "we should have access to
+  // all guidebooks in the game". Fifteen books exist across these mods and most
+  // players will never learn any of them are there - which is the same failure
+  // as the paths themselves, one layer down.
+  //
+  // Give-forms are NOT interchangeable and all were verified against the command
+  // parser before being written here:
+  //   Patchouli   patchouli:guide_book[patchouli:book='<ns>:<id>']   SINGLE quotes
+  //   Modonomicon modonomicon:modonomicon[modonomicon:book_id="..."] DOUBLE quotes
+  //   everything else is a plain item.
+  // fieldguide:field_guide is deliberately absent - it does not resolve as an
+  // item id despite having a lang entry, and a menu row that fails is worse than
+  // one that is missing.
+  const BOOKS = {
+    veldora:   ['Notes on Veldora',        'modonomicon:modonomicon[modonomicon:book_id="mcserver:veldora"]'],
+    hermetica: ['The Hermetica (alchemy)', 'modonomicon:modonomicon[modonomicon:book_id="theurgy:the_hermetica"]'],
+    ars:       ['Tattered Tome (Ars)',     "patchouli:guide_book[patchouli:book='ars_nouveau:worn_notebook']"],
+    goety:     ['Black Book (necromancy)', "patchouli:guide_book[patchouli:book='goety:black_book']"],
+    brews:     ['Witches Brew',            "patchouli:guide_book[patchouli:book='goety:witches_brew']"],
+    hostility: ['Hostility Guide (levels)', "patchouli:guide_book[patchouli:book='l2hostility:hostility_guide']"],
+    security:  ['SecurityCraft Manual',    'securitycraft:sc_manual'],
+    banking:   ['Banking Guide',           'numismatics:banking_guide'],
+    monsters:  ['Monster Guide',           'legendary_monsters:guide_book'],
+    dinos:     ['InGen Field Guide',       'jurassicreborn:field_guide'],
+    enchanting:['Blaze Enchanting Handbook', 'create_enchantment_industry:blazes_enchanting_handbook'],
+  }
+  const BOOK = BOOKS.veldora[1]
   const KEY = 'veldora_path'
   const CHANCE = 0.11          // per hostile kill, before the tier roll
   var warnedKill = false
@@ -109,15 +135,30 @@
   ServerEvents.commandRegistry(event => {
     const Commands = event.commands
 
-    // /guide - the book, freely, any time. Ethan: "Guidebooks should be freely
-    // obtainable on command." A guide you have to craft is a guide nobody reads.
-    event.register(Commands.literal('guide').executes(ctx => {
+    // /guide         -> the Veldora book, plus the library index
+    // /guide <name>  -> any guidebook in the pack
+    // A guide you have to craft is a guide nobody reads.
+    var guide = Commands.literal('guide').executes(ctx => {
       const p = ctx.source.player
       if (!p) return 0
       ctx.source.server.runCommandSilent('give ' + p.username + ' ' + BOOK + ' 1')
       p.tell('§6Notes on Veldora §7- what is known, and what is only said.')
+      p.tell('§8Other books in this world - §f/guide <name>§8:')
+      Object.keys(BOOKS).forEach(k => {
+        if (k !== 'veldora') p.tell('  §e' + k + ' §8- §7' + BOOKS[k][0])
+      })
       return 1
-    }))
+    })
+    Object.keys(BOOKS).forEach(key => {
+      guide = guide.then(Commands.literal(key).executes(ctx => {
+        const p = ctx.source.player
+        if (!p) return 0
+        ctx.source.server.runCommandSilent('give ' + p.username + ' ' + BOOKS[key][1] + ' 1')
+        p.tell('§6' + BOOKS[key][0])
+        return 1
+      }))
+    })
+    event.register(guide)
 
     // /path                -> what you are, and what is on offer
     // /path <name>         -> declare
