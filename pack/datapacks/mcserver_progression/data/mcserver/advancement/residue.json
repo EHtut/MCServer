@@ -11,7 +11,7 @@
   "hidden": false
  },
  "criteria": {
-  "c": {
+  "ore": {
    "trigger": "minecraft:inventory_changed",
    "conditions": {
     "items": [
@@ -20,7 +20,26 @@
      }
     ]
    }
+  },
+  "powder": {
+   "trigger": "minecraft:inventory_changed",
+   "conditions": {
+    "items": [
+     {
+      "items": "minecraft:gunpowder",
+      "count": {
+       "min": 16
+      }
+     }
+    ]
+   }
   }
  },
- "parent": "mcserver:deep_works"
+ "parent": "mcserver:deep_works",
+ "requirements": [
+  [
+   "ore",
+   "powder"
+  ]
+ ]
 }

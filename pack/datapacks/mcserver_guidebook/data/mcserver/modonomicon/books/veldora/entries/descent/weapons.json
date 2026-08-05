@@ -19,7 +19,7 @@
  ],
  "parents": [
   {
-   "entry": "mcserver:residue"
+   "entry": "mcserver:descent/residue"
   }
  ]
 }

@@ -24,7 +24,7 @@
  ],
  "parents": [
   {
-   "entry": "mcserver:choosing"
+   "entry": "mcserver:paths/choosing"
   }
  ]
 }

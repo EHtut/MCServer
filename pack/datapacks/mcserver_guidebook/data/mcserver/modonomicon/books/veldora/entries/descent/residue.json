@@ -14,7 +14,7 @@
  ],
  "parents": [
   {
-   "entry": "mcserver:strata"
+   "entry": "mcserver:descent/strata"
   }
  ]
 }
