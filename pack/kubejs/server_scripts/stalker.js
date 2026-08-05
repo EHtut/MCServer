@@ -530,7 +530,13 @@
   }
 
   // ------------------------------------------------------------------ summoning
-  function summon(player, pathKey, near) {
+  // skipStats: summonHarvest applies its OWN, buffed block immediately after.
+  // Without this, both ran - each scheduling a correction pass 20 ticks out, one
+  // aiming at st.health and the other at st.health x1.6, landing on the same tick
+  // and correct only because insertion order happened to favour the second. Two
+  // contradictory "health corrected" lines per Harvest, and a 250 HP boss instead
+  // of 400 the moment anything reordered them.
+  function summon(player, pathKey, near, skipStats) {
     var spec = CAST[pathKey]
     if (!spec) return null
     var e = player.level.createEntity(spec[0])
@@ -544,7 +550,7 @@
     e.spawn()
 
     var st = STATS[pathKey]
-    if (st) applyStats(e, st, 1, pathKey)
+    if (st && !skipStats) applyStats(e, st, 1, pathKey)
     try { e.getAttribute('minecraft:generic.scale').setBaseValue(SCALE) } catch (x) { }
     // NO GLOW. It was my idea for making a common species read as singular, and
     // Ethan is right that it looks wrong - an outline through walls is a game-UI
@@ -745,7 +751,7 @@
 
   // ----------------------------------------------------------- C7: the Harvest
   function summonHarvest(player, pathKey) {
-    var e = summon(player, pathKey, 6)
+    var e = summon(player, pathKey, 6, true)   // stats come from the buffed block below
     if (!e) return null
     e.persistentData.putBoolean(HARVEST, true)
     // the ONE case that must not despawn - a boss fight that evaporates is worse

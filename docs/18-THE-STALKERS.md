@@ -252,12 +252,16 @@ Pumpkinhead only has `_ARMOR/_DAMAGE/_HEALTH/_KNOCKBACK/_SPEED`. It never needed
 a flip during the C4 re-audit because it was the *no-toggle control*, and so it
 never got one.
 
-**Consequence, unfixed:** the Blade's 600 HP stalker still spawns naturally, so a
-Blade walker can meet a second, unowned Lord Pumpkinhead — precisely the "a common
-species must read as singular" failure this section exists to prevent. The fix is
-an In Control deny keyed on that one entity, which is safe: In Control filters
-`finalizeSpawn`, and our summon path bypasses it. **Left for Ethan** — it is a
-live behaviour change and he was already travelling.
+✅ **FIXED 2026-08-05 by a different route.** Lord Pumpkinhead is denied through
+**In Control** instead, keyed on that one entity. Safe because In Control filters
+`finalizeSpawn` and our KubeJS summon path does not run it — and that was
+*measured*, not assumed: a probe spawned him our way while the deny was live and
+he was alive at t+20, t+100 and t+200. Same method as the C4 re-audit, because a
+same-tick check is what produced the original false pass.
+
+So the six castings are now summon-only by two different mechanisms: five by the
+mod's own config toggle, one by In Control. Worth knowing when reading the code —
+`grep SPAWNING_ENABLED` will only ever find five.
 
 ---
 

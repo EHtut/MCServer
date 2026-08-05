@@ -214,7 +214,7 @@ within tolerance of 8% / 18% / 28%. **Measured, not reasoned.**
 
 ## C4 — Stop the six spawning naturally
 
-**Build:** five `*_SPAWNING_ENABLED = false` in
+**Build:** five `*_SPAWNING_ENABLED = false` (Lord Pumpkinhead has no such key — he is denied via In Control instead) in
 `borninconfiguration-general.toml`, tracked into `pack/config/`.
 
 ### ⚠️ C4 RE-AUDITED 2026-08-05 — the first pass was a FALSE PASS

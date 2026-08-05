@@ -24,6 +24,12 @@
     "result": "deny"
   },
   {
+    "mob": [
+      "born_in_chaos_v1:lord_pumpkinhead"
+    ],
+    "result": "deny"
+  },
+  {
     "dimension": "minecraft:overworld",
     "maxlight_sky": 0,
     "result": "default"
