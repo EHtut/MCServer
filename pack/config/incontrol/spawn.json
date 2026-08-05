@@ -24,6 +24,31 @@
   },
   {
     "dimension": "minecraft:overworld",
+    "mob": [
+      "shineals_prehistoric_expansion:utahraptor",
+      "shineals_prehistoric_expansion:spinosaurus",
+      "shineals_prehistoric_expansion:carnotaurus",
+      "shineals_prehistoric_expansion:dimorphodon",
+      "shineals_prehistoric_expansion:triceratops",
+      "shineals_prehistoric_expansion:phorusrhacos"
+    ],
+    "maxcount": 2,
+    "result": "default"
+  },
+  {
+    "dimension": "minecraft:overworld",
+    "mob": [
+      "shineals_prehistoric_expansion:utahraptor",
+      "shineals_prehistoric_expansion:spinosaurus",
+      "shineals_prehistoric_expansion:carnotaurus",
+      "shineals_prehistoric_expansion:dimorphodon",
+      "shineals_prehistoric_expansion:triceratops",
+      "shineals_prehistoric_expansion:phorusrhacos"
+    ],
+    "result": "deny"
+  },
+  {
+    "dimension": "minecraft:overworld",
     "hostile": true,
     "minheight": 40,
     "result": "deny"
