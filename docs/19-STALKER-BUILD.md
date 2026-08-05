@@ -10,6 +10,52 @@ observed, not a file written.
 
 ---
 
+## STATE OF THE BUILD — 2026-08-05, server going dark for a week
+
+Every chunk is **built and loading clean** (11/11 scripts, 0 errors). What
+separates them below is not whether they exist, but **what has actually been
+watched happening**.
+
+| chunk | built | verified live | how |
+|---|---|---|---|
+| **C0** capability probe | ✅ | ✅ | 7 rounds; 4 silent failures caught |
+| **C0b** player probes | ✅ | ✅ | `xpLevel` reads 27, setter works, player NBT stores |
+| **C1** notoriety | ✅ | ✅ | Ethan: number + floor + persistence |
+| **C2** drop chance | ✅ | ✅ | `/path sample` — expected 13.4%, observed 13.3% |
+| **C3** XP as power | ✅ | ✅ | live armour read **9.08** = his 8 + our 1.08 → selective |
+| **C4** natural spawns off | ✅ | ✅ | re-audited at t+200 after a false pass |
+| **H1** chaff health | ✅ | ✅ | 16.35 / 15.0 / 5.3 / 21.8 vs targets 15/15/5/20 |
+| **C5** unkillable | ✅ | ✅ | Ethan: *"it didn't die it just disappeared"* |
+| **C6** phases | ✅ | ◐ | loads; Companion/Helper/Absence unwatched |
+| **C7** Harvest | ✅ | ◐ | loads; in testing at time of writing |
+| **C8** cast/PvP/rates | ✅ | ❌ | **needs two players** |
+| **H1b** density | ❌ | — | deliberately unbuilt |
+
+### What to test first when everyone is back
+
+1. **PvP defence (C8).** The one thing that cannot be tested alone, and the one
+   Ethan actually asked for: brother hits you, your stalker answers. Two players,
+   both above notoriety 25, both on a path.
+2. **Stalker vs stalker.** Two defended players fighting each other. Nothing
+   about that has ever run.
+3. **Horde feel and TPS.** Chaff is at half health and specials are thinned, but
+   four-player TPS has never been sampled. Density is intentionally still
+   untouched until it is.
+4. **A real Harvest**, reached by playing rather than by `/stalker harvest`.
+
+### Known-unverified, by design
+
+- **`player.persistentData` across death** — never tested. It does not matter:
+  build rule 5 puts all per-player state on `server.persistentData` keyed by
+  UUID, so nothing depends on the answer.
+- **The death-source attacker accessor.** `src.type()` works; `getEntity()`
+  throws. `attackerOf()` walks six candidates and logs which one wins on first
+  use — so the first real Harvest death will tell us, in the log, for free.
+- **Whether a stalker survives a server restart mid-fight.** Persistence is
+  pinned via NBT, but the round trip has not been watched.
+
+---
+
 ## The standing rules for this build
 
 1. **Nothing ships unrun.** The server is off and free; every chunk boots it and

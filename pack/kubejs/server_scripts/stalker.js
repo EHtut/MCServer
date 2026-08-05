@@ -535,6 +535,18 @@
       if (e) { live[uuid] = e; console.info('[stalker] companion joined ' + player.username) }
       return
     }
+    // 🚨 A Companion is still a Born in Chaos HOSTILE. Left alone its own AI
+    // acquires the nearest player - which is its owner - and it mauls the person
+    // it is supposed to be protecting. Nothing in C6 prevented that; the
+    // owner-damage hook only ever SETS a target, it never clears a wrong one.
+    // Outside the Harvest, the owner is never a valid target.
+    try {
+      var tgt = cur.getTarget()
+      if (tgt && tgt.username === player.username) cur.setTarget(null)
+    } catch (x) {
+      try { if (cur.target && cur.target.username === player.username) cur.setTarget(null) } catch (y) { }
+    }
+
     try {
       var dx = cur.x - player.x, dy = cur.y - player.y, dz = cur.z - player.z
       if ((dx * dx + dy * dy + dz * dz) > LEASH * LEASH) {
@@ -583,7 +595,10 @@
     var e = summon(p, pathKey, 3)
     if (!e) return
     live[uuid] = e
+    // point it at the threat immediately; if there is no attacker (fall, lava)
+    // make sure it does not default to the owner it came to help
     if (attacker) { try { e.setTarget(attacker) } catch (x) { } }
+    else { try { e.setTarget(null) } catch (x) { } }
     console.info('[stalker] helper answered for ' + p.username + ' at ' + Math.round(after) + ' hp')
     SERVER.scheduleInTicks(HELPER_STAY, function () {
       if (live[uuid] === e) { delete live[uuid]; if (alive(e)) flee(e, 'helper visit over') }
