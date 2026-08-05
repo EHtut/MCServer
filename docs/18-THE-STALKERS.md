@@ -322,6 +322,40 @@ design, not a feature of this one. Written here so it is not lost.
 
 ---
 
+## 7d. ⟡ HOW DEEP CAN WE GO — the puppet question
+
+Ethan, 2026-08-05: *"part of me just wants to rip the model out and design custom
+behavior instead... though we have already built custom behavior i wonder how
+deep we can go."*
+
+Worth answering honestly, because the instinct is right and the answer is
+"further than you would think, but there is a wall".
+
+**What is already OURS**, none of it Born in Chaos's:
+targeting · movement and the distance ring · who it may hurt · whether it can die
+· when it appears and vanishes · its stat block · its name and size · its four
+phases · what it says · and now where it looks.
+
+**What is still BORROWED:** the model, the texture, the animations, the sounds,
+and its native attack AI underneath ours. That is genuinely most of what a player
+*perceives*, which is why it still reads as a Born in Chaos mob wearing our
+behaviour.
+
+**The wall:** KubeJS cannot remove a mob's goal AI or register a real custom
+entity with its own model. Going deeper means one of:
+
+1. **The puppet** — pick the most visually neutral mob in the pack and drive it
+   entirely from script. Cheapest, and we already own nearly every input.
+2. **A resource pack** — retexture and remodel an existing entity so the borrowed
+   half stops being recognisable. No Java, client-side only, and it would change
+   the *feel* more than any amount of behaviour work.
+3. **A real mod** — the only route to genuine custom AI, and a different project.
+
+⟡ **Not scheduled.** But (2) is the highest ratio of change-in-feel to effort on
+the entire roadmap, and it is the one nobody has considered yet.
+
+---
+
 ## 8. Open for Ethan
 
 1. **The daily rate** — 1.0/day gives a ~100-day first cycle. Faster?
