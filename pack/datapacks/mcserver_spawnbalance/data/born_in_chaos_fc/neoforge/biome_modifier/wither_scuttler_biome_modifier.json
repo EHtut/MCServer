@@ -1,0 +1,12 @@
+{
+ "type": "neoforge:add_spawns",
+ "biomes": {
+  "type": "neoforge:any"
+ },
+ "spawners": {
+  "type": "born_in_chaos_fc:wither_scuttler",
+  "weight": 8,
+  "minCount": 1,
+  "maxCount": 3
+ }
+}

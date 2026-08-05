@@ -1,0 +1,10 @@
+{
+ "type": "neoforge:add_spawns",
+ "biomes": "galosphere:pink_salt_caves",
+ "spawners": {
+  "type": "galosphere:preserved",
+  "maxCount": 4,
+  "minCount": 4,
+  "weight": 5
+ }
+}
