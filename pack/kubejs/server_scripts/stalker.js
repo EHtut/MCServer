@@ -332,6 +332,80 @@
     return e
   }
 
+  // --------------------------------------------------------------- distance
+  function healthFrac(p) {
+    try {
+      var m = p.getAttribute('minecraft:generic.max_health').getValue()
+      if (m > 0) return Math.max(0, Math.min(1, p.health / m))
+    } catch (x) { }
+    return 1
+  }
+
+  function yawOf(p) {
+    var cands = [
+      function () { return p.yaw },
+      function () { return p.getYRot() },
+      function () { return p.rotationYaw },
+    ]
+    for (var i = 0; i < cands.length; i++) {
+      try { var v = cands[i](); if (typeof v === 'number' && isFinite(v)) return v } catch (x) { }
+    }
+    return null
+  }
+
+  // Place it BEHIND the player rather than at a random bearing. A snap you can
+  // see is a bug; a snap at your back is the mod working, and when you turn
+  // around it is simply there.
+  function placeBehind(player, e, dist) {
+    var yaw = yawOf(player)
+    var ang
+    if (yaw === null) {
+      ang = Math.random() * Math.PI * 2
+    } else {
+      // MC yaw: the player faces (-sin, +cos). Behind is that negated, widened
+      // +/-50 degrees so it is not mechanically dead-centre.
+      ang = (yaw + 180) * Math.PI / 180 + (Math.random() - 0.5) * (100 * Math.PI / 180)
+    }
+    try {
+      e.setPos(player.x - Math.sin(ang) * dist, player.y, player.z + Math.cos(ang) * dist)
+      e.setTarget(null)
+    } catch (x) { }
+  }
+
+  var navWarned = false
+
+  function keepDistance(player, e) {
+    var want = DIST_NEAR + (DIST_FAR - DIST_NEAR) * healthFrac(player)
+    var dx, dz, d
+    try {
+      dx = e.x - player.x; dz = e.z - player.z
+      d = Math.sqrt(dx * dx + dz * dz)
+    } catch (x) { return }
+    if (Math.abs(d - want) <= BAND) return          // close enough; leave it be
+    if (d > TELEPORT_AT) { placeBehind(player, e, want); return }   // off-screen: snap
+
+    // Otherwise WALK it - pathing there looks like a creature deciding to move.
+    var tx = player.x + (dx / (d || 1)) * want
+    var tz = player.z + (dz / (d || 1)) * want
+    var moved = false
+    var cands = [
+      function () { e.navigation.moveTo(tx, e.y, tz, 1.0); return true },
+      function () { e.getNavigation().moveTo(tx, e.y, tz, 1.0); return true },
+      function () { e.ai.navigation.moveTo(tx, e.y, tz, 1.0); return true },
+    ]
+    for (var i = 0; i < cands.length; i++) {
+      try { if (cands[i]()) { moved = true; break } } catch (x) { }
+    }
+    if (!moved) {
+      if (!navWarned) {
+        navWarned = true
+        console.warn('[stalker] no navigation API - repositioning behind the player instead')
+      }
+      placeBehind(player, e, want)
+    }
+    try { e.setTarget(null) } catch (x) { }
+  }
+
   // ----------------------------------------------------------- C7: the Harvest
   function summonHarvest(player, pathKey) {
     var e = summon(player, pathKey, 6)

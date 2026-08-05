@@ -28,7 +28,13 @@
 // the book id is patchouli:cogs_and_cadavers and not some pack namespace.
 
 const FLAG = 'cc_guidebook_given'
-const BOOK = "patchouli:guide_book[patchouli:book='patchouli:cogs_and_cadavers'] 1"
+// ⚠️ WAS patchouli:cogs_and_cadavers, which exists in NO jar and in NO
+// server-side patchouli_books folder - it lives only as loose CLIENT files.
+// Patchouli answers an unknown id with item.patchouli.guide_book.invalid, so
+// /give SUCCEEDED and every player was handed an "Invalid Book" on first join
+// while the Modonomicon guide we actually built was never given out at all.
+// A silent success is worse than an error; nothing in any log said a word.
+const BOOK = 'modonomicon:modonomicon[modonomicon:book_id="mcserver:veldora"] 1'
 
 PlayerEvents.loggedIn(event => {
   const player = event.player
