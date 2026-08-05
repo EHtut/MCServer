@@ -82,7 +82,7 @@ play for five minutes, then change the next.
      Right-click the instance -> Edit -> Settings -> Memory.
      Set BOTH boxes to the same number:
 
-         16 GB of RAM  ->  6144   (the shipped default, leave it)
+         16 GB of RAM  ->  10240  (the shipped default, leave it)
          32 GB of RAM  ->  10240
          64 GB of RAM  ->  12288
 
