@@ -20,11 +20,7 @@
       "minecraft:skeleton",
       "minecraft:stray",
       "minecraft:bogged",
-      "minecraft:witch",
-      "born_in_chaos_v1:skeleton_demoman",
-      "born_in_chaos_v1:dark_vortex",
-      "born_in_chaos_v1:bonescaller",
-      "born_in_chaos_v1:phantom_creeper"
+      "minecraft:witch"
     ],
     "random": 0.5,
     "result": "deny"

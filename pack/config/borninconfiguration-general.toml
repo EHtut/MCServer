@@ -52,7 +52,7 @@
 			#.
 			# Default: 10.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			BABY_SKELETON_HEALTH = 10.0
+			BABY_SKELETON_HEALTH = 5.0
 			#.
 			# Default: 0.1
 			# Range: 0.0 ~ 1.7976931348623157E308
@@ -80,7 +80,7 @@
 			#.
 			# Default: 10.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			BABY_SPIDER_HEALTH = 10.0
+			BABY_SPIDER_HEALTH = 5.0
 			#.
 			# Default: 0.1
 			# Range: 0.0 ~ 1.7976931348623157E308
@@ -108,7 +108,7 @@
 			#.
 			# Default: 30.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			ZOMBIE_BARREL_HEALTH = 30.0
+			ZOMBIE_BARREL_HEALTH = 15.0
 			#.
 			# Default: 0.1
 			# Range: 0.0 ~ 1.7976931348623157E308
@@ -136,7 +136,7 @@
 			#.
 			# Default: 20.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			BLOODY_GADFLY_HEALTH = 20.0
+			BLOODY_GADFLY_HEALTH = 10.0
 			#.
 			# Default: 0.1
 			# Range: 0.0 ~ 1.7976931348623157E308
@@ -192,7 +192,7 @@
 			#.
 			# Default: 20.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			BONE_IMP_HEALTH = 20.0
+			BONE_IMP_HEALTH = 10.0
 			#.
 			# Default: 1.0
 			# Range: 0.0 ~ 1.7976931348623157E308
@@ -272,7 +272,7 @@
 			#.
 			# Default: 12.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			CORPSE_FISH_HEALTH = 12.0
+			CORPSE_FISH_HEALTH = 6.0
 			#.
 			# Default: 0.1
 			# Range: 0.0 ~ 1.7976931348623157E308
@@ -304,7 +304,7 @@
 			#.
 			# Default: 10.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			CORPSE_FLY_HEALTH = 10.0
+			CORPSE_FLY_HEALTH = 5.0
 			#.
 			# Default: 0.1
 			# Range: 0.0 ~ 1.7976931348623157E308
@@ -360,7 +360,7 @@
 			#.
 			# Default: 30.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			DECAYING_ZOMBIE_HEALTH = 30.0
+			DECAYING_ZOMBIE_HEALTH = 15.0
 			#.
 			# Default: 0.1
 			# Range: 0.0 ~ 1.7976931348623157E308
@@ -388,7 +388,7 @@
 			#.
 			# Default: 15.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			DECREPIT_SKELETON_HEALTH = 15.0
+			DECREPIT_SKELETON_HEALTH = 7.5
 			#.
 			# Default: 0.1
 			# Range: 0.0 ~ 1.7976931348623157E308
@@ -498,7 +498,7 @@
 			#.
 			# Default: 17.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			DREAD_HOUND_HEALTH = 17.0
+			DREAD_HOUND_HEALTH = 8.5
 			#.
 			# Default: 0.1
 			# Range: 0.0 ~ 1.7976931348623157E308
@@ -582,7 +582,7 @@
 			#.
 			# Default: 15.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			FIRELIGHT_HEALTH = 15.0
+			FIRELIGHT_HEALTH = 7.5
 			#.
 			# Default: 0.1
 			# Range: 0.0 ~ 1.7976931348623157E308
@@ -885,7 +885,7 @@
 			#.
 			# Default: 6.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			MAGGOT_HEALTH = 6.0
+			MAGGOT_HEALTH = 3.0
 			#.
 			# Default: 1.0
 			# Range: 0.0 ~ 1.7976931348623157E308
@@ -983,7 +983,7 @@
 			#.
 			# Default: 12.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			MR_PUMPKIN_HEALTH = 12.0
+			MR_PUMPKIN_HEALTH = 6.0
 			#.
 			# Default: 0.3
 			# Range: 0.0 ~ 1.7976931348623157E308
@@ -1131,7 +1131,7 @@
 			#.
 			# Default: 18.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			PUMPKIN_DUNCE_HEALTH = 18.0
+			PUMPKIN_DUNCE_HEALTH = 9.0
 			#.
 			PUMPKIN_DUNCE_SPAWNING_ENABLED = true
 			#.
@@ -1217,7 +1217,7 @@
 			#.
 			# Default: 24.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			RESTLESS_SPIRIT_HEALTH = 24.0
+			RESTLESS_SPIRIT_HEALTH = 12.0
 			#.
 			# Default: 0.1
 			# Range: 0.0 ~ 1.7976931348623157E308
@@ -1365,7 +1365,7 @@
 			#.
 			# Default: 20.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			SIAMESE_SKELETON_HEALTH = 20.0
+			SIAMESE_SKELETON_HEALTH = 10.0
 			#.
 			# Default: 0.1
 			# Range: 0.0 ~ 1.7976931348623157E308
@@ -1529,7 +1529,7 @@
 			#.
 			# Default: 32.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			SPIRIT_GUIDE_HEALTH = 32.0
+			SPIRIT_GUIDE_HEALTH = 16.0
 			#.
 			# Default: 0.9
 			# Range: 0.0 ~ 1.7976931348623157E308
@@ -1665,7 +1665,7 @@
 			#.
 			# Default: 40.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			SWARMER_HEALTH = 40.0
+			SWARMER_HEALTH = 20.0
 			#.
 			# Default: 0.1
 			# Range: 0.0 ~ 1.7976931348623157E308
@@ -1691,7 +1691,7 @@
 			#.
 			# Default: 25.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			THORNSHELL_CRAB_HEALTH = 25.0
+			THORNSHELL_CRAB_HEALTH = 12.5
 			#.
 			# Default: 0.7
 			# Range: 0.0 ~ 1.7976931348623157E308
@@ -1775,7 +1775,7 @@
 			#.
 			# Default: 25.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			ZOMBIE_FISHERMAN_HEALTH = 25.0
+			ZOMBIE_FISHERMAN_HEALTH = 12.5
 			#.
 			# Default: 0.4
 			# Range: 0.0 ~ 1.7976931348623157E308
@@ -1803,7 +1803,7 @@
 			#.
 			# Default: 25.0
 			# Range: 0.0 ~ 1.7976931348623157E308
-			ZOMBIE_LUMBERJACK_HEALTH = 25.0
+			ZOMBIE_LUMBERJACK_HEALTH = 12.5
 			#.
 			# Default: 0.3
 			# Range: 0.0 ~ 1.7976931348623157E308
