@@ -105,6 +105,57 @@
     wall:    { health: 90, damage: 6, armor: 0 },
   }
 
+  // IT SPEAKS WHEN YOU LOOK AT IT (Ethan, 2026-08-05).
+  //
+  // Sent to that player alone, with no prefix and no name tag - it should read as
+  // something that arrived in your head rather than a mod talking. Paired with a
+  // short, low-grade nausea: not a punishment, a wrongness. You looked too long.
+  //
+  // The proc is deliberately mean about frequency. A whisper every time you
+  // glance is a gimmick; a whisper you cannot reliably reproduce is a rumour, and
+  // your brother not believing you is the whole point.
+  var WHISPER_CHANCE = 0.03               // per second of being looked at
+  var WHISPER_COOLDOWN = 1200             // ticks (60s) between whispers per player
+  var NAUSEA_TICKS = 80                   // 4s, amplifier 0 - light
+  var WHISPERS = {
+    forge: [
+      'what you build, i keep',
+      'the sack is not full',
+      'you have been very good this year',
+      '*something heavy is dragged, somewhere below*',
+    ],
+    art: [
+      'you are dreaming this',
+      'wake up',
+      'i am the part you do not remember',
+      '*a door opens in a room you have not built*',
+    ],
+    blade: [
+      'not yet',
+      'you are not ready',
+      'i have counted your swings',
+      '*armour settles, close enough to hear*',
+    ],
+    salvage: [
+      'we have your scent',
+      'run, if you like',
+      'you smell of powder and grave dirt',
+      '*breathing, out of time with your own*',
+    ],
+    crown: [
+      'kneel',
+      'your dead are mine',
+      'they followed you because they had to',
+      '*many voices, saying one word*',
+    ],
+    wall: [
+      'i am on your walls',
+      'i was in the corner of the room',
+      'the door did not matter',
+      '*skittering, from inside the stone*',
+    ],
+  }
+
   var CAST = {
     forge:   ['born_in_chaos_v1:krampus', 'The Thief'],
     art:     ['born_in_chaos_v1:nightmare_stalker', 'The Nightmare'],
@@ -338,15 +389,47 @@
     // unclear we fail toward the LESSER penalty - a fall during a Harvest must
     // not cost someone everything.
     var killer = attackerOf(event)
-    if (!killer || !isStalker(killer) || !isHarvestInstance(killer)) {
-      console.info('[stalker] ' + e.username + ' died mid-Harvest but NOT to the stalker - no wipe')
+
+    // The stalker's OWN kill - the simple case.
+    if (killer && isStalker(killer) && isHarvestInstance(killer)) {
+      if (ownerOf(killer) !== e.username) {
+        console.info('[stalker] ' + e.username + ' was killed by another player stalker - no wipe')
+        return
+      }
+      harvestLost(SERVER, e, killer)
       return
     }
-    if (ownerOf(killer) !== e.username) {
-      console.info('[stalker] ' + e.username + ' was killed by another player stalker - no wipe')
+
+    // ⚠️ ITS ADDS COUNT TOO. Missioner and Mother Spider both fight through
+    // summoned minions, so for two of six castings the boss frequently never
+    // lands the killing blow itself - and losing the Harvest would have cost
+    // nothing at all. That is not mercy, it is the fight not mattering.
+    //
+    // The rule is: killed BY A MOB while your own Harvest instance is alive and
+    // present. Environmental deaths - fall, lava, drowning, suffocation - still
+    // cost nothing, so the "fail toward the lesser penalty" principle holds
+    // exactly where it should: when nothing was hunting you, nothing takes.
+    if (!killer) {
+      console.info('[stalker] ' + e.username + ' died mid-Harvest with no attacker - no wipe')
       return
     }
-    harvestLost(SERVER, e, killer)
+    var mine = live[String(e.uuid)]
+    if (!alive(mine) || !isHarvestInstance(mine)) {
+      console.info('[stalker] ' + e.username + ' died mid-Harvest but their instance is gone - no wipe')
+      return
+    }
+    var near = false
+    try {
+      var ax = mine.x - e.x, ay = mine.y - e.y, az = mine.z - e.z
+      near = (ax * ax + ay * ay + az * az) <= (48 * 48)
+    } catch (x) { }
+    if (!near) {
+      console.info('[stalker] ' + e.username + ' died mid-Harvest far from their instance - no wipe')
+      return
+    }
+    console.info('[stalker] ' + e.username + ' killed mid-Harvest by ' +
+      (killer.type || '?') + ' while the instance was present - counts as the loss')
+    harvestLost(SERVER, e, mine)
   })
 
   // ---------------------------------------------------- the stat block, VERIFIED
@@ -523,6 +606,24 @@
   // The one-second sweep is not a limitation here, it is the whole effect. You
   // look, there is a beat, and THEN it turns. Instant would read as a scripted
   // trigger; the delay reads as something noticing.
+  var lastWhisper = {}
+  function maybeWhisper(player, e) {
+    var uuid = String(player.uuid)
+    var now = sweepCount
+    if (lastWhisper[uuid] && (now - lastWhisper[uuid]) * SWEEP < WHISPER_COOLDOWN) return
+    if (Math.random() > WHISPER_CHANCE) return
+    var key = ''
+    try { key = e.persistentData.getString(PATHKEY) } catch (x) { }
+    var pool = WHISPERS[key]
+    if (!pool || !pool.length) return
+    lastWhisper[uuid] = now
+    var line = pool[Math.floor(Math.random() * pool.length)]
+    try {
+      player.tell(Text.of('§8§o' + line))
+      player.potionEffects.add('minecraft:nausea', NAUSEA_TICKS, 0, false, false)
+    } catch (x) { }
+  }
+
   var faceLogged = false
   function faceOwner(player, e) {
     var dx, dy, dz
@@ -563,7 +664,7 @@
     } catch (x) { return }
     // Looked at => look back, and do NOT reposition. Both halves of that matter:
     // it holds still under your gaze and it meets it.
-    if (inView(player, e)) { faceOwner(player, e); return }
+    if (inView(player, e)) { faceOwner(player, e); maybeWhisper(player, e); return }
 
     if (Math.abs(d - want) <= BAND) return          // close enough; leave it be
 

@@ -284,6 +284,44 @@ that chaff fills, so thinning ranged *is* increasing melee.
 
 ---
 
+## 7b. Rulings, 2026-08-05
+
+- **The Beasts are TROPHIES, not a path.** Ice and Fire gets no rungs. It is world
+  lore and a thing to have killed — which is what it always actually was. This
+  closes an open question from `17-PATHS-TO-POWER` §3.
+- **The Harvest having one shape is fine for now** — *"you are meant to not win."*
+  Six castings differing only by stat block is acceptable while losing is the
+  expected outcome. Revisit if it ever becomes routinely winnable.
+- **Numismatics** is approved for use. It is a Create-styled currency mod,
+  installed and doing nothing since day one.
+
+---
+
+## 7c. ⟡ THE WAVES — captured, deliberately NOT in scope
+
+Ethan, 2026-08-05, on *Shield Hero*: the entire hero structure there is oriented
+around **waves** — a shared threat arriving every 30 days that the heroes must
+combine against.
+
+It is the answer to the oldest unsolved problem in this design: **the paths do
+not need each other** (`17-PATHS-TO-POWER` §0). Exclusivity made them scarce; it
+never made them interdependent. Six people can walk six paths and never once have
+a reason to speak.
+
+A wave would fix that in a way nothing else on the list does, because it is the
+only mechanic that puts a deadline on the *server* rather than on a person. It
+would also give the surface a reason to exist — the whole design currently points
+down, and a wave arrives on top of you.
+
+The 30-day cadence is not a coincidence worth ignoring either: **the Harvest
+absence is already 30 days.** Two clocks of the same length, one personal and one
+shared, is a structure rather than a duplication.
+
+**Explicitly out of scope for now** — his call, and the right one. This is its own
+design, not a feature of this one. Written here so it is not lost.
+
+---
+
 ## 8. Open for Ethan
 
 1. **The daily rate** — 1.0/day gives a ~100-day first cycle. Faster?
