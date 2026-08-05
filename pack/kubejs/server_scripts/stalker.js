@@ -117,66 +117,52 @@
   var WHISPER_CHANCE = 0.03               // per second of being looked at
   var WHISPER_COOLDOWN = 1200             // ticks (60s) between whispers per player
   var NAUSEA_TICKS = 80                   // 4s, amplifier 0 - light
-  var WHISPERS = {
-    forge: [
-      'what you build, i keep',
-      'the sack is not full',
-      'you have been very good this year',
-      '*something heavy is dragged, somewhere below*',
-    ],
-    art: [
-      'you are dreaming this',
-      'wake up',
-      'i am the part you do not remember',
-      '*a door opens in a room you have not built*',
-    ],
-    blade: [
-      'not yet',
-      'you are not ready',
-      'i have counted your swings',
-      '*armour settles, close enough to hear*',
-    ],
-    salvage: [
-      'we have your scent',
-      'run, if you like',
-      'you smell of powder and grave dirt',
-      '*breathing, out of time with your own*',
-    ],
-    crown: [
-      'kneel',
-      'your dead are mine',
-      'they followed you because they had to',
-      '*many voices, saying one word*',
-    ],
-    wall: [
-      'i am on your walls',
-      'i was in the corner of the room',
-      'the door did not matter',
-      '*skittering, from inside the stone*',
-    ],
-  }
-
-  // THE RARE ONES. A joke tier, and the joke only works because it is rare - if
-  // you can make it happen it is a feature, and if you cannot it is a thing that
-  // happened to you once and nobody believes.
+  // ETHAN'S LINES (2026-08-05). "We cannot commit fully to the horror, the
+  // server still needs to have my brand of humor everywhere plus im author so
+  // i can reference my books."
   //
-  // Undertale's flavour-text convention is the "* " prefix, so it is kept: the
-  // reference is the FORMAT as much as the line. Paired with genuinely unpleasant
-  // nausea, because the funniest version is the one that also ruins the next ten
-  // seconds of your life.
-  var RARE_CHANCE = 0.08                  // of a whisper, not of a second
+  // He is right, and it is not a compromise. Unbroken dread goes flat - the
+  // Obsessed is beloved here precisely because it is absurd as often as it is
+  // frightening. A goat that spills its bag and a thing that shows you
+  // thousands of blinking crimson eyes are scarier TOGETHER, because you stop
+  // being able to predict which one you are about to get.
+  //
+  // Caebrim and the Umamusume line are his. Left exactly as written.
+  var RARE_CHANCE = 0.08                  // of a whisper: same line, ruinous nausea
   var RARE_NAUSEA_TICKS = 240             // 12s
   var RARE_NAUSEA_AMP = 3
-  var RARE_WHISPERS = {
-    wall: [
-      '* The spider does a funny dance.',
-      '* Smells like tough love.',
+  var WHISPERS = {
+    forge: [
+      "*The goat accidentally spills his entire bag, you try not to look*",
+      "*The goat makes a goat noise*",
+      "*The goat whispers in a distinctly southern accent. You don't get the reference*",
     ],
-    forge: ['* You feel your pockets. They are lighter.'],
-    art: ['* You are filled with someone else's determination.'],
-    blade: ['* The challenger is sizing you up. It is not impressed.'],
-    salvage: ['* Something is counting your bullets. It got a lower number than you did.'],
-    crown: ['* The dead take a knee. Not for you.'],
+    art: [
+      "*It whispers into your ear. Soft things. Harsh things. It has anxiety*",
+      "*The word Caebrim comes to your tongue. You don't know what it means*",
+      "*You see thousands of crimson eyes. They are blinking. You are not*",
+    ],
+    blade: [
+      "*He watches you. Your blade. The one at your waist... He wants you to know he's referencing your sword*",
+      "*He pets his horse. His horse says “Life is an experiment, and we its guinea pigs. You, me, the other Umamusume—everyone!” You have no idea what that means*",
+      "*His horse wants to race you. The rider has motion sickness*",
+    ],
+    salvage: [
+      "*AWOOOO*",
+      "*The wolf is an alcoholic. You are in danger*",
+      "*The wolf is attempting to get her life together. She is failing. You can't help*",
+    ],
+    crown: [
+      "“The dead speak to me. They say many things. Do many things. Like talk”",
+      "“I worship the goddess of death. I see her light. You have none”",
+      "*The missionary is attempting to account for weekly bonuses*",
+      "*The missionary wants donations*",
+    ],
+    wall: [
+      "*The spider does a funny dance, you squint but don't catch it*",
+      "*The spider waves its hands to the beat. You hear nothing*",
+      "*The spider attempts to have a tea party. The tea is all over the floor*",
+    ],
   }
 
   var CAST = {
@@ -641,22 +627,23 @@
     if (!pool || !pool.length) return
     lastWhisper[uuid] = now
 
-    var rare = RARE_WHISPERS[key]
-    if (rare && rare.length && Math.random() < RARE_CHANCE) {
-      var joke = rare[Math.floor(Math.random() * rare.length)]
-      try {
-        player.tell(Text.of('§f' + joke))     // white, not the grey murmur - it is ANNOUNCING itself
-        player.potionEffects.add('minecraft:nausea', RARE_NAUSEA_TICKS, RARE_NAUSEA_AMP, false, false)
-      } catch (x) { }
-      console.info('[stalker] rare whisper to ' + player.username + ': ' + joke)
-      return
-    }
-
+    // One pool now - his lines ARE the joke tier. The rare roll no longer picks a
+    // different LINE, it just decides whether this one wrecks you: 12 seconds of
+    // amplifier-3 nausea instead of 4 of amplifier 0. Same words, and you will
+    // never be sure whether the goat noise or the crimson eyes is the one that
+    // does it to you.
     var line = pool[Math.floor(Math.random() * pool.length)]
+    var rare = Math.random() < RARE_CHANCE
     try {
-      player.tell(Text.of('§8§o' + line))
-      player.potionEffects.add('minecraft:nausea', NAUSEA_TICKS, 0, false, false)
+      player.tell(Text.of((rare ? '§f' : '§8§o') + line))
+      player.potionEffects.add('minecraft:nausea',
+        rare ? RARE_NAUSEA_TICKS : NAUSEA_TICKS,
+        rare ? RARE_NAUSEA_AMP : 0, false, false)
     } catch (x) { }
+    if (rare) console.info('[stalker] RARE whisper to ' + player.username + ': ' + line)
+    return
+
+
   }
 
   var faceLogged = false
