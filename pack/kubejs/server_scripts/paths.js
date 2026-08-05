@@ -128,6 +128,42 @@
     try { return player.persistentData.getString(KEY) || '' } catch (e) { return '' }
   }
 
+  // ---------------------------------------------------------------------------
+  // EXCLUSIVITY — one player per path (Ethan, 2026-08-04)
+  //
+  // "only one person can have each path. If i choose creation my brother can't
+  // choose it unless i relinquish it."
+  //
+  // He called it selfish design. It is the opposite: it is the only thing that
+  // makes the paths' DENIALS bite. A path that gives throughput and denies you a
+  // body only matters if the person who has a body is someone else. Four players
+  // all walking the Forge is four people doing one thing slowly - exclusivity is
+  // what turns specialisation into a reason to talk to each other.
+  //
+  // Claims live on the SERVER's persistent data, not the player's, because the
+  // question "is the Forge taken" has to be answerable while its owner is
+  // offline.
+  // ---------------------------------------------------------------------------
+  const CLAIM = 'veldora_claim_'
+
+  function holderOf(server, key) {
+    try { return server.persistentData.getString(CLAIM + key) || '' } catch (e) { return '' }
+  }
+
+  function setHolder(server, key, name) {
+    try { server.persistentData.putString(CLAIM + key, name || '') } catch (e) {
+      console.error('[paths] could not write claim for ' + key + ': ' + e)
+    }
+  }
+
+  function releasePath(server, player) {
+    var cur = pathOf(player)
+    if (!cur) return ''
+    if (holderOf(server, cur) === player.username) setHolder(server, cur, '')
+    try { player.persistentData.putString(KEY, '') } catch (e) { }
+    return cur
+  }
+
   // ===========================================================================
   // commands
   // ===========================================================================
@@ -165,25 +201,51 @@
     var root = Commands.literal('path').executes(ctx => {
       const p = ctx.source.player
       if (!p) return 0
+      var srv = ctx.source.server
       var cur = pathOf(p)
       p.tell(cur && PATHS[cur]
         ? '§6You walk ' + PATHS[cur].name + '§7. ' + PATHS[cur].blurb
         : '§7You have declared no path. §f/path <name>')
       Object.keys(PATHS).forEach(k => {
-        p.tell('  §e' + k + ' §8- §7' + PATHS[k].name)
+        var h = holderOf(srv, k)
+        var tag = !h ? '§a(open)' : (h === p.username ? '§6(yours)' : '§c(' + h + ')')
+        p.tell('  §e' + k + ' §8- §7' + PATHS[k].name + ' ' + tag)
       })
+      p.tell('§8One walker each. §f/path release§8 gives yours up.')
       p.tell('§8Hostile kills pay in your path. Deeper kills pay better.')
       return 1
     })
+
+    root = root.then(Commands.literal('release').executes(ctx => {
+      const p = ctx.source.player
+      if (!p) return 0
+      var gone = releasePath(ctx.source.server, p)
+      if (!gone) { p.tell('§7You walk no path.'); return 0 }
+      p.tell('§7You set down ' + PATHS[gone].name + '§7. It is open to the others.')
+      ctx.source.server.tell('§8' + p.username + ' has relinquished ' + PATHS[gone].name + '.')
+      return 1
+    }))
 
     Object.keys(PATHS).forEach(key => {
       root = root.then(Commands.literal(key).executes(ctx => {
         const p = ctx.source.player
         if (!p) return 0
+        var srv = ctx.source.server
+        var held = holderOf(srv, key)
+        if (held && held !== p.username) {
+          p.tell('§c' + PATHS[key].name + ' is walked by ' + held + '§c.')
+          p.tell('§7Only one may walk each. They must §frelease§7 it first.')
+          return 0
+        }
+        if (pathOf(p) === key) { p.tell('§7You already walk that path.'); return 0 }
+        var old = releasePath(srv, p)          // a walker holds exactly one
         p.persistentData.putString(KEY, key)
+        setHolder(srv, key, p.username)
+        if (old) p.tell('§8You set down ' + PATHS[old].name + '.')
         p.tell('§6You walk ' + PATHS[key].name + '§7.')
         p.tell('§7' + PATHS[key].blurb)
         p.tell('§8Kills now pay in your path - and pay better the deeper you are.')
+        srv.tell('§8' + p.username + ' walks ' + PATHS[key].name + '.')
         return 1
       }))
     })
@@ -217,6 +279,10 @@
 
     var key = pathOf(killer)
     if (!key || !PATHS[key]) return
+    // The SERVER's claim is authoritative, not the player's copy. If the claim
+    // was cleared while they still carry the key, they stop being paid - so a
+    // stale tag can never quietly keep earning.
+    if (holderOf(event.server, key) !== killer.username) return
     if (Math.random() > CHANCE) return
 
     // THE ANTI-FARM RULE: the mob's death height decides the tier, so a basement
@@ -231,6 +297,31 @@
       event.server.runCommandSilent('give ' + killer.username + ' ' + item + ' 1')
     } catch (e) {
       console.warn('[paths] could not pay out ' + item + ': ' + e)
+    }
+  })
+
+  // ===========================================================================
+  // startup self-test
+  //
+  // Claims live on server.persistentData behind a try/catch, so if that API is
+  // not what this KubeJS version exposes, every claim would fail SILENTLY and
+  // exclusivity would look like it worked while enforcing nothing. Write a probe
+  // and read it back, so a broken store is loud at boot instead of discovered by
+  // two players ending up on the same path.
+  // ===========================================================================
+  ServerEvents.loaded(event => {
+    var ok = false
+    try {
+      event.server.persistentData.putString('veldora_probe', 'ok')
+      ok = event.server.persistentData.getString('veldora_probe') === 'ok'
+    } catch (e) {
+      console.error('[paths] server.persistentData threw: ' + e)
+    }
+    if (ok) {
+      console.info('[paths] claim store OK - exclusivity is enforced')
+    } else {
+      console.error('[paths] CLAIM STORE NOT WORKING - paths will NOT be exclusive. '
+                    + 'Two players could hold the same path.')
     }
   })
 

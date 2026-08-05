@@ -147,15 +147,20 @@ built.*
 
 ## 3. What the audit says is MISSING
 
-**⚠️ The Wall is not a path yet — Ethan is right.** Its rungs stop at doors and
-keypads. Everything that would make it a path — reinforced blocks — is Vault
-loot at −64…−128, and **D2 Vaults are unbuilt**. So SecurityCraft currently
-offers a lock and nothing to protect it with.
+**⚠️ The Wall — CORRECTION, 2026-08-04.** I previously wrote that reinforced
+blocks are Vault loot and the Wall is therefore gated behind unbuilt D2. **That
+was wrong.** It repeated the *proposal* in `10-DEPTH-LOOP.md` as if it were the
+shipped state. Checked against the jar: SecurityCraft has **846 recipes, 665 of
+them reinforced blocks, and ZERO worldgen entries.**
 
-That is not a mod problem, it is the same gap as everywhere else: the payoff was
-never built. Until D2 exists the Wall is a **tax** (everyone puts a door on)
-rather than a specialisation. Building D2 turns it into a path in one step, which
-is a strong argument for D2 being next.
+So the Wall is fully craftable today. Ethan's actual report — "no one has run
+into anything from security" — is explained by the second half of that number:
+**SecurityCraft generates nothing in the world.** There is nothing to run into.
+It is a build-it mod in a pack where everything else is a find-it mod, so it is
+invisible by default rather than gated.
+
+That makes it a **signage** problem, not a content one, and the guidebook's Wall
+entry is the fix. It stays a path.
 
 **⚠️ The Beasts are not a path.** Ice and Fire is listed as "dragons as a
 late-game target", but there are no rungs — a dragon is a wall, not a ladder,
@@ -194,9 +199,11 @@ Ranked by effect per hour, all consistent with the existing plan:
 
 ## 5. Open for Ethan
 
-1. **Should paths be exclusive?** Nothing currently stops one player walking all
-   five. Soft exclusivity (time and scarcity) is probably enough; hard
-   exclusivity would need a class-style commitment and is a bigger ruling.
+1. **Exclusivity ✅ RULED, 2026-08-04 — one walker per path, release to free it.**
+   Ethan called it "selfish design". It is the opposite: it is the only thing
+   that makes the DENIALS bite. A path that grants throughput and denies you a
+   body only matters if the person who has a body is somebody else. Built and
+   enforced server-side; `/path release` relinquishes.
 2. **Is the Wall a path or a tax?** It only prevents loss. That may make it
    everyone's baseline rather than anyone's specialisation.
 3. **Do the Beasts get rungs, or become a trophy?**
