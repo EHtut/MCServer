@@ -31,6 +31,18 @@ watched happening**.
 | **C8** cast/PvP/rates | ✅ | ❌ | **needs two players** |
 | **H1b** density | ❌ | — | deliberately unbuilt |
 
+### ⚠️ The table above was last updated at 11:11 on 2026-08-05
+
+Fourteen code commits landed after it. Everything from the polish pass — the
+100-block ring, the look-back, the whispers and nausea, the self-correcting stat
+block, the Missioner-minion attribution, the Revervox removal — is **built and
+loading clean but was never watched working**, and none of it is reflected in the
+✅ column. Treat every tick as "true as of 11:11".
+
+Also honest: the retained logs cover only 12:41→13:17 and contain no player
+joins. The verifications recorded above did happen, but **no evidence of them
+survives on disk** — so on return, re-prove rather than re-read.
+
 ### What to test first when everyone is back
 
 1. **PvP defence (C8).** The one thing that cannot be tested alone, and the one
@@ -45,9 +57,14 @@ watched happening**.
 
 ### Known-unverified, by design
 
-- **`player.persistentData` across death** — never tested. It does not matter:
-  build rule 5 puts all per-player state on `server.persistentData` keyed by
-  UUID, so nothing depends on the answer.
+- ⚠️ **`player.persistentData` across death — the note here was wrong TWICE.** It
+  claimed nothing depends on it and that it was unanswered. Both false. **Path
+  membership lives there** (`paths.js` `pathOf`, and the gate on every stalker
+  summon), so it governs payouts AND the whole stalker system. And the answer was
+  already in this repo: `the_hunt.js` records that NeoForge's persistent data
+  survives death only via its `PlayerPersisted` subtag, while **KubeJS's tag is
+  copied wholesale on `PlayerEvent.Clone`** — so it very likely does survive.
+  Still never observed directly.
 - **The death-source attacker accessor.** `src.type()` works; `getEntity()`
   throws. `attackerOf()` walks six candidates and logs which one wins on first
   use — so the first real Harvest death will tell us, in the log, for free.
@@ -197,7 +214,7 @@ within tolerance of 8% / 18% / 28%. **Measured, not reasoned.**
 
 ## C4 — Stop the six spawning naturally
 
-**Build:** six `*_SPAWNING_ENABLED = false` in
+**Build:** five `*_SPAWNING_ENABLED = false` in
 `borninconfiguration-general.toml`, tracked into `pack/config/`.
 
 ### ⚠️ C4 RE-AUDITED 2026-08-05 — the first pass was a FALSE PASS
@@ -239,14 +256,14 @@ independently, tell you a comfortable lie.
 - if summoning is also gated, C5 changes shape entirely — **find out here, not
   at C7**
 
-**Rollback:** six `true`s.
+**Rollback:** five `true`s.
 
 ---
 
 ## C5 — The unkillable wrapper
 
 **Build:** summon a marked stalker (custom name, scale bump, owner UUID on its
-persistent data). Cancel damage below 30% health → flee → discard. Immunity to
+persistent data). Cancel damage below 35% health → flee → discard. Immunity to
 every death route. Never drops loot or XP.
 
 **Audit gate — adversarial, one path only.** It must survive: melee burst, bow,

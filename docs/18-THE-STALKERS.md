@@ -140,7 +140,7 @@ stalker blinks in and out all evening. The floor damps most of this on its own.
 
 ## 4. THE HARVEST — the only time it can die
 
-In phases 1–3 the stalker **cannot be killed**: below 30% health, damage is
+In phases 1–3 the stalker **cannot be killed**: below **35%** health, damage is
 cancelled and it leaves. Immune to void, fire, fall, suffocation, `/kill`,
 chunk-unload. If it dies once in these phases, everyone learns it is killable.
 
@@ -243,9 +243,21 @@ on that axis. Kill its natural spawn, and **give every stalker a custom name, a
 size bump and a mark** so a common species still reads as singular.
 
 🎯 `borninconfiguration-general.toml` exposes **46 per-mob `*_SPAWNING_ENABLED`
-toggles** and **63 `*_HEALTH` knobs**. Six flips stop natural spawning at the
-mod's own switch, with nothing in front of the summon path — no In Control rule
-needed for the casting.
+toggles** and **63 `*_HEALTH` knobs** — the mod's own switch, at the natural-spawn
+site, with nothing in front of the summon path.
+
+⚠️ **It is FIVE flips, not six, and one casting has no switch at all.**
+`LORD_PUMPKIN_HEAD_SPAWNING_ENABLED` **does not exist** in that config — Lord
+Pumpkinhead only has `_ARMOR/_DAMAGE/_HEALTH/_KNOCKBACK/_SPEED`. It never needed
+a flip during the C4 re-audit because it was the *no-toggle control*, and so it
+never got one.
+
+**Consequence, unfixed:** the Blade's 600 HP stalker still spawns naturally, so a
+Blade walker can meet a second, unowned Lord Pumpkinhead — precisely the "a common
+species must read as singular" failure this section exists to prevent. The fix is
+an In Control deny keyed on that one entity, which is safe: In Control filters
+`finalizeSpawn`, and our summon path bypasses it. **Left for Ethan** — it is a
+live behaviour change and he was already travelling.
 
 ---
 

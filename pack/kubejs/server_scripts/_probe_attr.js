@@ -1,4 +1,6 @@
-// _probe_attr.js - THROWAWAY, kept only for the cross-file check.
+// _probe_attr.js - NOT a throwaway. This is the cross-file seam assertion.
+// It began as a C0 probe, which is why the filename is wrong, but it is the
+// only thing that would catch VELDORA silently failing to publish.
 // C1 publishes onto VELDORA and C2/C3/C7 read it from other files. If that ever
 // stops working the symptom is silent: consumers read undefined, treat it as
 // notoriety 0, and everything looks healthy at 8% drops forever. So it says so.

@@ -32,14 +32,12 @@
   var STATE = 'veldora_stalker_state'     // server.persistentData: uuid -> { phase }
   var FLEE_AT = 0.35
   var SCALE = 1.25
-  // A mob closes roughly 10 blocks in 2 seconds, so a 2s sweep was letting a
-  // Companion cross from MIN_DIST to arm's reach between checks. The distance
-  // ring runs every second; the EXPENSIVE part (an 80-block entity scan for
-  // duplicates) only every fifth pass, since orphans do not appear mid-second.
+  // A mob closes roughly 10 blocks in 2 seconds, so a 2s sweep let a Companion
+  // cross from the inner ring to arm's reach between checks. The ring runs every
+  // second; the EXPENSIVE part - the duplicate scan, a 148-block RADIUS box that
+  // has to cover the whole ring - runs every tenth pass, because orphans only
+  // ever arise across restarts and dimension changes, never mid-second.
   var SWEEP = 20                          // ticks between phase sweeps (1s)
-  // The scan box grew with the ring (176 blocks a side), so run it less often.
-  // Orphans do not appear mid-second; duplicates only ever arise across restarts
-  // or dimension changes.
   var CULL_EVERY = 10                     // sweeps between duplicate scans
   var HYST = 3                            // notoriety points of stickiness at every edge
   var HELPER_AT = 0.35                    // owner health fraction that summons the Helper
@@ -53,9 +51,9 @@
   // REACH in the first place. Distance is the safety, the damage cancel below is
   // the guarantee, and clearing the target is only cosmetic.
   // DISTANCE IS DYNAMIC (Ethan, 2026-08-05): "creeping closer the lower the
-  // player's health is... lets do 30, at the edge of the player's chunk."
+  // player's health is." Settled at 100 after 30 and 128 were both tried.
   //
-  // At full health it keeps two chunks back and simply paces you. As you weaken
+  // At full health it keeps six chunks back and simply paces you. As you weaken
   // it closes - not to attack (it cannot; damage to its owner is cancelled) but
   // because it is paying attention. Being hurt is what makes it interested, which
   // is the same instinct as the Helper and reads as appetite rather than AI.
@@ -220,21 +218,35 @@
     return typeof v === 'number' && isFinite(v) && v >= 0 && v <= DMG_MAX
   }
 
+  var DAMAGE_CANDS = [
+    ['event.damage', function (e) { return e.damage }],
+    ['event.getDamage()', function (e) { return e.getDamage() }],
+    ['event.amount', function (e) { return e.amount }],
+    ['event.getAmount()', function (e) { return e.getAmount() }],
+    ['event.source.damage', function (e) { return e.source.damage }],
+  ]
+  var damagePick = -1
   function damageOf(event) {
-    var cands = [
-      ['event.damage', function () { return event.damage }],
-      ['event.getDamage()', function () { return event.getDamage() }],
-      ['event.amount', function () { return event.amount }],
-      ['event.getAmount()', function () { return event.getAmount() }],
-      ['event.source.damage', function () { return event.source.damage }],
-    ]
+    // Cached like attackerOf: this runs on every hit to a stalker and on every
+    // player hit that reaches the Helper branch - 20/s per burning player - and
+    // several candidates THROW, which is the expensive part in Rhino.
+    if (damagePick >= 0) {
+      try {
+        var q = DAMAGE_CANDS[damagePick][1](event)
+        if (plausible(q)) return q
+      } catch (x) { }
+      damagePick = -1                                  // miss: re-probe, never assume
+    }
+    var cands = DAMAGE_CANDS.map(function (c) {
+      return [c[0], function () { return c[1](event) }]
+    })
     var chosen = null, chosenLabel = ''
     var report = []
     for (var i = 0; i < cands.length; i++) {
       var raw
       try { raw = cands[i][1]() } catch (x) { raw = '<threw>' }
       report.push(cands[i][0] + '=' + raw)
-      if (chosen === null && plausible(raw)) { chosen = raw; chosenLabel = cands[i][0] }
+      if (chosen === null && plausible(raw)) { chosen = raw; chosenLabel = cands[i][0]; damagePick = i }
     }
     if (!damageAccessorLogged) {
       damageAccessorLogged = true
@@ -268,7 +280,14 @@
         var q = ATTACKER_CANDS[attackerPick][1](src)
         if (q && typeof q !== 'function' && alive(q)) return q
       } catch (x) { }
-      return null
+      // FALL THROUGH, do not return null. The cache locks onto whichever
+      // accessor answered FIRST - and if the first live event of a boot was
+      // player-dealt damage, it can lock to source.player, after which every MOB
+      // attacker would read as null forever. Indistinguishable from environmental
+      // damage: the Companion would never retaliate and the Missioner-minion
+      // Harvest attribution would silently never fire.
+      // A miss re-probes and re-picks instead.
+      attackerPick = -1
     }
     var cands = ATTACKER_CANDS.map(function (c) {
       return [c[0], function () { return c[1](src) }]
@@ -338,7 +357,9 @@
     var zeroed = false
     var cands = [
       function () { event.experience = 0; return event.experience === 0 },
-      function () { event.setExperience(0); return true },
+      // was `return true` - asserting rather than checking, which is the exact
+      // class of bug wipeXp's verification loop exists to avoid
+      function () { event.setExperience(0); return event.experience === 0 },
       function () { event.xp = 0; return event.xp === 0 },
     ]
     for (var i = 0; i < cands.length; i++) { try { if (cands[i]()) { zeroed = true; break } } catch (x) { } }

@@ -178,6 +178,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var hc = rec.getInt('harvestCount')
     var next = won ? 0 : hc + 1
     var day = dayNow(server)
+    // dayNow returns NULL on failure, and Rhino coerces null to 0 for an int
+    // parameter - writing lastHarvestDay = 0 and handing this player a floor
+    // equal to the entire age of the world. That is exactly the bug dayNow's own
+    // comment describes, reintroduced at the ONE site that writes the anchor.
+    // ensure() guards it; this did not.
+    if (day === null) {
+      console.error('[notoriety] !! HARVEST NOT RECORDED for ' + player.username +
+        ' - world clock unreadable. Cycle did not advance, absence not set.')
+      return null
+    }
     rec.putInt('lastHarvestDay', day)
     rec.putInt('harvestCount', next)
     writeRecord(server, uuid, rec)
@@ -224,8 +234,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         (b.dominant === 'floor' ? '  §a<- dominant' : '')))
       p.tell(Text.of('§7  world day   §f' + b.day + ' §8(last harvest: day ' + b.lastHarvestDay + ')'))
       p.tell(Text.of('§7  harvests    §f' + b.harvestCount + ' §8(next rate ' + b.rate + '/day)'))
-      p.tell(Text.of('§8  drop chance would be ' +
-        Math.round((0.08 + 0.002 * b.value) * 1000) / 10 + '%  §8(not wired until C2)'))
+      p.tell(Text.of('§8  your kills pay ' +
+        Math.round((0.08 + 0.002 * b.value) * 1000) / 10 + '%'))
       return 1
     }))
 
