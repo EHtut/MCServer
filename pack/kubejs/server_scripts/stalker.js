@@ -37,6 +37,24 @@
   var HELPER_AT = 0.35                    // owner health fraction that summons the Helper
   var HELPER_STAY = 100                   // ticks the Helper lingers (5s)
   var LEASH = 24                          // blocks before the Companion is pulled back
+  var HARVEST = 'veldora_harvest'         // entity flag: this one CAN die
+  var ABSENT_DAYS = 30                    // gone this long after a Harvest, either way
+
+  // "it is fat too" - the Harvest instance has been eating for a hundred days.
+  // Without this the fight is trivial against a player carrying C3's bonuses.
+  var HARVEST_MULT = { health: 1.6, damage: 1.3, armor: 1.2 }
+
+  // ONE LINE. Not a stats book - that was clever rather than good. Its whole job
+  // is to make the player ask what this was all for, at the exact moment the game
+  // takes their path away and asks them to choose again.
+  var FRAGMENTS = [
+    'It was never hungry.',
+    'You were chosen the day you chose.',
+    'There were five others. It ate them first.',
+    'It has done this before. You have done this before.',
+    'It did not want you strong. It wanted you worth taking.',
+    'Nothing was ever watching. It was only ever waiting.',
+  ]
 
   // Explicit stat block per casting. NOT optional, and not merely tuning:
   // a KubeJS createEntity().spawn() bypasses finalizeSpawn, which is where Born
@@ -170,6 +188,12 @@
   EntityEvents.beforeHurt(function (event) {
     var e = event.entity
     if (!isStalker(e)) return
+
+    // THE HARVEST is the one time it can die. The thing that was invulnerable for
+    // weeks becomes mortal at the exact moment it turns on you - which is why the
+    // Harvest must not be guaranteed. A fight you cannot win is not a fight.
+    if (isHarvestInstance(e)) return
+
     if (isFleeing(e)) { event.cancel(); return }     // nothing touches it on the way out
 
     var hp = 20
@@ -193,14 +217,49 @@
     event.cancel()
   })
 
-  // The invariant's alarm.
   EntityEvents.death(function (event) {
-    if (!isStalker(event.entity)) return
-    console.error('[stalker] !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    console.error('[stalker] !! INVARIANT BREACH: a stalker DIED.')
-    console.error('[stalker] !! owner=' + ownerOf(event.entity) + ' type=' + event.entity.type)
-    try { console.error('[stalker] !! source=' + event.source.type()) } catch (x) { }
-    console.error('[stalker] !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    var e = event.entity
+    if (!SERVER) return
+
+    // --- a stalker died ---
+    if (isStalker(e)) {
+      var owner = ownerOf(e)
+      if (isHarvestInstance(e)) {
+        // WON. Only its owner collects - a passer-by who lands the last hit does
+        // not take someone else's ending.
+        var p = null
+        try { p = SERVER.getPlayer(owner) } catch (x) { }
+        if (p) { harvestWon(SERVER, p, e); return }
+        console.warn('[stalker] harvest instance died but owner ' + owner + ' is offline')
+        return
+      }
+      console.error('[stalker] !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+      console.error('[stalker] !! INVARIANT BREACH: a NON-harvest stalker DIED.')
+      console.error('[stalker] !! owner=' + owner + ' type=' + e.type)
+      try { console.error('[stalker] !! source=' + event.source.type()) } catch (x) { }
+      console.error('[stalker] !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+      return
+    }
+
+    // --- a player died: was it OUR doing? ---
+    var isPlayer = false
+    try { isPlayer = !!e && !!e.username } catch (x) { }
+    if (!isPlayer) return
+    if (phaseStored(SERVER, e) !== 'harvest') return
+
+    // ATTRIBUTION. The wipe fires only on the stalker's kill. When the source is
+    // unclear we fail toward the LESSER penalty - a fall during a Harvest must
+    // not cost someone everything.
+    var killer = attackerOf(event)
+    if (!killer || !isStalker(killer) || !isHarvestInstance(killer)) {
+      console.info('[stalker] ' + e.username + ' died mid-Harvest but NOT to the stalker - no wipe')
+      return
+    }
+    if (ownerOf(killer) !== e.username) {
+      console.info('[stalker] ' + e.username + ' was killed by another player stalker - no wipe')
+      return
+    }
+    harvestLost(SERVER, e, killer)
   })
 
   // ------------------------------------------------------------------ summoning
@@ -240,6 +299,75 @@
     return e
   }
 
+  // ----------------------------------------------------------- C7: the Harvest
+  function summonHarvest(player, pathKey) {
+    var e = summon(player, pathKey, 6)
+    if (!e) return null
+    e.persistentData.putBoolean(HARVEST, true)
+    var st = STATS[pathKey]
+    if (st) {
+      try { e.getAttribute('minecraft:generic.max_health').setBaseValue(st.health * HARVEST_MULT.health) } catch (x) { }
+      try { e.getAttribute('minecraft:generic.attack_damage').setBaseValue(st.damage * HARVEST_MULT.damage) } catch (x) { }
+      try { e.getAttribute('minecraft:generic.armor').setBaseValue(st.armor * HARVEST_MULT.armor) } catch (x) { }
+      try { e.setHealth(st.health * HARVEST_MULT.health) } catch (x) { }
+    }
+    try { e.setCustomName(Text.of('§4§l' + CAST[pathKey][1])) } catch (x) { }
+    try { e.setTarget(player) } catch (x) { }
+    return e
+  }
+
+  function closeHarvest(server, player, won) {
+    var b = readNotoriety(server, player)
+    var day = b ? b.day : 0
+    if (typeof VELDORA !== 'undefined' && typeof VELDORA.recordHarvest === 'function') {
+      VELDORA.recordHarvest(server, player, won)
+    } else {
+      console.error('[stalker] !! VELDORA.recordHarvest missing - the cycle did NOT advance')
+    }
+    setAbsentUntil(server, player, day + ABSENT_DAYS)
+    phaseStore(server, player, 'absence')
+    dismiss(String(player.uuid))
+  }
+
+  function harvestWon(server, player, entity) {
+    var pathKey = ''
+    try { pathKey = entity.persistentData.getString(PATHKEY) } catch (x) { }
+
+    // the line, first - before anything mechanical happens
+    var line = FRAGMENTS[Math.floor(Math.random() * FRAGMENTS.length)]
+    player.tell(Text.of(''))
+    player.tell(Text.of('§8§o' + line))
+    player.tell(Text.of(''))
+
+    // materials: a garnish, deliberately the least interesting part
+    try { server.runCommandSilent('give ' + player.username + ' minecraft:diamond 3') } catch (x) { }
+
+    // ESCROW - the real reward is losing the path and having to choose again
+    var freed = ''
+    if (typeof VELDORA !== 'undefined' && VELDORA.paths) {
+      freed = VELDORA.paths.escrowFor(server, player)
+    } else {
+      console.error('[stalker] !! VELDORA.paths missing - the path was NOT escrowed')
+    }
+    if (freed) {
+      var nm = VELDORA.paths.nameOf(freed)
+      player.tell(Text.of('§7You set down §f' + nm + '§7.'))
+      player.tell(Text.of('§7It is held for you. Choose again with §f/path§7 - the same, or another.'))
+      player.tell(Text.of('§8Walk away without choosing and it opens to the others.'))
+      server.tell(Text.of('§8' + player.username + ' killed what was hunting them, and set down ' + nm + '.'))
+    }
+    closeHarvest(server, player, true)
+  }
+
+  function harvestLost(server, player, entity) {
+    wipeXp(server, player)
+    player.tell(Text.of(''))
+    player.tell(Text.of('§8§oIt took what it came for.'))
+    player.tell(Text.of(''))
+    closeHarvest(server, player, false)
+    try { if (alive(entity)) entity.discard() } catch (x) { }
+  }
+
   // ------------------------------------------------------------- C6: the phases
   function stateAll(server) { return server.persistentData.getCompound(STATE) }
 
@@ -277,12 +405,59 @@
     return now
   }
 
-  function notorietyOf(server, player) {
+  function readNotoriety(server, player) {
     if (typeof VELDORA === 'undefined' || typeof VELDORA.notoriety !== 'function') return null
     try {
       var b = VELDORA.notoriety(server, player)
-      return (b && typeof b.value === 'number' && isFinite(b.value)) ? b.value : null
+      return (b && typeof b.value === 'number' && isFinite(b.value)) ? b : null
     } catch (x) { return null }
+  }
+  function notorietyOf(server, player) {
+    var b = readNotoriety(server, player)
+    return b === null ? null : b.value
+  }
+
+  // ---- C7 state: the 30-day absence -----------------------------------------
+  function absentUntil(server, player) {
+    var all = stateAll(server), u = String(player.uuid)
+    return all.contains(u) ? all.getCompound(u).getInt('absentUntil') : 0
+  }
+  function setAbsentUntil(server, player, day) {
+    var all = stateAll(server), u = String(player.uuid)
+    var rec = all.getCompound(u)
+    rec.putInt('absentUntil', day)
+    all.put(u, rec)
+    server.persistentData.put(STATE, all)
+  }
+
+  function isHarvestInstance(e) {
+    try { return !!e && e.persistentData.getBoolean(HARVEST) } catch (x) { return false }
+  }
+
+  // The wipe. Verified at the point of USE - "I set it to 0" and "it is 0" are
+  // different claims, and a silent failure here would let a player keep every
+  // level after losing everything.
+  function wipeXp(server, player) {
+    var before = -1
+    try { before = player.xpLevel } catch (x) { }
+    var cands = [
+      ['xp set command', function () { server.runCommandSilent('xp set ' + player.username + ' 0 levels') }],
+      ['xpLevel setter', function () { player.xpLevel = 0 }],
+      ['setExperienceLevels', function () { player.setExperienceLevels(0) }],
+    ]
+    for (var i = 0; i < cands.length; i++) {
+      try {
+        cands[i][1]()
+        var after = player.xpLevel
+        if (typeof after === 'number' && after === 0) {
+          console.info('[stalker] XP wiped for ' + player.username + ' (' + before + ' -> 0) via ' + cands[i][0])
+          return true
+        }
+      } catch (x) { }
+    }
+    console.error('[stalker] !! XP WIPE FAILED for ' + player.username + ' - still at ' + before)
+    console.error('[stalker] !! The Harvest took nothing. That is a BUG, not a mercy.')
+    return false
   }
 
   function dismiss(uuid) {
@@ -294,13 +469,24 @@
   var warnedNoC1 = false
   function sweepPlayer(server, player) {
     var uuid = String(player.uuid)
-    var n = notorietyOf(server, player)
-    if (n === null) {
+    var b = readNotoriety(server, player)
+    if (b === null) {
       if (!warnedNoC1) {
         warnedNoC1 = true
         console.warn('[stalker] C1 unreadable - NO phase logic is running for anyone.')
         console.warn('[stalker] That is a BUG, not a mode.')
       }
+      return
+    }
+    var n = b.value
+
+    var cur0 = live[uuid]
+    if (!alive(cur0)) delete live[uuid]
+
+    // THE 30-DAY ABSENCE after a Harvest, won or lost. It overrides every phase:
+    // enough for you to forget what they did.
+    if (b.day < absentUntil(server, player)) {
+      if (live[uuid]) dismiss(uuid)
       return
     }
 
@@ -314,9 +500,25 @@
     var cur = live[uuid]
     if (!alive(cur)) { delete live[uuid]; cur = null }
 
-    // THE ABSENCE, and the Harvest (C7's business): nothing of ours stands here.
-    if (phase === 'absence' || phase === 'harvest') {
+    // THE ABSENCE: gone. no warning, no message.
+    if (phase === 'absence') {
       if (cur) dismiss(uuid)
+      return
+    }
+
+    // THE HARVEST: it comes for you, and now it can die.
+    if (phase === 'harvest') {
+      if (cur && isHarvestInstance(cur)) return
+      if (cur) dismiss(uuid)                       // a companion does not become the harvest
+      var hk = ''
+      try { hk = player.persistentData.getString('veldora_path') } catch (x) { }
+      if (!hk || !CAST[hk]) return
+      var he = summonHarvest(player, hk)
+      if (he) {
+        live[uuid] = he
+        console.info('[stalker] HARVEST begun for ' + player.username + ' (' + hk + ')')
+        player.tell(Text.of('§4§l' + CAST[hk][1] + '§c has come for you.'))
+      }
       return
     }
 
@@ -404,6 +606,8 @@
       '% health, ' + Object.keys(CAST).length + ' castings, scale x' + SCALE)
     console.info('[stalker] C6 active - sweep ' + SWEEP + 't, hysteresis ' + HYST +
       ', helper at ' + Math.round(HELPER_AT * 100) + '% owner health')
+    console.info('[stalker] C7 active - harvest x' + HARVEST_MULT.health +
+      ' health, ' + ABSENT_DAYS + '-day absence, ' + FRAGMENTS.length + ' fragments')
     console.info('[stalker] a stalker DEATH will log an INVARIANT BREACH banner')
     event.server.scheduleInTicks(SWEEP, function () { sweep(event.server) })
   })
@@ -426,6 +630,25 @@
       return 1
     }))
 
+    root = root.then(Commands.literal('harvest').executes(function (ctx) {
+      var p = ctx.source.player
+      if (!p) return 0
+      var srv = ctx.source.server
+      var hk = ''
+      try { hk = p.persistentData.getString('veldora_path') } catch (x) { }
+      if (!hk || !CAST[hk]) { p.tell(Text.of('§cWalk a path first: /path <name>')); return 0 }
+      dismiss(String(p.uuid))
+      setAbsentUntil(srv, p, 0)
+      phaseStore(srv, p, 'harvest')
+      var e = summonHarvest(p, hk)
+      if (!e) { p.tell(Text.of('§ccould not summon')); return 0 }
+      live[String(p.uuid)] = e
+      p.tell(Text.of('§4§l' + CAST[hk][1] + '§c has come for you.'))
+      p.tell(Text.of('§8It CAN die now. Kill it, or let it kill you - both close the cycle.'))
+      p.tell(Text.of('§8health §f' + Math.round(maxHealthOf(e)) + '§8 (x' + HARVEST_MULT.health + ')'))
+      return 1
+    }))
+
     root = root.then(Commands.literal('phase').executes(function (ctx) {
       var p = ctx.source.player
       if (!p) return 0
@@ -438,8 +661,14 @@
       p.tell(Text.of('§7stored    §f' + (stored || '§8none yet')))
       p.tell(Text.of('§8  hysteresis ' + HYST + ': the stored phase only changes once'))
       p.tell(Text.of('§8  notoriety is ' + HYST + ' clear of its band'))
+      var au = absentUntil(srv, p)
+      var bb = readNotoriety(srv, p)
+      if (bb && bb.day < au) {
+        p.tell(Text.of('§7absent    §funtil day ' + au + ' §8(today is ' + bb.day + ')'))
+      }
       var cur = live[String(p.uuid)]
-      p.tell(Text.of('§7stalker   §f' + (alive(cur) ? cur.type : '§8none present')))
+      p.tell(Text.of('§7stalker   §f' + (alive(cur) ? cur.type +
+        (isHarvestInstance(cur) ? ' §4§lHARVEST' : '') : '§8none present')))
       return 1
     }))
 

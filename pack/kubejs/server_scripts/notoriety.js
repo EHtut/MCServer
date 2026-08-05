@@ -139,6 +139,25 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   VELDORA.notoriety = function (server, player) { return breakdown(server, player) }
   VELDORA.phaseLabel = phaseLabel
 
+  // C7 writes here, and ONLY C7. lastHarvestDay is the anchor the whole floor is
+  // derived from, so a stray write anywhere else would silently reset every
+  // player's clock. The rate resets on a win and escalates on a loss - it has
+  // tasted you, so it comes back sooner.
+  VELDORA.recordHarvest = function (server, player, won) {
+    var uuid = String(player.uuid)
+    var rec = ensure(server, player)
+    var hc = rec.getInt('harvestCount')
+    var next = won ? 0 : hc + 1
+    var day = dayNow(server)
+    rec.putInt('lastHarvestDay', day)
+    rec.putInt('harvestCount', next)
+    writeRecord(server, uuid, rec)
+    console.info('[notoriety] HARVEST ' + (won ? 'WON' : 'LOST') + ' by ' + player.username +
+      ' - day ' + day + ', harvestCount ' + hc + ' -> ' + next +
+      ', next rate ' + rateFor(next) + '/day')
+    return { day: day, harvestCount: next, rate: rateFor(next) }
+  }
+
   ServerEvents.loaded(function (event) {
     var ok = (typeof VELDORA.notoriety === 'function')
     console.info('[notoriety] C1 active - ' + (ok

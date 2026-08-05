@@ -201,6 +201,49 @@
     return cur
   }
 
+  // ---------------------------------------------------------------------------
+  // ESCROW — C7. Killing your stalker costs you your path.
+  //
+  // Ethan, 2026-08-05: "escrow". The path is HELD while its former walker
+  // decides, and opens to everyone only if they walk away without choosing. The
+  // stake stays real, but it is theirs to lose rather than a race they can be
+  // sniped in while reading a single line of text.
+  //
+  // The marker is stored in the claim slot itself, so it needs no second store
+  // and - importantly - paths.js's payout guard already compares the claim to the
+  // killer's name, which means an escrowed path STOPS PAYING immediately. You
+  // gave it up; you do not keep earning from it while you think.
+  // ---------------------------------------------------------------------------
+  const ESCROW = '!escrow!'
+
+  function escrowHolder(value) {
+    return (value && value.indexOf(ESCROW) === 0) ? value.substring(ESCROW.length) : ''
+  }
+
+  function escrowFor(server, player) {
+    var cur = pathOf(player)
+    if (!cur) return ''
+    setHolder(server, cur, ESCROW + player.username)
+    try { player.persistentData.putString(KEY, '') } catch (e) { }
+    return cur
+  }
+
+  // C7 lives in stalker.js and needs to reach the claim store. `global` is
+  // rejected in server scripts, so the shared VELDORA namespace carries it -
+  // the same seam C1 proved works across files.
+  if (typeof VELDORA !== 'undefined') {
+    VELDORA.paths = {
+      holderOf: holderOf,
+      setHolder: setHolder,
+      pathOf: pathOf,
+      escrowFor: escrowFor,
+      escrowHolder: escrowHolder,
+      nameOf: function (key) { return (PATHS[key] && PATHS[key].name) || key },
+    }
+  } else {
+    console.error('[paths] VELDORA namespace missing - C7 escrow will NOT work')
+  }
+
   // ===========================================================================
   // commands
   // ===========================================================================
@@ -293,11 +336,29 @@
         if (!p) return 0
         var srv = ctx.source.server
         var held = holderOf(srv, key)
-        if (held && held !== p.username) {
+        var esc = escrowHolder(held)
+        if (esc) {
+          // Held in escrow. Only the person deciding may take it back.
+          if (esc !== p.username) {
+            p.tell('§c' + PATHS[key].name + ' is held.')
+            p.tell('§7' + esc + ' §7set it down and has not yet chosen. Wait.')
+            return 0
+          }
+          // it is theirs to reclaim - fall through
+        } else if (held && held !== p.username) {
           p.tell('§c' + PATHS[key].name + ' is walked by ' + held + '§c.')
           p.tell('§7Only one may walk each. They must §frelease§7 it first.')
           return 0
         }
+
+        // Choosing a DIFFERENT path while holding one in escrow opens the old one.
+        Object.keys(PATHS).forEach(function (other) {
+          if (other === key) return
+          if (escrowHolder(holderOf(srv, other)) === p.username) {
+            setHolder(srv, other, '')
+            srv.tell('§8' + PATHS[other].name + ' is open. ' + p.username + ' did not go back.')
+          }
+        })
         if (pathOf(p) === key) { p.tell('§7You already walk that path.'); return 0 }
         var old = releasePath(srv, p)          // a walker holds exactly one
         p.persistentData.putString(KEY, key)
