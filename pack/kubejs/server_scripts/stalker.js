@@ -514,6 +514,46 @@
     return dot > Math.cos(VIEW_HALF_ANGLE * Math.PI / 180)
   }
 
+  // IT LOOKS BACK (Ethan, 2026-08-05).
+  //
+  // inView() was built to decide when a teleport is safe. It answers a second
+  // question for free: whether you are looking AT it. So when you are, it turns
+  // and faces you - at any distance, across any gap.
+  //
+  // The one-second sweep is not a limitation here, it is the whole effect. You
+  // look, there is a beat, and THEN it turns. Instant would read as a scripted
+  // trigger; the delay reads as something noticing.
+  var faceLogged = false
+  function faceOwner(player, e) {
+    var dx, dy, dz
+    try {
+      dx = player.x - e.x
+      dy = (player.y + 1.6) - (e.y + 1.6)
+      dz = player.z - e.z
+    } catch (x) { return }
+    var flat = Math.sqrt(dx * dx + dz * dz)
+    if (flat < 0.01) return
+    var yaw = Math.atan2(-dx, dz) * 180 / Math.PI
+    var pitch = -Math.atan2(dy, flat) * 180 / Math.PI
+    var cands = [
+      ['lookAt(player)', function () { e.lookAt(player, 360, 360); return true }],
+      ['setRotation', function () { e.setRotation(yaw, pitch); return true }],
+      ['setYaw/setPitch', function () { e.setYaw(yaw); e.setPitch(pitch); return true }],
+      ['yaw/pitch props', function () { e.yaw = yaw; e.pitch = pitch; return true }],
+      ['setYHeadRot', function () { e.setYHeadRot(yaw); e.setYRot(yaw); return true }],
+    ]
+    var ok = false
+    for (var i = 0; i < cands.length; i++) {
+      try { if (cands[i][0] && cands[i][1]()) { ok = true;
+        if (!faceLogged) { faceLogged = true; console.info('[stalker] look-back via ' + cands[i][0]) }
+        break } } catch (x) { }
+    }
+    if (!ok && !faceLogged) {
+      faceLogged = true
+      console.warn('[stalker] no way to rotate an entity found - it will not look back')
+    }
+  }
+
   function keepDistance(player, e) {
     var want = DIST_NEAR + (DIST_FAR - DIST_NEAR) * healthFrac(player)
     var dx, dz, d
@@ -521,6 +561,10 @@
       dx = e.x - player.x; dz = e.z - player.z
       d = Math.sqrt(dx * dx + dz * dz)
     } catch (x) { return }
+    // Looked at => look back, and do NOT reposition. Both halves of that matter:
+    // it holds still under your gaze and it meets it.
+    if (inView(player, e)) { faceOwner(player, e); return }
+
     if (Math.abs(d - want) <= BAND) return          // close enough; leave it be
 
     // Past the boundary it must be snapped - it is out of the ticking set and
