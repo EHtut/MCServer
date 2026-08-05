@@ -1141,11 +1141,6 @@ hash = "3e88d197a1ef48696cee4a7691155b50c27b8dd3bf14a1872780918e2362a4be"
 metafile = true
 
 [[files]]
-file = "mods/revervox.pw.toml"
-hash = "8ad2b8f1f14642897e3ffbd984687257b6da14f51ac89612341abc28ff2c7eb0"
-metafile = true
-
-[[files]]
 file = "mods/rhino.pw.toml"
 hash = "e55ca32b338a0e0540f4fec5170675d860566255ae0f45692a00cb4ebf2eb535"
 metafile = true

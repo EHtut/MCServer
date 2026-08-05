@@ -10,12 +10,6 @@
     "result": "default"
   },
   {
-    "mod": [
-      "revervox_mod"
-    ],
-    "result": "deny"
-  },
-  {
     "mob": [
       "minecraft:skeleton",
       "minecraft:stray",
@@ -82,7 +76,6 @@
       "legendary_monsters",
       "sculks_of_arda",
       "grim_and_bleak",
-      "revervox_mod",
       "frostiful",
       "friendsandfoes",
       "rottencreatures",

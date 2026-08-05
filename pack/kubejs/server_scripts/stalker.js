@@ -37,7 +37,10 @@
   // ring runs every second; the EXPENSIVE part (an 80-block entity scan for
   // duplicates) only every fifth pass, since orphans do not appear mid-second.
   var SWEEP = 20                          // ticks between phase sweeps (1s)
-  var CULL_EVERY = 5                      // sweeps between duplicate scans
+  // The scan box grew with the ring (176 blocks a side), so run it less often.
+  // Orphans do not appear mid-second; duplicates only ever arise across restarts
+  // or dimension changes.
+  var CULL_EVERY = 10                     // sweeps between duplicate scans
   var HYST = 3                            // notoriety points of stickiness at every edge
   var HELPER_AT = 0.35                    // owner health fraction that summons the Helper
   var HELPER_STAY = 100                   // ticks the Helper lingers (5s)
@@ -56,10 +59,27 @@
   // it closes - not to attack (it cannot; damage to its owner is cancelled) but
   // because it is paying attention. Being hurt is what makes it interested, which
   // is the same instinct as the Helper and reads as appetite rather than AI.
-  var DIST_FAR = 30                       // at full health - the edge of the chunk
-  var DIST_NEAR = 8                       // at death's door
-  var BAND = 6                            // slack before we bother repositioning
-  var TELEPORT_AT = 48                    // beyond this it is surely off-screen: snap
+  var DIST_FAR = 128                      // at full health (Ethan, 2026-08-05)
+  var DIST_NEAR = 12                      // at death's door
+  var BAND = 14                            // slack before we bother repositioning
+  // Must exceed DIST_FAR or EVERY correction is a snap. It was 48 against a
+  // 30-block ring; at 128 that would have meant it never walked once.
+  var TELEPORT_AT = 200
+
+  // ⚠️ simulation-distance is 8 chunks = EXACTLY 128 blocks. An entity parked at
+  // the far end of the ring sits on that boundary: view-distance 12 means the
+  // chunk is still sent, so you SEE it, but it is outside the ticking set, so its
+  // own AI does not run. Our sweep still positions it every second, so it follows
+  // - it simply does not animate or path for itself out there.
+  //
+  // That is arguably the better horror: a figure at the treeline that is only
+  // ever exactly where it was put. But it is a real behaviour change, not a
+  // detail, so it is written down rather than discovered.
+  //
+  // The CULL RADIUS has to cover the ring or the sweep cannot see its own
+  // stalker and mints a second one. 80 was fine for a 30-block ring and is a bug
+  // at 128.
+  var SCAN_RADIUS = DIST_FAR + 48
   var HARVEST = 'veldora_harvest'         // entity flag: this one CAN die
   var ABSENT_DAYS = 30                    // gone this long after a Harvest, either way
 
@@ -339,6 +359,73 @@
     harvestLost(SERVER, e, killer)
   })
 
+  // ---------------------------------------------------- the stat block, VERIFIED
+  //
+  // Two faults this replaces:
+  //
+  // 1. It was twelve empty catch blocks. If any setBaseValue failed the stalker
+  //    silently kept its code default - the exact drift the block exists to
+  //    remove - and nothing anywhere said so.
+  //
+  // 2. THE NUMBERS DID NOT LAND. Live logs showed Krampus at 273 / 310 / 318 /
+  //    355 against a configured 250: L2Hostility applies a level modifier ON TOP
+  //    of our base, after we set it. The Harvest then multiplied that unknown
+  //    number by 1.6, so a fight balanced for 400 could arrive at 570.
+  //
+  // So: set the base, then RE-READ a second later - after everything else has had
+  // its say - and correct the base by whatever the difference turns out to be.
+  // Self-correcting against any modifier from any mod, present or future, because
+  // it measures the total rather than assuming it owns it.
+  function setAttr(e, attr, want) {
+    try {
+      var a = e.getAttribute(attr)
+      if (!a) return null
+      a.setBaseValue(want)
+      return a.getValue()
+    } catch (x) { return null }
+  }
+
+  function applyStats(e, st, mult, label) {
+    var m = (typeof mult === 'number') ? { health: mult, damage: mult, armor: mult } : mult
+    var wantHp = st.health * m.health
+    var plan = [
+      ['minecraft:generic.max_health', wantHp],
+      ['minecraft:generic.attack_damage', st.damage * m.damage],
+      ['minecraft:generic.armor', st.armor * m.armor],
+    ]
+    var failed = []
+    for (var i = 0; i < plan.length; i++) {
+      if (setAttr(e, plan[i][0], plan[i][1]) === null) failed.push(plan[i][0])
+    }
+    if (failed.length) {
+      console.warn('[stalker] ' + label + ': could not set ' + failed.join(', ') +
+        ' - it is running on mod defaults for those')
+    }
+    try { e.setHealth(wantHp) } catch (x) { }
+
+    // The correction pass. Anything else that scales this mob has acted by now.
+    if (!SERVER) return
+    SERVER.scheduleInTicks(20, function () {
+      if (!alive(e)) return
+      try {
+        var a = e.getAttribute('minecraft:generic.max_health')
+        var actual = a.getValue()
+        if (Math.abs(actual - wantHp) > 0.5) {
+          var base = a.getBaseValue()
+          a.setBaseValue(base + (wantHp - actual))
+          var now = a.getValue()
+          console.info('[stalker] ' + label + ' health corrected ' +
+            Math.round(actual) + ' -> ' + Math.round(now) + ' (wanted ' + Math.round(wantHp) + ')')
+          if (Math.abs(now - wantHp) > 0.5) {
+            console.warn('[stalker] ' + label + ' STILL off: ' + Math.round(now) +
+              ' vs ' + Math.round(wantHp) + ' - something is re-applying after us')
+          }
+        }
+        e.setHealth(e.getAttribute('minecraft:generic.max_health').getValue())
+      } catch (x) { console.warn('[stalker] ' + label + ' health check threw :: ' + x) }
+    })
+  }
+
   // ------------------------------------------------------------------ summoning
   function summon(player, pathKey, near) {
     var spec = CAST[pathKey]
@@ -353,14 +440,8 @@
     placeBehind(player, e, d)      // set the position BEFORE it enters the world
     e.spawn()
 
-    // stats first, health last - setting health before max_health clamps it
     var st = STATS[pathKey]
-    if (st) {
-      try { e.getAttribute('minecraft:generic.max_health').setBaseValue(st.health) } catch (x) { }
-      try { e.getAttribute('minecraft:generic.attack_damage').setBaseValue(st.damage) } catch (x) { }
-      try { e.getAttribute('minecraft:generic.armor').setBaseValue(st.armor) } catch (x) { }
-      try { e.setHealth(st.health) } catch (x) { }
-    }
+    if (st) applyStats(e, st, 1, pathKey)
     try { e.getAttribute('minecraft:generic.scale').setBaseValue(SCALE) } catch (x) { }
     // NO GLOW. It was my idea for making a common species read as singular, and
     // Ethan is right that it looks wrong - an outline through walls is a game-UI
@@ -459,12 +540,7 @@
     // than no boss fight at all
     try { e.mergeNbt({ PersistenceRequired: 1 }) } catch (x) { }
     var st = STATS[pathKey]
-    if (st) {
-      try { e.getAttribute('minecraft:generic.max_health').setBaseValue(st.health * HARVEST_MULT.health) } catch (x) { }
-      try { e.getAttribute('minecraft:generic.attack_damage').setBaseValue(st.damage * HARVEST_MULT.damage) } catch (x) { }
-      try { e.getAttribute('minecraft:generic.armor').setBaseValue(st.armor * HARVEST_MULT.armor) } catch (x) { }
-      try { e.setHealth(st.health * HARVEST_MULT.health) } catch (x) { }
-    }
+    if (st) applyStats(e, st, HARVEST_MULT, pathKey)
     try { e.setCustomName(Text.of('§4§l' + CAST[pathKey][1])) } catch (x) { }
     try { e.setTarget(player) } catch (x) { }
     return e
@@ -624,7 +700,7 @@
   function findOwned(player) {
     var out = []
     try {
-      var near = player.level.getEntitiesWithin(player.boundingBox.inflate(80))
+      var near = player.level.getEntitiesWithin(player.boundingBox.inflate(SCAN_RADIUS))
       for (var i = 0; i < near.length; i++) {
         var e = near[i]
         // fleeing ones are INCLUDED: a flee interrupted by a restart leaves an
