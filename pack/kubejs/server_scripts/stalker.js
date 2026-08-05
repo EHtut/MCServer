@@ -287,15 +287,12 @@
     try { e.getAttribute('minecraft:generic.scale').setBaseValue(SCALE) } catch (x) { }
     try { e.setGlowing(true) } catch (x) { }
 
-    // setPersistenceRequired(boolean) DOES NOT EXIST here - it throws
-    // "Can't find method Mob.setPersistenceRequired(boolean)". NBT is the route,
-    // and it is tried FIRST rather than as a fallback behind a call we know fails.
-    // Without this a stalker despawns on its own and the illusion dies quietly.
-    var persisted = false
-    try { e.mergeNbt({ PersistenceRequired: 1 }); persisted = true } catch (x) {
-      try { e.setPersistenceRequired(); persisted = true } catch (y) { }
-    }
-    if (!persisted) console.warn('[stalker] could not pin persistence - it may despawn on its own')
+    // NO PERSISTENCE on a Companion or Helper - deliberately.
+    // Pinning them meant every stalker outlived its session, and since they also
+    // CANNOT DIE the world was accumulating immortal minibosses forever. Letting
+    // them despawn naturally is self-healing: the sweep notices and re-summons
+    // within 2 seconds when the owner is actually around. Only the Harvest pins
+    // itself (summonHarvest), because despawning mid-boss-fight would be absurd.
     return e
   }
 
@@ -304,6 +301,9 @@
     var e = summon(player, pathKey, 6)
     if (!e) return null
     e.persistentData.putBoolean(HARVEST, true)
+    // the ONE case that must not despawn - a boss fight that evaporates is worse
+    // than no boss fight at all
+    try { e.mergeNbt({ PersistenceRequired: 1 }) } catch (x) { }
     var st = STATS[pathKey]
     if (st) {
       try { e.getAttribute('minecraft:generic.max_health').setBaseValue(st.health * HARVEST_MULT.health) } catch (x) { }
@@ -460,6 +460,38 @@
     return false
   }
 
+  // The in-memory map is not the world's opinion. It is empty after every
+  // restart, so orphans from the previous session are invisible to it and the
+  // sweep cheerfully summons another one alongside them. That is how Ethan got
+  // multiple Krampuses. Ask the world instead.
+  function findOwned(player) {
+    var out = []
+    try {
+      var near = player.level.getEntitiesWithin(player.boundingBox.inflate(80))
+      for (var i = 0; i < near.length; i++) {
+        var e = near[i]
+        if (isStalker(e) && ownerOf(e) === player.username && alive(e) && !isFleeing(e)) out.push(e)
+      }
+    } catch (x) { }
+    return out
+  }
+
+  function cull(player, uuid) {
+    var owned = findOwned(player)
+    if (!owned.length) return null
+    var keep = null
+    for (var i = 0; i < owned.length; i++) if (isHarvestInstance(owned[i])) { keep = owned[i]; break }
+    if (!keep) keep = owned[0]
+    var killed = 0
+    for (var j = 0; j < owned.length; j++) {
+      if (owned[j] === keep) continue
+      try { owned[j].discard(); killed++ } catch (x) { }
+    }
+    if (killed) console.warn('[stalker] culled ' + killed + ' duplicate stalker(s) for ' + player.username)
+    live[uuid] = keep
+    return keep
+  }
+
   function dismiss(uuid) {
     var e = live[uuid]
     delete live[uuid]
@@ -499,6 +531,10 @@
 
     var cur = live[uuid]
     if (!alive(cur)) { delete live[uuid]; cur = null }
+    // adopt orphans and kill duplicates before deciding anything
+    var found = cull(player, uuid)
+    if (found) cur = found
+    else delete live[uuid]
 
     // THE ABSENCE: gone. no warning, no message.
     if (phase === 'absence') {
