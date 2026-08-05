@@ -1,0 +1,26 @@
+{
+ "display": {
+  "icon": {
+   "id": "create:cogwheel"
+  },
+  "title": "The Forge",
+  "description": "Throughput. Power that works while you sleep - and stays at home.",
+  "frame": "task",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": false
+ },
+ "criteria": {
+  "c": {
+   "trigger": "minecraft:inventory_changed",
+   "conditions": {
+    "items": [
+     {
+      "items": "create:cogwheel"
+     }
+    ]
+   }
+  }
+ },
+ "parent": "mcserver:root"
+}

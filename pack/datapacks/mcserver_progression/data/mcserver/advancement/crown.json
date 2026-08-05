@@ -1,0 +1,26 @@
+{
+ "display": {
+  "icon": {
+   "id": "goety:necro_staff"
+  },
+  "title": "The Crown",
+  "description": "Adventurers cannot die. Servants can.",
+  "frame": "goal",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": false
+ },
+ "criteria": {
+  "c": {
+   "trigger": "minecraft:inventory_changed",
+   "conditions": {
+    "items": [
+     {
+      "items": "goety:necro_staff"
+     }
+    ]
+   }
+  }
+ },
+ "parent": "mcserver:root"
+}

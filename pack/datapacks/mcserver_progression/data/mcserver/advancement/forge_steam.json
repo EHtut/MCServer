@@ -1,0 +1,26 @@
+{
+ "display": {
+  "icon": {
+   "id": "create:steam_engine"
+  },
+  "title": "Steam",
+  "description": "The tech ceiling is steam and early electricity. No further.",
+  "frame": "goal",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": false
+ },
+ "criteria": {
+  "c": {
+   "trigger": "minecraft:inventory_changed",
+   "conditions": {
+    "items": [
+     {
+      "items": "create:steam_engine"
+     }
+    ]
+   }
+  }
+ },
+ "parent": "mcserver:forge"
+}

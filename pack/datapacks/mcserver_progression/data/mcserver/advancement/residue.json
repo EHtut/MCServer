@@ -1,0 +1,26 @@
+{
+ "display": {
+  "icon": {
+   "id": "gunpowderore:gun_powder_ore"
+  },
+  "title": "The Black Residue",
+  "description": "Not a mineral. Left over, only where they made it.",
+  "frame": "task",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": false
+ },
+ "criteria": {
+  "c": {
+   "trigger": "minecraft:inventory_changed",
+   "conditions": {
+    "items": [
+     {
+      "items": "gunpowderore:gun_powder_ore"
+     }
+    ]
+   }
+  }
+ },
+ "parent": "mcserver:deep_works"
+}

@@ -1714,6 +1714,11 @@
           "automaticons",
           "Golem automation OUTSIDE Create - Ethan asked for exactly this",
           "minor"
+        ],
+        [
+          "waystones",
+          "Fast travel between discovered points. CUT 2026-08-03 for deleting extraction, RESTORED 2026-08-04 by Ethan. Consider gating use below y0 to keep the climb-out",
+          "major"
         ]
       ]
     },

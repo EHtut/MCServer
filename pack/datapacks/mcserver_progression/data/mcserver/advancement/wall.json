@@ -1,0 +1,26 @@
+{
+ "display": {
+  "icon": {
+   "id": "securitycraft:reinforced_stone"
+  },
+  "title": "The Wall",
+  "description": "It wins nothing. It only refuses to lose.",
+  "frame": "task",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": false
+ },
+ "criteria": {
+  "c": {
+   "trigger": "minecraft:inventory_changed",
+   "conditions": {
+    "items": [
+     {
+      "items": "securitycraft:reinforced_stone"
+     }
+    ]
+   }
+  }
+ },
+ "parent": "mcserver:root"
+}

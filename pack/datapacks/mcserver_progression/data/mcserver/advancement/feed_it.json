@@ -1,0 +1,26 @@
+{
+ "display": {
+  "icon": {
+   "id": "minecraft:gunpowder"
+  },
+  "title": "A Small Cruelty",
+  "description": "Powder, a cup of soft metal, and a stone to throw.",
+  "frame": "task",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": false
+ },
+ "criteria": {
+  "c": {
+   "trigger": "minecraft:inventory_changed",
+   "conditions": {
+    "items": [
+     {
+      "items": "tacz:ammo"
+     }
+    ]
+   }
+  }
+ },
+ "parent": "mcserver:residue"
+}

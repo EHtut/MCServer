@@ -1,0 +1,36 @@
+{
+ "display": {
+  "icon": {
+   "id": "minecraft:deepslate"
+  },
+  "title": "The Deep Works",
+  "description": "Corners become square. Something dug here that was not us.",
+  "frame": "goal",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": false
+ },
+ "criteria": {
+  "c": {
+   "trigger": "minecraft:location",
+   "conditions": {
+    "player": [
+     {
+      "condition": "minecraft:entity_properties",
+      "entity": "this",
+      "predicate": {
+       "location": {
+        "position": {
+         "y": {
+          "max": -64.0
+         }
+        }
+       }
+      }
+     }
+    ]
+   }
+  }
+ },
+ "parent": "mcserver:diggings"
+}

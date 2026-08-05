@@ -1421,6 +1421,11 @@ hash = "9c14d2011a343872dfa72aee64ef7beb2f9f9e47867807b4b03726cfa8e429b7"
 metafile = true
 
 [[files]]
+file = "mods/waystones.pw.toml"
+hash = "07a8aecb54b8aa2148d05a452e697643b1e7b2239060204b369a32018cf0df6e"
+metafile = true
+
+[[files]]
 file = "mods/weather-storms-tornadoes.pw.toml"
 hash = "54d07601a6be738af7115e07b29d75de786b5ffdc98681a383d6c66f1bd6a6c9"
 metafile = true
