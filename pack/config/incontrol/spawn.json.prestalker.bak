@@ -10,24 +10,6 @@
     "result": "default"
   },
   {
-    "mod": [
-      "born_in_chaos_v1",
-      "born_in_chaos_fc",
-      "revervox_mod"
-    ],
-    "result": "deny"
-  },
-  {
-    "mob": [
-      "minecraft:skeleton",
-      "minecraft:stray",
-      "minecraft:bogged",
-      "minecraft:witch"
-    ],
-    "random": 0.5,
-    "result": "deny"
-  },
-  {
     "dimension": "minecraft:overworld",
     "maxlight_sky": 0,
     "result": "default"
