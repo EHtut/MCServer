@@ -359,3 +359,52 @@ gamerule doImmediateRespawn true         # "they cannot die, but they can be bro
 `doImmediateRespawn` is load-bearing for the fiction: with Corpse it produces
 exactly the canon in `docs/15-LORE.md` — you get up, you are whole, and
 everything you carried is lying where you fell.
+
+---
+
+## 14. Queued — hide mob levels, and the "more fun" shortlist
+
+### 14a. Hide the L2Hostility level nameplates
+Ethan, 2026-08-04. The floating `Lv. N` over every mob comes from **l2hostility**,
+and the knobs are **client-side**, so they ship in the instance zip (which already
+carries 19 client configs) rather than through packwiz.
+
+Config keys read out of the jar: `showLevelOverHead`, `showTraitOverHead`,
+`showOnlyWhenHovered`, `overHeadRenderDistance`.
+
+Two options, and the second is probably better:
+- `showLevelOverHead = false` — gone entirely.
+- `showOnlyWhenHovered = true` — the level appears only when you look straight at
+  a mob. Keeps the information available when you actually want it (deciding
+  whether to fight something) without a screen full of floating numbers.
+
+⚠️ Client-side means **re-import**, not a Play-press. Bundle it with the next zip
+rather than shipping a zip for it alone.
+
+### 14b. Fun — the measured gap is FOOD, not content
+`food-farm` holds **one mod** (farmers-delight) out of 296. Everything else is
+saturated: qol has 52, create 26, magic 20. Cooking and farming is the thing a
+group does together between expeditions, and it is the one category with nothing
+in it.
+
+Verified available for 1.21.1 NeoForge:
+
+| mod | why | status |
+|---|---|---|
+| `miners-delight` | mining-themed cooking. In a pack whose whole loop is descending, food you make from what you dig up is on-theme rather than bolted on | release |
+| `aquaculture` | fishing overhaul - real tackle, many fish | release |
+| `stardew-fishing` (653k) | turns fishing from an AFK timer into an actual minigame. Low-stakes downtime that is not another combat system | release |
+| `ends-delight` | more Delight content | beta |
+| `lets-do-vinery` | winemaking | beta |
+
+### 14c. Quests — why the gap persists
+**FTB Quests is not on Modrinth.** Only its addons are (`ftb-quests-optimizer`,
+`extraquests`), and Heracles does not resolve there either. `resolve.py` is a
+Modrinth-only pipeline, so a real quest engine means either a CurseForge
+dependency - breaking the one-click rebuild-from-manifest guarantee - or the
+custom engine Ethan already chose. That decision was right, and this is the
+evidence for it rather than a preference.
+
+`daily-quests` (1.21.1 NeoForge, standalone, 21k) is the cheap middle: rotating
+daily objectives, no FTB dependency. Not a progression spine, but it is a "next
+thing" that costs one jar.
