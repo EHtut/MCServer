@@ -63,8 +63,45 @@
   }
   const BOOK = BOOKS.veldora[1]
   const KEY = 'veldora_path'
-  const CHANCE = 0.11          // per hostile kill, before the tier roll
+  // C2 — the drop chance is no longer flat. It rides notoriety:
+  //     0.08 + 0.002 x min(notoriety, 100)   ->  8% at 0, 11% at 15, 18% at 50, 28% at 100
+  // The old flat 11% survives as roughly notoriety 15, so today's feel becomes
+  // the EARLY game rather than the whole game.
+  const CHANCE_BASE = 0.08
+  const CHANCE_PER = 0.002
+  const CHANCE_CAP = 100
+  const CHANCE_FLAT = 0.11     // pre-C2 rate. Used ONLY when notoriety is unreadable.
   var warnedKill = false
+  var warnedNotoriety = false
+
+  function warnOnce(msg) {
+    if (warnedNotoriety) return          // one line per boot, not one per kill
+    warnedNotoriety = true
+    console.warn('[paths] C2 FALLBACK: ' + msg)
+    console.warn('[paths] drops are running at the flat pre-C2 rate. That is a BUG, not a mode.')
+  }
+
+  // "could not read notoriety" and "notoriety is 0" must never share an answer.
+  // Treating an unreadable value as 0 would pin every drop at 8% forever while
+  // looking perfectly healthy - so the failure path returns the OLD flat rate and
+  // says so out loud, once.
+  function dropChanceFor(server, player) {
+    try {
+      if (typeof VELDORA !== 'undefined' && typeof VELDORA.notoriety === 'function') {
+        var b = VELDORA.notoriety(server, player)
+        if (b && typeof b.value === 'number' && isFinite(b.value)) {
+          return CHANCE_BASE + CHANCE_PER * Math.min(b.value, CHANCE_CAP)
+        }
+        warnOnce('VELDORA.notoriety returned no usable value')
+        return CHANCE_FLAT
+      }
+    } catch (e) {
+      warnOnce('VELDORA.notoriety threw :: ' + e)
+      return CHANCE_FLAT
+    }
+    warnOnce('VELDORA is not visible from paths.js (load order, or C1 failed to load)')
+    return CHANCE_FLAT
+  }
 
   // Every id verified against the mod jars before being written here.
   const PATHS = {
@@ -226,6 +263,30 @@
       return 1
     }))
 
+    // C2 AUDIT — the gate is a MEASURED rate, not a reasoned one. This rolls the
+    // real dropChanceFor() against the caller's real notoriety, so it exercises
+    // the whole path including the cross-file VELDORA read. Pair it with
+    // /notoriety_setday to move the number and sample again.
+    root = root.then(Commands.literal('sample').executes(ctx => {
+      const p = ctx.source.player
+      if (!p) return 0
+      var srv = ctx.source.server
+      var chance = dropChanceFor(srv, p)
+      var rolls = 2000, hits = 0
+      for (var i = 0; i < rolls; i++) { if (Math.random() <= chance) hits++ }
+      var observed = hits / rolls
+      var b = (typeof VELDORA !== 'undefined' && VELDORA.notoriety)
+        ? VELDORA.notoriety(srv, p) : null
+      p.tell('§8§m                                        ')
+      p.tell('§7notoriety   §f' + (b ? b.value : '§cUNREADABLE'))
+      p.tell('§7expected    §f' + (Math.round(chance * 1000) / 10) + '%' +
+        (chance === CHANCE_FLAT ? ' §c<- FLAT FALLBACK, notoriety was not read' : ''))
+      p.tell('§7observed    §f' + (Math.round(observed * 1000) / 10) + '% §8(' + hits + '/' + rolls + ')')
+      var drift = Math.abs(observed - chance)
+      p.tell(drift < 0.02 ? '§a  within tolerance' : '§c  DRIFT ' + (Math.round(drift * 1000) / 10) + 'pp')
+      return 1
+    }))
+
     Object.keys(PATHS).forEach(key => {
       root = root.then(Commands.literal(key).executes(ctx => {
         const p = ctx.source.player
@@ -283,7 +344,7 @@
     // was cleared while they still carry the key, they stop being paid - so a
     // stale tag can never quietly keep earning.
     if (holderOf(event.server, key) !== killer.username) return
-    if (Math.random() > CHANCE) return
+    if (Math.random() > dropChanceFor(event.server, killer)) return
 
     // THE ANTI-FARM RULE: the mob's death height decides the tier, so a basement
     // mob farm pays in iron nuggets and the Sealed Floor pays in brass.
