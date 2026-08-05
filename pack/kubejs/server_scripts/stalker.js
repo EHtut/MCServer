@@ -49,9 +49,9 @@
   // between our sweeps, so the reliable answer is that it never gets to ARM'S
   // REACH in the first place. Distance is the safety, the damage cancel below is
   // the guarantee, and clearing the target is only cosmetic.
-  var SPAWN_DIST = 28                     // where a Companion appears
-  var MIN_DIST = 14                       // it is pushed back out if it closes past this
-  var LEASH = 48                          // and pulled in if it falls behind this
+  var SPAWN_DIST = 16                     // where a Companion appears (Ethan, 2026-08-05)
+  var MIN_DIST = 10                       // it is pushed back out if it closes past this
+  var LEASH = 32                          // and pulled in if it falls behind this
   var HARVEST = 'veldora_harvest'         // entity flag: this one CAN die
   var ABSENT_DAYS = 30                    // gone this long after a Harvest, either way
 
@@ -622,7 +622,7 @@
       var d2 = dx * dx + dz * dz
       if (d2 < MIN_DIST * MIN_DIST || d2 > LEASH * LEASH) {
         var ang = Math.random() * Math.PI * 2
-        var r = MIN_DIST + 6
+        var r = SPAWN_DIST
         cur.setPos(player.x + Math.cos(ang) * r, player.y, player.z + Math.sin(ang) * r)
         try { cur.setTarget(null) } catch (y) { }
       }
