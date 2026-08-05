@@ -111,33 +111,43 @@
     try { return !!e && e.isAlive() } catch (x) { return false }
   }
 
-  // The damage amount, or null if unreadable. null is NOT zero — the caller
-  // treats "unreadable" as the worst case, never as "harmless".
+  // The damage amount, or null if unreadable.
+  //
+  // ⚠️ `typeof v === 'number'` IS NOT ENOUGH. event.damage answers with
+  // Long.MAX_VALUE here - a perfectly valid number that is not a damage amount.
+  // It sailed through the type check, so `hp - dmg` came out at -9.2e18, every
+  // single hit read as lethal, and every stalker fled on first contact. The
+  // "friends can push it toward leaving" behaviour never once ran.
+  //
+  // A value has to be PLAUSIBLE, not merely numeric. Nothing in this pack deals
+  // five figures of damage in one blow.
+  var DMG_MAX = 100000
+  function plausible(v) {
+    return typeof v === 'number' && isFinite(v) && v >= 0 && v <= DMG_MAX
+  }
+
   function damageOf(event) {
     var cands = [
       ['event.damage', function () { return event.damage }],
       ['event.getDamage()', function () { return event.getDamage() }],
       ['event.amount', function () { return event.amount }],
       ['event.getAmount()', function () { return event.getAmount() }],
+      ['event.source.damage', function () { return event.source.damage }],
     ]
+    var chosen = null, chosenLabel = ''
+    var report = []
     for (var i = 0; i < cands.length; i++) {
-      try {
-        var v = cands[i][1]()
-        if (typeof v === 'number' && isFinite(v)) {
-          if (!damageAccessorLogged) {
-            damageAccessorLogged = true
-            console.info('[stalker] damage amount read via ' + cands[i][0])
-          }
-          return v
-        }
-      } catch (x) { }
+      var raw
+      try { raw = cands[i][1]() } catch (x) { raw = '<threw>' }
+      report.push(cands[i][0] + '=' + raw)
+      if (chosen === null && plausible(raw)) { chosen = raw; chosenLabel = cands[i][0] }
     }
     if (!damageAccessorLogged) {
       damageAccessorLogged = true
-      console.warn('[stalker] NO damage accessor works on beforeHurt.')
-      console.warn('[stalker] Falling back to worst-case: any hit triggers the flee. Blunt but safe.')
+      console.info('[stalker] damage candidates: ' + report.join('  '))
+      console.info('[stalker] using ' + (chosen === null ? 'NONE - worst case per hit' : chosenLabel))
     }
-    return null
+    return chosen
   }
 
   // Who threw the punch. C0 found src.getEntity() throws and zero-arg accessors

@@ -288,11 +288,29 @@
         : '§7You have declared no path. §f/path <name>')
       Object.keys(PATHS).forEach(k => {
         var h = holderOf(srv, k)
-        var tag = !h ? '§a(open)' : (h === p.username ? '§6(yours)' : '§c(' + h + ')')
+        var esc = escrowHolder(h)
+        var tag = esc
+          ? (esc === p.username ? '§e(held for you)' : '§e(held - ' + esc + ' is choosing)')
+          : (!h ? '§a(open)' : (h === p.username ? '§6(yours)' : '§c(' + h + ')'))
         p.tell('  §e' + k + ' §8- §7' + PATHS[k].name + ' ' + tag)
       })
       p.tell('§8One walker each. §f/path release§8 gives yours up.')
       p.tell('§8Hostile kills pay in your path. Deeper kills pay better.')
+
+      // Notoriety belongs HERE, where players already look - not behind a command
+      // nobody knows exists. Design 18 §3: the number is shown precisely because
+      // it is your reward stat and you should be able to plan against it. The
+      // phase is deliberately NOT named; that stays something you notice.
+      if (typeof VELDORA !== 'undefined' && typeof VELDORA.notoriety === 'function') {
+        try {
+          var b = VELDORA.notoriety(srv, p)
+          var pct = Math.round((0.08 + 0.002 * Math.min(b.value, 100)) * 1000) / 10
+          p.tell('§8§m                                        ')
+          p.tell('§7Notoriety §f§l' + b.value + ' §8- your kills pay §f' + pct + '%')
+          p.tell('§8It rises with the levels you hold, and on its own with the days.')
+          p.tell('§8Spending experience is the only thing that lowers it.')
+        } catch (e) { }
+      }
       return 1
     })
 

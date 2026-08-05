@@ -111,10 +111,51 @@ def cmd_status() -> int:
     return 0
 
 
+LOG = INSTANCE / "logs" / "latest.log"
+
+# THE KNOWN STRANDING BUG - voicechatrecording, 2026-08-05.
+#
+# VoiceChatRecordingPlugin.shutdownSaving submits a save task to a thread pool it
+# has ALREADY terminated, throwing RejectedExecutionException inside
+# handleServerStopped. That breaks the shutdown chain, System.exit never runs,
+# and its non-daemon pool holds the JVM open forever. Observed twice; both times
+# the world had already finished saving.
+#
+# Only revervox_mod depends on voicechatrecording, and revervox is being cut, so
+# the real fix is removing both at the next client re-import. Until then this is
+# every shutdown, and a stranded JVM is exactly the state that once nearly
+# corrupted the world by inviting a double start.
+#
+# So the fallback kill is allowed - but ONLY on evidence, never on a timeout
+# alone. Both must be true, in the log written SINCE we asked it to stop:
+#   1. the world finished saving        ("All dimensions are saved")
+#   2. this specific bug is the reason  ("VoiceChatRecordingPlugin")
+# Anything else is an unknown hang and still refuses to act.
+SAVED_MARK = "All dimensions are saved"
+STRAND_MARK = "VoiceChatRecordingPlugin"
+
+
+def _log_size() -> int:
+    try:
+        return LOG.stat().st_size
+    except OSError:
+        return 0
+
+
+def _log_since(offset: int) -> str:
+    try:
+        with LOG.open("r", encoding="utf-8", errors="ignore") as fh:
+            fh.seek(offset)
+            return fh.read()
+    except OSError:
+        return ""
+
+
 def cmd_stop(message: str, grace: int) -> int:
     if not java_pids():
         print("  already stopped")
         return 0
+    mark = _log_size()
     if rcon_open():
         if message:
             rcon(f"say {message}")
@@ -129,10 +170,33 @@ def cmd_stop(message: str, grace: int) -> int:
     ok = wait_for(lambda: not java_pids(), timeout=240)
     n = len(java_pids())
     print(f"  java processes : {n}")
-    if not ok:
-        print("  !! STILL RUNNING after 4 minutes. NOT safe to start. Investigate.")
+    if ok:
+        print("  stopped cleanly")
+        return 0
+
+    tail = _log_since(mark)
+    saved = SAVED_MARK in tail
+    stranded = STRAND_MARK in tail
+    print(f"  world saved    : {saved}")
+    print(f"  known strand   : {stranded} (voicechatrecording)")
+
+    if not (saved and stranded):
+        print("  !! STILL RUNNING after 4 minutes, and this is NOT the known bug.")
+        print("  !! NOT safe to start. Investigate before touching it.")
         return 1
-    print("  stopped cleanly")
+
+    print("  the world is saved and this is the known voicechatrecording strand.")
+    for pid in java_pids():
+        print(f"  terminating stranded pid {pid}")
+        subprocess.run(["taskkill", "/PID", str(pid), "/F"],
+                       capture_output=True, text=True)
+    time.sleep(3)
+    n = len(java_pids())
+    print(f"  java processes : {n}")
+    if n:
+        print("  !! STILL RUNNING after the kill. NOT safe to start.")
+        return 1
+    print("  stopped (forced, after a completed save)")
     return 0
 
 
