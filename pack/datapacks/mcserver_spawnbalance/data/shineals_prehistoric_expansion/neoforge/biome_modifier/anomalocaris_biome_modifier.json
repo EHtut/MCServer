@@ -1,0 +1,17 @@
+{
+ "type": "neoforge:add_spawns",
+ "biomes": [
+  "deep_frozen_ocean",
+  "frozen_ocean",
+  "deep_lukewarm_ocean",
+  "lukewarm_ocean",
+  "cold_ocean",
+  "deep_cold_ocean"
+ ],
+ "spawners": {
+  "type": "shineals_prehistoric_expansion:anomalocaris",
+  "weight": 10,
+  "minCount": 1,
+  "maxCount": 1
+ }
+}

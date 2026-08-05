@@ -1,0 +1,13 @@
+{
+ "type": "neoforge:add_spawns",
+ "biomes": [
+  "mangrove_swamp",
+  "swamp"
+ ],
+ "spawners": {
+  "type": "shineals_prehistoric_expansion:spinosaurus",
+  "weight": 5,
+  "minCount": 1,
+  "maxCount": 1
+ }
+}

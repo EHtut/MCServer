@@ -1,0 +1,16 @@
+{
+ "type": "neoforge:add_spawns",
+ "biomes": [
+  "beach",
+  "mangrove_swamp",
+  "swamp",
+  "lush_caves",
+  "river"
+ ],
+ "spawners": {
+  "type": "shineals_prehistoric_expansion:diplocaulus",
+  "weight": 10,
+  "minCount": 2,
+  "maxCount": 3
+ }
+}

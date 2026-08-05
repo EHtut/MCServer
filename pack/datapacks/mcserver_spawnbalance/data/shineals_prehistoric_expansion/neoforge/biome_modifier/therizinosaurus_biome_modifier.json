@@ -1,0 +1,13 @@
+{
+ "type": "neoforge:add_spawns",
+ "biomes": [
+  "jungle",
+  "sparse_jungle"
+ ],
+ "spawners": {
+  "type": "shineals_prehistoric_expansion:therizinosaurus",
+  "weight": 8,
+  "minCount": 1,
+  "maxCount": 3
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "type": "neoforge:add_spawns",
+ "biomes": [
+  "deep_lukewarm_ocean",
+  "lukewarm_ocean",
+  "warm_ocean"
+ ],
+ "spawners": {
+  "type": "shineals_prehistoric_expansion:hippocampus",
+  "weight": 10,
+  "minCount": 1,
+  "maxCount": 2
+ }
+}

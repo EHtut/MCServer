@@ -1,0 +1,10 @@
+{
+ "type": "neoforge:add_spawns",
+ "biomes": "shineals_prehistoric_expansion:juniper_forest",
+ "spawners": {
+  "type": "shineals_prehistoric_expansion:dodo",
+  "weight": 10,
+  "minCount": 2,
+  "maxCount": 4
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "type": "neoforge:add_spawns",
+ "biomes": [
+  "badlands",
+  "eroded_badlands",
+  "savanna_plateau"
+ ],
+ "spawners": {
+  "type": "shineals_prehistoric_expansion:carnotaurus",
+  "weight": 5,
+  "minCount": 1,
+  "maxCount": 1
+ }
+}

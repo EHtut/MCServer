@@ -1,0 +1,14 @@
+{
+ "type": "neoforge:add_spawns",
+ "biomes": [
+  "snowy_plains",
+  "snowy_taiga",
+  "ice_spikes"
+ ],
+ "spawners": {
+  "type": "shineals_prehistoric_expansion:mammoth",
+  "weight": 10,
+  "minCount": 2,
+  "maxCount": 4
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "type": "neoforge:add_spawns",
+ "biomes": [
+  "plains",
+  "sunflower_plains",
+  "forest"
+ ],
+ "spawners": {
+  "type": "shineals_prehistoric_expansion:triceratops",
+  "weight": 6,
+  "minCount": 1,
+  "maxCount": 1
+ }
+}

@@ -1,0 +1,18 @@
+{
+ "type": "neoforge:add_spawns",
+ "biomes": [
+  "savanna",
+  "savanna_plateau",
+  "windswept_savanna",
+  "desert",
+  "badlands",
+  "eroded_badlands",
+  "wooded_badlands"
+ ],
+ "spawners": {
+  "type": "shineals_prehistoric_expansion:serpopard",
+  "weight": 10,
+  "minCount": 1,
+  "maxCount": 3
+ }
+}
