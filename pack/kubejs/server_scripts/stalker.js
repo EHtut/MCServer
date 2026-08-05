@@ -59,27 +59,17 @@
   // it closes - not to attack (it cannot; damage to its owner is cancelled) but
   // because it is paying attention. Being hurt is what makes it interested, which
   // is the same instinct as the Helper and reads as appetite rather than AI.
-  var DIST_FAR = 128                      // at full health (Ethan, 2026-08-05)
+  // 100, not 128 (Ethan): simulation-distance is 8 chunks = exactly 128 blocks,
+  // so a stalker parked AT 128 sits on the boundary and stops ticking - present
+  // and visible, but frozen and unable to path for itself. At 100 it has 28
+  // blocks of room inside the line and stays a live creature.
+  var DIST_FAR = 100                      // at full health
   var DIST_NEAR = 12                      // at death's door
-  var BAND = 14                            // slack before we bother repositioning
-  // Must exceed DIST_FAR or EVERY correction is a snap. It was 48 against a
-  // 30-block ring; at 128 that would have meant it never walked once.
-  var TELEPORT_AT = 200
-
-  // ⚠️ simulation-distance is 8 chunks = EXACTLY 128 blocks. An entity parked at
-  // the far end of the ring sits on that boundary: view-distance 12 means the
-  // chunk is still sent, so you SEE it, but it is outside the ticking set, so its
-  // own AI does not run. Our sweep still positions it every second, so it follows
-  // - it simply does not animate or path for itself out there.
-  //
-  // That is arguably the better horror: a figure at the treeline that is only
-  // ever exactly where it was put. But it is a real behaviour change, not a
-  // detail, so it is written down rather than discovered.
-  //
-  // The CULL RADIUS has to cover the ring or the sweep cannot see its own
-  // stalker and mints a second one. 80 was fine for a 30-block ring and is a bug
-  // at 128.
-  var SCAN_RADIUS = DIST_FAR + 48
+  var BAND = 14                           // slack before we bother repositioning
+  var TELEPORT_AT = 128                   // the boundary itself: past it, snap
+  var SCAN_RADIUS = DIST_FAR + 48         // the cull must cover the whole ring
+  var VIEW_HALF_ANGLE = 80                // degrees either side of where you face
+  var CANNOT_BE_SEEN = 192                // view-distance 12; past this, nothing renders
   var HARVEST = 'veldora_harvest'         // entity flag: this one CAN die
   var ABSENT_DAYS = 30                    // gone this long after a Harvest, either way
 
@@ -499,6 +489,31 @@
 
   var navWarned = false
 
+  // Is it inside the arc the player is actually facing?
+  //
+  // Ethan: "it should also only teleport if the player isn't looking at it."
+  // This is the right rule and it replaces distance as the test - a snap 60
+  // blocks away in your peripheral vision is far more jarring than one behind a
+  // hill at 30. Horizontal only: pitch barely matters for something on the ground
+  // at range, and ignoring it keeps the check cheap enough to run every second.
+  //
+  // Fails CLOSED. If the yaw cannot be read we answer "yes, they can see it" and
+  // decline to teleport - a stalker briefly out of position is nothing; a stalker
+  // seen blinking is the illusion gone.
+  function inView(player, e) {
+    var yaw = yawOf(player)
+    if (yaw === null) return true
+    var dx, dz
+    try { dx = e.x - player.x; dz = e.z - player.z } catch (x) { return true }
+    var d = Math.sqrt(dx * dx + dz * dz)
+    if (d < 0.01) return true
+    if (d > CANNOT_BE_SEEN) return false          // past render distance
+    var f = yaw * Math.PI / 180
+    var fx = -Math.sin(f), fz = Math.cos(f)       // the direction they face
+    var dot = (dx / d) * fx + (dz / d) * fz
+    return dot > Math.cos(VIEW_HALF_ANGLE * Math.PI / 180)
+  }
+
   function keepDistance(player, e) {
     var want = DIST_NEAR + (DIST_FAR - DIST_NEAR) * healthFrac(player)
     var dx, dz, d
@@ -507,7 +522,15 @@
       d = Math.sqrt(dx * dx + dz * dz)
     } catch (x) { return }
     if (Math.abs(d - want) <= BAND) return          // close enough; leave it be
-    if (d > TELEPORT_AT) { placeBehind(player, e, want); return }   // off-screen: snap
+
+    // Past the boundary it must be snapped - it is out of the ticking set and
+    // will never walk back on its own. But NOT while it is being watched: if the
+    // player is looking at it we simply leave it there and try again in a second.
+    // The side effect is the good kind - it does not move while you look at it.
+    if (d > TELEPORT_AT) {
+      if (!inView(player, e)) placeBehind(player, e, want)
+      return
+    }
 
     // Otherwise WALK it - pathing there looks like a creature deciding to move.
     var tx = player.x + (dx / (d || 1)) * want
@@ -526,7 +549,8 @@
         navWarned = true
         console.warn('[stalker] no navigation API - repositioning behind the player instead')
       }
-      placeBehind(player, e, want)
+      // same rule for the fallback: never blink in front of someone
+      if (!inView(player, e)) placeBehind(player, e, want)
     }
     try { e.setTarget(null) } catch (x) { }
   }
