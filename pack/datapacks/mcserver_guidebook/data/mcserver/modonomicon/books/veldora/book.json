@@ -1,0 +1,6 @@
+{
+ "name": "Notes on Veldora",
+ "tooltip": "What is known, and what is only said.",
+ "generate_book_item": true,
+ "model": "modonomicon:modonomicon_purple"
+}

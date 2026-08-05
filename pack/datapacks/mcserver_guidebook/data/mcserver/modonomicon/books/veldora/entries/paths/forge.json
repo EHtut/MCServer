@@ -1,0 +1,14 @@
+{
+ "category": "mcserver:paths",
+ "name": "The Forge",
+ "description": "Industry",
+ "icon": "minecraft:blast_furnace",
+ "x": 0,
+ "y": 0,
+ "pages": [
+  {
+   "type": "modonomicon:text",
+   "text": "Probe entry. If you are reading this, the book loads."
+  }
+ ]
+}

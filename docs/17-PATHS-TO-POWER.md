@@ -102,6 +102,34 @@ does not need fuel, and works the instant you spawn.
 **Crosses the descent:** L2Hostility scales with depth and days, so the Blade is
 the only path whose difficulty curve is *already* the descent's curve.
 
+### VI. THE CROWN — command  ✅ Ethan, 2026-08-04
+*Goety, Guard Villagers, Automaticons*
+
+Ethan asked for "the class of the leader ... managing minions or people to
+conquer the depths with you". **No mod needs adding — Goety alone registers 64
+SERVANT entities**, from Bear and Blaze to Evoker, Geomancer and Ghast. Guard
+Villagers hires defenders; Automaticons builds golems that work. The path exists
+in full and has simply never been named.
+
+**Gives:** numbers. The only path where power is measured in bodies rather than
+gear, and the only one that can hold ground in two places at once.
+**Denies:** self-sufficiency alone — a Leader without a retinue is the weakest
+thing in the room, and every servant is upkeep.
+**Rungs:** first servant → a working retinue → specialised summons → the rituals
+that raise the strong ones → commanding through Guard Villagers and golems.
+**Crosses the descent:** this is the one that lands hardest on the canon.
+
+> Adventurers **cannot die**. They can only be broken, over and over.
+> **Servants can die.**
+
+The Leader is the only path that can send something ahead of it into the dark. On
+the Sealed Floor, where being broken is the whole cost, spending the expendable
+IS the power — and it is a moral posture as much as a build, which suits a world
+that watches you.
+
+⟡ **Open:** should the watchers care? A path built on sending others down first is
+exactly the kind of thing the Angels might notice. Good DM fuel; Ethan's call.
+
 ### V. THE WALL — defence
 *SecurityCraft, reinforced blocks*
 
@@ -118,6 +146,16 @@ built.*
 ---
 
 ## 3. What the audit says is MISSING
+
+**⚠️ The Wall is not a path yet — Ethan is right.** Its rungs stop at doors and
+keypads. Everything that would make it a path — reinforced blocks — is Vault
+loot at −64…−128, and **D2 Vaults are unbuilt**. So SecurityCraft currently
+offers a lock and nothing to protect it with.
+
+That is not a mod problem, it is the same gap as everywhere else: the payoff was
+never built. Until D2 exists the Wall is a **tax** (everyone puts a door on)
+rather than a specialisation. Building D2 turns it into a path in one step, which
+is a strong argument for D2 being next.
 
 **⚠️ The Beasts are not a path.** Ice and Fire is listed as "dragons as a
 late-game target", but there are no rungs — a dragon is a wall, not a ladder,
