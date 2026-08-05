@@ -156,6 +156,29 @@
     ],
   }
 
+  // THE RARE ONES. A joke tier, and the joke only works because it is rare - if
+  // you can make it happen it is a feature, and if you cannot it is a thing that
+  // happened to you once and nobody believes.
+  //
+  // Undertale's flavour-text convention is the "* " prefix, so it is kept: the
+  // reference is the FORMAT as much as the line. Paired with genuinely unpleasant
+  // nausea, because the funniest version is the one that also ruins the next ten
+  // seconds of your life.
+  var RARE_CHANCE = 0.08                  // of a whisper, not of a second
+  var RARE_NAUSEA_TICKS = 240             // 12s
+  var RARE_NAUSEA_AMP = 3
+  var RARE_WHISPERS = {
+    wall: [
+      '* The spider does a funny dance.',
+      '* Smells like tough love.',
+    ],
+    forge: ['* You feel your pockets. They are lighter.'],
+    art: ['* You are filled with someone else's determination.'],
+    blade: ['* The challenger is sizing you up. It is not impressed.'],
+    salvage: ['* Something is counting your bullets. It got a lower number than you did.'],
+    crown: ['* The dead take a knee. Not for you.'],
+  }
+
   var CAST = {
     forge:   ['born_in_chaos_v1:krampus', 'The Thief'],
     art:     ['born_in_chaos_v1:nightmare_stalker', 'The Nightmare'],
@@ -617,6 +640,18 @@
     var pool = WHISPERS[key]
     if (!pool || !pool.length) return
     lastWhisper[uuid] = now
+
+    var rare = RARE_WHISPERS[key]
+    if (rare && rare.length && Math.random() < RARE_CHANCE) {
+      var joke = rare[Math.floor(Math.random() * rare.length)]
+      try {
+        player.tell(Text.of('§f' + joke))     // white, not the grey murmur - it is ANNOUNCING itself
+        player.potionEffects.add('minecraft:nausea', RARE_NAUSEA_TICKS, RARE_NAUSEA_AMP, false, false)
+      } catch (x) { }
+      console.info('[stalker] rare whisper to ' + player.username + ': ' + joke)
+      return
+    }
+
     var line = pool[Math.floor(Math.random() * pool.length)]
     try {
       player.tell(Text.of('§8§o' + line))
