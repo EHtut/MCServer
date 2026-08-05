@@ -32,11 +32,26 @@
   var STATE = 'veldora_stalker_state'     // server.persistentData: uuid -> { phase }
   var FLEE_AT = 0.35
   var SCALE = 1.25
-  var SWEEP = 40                          // ticks between phase sweeps (2s)
+  // A mob closes roughly 10 blocks in 2 seconds, so a 2s sweep was letting a
+  // Companion cross from MIN_DIST to arm's reach between checks. The distance
+  // ring runs every second; the EXPENSIVE part (an 80-block entity scan for
+  // duplicates) only every fifth pass, since orphans do not appear mid-second.
+  var SWEEP = 20                          // ticks between phase sweeps (1s)
+  var CULL_EVERY = 5                      // sweeps between duplicate scans
   var HYST = 3                            // notoriety points of stickiness at every edge
   var HELPER_AT = 0.35                    // owner health fraction that summons the Helper
   var HELPER_STAY = 100                   // ticks the Helper lingers (5s)
-  var LEASH = 24                          // blocks before the Companion is pulled back
+  // DISTANCE. Ethan: "make it always spawn far, far enough that it is still
+  // following you but at a large distance."
+  //
+  // This is not only taste - it is the fix for "if i get too close it kills me".
+  // A Companion is a Born in Chaos hostile whose AI keeps re-acquiring its owner
+  // between our sweeps, so the reliable answer is that it never gets to ARM'S
+  // REACH in the first place. Distance is the safety, the damage cancel below is
+  // the guarantee, and clearing the target is only cosmetic.
+  var SPAWN_DIST = 28                     // where a Companion appears
+  var MIN_DIST = 14                       // it is pushed back out if it closes past this
+  var LEASH = 48                          // and pulled in if it falls behind this
   var HARVEST = 'veldora_harvest'         // entity flag: this one CAN die
   var ABSENT_DAYS = 30                    // gone this long after a Harvest, either way
 
@@ -90,6 +105,7 @@
   ]
 
   var SERVER = null
+  var sweepCount = 0
   var live = {}                 // uuid -> stalker entity (in-memory; always re-checked)
   var damageAccessorLogged = false
   var sourceAccessorLogged = false
@@ -185,7 +201,6 @@
     if (isFleeing(e)) return
     try { e.persistentData.putBoolean(FLEEING, true) } catch (x) { }
     console.info('[stalker] ' + (e.type || '?') + ' fleeing from ' + ownerOf(e) + ' (' + why + ')')
-    try { e.setGlowing(false) } catch (x) { }
     try { e.potionEffects.add('minecraft:invisibility', 60, 0, false, false) } catch (x) { }
     try { e.potionEffects.add('minecraft:speed', 60, 3, false, false) } catch (x) { }
     try { e.setTarget(null) } catch (x) { }
@@ -278,8 +293,10 @@
     if (!spec) return null
     var e = player.level.createEntity(spec[0])
     if (!e) return null
-    var d = near || 4
-    e.setPos(player.x + d, player.y, player.z)
+    // random bearing at range - always appearing due east read as scripted
+    var d = near || SPAWN_DIST
+    var a = Math.random() * Math.PI * 2
+    e.setPos(player.x + Math.cos(a) * d, player.y, player.z + Math.sin(a) * d)
     e.persistentData.putString(OWNER, player.username)
     e.persistentData.putString(PATHKEY, pathKey)
     e.setCustomName(Text.of('§c' + spec[1]))
@@ -295,7 +312,10 @@
       try { e.setHealth(st.health) } catch (x) { }
     }
     try { e.getAttribute('minecraft:generic.scale').setBaseValue(SCALE) } catch (x) { }
-    try { e.setGlowing(true) } catch (x) { }
+    // NO GLOW. It was my idea for making a common species read as singular, and
+    // Ethan is right that it looks wrong - an outline through walls is a game-UI
+    // tell, not a horror one. The name and the size do that job without
+    // announcing themselves.
 
     // NO PERSISTENCE on a Companion or Helper - deliberately.
     // Pinning them meant every stalker outlived its session, and since they also
@@ -541,10 +561,12 @@
 
     var cur = live[uuid]
     if (!alive(cur)) { delete live[uuid]; cur = null }
-    // adopt orphans and kill duplicates before deciding anything
-    var found = cull(player, uuid)
-    if (found) cur = found
-    else delete live[uuid]
+    // adopt orphans and kill duplicates - the costly scan, so not every pass
+    if (sweepCount % CULL_EVERY === 0 || !cur) {
+      var found = cull(player, uuid)
+      if (found) cur = found
+      else delete live[uuid]
+    }
 
     // THE ABSENCE: gone. no warning, no message.
     if (phase === 'absence') {
@@ -593,10 +615,16 @@
       try { if (cur.target && cur.target.username === player.username) cur.setTarget(null) } catch (y) { }
     }
 
+    // Keep it in a RING: never closer than MIN_DIST, never further than LEASH.
+    // Being pushed back out is what stops it reaching him between sweeps.
     try {
-      var dx = cur.x - player.x, dy = cur.y - player.y, dz = cur.z - player.z
-      if ((dx * dx + dy * dy + dz * dz) > LEASH * LEASH) {
-        cur.setPos(player.x + 3, player.y, player.z + 3)
+      var dx = cur.x - player.x, dz = cur.z - player.z
+      var d2 = dx * dx + dz * dz
+      if (d2 < MIN_DIST * MIN_DIST || d2 > LEASH * LEASH) {
+        var ang = Math.random() * Math.PI * 2
+        var r = MIN_DIST + 6
+        cur.setPos(player.x + Math.cos(ang) * r, player.y, player.z + Math.sin(ang) * r)
+        try { cur.setTarget(null) } catch (y) { }
       }
     } catch (x) { }
   }
@@ -609,6 +637,17 @@
     var isPlayer = false
     try { isPlayer = !!p && !!p.username } catch (x) { }
     if (!isPlayer || !SERVER) return
+
+    // YOUR OWN STALKER CANNOT HURT YOU outside the Harvest. Clearing its target
+    // on a 2s sweep is cosmetic; between sweeps its AI re-acquires and swings,
+    // which is exactly how it was killing Ethan. This is the hard stop, and it is
+    // event-driven so there is no window.
+    var biter = attackerOf(event)
+    if (biter && isStalker(biter) && ownerOf(biter) === p.username && !isHarvestInstance(biter)) {
+      try { biter.setTarget(null) } catch (x) { }
+      event.cancel()
+      return
+    }
 
     var uuid = String(p.uuid)
     var phase = phaseStored(SERVER, p)
@@ -638,7 +677,7 @@
     try { pathKey = p.persistentData.getString('veldora_path') } catch (x) { }
     if (!pathKey || !CAST[pathKey]) return
 
-    var e = summon(p, pathKey, 3)
+    var e = summon(p, pathKey, 8)
     if (!e) return
     live[uuid] = e
     // point it at the threat immediately; if there is no attacker (fall, lava)
@@ -653,6 +692,7 @@
 
   // -------------------------------------------------------------------- boot
   function sweep(server) {
+    sweepCount++
     try {
       var players = server.players
       for (var i = 0; i < players.length; i++) sweepPlayer(server, players[i])
