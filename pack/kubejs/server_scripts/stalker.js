@@ -177,22 +177,37 @@
   // Who threw the punch. C0 found src.getEntity() throws and zero-arg accessors
   // read back as METHODS when touched as properties, so every candidate is
   // called and type-checked.
+  var ATTACKER_CANDS = [
+    ['source.actor', function (s) { return s.actor }],
+    ['source.player', function (s) { return s.player }],
+    ['source.entity', function (s) { return s.entity }],
+    ['source.directEntity', function (s) { return s.directEntity }],
+    ['source.getEntity()', function (s) { return s.getEntity() }],
+    ['source.getDirectEntity()', function (s) { return s.getDirectEntity() }],
+  ]
+  var attackerPick = -1
   function attackerOf(event) {
     var src = null
     try { src = event.source } catch (x) { return null }
     if (!src) return null
-    var cands = [
-      ['source.actor', function () { return src.actor }],
-      ['source.player', function () { return src.player }],
-      ['source.entity', function () { return src.entity }],
-      ['source.directEntity', function () { return src.directEntity }],
-      ['source.getEntity()', function () { return src.getEntity() }],
-      ['source.getDirectEntity()', function () { return src.getDirectEntity() }],
-    ]
+    // Once we know which accessor this runtime exposes, stop re-discovering it.
+    // This runs on EVERY damage tick - standing in fire is 20/s per player - and
+    // several candidates throw, which is the expensive part in Rhino.
+    if (attackerPick >= 0) {
+      try {
+        var q = ATTACKER_CANDS[attackerPick][1](src)
+        if (q && typeof q !== 'function' && alive(q)) return q
+      } catch (x) { }
+      return null
+    }
+    var cands = ATTACKER_CANDS.map(function (c) {
+      return [c[0], function () { return c[1](src) }]
+    })
     for (var i = 0; i < cands.length; i++) {
       try {
         var v = cands[i][1]()
         if (v && typeof v !== 'function' && alive(v)) {
+          attackerPick = i
           if (!sourceAccessorLogged) {
             sourceAccessorLogged = true
             console.info('[stalker] attacker read via ' + cands[i][0])
@@ -247,8 +262,23 @@
   // predator and becomes a resource.
   EntityEvents.drops(function (event) {
     if (!isStalker(event.entity)) return
+    // Design: "no loot, no XP". drops covers ITEMS only - a killed Harvest was
+    // still dropping experience orbs, which fed the very notoriety it exists to
+    // reset. Zero the xp on the event where the API allows it.
+    var zeroed = false
+    var cands = [
+      function () { event.experience = 0; return event.experience === 0 },
+      function () { event.setExperience(0); return true },
+      function () { event.xp = 0; return event.xp === 0 },
+    ]
+    for (var i = 0; i < cands.length; i++) { try { if (cands[i]()) { zeroed = true; break } } catch (x) { } }
+    if (!zeroed && !xpDropWarned) {
+      xpDropWarned = true
+      console.warn('[stalker] could not zero XP drop - a killed Harvest still pays experience')
+    }
     event.cancel()
   })
+  var xpDropWarned = false
 
   EntityEvents.death(function (event) {
     var e = event.entity
@@ -258,12 +288,26 @@
     if (isStalker(e)) {
       var owner = ownerOf(e)
       if (isHarvestInstance(e)) {
-        // WON. Only its owner collects - a passer-by who lands the last hit does
-        // not take someone else's ending.
+        // WON - but the owner has to have BEEN THERE. The old check only asked
+        // whether they were online, so a brother could find your boss and kill
+        // it while you were asleep 5000 blocks away, and you would take the
+        // fragment, the escrow and the 30-day absence for a fight you never saw.
+        //
+        // Proximity rather than last-hit, because design rule 3 says friends may
+        // help: someone else landing the final blow beside you still counts.
         var p = null
         try { p = SERVER.getPlayer(owner) } catch (x) { }
-        if (p) { harvestWon(SERVER, p, e); return }
-        console.warn('[stalker] harvest instance died but owner ' + owner + ' is offline')
+        if (!p) { console.warn('[stalker] harvest died but owner ' + owner + ' is offline - no credit'); return }
+        var near = false
+        try {
+          var ddx = p.x - e.x, ddy = p.y - e.y, ddz = p.z - e.z
+          near = (ddx * ddx + ddy * ddy + ddz * ddz) <= (64 * 64)
+        } catch (x) { }
+        if (!near) {
+          console.warn('[stalker] harvest died far from ' + owner + ' - no credit, it simply left')
+          return
+        }
+        harvestWon(SERVER, p, e)
         return
       }
       console.error('[stalker] !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
@@ -574,21 +618,30 @@
   // restart, so orphans from the previous session are invisible to it and the
   // sweep cheerfully summons another one alongside them. That is how Ethan got
   // multiple Krampuses. Ask the world instead.
+  // Returns an array, or NULL if the scan could not run. null is NOT "none" -
+  // treating a failed scan as an empty world is what minted duplicate immortal
+  // stalkers every time an owner walked 85 blocks away or through a portal.
   function findOwned(player) {
     var out = []
     try {
       var near = player.level.getEntitiesWithin(player.boundingBox.inflate(80))
       for (var i = 0; i < near.length; i++) {
         var e = near[i]
-        if (isStalker(e) && ownerOf(e) === player.username && alive(e) && !isFleeing(e)) out.push(e)
+        // fleeing ones are INCLUDED: a flee interrupted by a restart leaves an
+        // immortal that nothing else can remove, since the guard cancels all
+        // damage to it forever.
+        if (isStalker(e) && ownerOf(e) === player.username && alive(e)) out.push(e)
       }
-    } catch (x) { }
+    } catch (x) { return null }
     return out
   }
 
+  // null  = could not determine (caller must NOT summon)
+  // false = determined, nothing there (caller may summon)
   function cull(player, uuid) {
     var owned = findOwned(player)
-    if (!owned.length) return null
+    if (owned === null) return null
+    if (!owned.length) return false
     var keep = null
     for (var i = 0; i < owned.length; i++) if (isHarvestInstance(owned[i])) { keep = owned[i]; break }
     if (!keep) keep = owned[0]
@@ -598,6 +651,8 @@
       try { owned[j].discard(); killed++ } catch (x) { }
     }
     if (killed) console.warn('[stalker] culled ' + killed + ' duplicate stalker(s) for ' + player.username)
+    // a stalker that was mid-flee is not a companion; drop it rather than adopt
+    if (isFleeing(keep)) { try { keep.discard() } catch (x) { } ; delete live[uuid]; return false }
     live[uuid] = keep
     return keep
   }
@@ -642,10 +697,12 @@
     var cur = live[uuid]
     if (!alive(cur)) { delete live[uuid]; cur = null }
     // adopt orphans and kill duplicates - the costly scan, so not every pass
+    var scanned = true
     if (sweepCount % CULL_EVERY === 0 || !cur) {
       var found = cull(player, uuid)
-      if (found) cur = found
-      else delete live[uuid]
+      if (found === null) { scanned = false }            // could not tell - do NOT summon
+      else if (found) { cur = found }
+      else { delete live[uuid]; cur = null }
     }
 
     // THE ABSENCE: gone. no warning, no message.
@@ -654,13 +711,24 @@
       return
     }
 
+    // NO PATH is a perfectly legitimate way to play (Ethan, 2026-08-05: "paths
+    // can be opted out, that's fine"). It must be a clean state, not a wedged
+    // one: nothing follows you, and the stored phase does not stick on 'harvest'
+    // leaving you unprotected and unpaid with no signal that anything is wrong.
+    var myPath = ''
+    try { myPath = player.persistentData.getString('veldora_path') } catch (x) { }
+    if (!myPath || !CAST[myPath]) {
+      if (cur) dismiss(uuid)
+      if (phase !== 'none') phaseStore(server, player, 'none')
+      return
+    }
+
     // THE HARVEST: it comes for you, and now it can die.
     if (phase === 'harvest') {
       if (cur && isHarvestInstance(cur)) return
       if (cur) dismiss(uuid)                       // a companion does not become the harvest
-      var hk = ''
-      try { hk = player.persistentData.getString('veldora_path') } catch (x) { }
-      if (!hk || !CAST[hk]) return
+      var hk = myPath
+      if (!scanned) return
       var he = summonHarvest(player, hk)
       if (he) {
         live[uuid] = he
@@ -671,15 +739,18 @@
     }
 
     // THE HELPER only ever appears at low health - it is summoned by the damage
-    // hook below, never by this sweep. All the sweep does is expire it.
-    if (phase === 'helper') return
+    // hook below, never by this sweep. But a player who enchants from 30 down to
+    // 20 was leaving their Companion standing there indefinitely, which made
+    // "the Helper appears ONLY at low health" plainly untrue.
+    if (phase === 'helper') {
+      if (cur && !isHarvestInstance(cur)) dismiss(uuid)
+      return
+    }
 
     // THE COMPANION: a tamed dog. Present, and kept on a leash.
     if (!cur) {
-      var pathKey = ''
-      try { pathKey = player.persistentData.getString('veldora_path') } catch (x) { }
-      if (!pathKey || !CAST[pathKey]) return        // no path, no stalker
-      var e = summon(player, pathKey, 6)
+      if (!scanned) return                          // the scan failed: never summon blind
+      var e = summon(player, myPath, DIST_FAR)
       if (e) { live[uuid] = e; console.info('[stalker] companion joined ' + player.username) }
       return
     }
@@ -762,10 +833,17 @@
   // -------------------------------------------------------------------- boot
   function sweep(server) {
     sweepCount++
+    // PER PLAYER, not per loop. The try used to wrap the whole loop, so one
+    // deterministic fault on the first player silently starved everyone behind
+    // them in the list - which is exactly what the undefined-helper bug would
+    // have done to all four of them at once.
     try {
       var players = server.players
-      for (var i = 0; i < players.length; i++) sweepPlayer(server, players[i])
-    } catch (e) { console.warn('[stalker] sweep threw :: ' + e) }
+      for (var i = 0; i < players.length; i++) {
+        try { sweepPlayer(server, players[i]) }
+        catch (one) { console.warn('[stalker] sweep threw for ' + players[i].username + ' :: ' + one) }
+      }
+    } catch (e) { console.warn('[stalker] sweep loop threw :: ' + e) }
     server.scheduleInTicks(SWEEP, function () { sweep(server) })
   }
 
@@ -783,11 +861,18 @@
   })
 
   // ------------------------------------------------------------------ commands
+  // ADMIN GATE. Everything that can mint items, force a boss, or opt a player out
+  // of the hunt is level 2. It FAILS CLOSED - if hasPermission ever throws, the
+  // answer is no. On a four-player server with a brother, /stalker harvest was
+  // three diamonds a go on repeat and /notoriety_setday was a permanent opt-out
+  // of the one thing the design says you cannot opt out of.
+  function ADMIN(s) { try { return s.hasPermission(2) } catch (e) { return false } }
+
   ServerEvents.commandRegistry(function (event) {
     var Commands = event.commands
     var root = Commands.literal('stalker')
 
-    root = root.then(Commands.literal('clear').executes(function (ctx) {
+    root = root.then(Commands.literal('clear').requires(ADMIN).executes(function (ctx) {
       var p = ctx.source.player
       if (!p) return 0
       var n = 0
@@ -800,7 +885,7 @@
       return 1
     }))
 
-    root = root.then(Commands.literal('harvest').executes(function (ctx) {
+    root = root.then(Commands.literal('harvest').requires(ADMIN).executes(function (ctx) {
       var p = ctx.source.player
       if (!p) return 0
       var srv = ctx.source.server
@@ -843,10 +928,10 @@
     }))
 
     Object.keys(CAST).forEach(function (key) {
-      root = root.then(Commands.literal(key).executes(function (ctx) {
+      root = root.then(Commands.literal(key).requires(ADMIN).executes(function (ctx) {
         var p = ctx.source.player
         if (!p) return 0
-        var e = summon(p, key, 4)
+        var e = summon(p, key, DIST_FAR)
         if (!e) { p.tell(Text.of('§ccould not summon ' + key)); return 0 }
         p.tell(Text.of('§7Summoned §f' + CAST[key][1] + ' §8(' + CAST[key][0] + ')'))
         p.tell(Text.of('§7max health §f' + Math.round(maxHealthOf(e)) +

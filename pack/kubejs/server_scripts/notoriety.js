@@ -35,10 +35,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var CAP = 100
 
   // ---------------------------------------------------------------- helpers
+  // null, never 0. Returning 0 on failure anchored a first-seen player at day 0,
+  // so the moment the clock read correctly their floor was the entire age of the
+  // world and they were harvested on arrival - the exact bug the anchor exists to
+  // prevent. It also silently skipped the 30-day absence after a Harvest.
   function dayNow(server) {
-    try { return Math.floor(server.overworld().dayTime() / 24000) }
-    catch (e) { return 0 }
+    try {
+      var d = server.overworld().dayTime()
+      if (typeof d === 'number' && isFinite(d)) return Math.floor(d / 24000)
+    } catch (e) { }
+    if (!dayWarned) {
+      dayWarned = true
+      console.error('[notoriety] !! CANNOT READ THE WORLD CLOCK. Anchoring and the')
+      console.error('[notoriety] !! 30-day absence are both suspended until it reads.')
+    }
+    return null
   }
+  var dayWarned = false
 
   function rateFor(harvestCount) {
     var i = harvestCount < 0 ? 0 : (harvestCount >= RATES.length ? RATES.length - 1 : harvestCount)
@@ -83,21 +96,26 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var uuid = String(player.uuid)
     var rec = recordOf(server, uuid)
     if (rec) return rec
+    var today = dayNow(server)
+    if (today === null) return null                   // refuse to anchor blind
     var fresh = allRecords(server).getCompound(uuid)   // an empty compound
-    fresh.putInt('lastHarvestDay', dayNow(server))
+    fresh.putInt('lastHarvestDay', today)
     fresh.putInt('harvestCount', 0)
     fresh.putString('name', player.username)
     writeRecord(server, uuid, fresh)
-    console.info('[notoriety] anchored ' + player.username + ' at day ' + dayNow(server))
+    console.info('[notoriety] anchored ' + player.username + ' at day ' + today)
     return recordOf(server, uuid)
   }
 
   // ------------------------------------------------------------------ the API
   // Returns a breakdown, never a bare number, so callers and the audit can see
   // WHICH term is dominant - and so "could not read XP" never masquerades as 0.
+  var xpWarned = false
   function breakdown(server, player) {
     var rec = ensure(server, player)
+    if (!rec) return null                            // no clock, no anchor, no answer
     var day = dayNow(server)
+    if (day === null) return null
     var last = rec.getInt('lastHarvestDay')
     var hc = rec.getInt('harvestCount')
     var rate = rateFor(hc)
@@ -105,6 +123,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (since < 0) since = 0                       // clock ran backwards; do not go negative
     var floor = Math.floor(since * rate)
     var xp = xpLevelOf(player)
+    if (xp === null && !xpWarned) {
+      xpWarned = true
+      console.error('[notoriety] !! CANNOT READ XP LEVEL for ' + player.username + '.')
+      console.error('[notoriety] !! Notoriety is running on the day-floor ALONE. Power,')
+      console.error('[notoriety] !! drops and phases are all wrong. That is a BUG.')
+    }
     var value = Math.max(xp === null ? 0 : xp, floor)
     return {
       value: value > CAP ? CAP : value,
@@ -146,6 +170,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   VELDORA.recordHarvest = function (server, player, won) {
     var uuid = String(player.uuid)
     var rec = ensure(server, player)
+    if (!rec) {
+      console.error('[stalker] !! recordHarvest could not anchor ' + player.username +
+        ' - the cycle did NOT advance and the absence was NOT set')
+      return null
+    }
     var hc = rec.getInt('harvestCount')
     var next = won ? 0 : hc + 1
     var day = dayNow(server)
@@ -170,6 +199,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   PlayerEvents.loggedIn(function (event) { ensure(event.server, event.player) })
 
   // ------------------------------------------------------------------ command
+  // ADMIN GATE. Everything that can mint items, force a boss, or opt a player out
+  // of the hunt is level 2. It FAILS CLOSED - if hasPermission ever throws, the
+  // answer is no. On a four-player server with a brother, /stalker harvest was
+  // three diamonds a go on repeat and /notoriety_setday was a permanent opt-out
+  // of the one thing the design says you cannot opt out of.
+  function ADMIN(s) { try { return s.hasPermission(2) } catch (e) { return false } }
+
   ServerEvents.commandRegistry(function (event) {
     var Commands = event.commands
 
@@ -177,6 +213,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       var p = ctx.source.player
       if (!p) { ctx.source.sendSystemMessage(Text.of('[notoriety] run this as a player')); return 0 }
       var b = breakdown(ctx.source.server, p)
+      if (!b) { p.tell(Text.of('§cnotoriety unavailable - see the server log. This is a bug.')); return 0 }
 
       p.tell(Text.of('§8§m                                        '))
       p.tell(Text.of('§7Notoriety  §f§l' + b.value + (b.raw > CAP ? ' §8(capped from ' + b.raw + ')' : '')))
@@ -193,24 +230,32 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     }))
 
     // audit helpers - C1 only, removed when the chunk is signed off
-    event.register(Commands.literal('notoriety_setday')
+    event.register(Commands.literal('notoriety_setday').requires(ADMIN)
       .then(Commands.argument('day', event.arguments.INTEGER.create(event))
         .executes(function (ctx) {
           var p = ctx.source.player
+          // From the console there IS no player, and reaching for p.uuid threw
+          // "An unexpected error occurred" rather than saying so.
+          if (!p) { ctx.source.sendSystemMessage(Text.of('[notoriety] run this as a player')); return 0 }
           var uuid = String(p.uuid)
           var rec = ensure(ctx.source.server, p)
+          if (!rec) { p.tell(Text.of('§cno world clock - cannot anchor. See the log.')); return 0 }
           rec.putInt('lastHarvestDay', ctx.getArgument('day', Java.loadClass('java.lang.Integer')))
           writeRecord(ctx.source.server, uuid, rec)
           p.tell(Text.of('[notoriety] lastHarvestDay set - run /notoriety'))
           return 1
         })))
 
-    event.register(Commands.literal('notoriety_harvests')
+    event.register(Commands.literal('notoriety_harvests').requires(ADMIN)
       .then(Commands.argument('n', event.arguments.INTEGER.create(event))
         .executes(function (ctx) {
           var p = ctx.source.player
+          // From the console there IS no player, and reaching for p.uuid threw
+          // "An unexpected error occurred" rather than saying so.
+          if (!p) { ctx.source.sendSystemMessage(Text.of('[notoriety] run this as a player')); return 0 }
           var uuid = String(p.uuid)
           var rec = ensure(ctx.source.server, p)
+          if (!rec) { p.tell(Text.of('§cno world clock - cannot anchor. See the log.')); return 0 }
           rec.putInt('harvestCount', ctx.getArgument('n', Java.loadClass('java.lang.Integer')))
           writeRecord(ctx.source.server, uuid, rec)
           p.tell(Text.of('[notoriety] harvestCount set - run /notoriety'))

@@ -122,6 +122,7 @@
   // ---------------------------------------------------------------- commands
   ServerEvents.commandRegistry(function (event) {
     var Commands = event.commands
+    function ADMIN(s) { try { return s.hasPermission(2) } catch (e) { return false } }
 
     event.register(Commands.literal('power').executes(function (ctx) {
       var p = ctx.source.player
@@ -148,7 +149,7 @@
       return 1
     }))
 
-    event.register(Commands.literal('power_clear').executes(function (ctx) {
+    event.register(Commands.literal('power_clear').requires(ADMIN).executes(function (ctx) {
       var p = ctx.source.player
       if (!p) return 0
       var done = clearPower(p)

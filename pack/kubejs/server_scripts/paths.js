@@ -292,6 +292,9 @@
   // ===========================================================================
 
   ServerEvents.commandRegistry(event => {
+    // ADMIN GATE, failing closed - if hasPermission throws, the answer is no.
+    function ADMIN(s) { try { return s.hasPermission(2) } catch (e) { return false } }
+
     const Commands = event.commands
 
     // /guide         -> the Veldora book, plus the library index
@@ -349,6 +352,7 @@
       if (typeof VELDORA !== 'undefined' && typeof VELDORA.notoriety === 'function') {
         try {
           var b = VELDORA.notoriety(srv, p)
+          if (!b) throw 'unavailable'
           var pct = Math.round((0.08 + 0.002 * Math.min(b.value, 100)) * 1000) / 10
           p.tell('§8§m                                        ')
           p.tell('§7Notoriety §f§l' + b.value + ' §8- your kills pay §f' + pct + '%')
@@ -373,6 +377,28 @@
     // real dropChanceFor() against the caller's real notoriety, so it exercises
     // the whole path including the cross-file VELDORA read. Pair it with
     // /notoriety_setday to move the number and sample again.
+    // /path forcerelease <name>  — ADMIN. Ethan's ruling for the permanent lock.
+    //
+    // escrowFor() clears the holder's own path tag, so releasePath() reads '' and
+    // answers "you walk no path" - the one person entitled to give it up is the
+    // one person who cannot. If they stop playing, that path is gone for good,
+    // and on a six-path four-player server that is a third of the design.
+    root = root.then(Commands.literal('forcerelease').requires(ADMIN)
+      .then(Commands.argument('path', event.arguments.STRING.create(event))
+        .executes(ctx => {
+          var key = ctx.getArgument('path', Java.loadClass('java.lang.String'))
+          if (!PATHS[key]) {
+            ctx.source.sendSystemMessage(Text.of('§cUnknown path. ' + Object.keys(PATHS).join(', ')))
+            return 0
+          }
+          var srv = ctx.source.server
+          var was = holderOf(srv, key)
+          setHolder(srv, key, '')
+          srv.tell('§8' + PATHS[key].name + ' has been opened' +
+            (was ? ' §8(was ' + was.replace(ESCROW, 'held by ') + ')' : '') + '.')
+          return 1
+        })))
+
     root = root.then(Commands.literal('books').executes(ctx => {
       const p = ctx.source.player
       if (!p) return 0
@@ -382,7 +408,7 @@
       return 1
     }))
 
-    root = root.then(Commands.literal('sample').executes(ctx => {
+    root = root.then(Commands.literal('sample').requires(ADMIN).executes(ctx => {
       const p = ctx.source.player
       if (!p) return 0
       var srv = ctx.source.server
@@ -390,8 +416,8 @@
       var rolls = 2000, hits = 0
       for (var i = 0; i < rolls; i++) { if (Math.random() <= chance) hits++ }
       var observed = hits / rolls
-      var b = (typeof VELDORA !== 'undefined' && VELDORA.notoriety)
-        ? VELDORA.notoriety(srv, p) : null
+      var b = null
+      try { if (typeof VELDORA !== 'undefined' && VELDORA.notoriety) b = VELDORA.notoriety(srv, p) } catch (e) { }
       p.tell('§8§m                                        ')
       p.tell('§7notoriety   §f' + (b ? b.value : '§cUNREADABLE'))
       p.tell('§7expected    §f' + (Math.round(chance * 1000) / 10) + '%' +
@@ -464,9 +490,22 @@
       for (var i = 0; i < players.length; i++) {
         var p = players[i]
         if (pathOf(p)) continue
+
+        // Someone mid-escrow HAS no path but is not adrift - they are deciding.
+        // Nagging them as pathless, and listing their own held path as "open",
+        // was telling them to take something they already have.
+        var mine = Object.keys(PATHS).filter(function (k) {
+          return escrowHolder(holderOf(server, k)) === p.username
+        })
+        if (mine.length) {
+          p.tell('§7' + PATHS[mine[0]].name + ' §7is still held for you.')
+          p.tell('§8Take it back with §f/path ' + mine[0] + '§8, or choose another.')
+          continue
+        }
+
+        // Escrowed paths are NOT open - /path would refuse them.
         var open = Object.keys(PATHS).filter(function (k) {
-          var h = holderOf(server, k)
-          return !h || !!escrowHolder(h)
+          return !holderOf(server, k)
         })
         if (!open.length) continue
         p.tell('§8§m                                        ')
