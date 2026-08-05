@@ -62,6 +62,28 @@
     enchanting:['Blaze Enchanting Handbook', 'create_enchantment_industry:blazes_enchanting_handbook'],
   }
   const BOOK = BOOKS.veldora[1]
+
+  // The reading you are handed the moment you commit. Ethan: "guidebooks for each
+  // to throw at the player. more reading material."
+  //
+  // A guide you have to know exists is a guide nobody reads - the whole reason
+  // the pack felt like "vanilla with worse mobs" was that nothing pointed
+  // anywhere. Choosing a path is the one moment we KNOW a player is asking "so
+  // what do I do now", so that is when the books arrive.
+  const PATH_BOOKS = {
+    forge:   ['enchanting', 'banking'],
+    art:     ['ars', 'hermetica', 'brews'],
+    salvage: ['hostility'],
+    blade:   ['hostility', 'monsters'],
+    crown:   ['goety'],
+    wall:    ['security'],
+  }
+
+  // How often to nudge someone who walks no path. Long enough not to nag, short
+  // enough that a new player cannot spend an evening not knowing the system
+  // exists.
+  const NUDGE_TICKS = 6000        // ~5 minutes
+
   const KEY = 'veldora_path'
   // C2 — the drop chance is no longer flat. It rides notoriety:
   //     0.08 + 0.002 x min(notoriety, 100)   ->  8% at 0, 11% at 15, 18% at 50, 28% at 100
@@ -201,6 +223,27 @@
     return cur
   }
 
+  function givePathBooks(server, player, key) {
+    var list = PATH_BOOKS[key] || []
+    var given = []
+    for (var i = 0; i < list.length; i++) {
+      var b = BOOKS[list[i]]
+      if (!b) continue
+      try {
+        server.runCommandSilent('give ' + player.username + ' ' + b[1] + ' 1')
+        given.push(b[0])
+      } catch (e) {
+        console.warn('[paths] could not give ' + list[i] + ' :: ' + e)
+      }
+    }
+    if (given.length) {
+      player.tell('§7Reading, for the road:')
+      for (var j = 0; j < given.length; j++) player.tell('  §6' + given[j])
+      player.tell('§8§o/path books §8re-issues them. §8/guide §8lists every book in the world.')
+    }
+    return given.length
+  }
+
   // ---------------------------------------------------------------------------
   // ESCROW — C7. Killing your stalker costs you your path.
   //
@@ -276,6 +319,8 @@
     })
     event.register(guide)
 
+
+
     // /path                -> what you are, and what is on offer
     // /path <name>         -> declare
     var root = Commands.literal('path').executes(ctx => {
@@ -328,6 +373,15 @@
     // real dropChanceFor() against the caller's real notoriety, so it exercises
     // the whole path including the cross-file VELDORA read. Pair it with
     // /notoriety_setday to move the number and sample again.
+    root = root.then(Commands.literal('books').executes(ctx => {
+      const p = ctx.source.player
+      if (!p) return 0
+      var k = pathOf(p)
+      if (!k || !PATH_BOOKS[k]) { p.tell('§7Declare a path first: §f/path <name>'); return 0 }
+      givePathBooks(ctx.source.server, p, k)
+      return 1
+    }))
+
     root = root.then(Commands.literal('sample').executes(ctx => {
       const p = ctx.source.player
       if (!p) return 0
@@ -385,11 +439,48 @@
         p.tell('§6You walk ' + PATHS[key].name + '§7.')
         p.tell('§7' + PATHS[key].blurb)
         p.tell('§8Kills now pay in your path - and pay better the deeper you are.')
+        givePathBooks(srv, p, key)
         srv.tell('§8' + p.username + ' walks ' + PATHS[key].name + '.')
         return 1
       }))
     })
     event.register(root)
+  })
+
+  // ===========================================================================
+  // the nudge - nobody can walk a path they never heard of
+  // ===========================================================================
+  //
+  // The pack's original complaint was "no one knows what to do, so it is just
+  // vanilla with worse mobs". Every system since then assumed the player already
+  // knew paths existed. This is the only thing that tells them.
+  //
+  // It goes quiet the moment they choose, so it can never become the noise it is
+  // meant to prevent.
+
+  function nudge(server) {
+    try {
+      var players = server.players
+      for (var i = 0; i < players.length; i++) {
+        var p = players[i]
+        if (pathOf(p)) continue
+        var open = Object.keys(PATHS).filter(function (k) {
+          var h = holderOf(server, k)
+          return !h || !!escrowHolder(h)
+        })
+        if (!open.length) continue
+        p.tell('§8§m                                        ')
+        p.tell('§7You walk no path. §8Everything you kill pays you nothing.')
+        p.tell('§7Open: §f' + open.join('§7, §f'))
+        p.tell('§8Pick one with §f/path <name>§8. One walker each - first come.')
+      }
+    } catch (e) { console.warn('[paths] nudge threw :: ' + e) }
+    server.scheduleInTicks(NUDGE_TICKS, function () { nudge(server) })
+  }
+
+  ServerEvents.loaded(function (event) {
+    event.server.scheduleInTicks(NUDGE_TICKS, function () { nudge(event.server) })
+    console.info('[paths] path nudge every ' + NUDGE_TICKS + 't for players with no path')
   })
 
   // ===========================================================================

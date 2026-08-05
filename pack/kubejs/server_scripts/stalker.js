@@ -49,9 +49,17 @@
   // between our sweeps, so the reliable answer is that it never gets to ARM'S
   // REACH in the first place. Distance is the safety, the damage cancel below is
   // the guarantee, and clearing the target is only cosmetic.
-  var SPAWN_DIST = 16                     // where a Companion appears (Ethan, 2026-08-05)
-  var MIN_DIST = 10                       // it is pushed back out if it closes past this
-  var LEASH = 32                          // and pulled in if it falls behind this
+  // DISTANCE IS DYNAMIC (Ethan, 2026-08-05): "creeping closer the lower the
+  // player's health is... lets do 30, at the edge of the player's chunk."
+  //
+  // At full health it keeps two chunks back and simply paces you. As you weaken
+  // it closes - not to attack (it cannot; damage to its owner is cancelled) but
+  // because it is paying attention. Being hurt is what makes it interested, which
+  // is the same instinct as the Helper and reads as appetite rather than AI.
+  var DIST_FAR = 30                       // at full health - the edge of the chunk
+  var DIST_NEAR = 8                       // at death's door
+  var BAND = 6                            // slack before we bother repositioning
+  var TELEPORT_AT = 48                    // beyond this it is surely off-screen: snap
   var HARVEST = 'veldora_harvest'         // entity flag: this one CAN die
   var ABSENT_DAYS = 30                    // gone this long after a Harvest, either way
 
@@ -293,14 +301,12 @@
     if (!spec) return null
     var e = player.level.createEntity(spec[0])
     if (!e) return null
-    // random bearing at range - always appearing due east read as scripted
-    var d = near || SPAWN_DIST
-    var a = Math.random() * Math.PI * 2
-    e.setPos(player.x + Math.cos(a) * d, player.y, player.z + Math.sin(a) * d)
+    var d = near || DIST_FAR
     e.persistentData.putString(OWNER, player.username)
     e.persistentData.putString(PATHKEY, pathKey)
     e.setCustomName(Text.of('§c' + spec[1]))
     e.setCustomNameVisible(true)
+    placeBehind(player, e, d)      // set the position BEFORE it enters the world
     e.spawn()
 
     // stats first, health last - setting health before max_health clamps it
@@ -615,18 +621,7 @@
       try { if (cur.target && cur.target.username === player.username) cur.setTarget(null) } catch (y) { }
     }
 
-    // Keep it in a RING: never closer than MIN_DIST, never further than LEASH.
-    // Being pushed back out is what stops it reaching him between sweeps.
-    try {
-      var dx = cur.x - player.x, dz = cur.z - player.z
-      var d2 = dx * dx + dz * dz
-      if (d2 < MIN_DIST * MIN_DIST || d2 > LEASH * LEASH) {
-        var ang = Math.random() * Math.PI * 2
-        var r = SPAWN_DIST
-        cur.setPos(player.x + Math.cos(ang) * r, player.y, player.z + Math.sin(ang) * r)
-        try { cur.setTarget(null) } catch (y) { }
-      }
-    } catch (x) { }
+    keepDistance(player, cur)
   }
 
   // The owner got hit. This is what makes a Helper appear, and what makes a
@@ -677,7 +672,7 @@
     try { pathKey = p.persistentData.getString('veldora_path') } catch (x) { }
     if (!pathKey || !CAST[pathKey]) return
 
-    var e = summon(p, pathKey, 8)
+    var e = summon(p, pathKey, 10)
     if (!e) return
     live[uuid] = e
     // point it at the threat immediately; if there is no attacker (fall, lava)
