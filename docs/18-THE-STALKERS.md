@@ -93,9 +93,28 @@ survivable at all, and the reason a fat player *feels* fat.
 build-it-ourselves. Attribute modifiers via KubeJS, keyed on a stable UUID so
 they replace rather than stack.
 
-⚠️ Check against **L2Hostility**, which already scales mobs by depth and days. If
-players now scale too, the two curves need to be looked at together or the deep
-gets easier over time rather than harder.
+### 2c. You are supposed to outgrow the world
+
+Ethan, 2026-08-05: *"that's the idea. you're becoming stronger. you're becoming
+closer to godhood. And the stalker likes their meals ripe."*
+
+This settles what looked like a balance problem. XP-as-power runs alongside
+**L2Hostility**, which already scales mobs by depth and days, and the obvious
+worry was that a scaling player makes the deep get *easier* over time.
+
+**That is not a fault, it is the design.** A player climbing toward 100 is meant
+to outgrow the horde — that is precisely the Vermintide feeling in §7, where
+chaff is something you wade through rather than fight. And it means:
+
+> **The stalker replaces the difficulty curve.**
+
+By the Absence, the world has stopped being able to threaten you, and the only
+thing left that can is the one that has been feeding you the whole time. The game
+does not stay hard by making zombies harder. It stays hard by making *the thing
+that owns you* the last real danger in it.
+
+Which is also why the Harvest instance must scale with you (§5) — it likes its
+meals ripe, and it has been waiting for exactly this.
 
 ---
 
@@ -193,8 +212,10 @@ whether the last hundred days meant anything. And while you decide, **your
 brother can take your path.** That is a genuine stake produced by a system that
 already exists.
 
-⟡ **Open:** is the freed path held in escrow during the choice, or is it open the
-instant the stalker dies? Escrow is kinder; open is better television.
+✅ **Ruled (Ethan, 2026-08-05): escrow.** The path is held while its former walker
+decides. It opens to everyone only if they walk away without choosing — so the
+stake is real, but it is *theirs to lose* rather than a race they can be sniped
+in while reading a single line of text.
 
 ---
 
@@ -265,12 +286,10 @@ that chaff fills, so thinning ranged *is* increasing melee.
 
 ## 8. Open for Ethan
 
-1. **Escrow or open?** (§4d) — is a freed path claimable the instant the stalker
-   dies, or held while its owner chooses?
-2. **The daily rate** — 1.0/day gives a ~100-day first cycle. Faster?
-3. **Do the fragments repeat?** One per kill, drawn from a pool, or a fixed
+1. **The daily rate** — 1.0/day gives a ~100-day first cycle. Faster?
+2. **Do the fragments repeat?** One per kill, drawn from a pool, or a fixed
    sequence that tells one story across five deaths?
-4. **The Obsessed** stays outside all of this?
+3. **The Obsessed** stays outside all of this?
 
 ---
 
@@ -297,7 +316,9 @@ S1 and S2 are safe to build now and need nothing decided above.
   can die in 1.21, not just melee damage.
 - **`SPAWNING_ENABLED` may gate summoning too.** Unverified; the casting depends
   on it. **Test at S3** — flip one, then try to summon it.
-- **XP-as-power vs L2Hostility.** Two scaling curves that have never met.
+- **XP-as-power vs L2Hostility** is no longer a balance risk (§2c) but it is a
+  *measurement* one: we should know at what notoriety the deep stops threatening
+  a player, because that number is when the stalker has to carry the whole game.
 - **Harvest attribution.** The XP wipe fires only on the stalker's kill; when the
   damage source is unclear, fail toward the lesser penalty.
 - **Path release on death of the stalker** must not corrupt the claim store —
