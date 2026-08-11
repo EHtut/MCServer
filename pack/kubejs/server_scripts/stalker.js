@@ -860,6 +860,10 @@
   // left once the number is HYST clear of the band it is in.
   function resolvePhase(n, prev) {
     var now = bandOf(n)
+    // 'none' is not a band and never can be - it means "no path", not a notoriety
+    // range. Treat it as no previous phase at all rather than letting the sticky
+    // loop below fail to find it and silently fall through every single call.
+    if (prev === 'none') prev = ''
     if (!prev || prev === now) return now
     for (var i = 0; i < BANDS.length; i++) {
       if (BANDS[i][0] !== prev) continue
@@ -1016,6 +1020,28 @@
       return
     }
 
+    // NO PATH is a legitimate way to play, and it must be checked BEFORE any
+    // phase work - not after.
+    //
+    // 🚨 THIS WAS A LIVE LAG BUG. It used to sit below the resolver, so every
+    // sweep for a pathless player did: resolve 'none' -> 'helper' (because 'none'
+    // is not a band, so no stickiness applies), WRITE it, LOG it, and then the
+    // pathless branch wrote 'none' straight back. Two full NBT read-mutate-writes
+    // of the whole state compound plus a log line, once a SECOND, per pathless
+    // player, forever. ClickedIce29313 spammed
+    // "none -> helper (n=6)" and the server crawled.
+    var myPath = ''
+    try { myPath = player.persistentData.getString('veldora_path') } catch (x) { }
+    if (!myPath || !CAST[myPath]) {
+      if (live[uuid]) dismiss(uuid)
+      // compare against what is STORED, so a settled pathless player writes nothing
+      if (phaseStored(server, player) !== 'none') {
+        phaseStore(server, player, 'none')
+        console.info('[stalker] ' + player.username + ' walks no path - stalker stood down')
+      }
+      return
+    }
+
     var prev = phaseStored(server, player)
     var phase = resolvePhase(n, prev)
     if (phase !== prev) {
@@ -1037,18 +1063,6 @@
     // THE ABSENCE: gone. no warning, no message.
     if (phase === 'absence') {
       if (cur) dismiss(uuid)
-      return
-    }
-
-    // NO PATH is a perfectly legitimate way to play (Ethan, 2026-08-05: "paths
-    // can be opted out, that's fine"). It must be a clean state, not a wedged
-    // one: nothing follows you, and the stored phase does not stick on 'harvest'
-    // leaving you unprotected and unpaid with no signal that anything is wrong.
-    var myPath = ''
-    try { myPath = player.persistentData.getString('veldora_path') } catch (x) { }
-    if (!myPath || !CAST[myPath]) {
-      if (cur) dismiss(uuid)
-      if (phase !== 'none') phaseStore(server, player, 'none')
       return
     }
 
