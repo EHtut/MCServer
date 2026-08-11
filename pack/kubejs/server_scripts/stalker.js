@@ -42,6 +42,25 @@
   var HYST = 3                            // notoriety points of stickiness at every edge
   var HELPER_AT = 0.35                    // owner health fraction that summons the Helper
   var HELPER_STAY = 100                   // ticks the Helper lingers (5s)
+
+  // PRESENCE IS A ROLL, NOT A GUARANTEE (Ethan, 2026-08-11): "what if they didn't
+  // show up everyday? Instead a percentage chance every in-game hour."
+  //
+  // Right, and the chance SCALES with notoriety rather than being flat. Always-on
+  // made the Companion furniture; a flat chance would make it invisible, which is
+  // the information drought we are trying to fix. Scaling does both jobs at once:
+  //
+  //  · it makes notoriety legible WITHOUT a number - you feel it climbing because
+  //    the thing shows up more often
+  //  · it turns the Absence at 75 from "my pet vanished" into a slammed door. It
+  //    had been there nearly every hour, and then it simply stops coming.
+  //
+  // Rolled once per in-game hour, both ways: present-and-fails leaves, absent-and-
+  // succeeds arrives. That produces natural runs rather than a coin flip every
+  // hour, which is what makes an absence feel like an absence.
+  var HOUR_TICKS = 1000                   // an in-game hour
+  var PRESENCE_AT_25 = 0.15
+  var PRESENCE_AT_74 = 0.85
   // DISTANCE. Ethan: "make it always spawn far, far enough that it is still
   // following you but at a large distance."
   //
@@ -125,7 +144,6 @@
   // thousands of blinking crimson eyes are scarier TOGETHER, because you stop
   // being able to predict which one you are about to get.
   //
-  // Caebrim and the Umamusume line are his. Left exactly as written.
   var RARE_CHANCE = 0.08                  // of a whisper: same line, ruinous nausea
   var RARE_NAUSEA_TICKS = 240             // 12s
   var RARE_NAUSEA_AMP = 3
@@ -142,7 +160,6 @@
     ],
     blade: [
       "*He watches you. Your blade. The one at your waist... He wants you to know he's referencing your sword*",
-      "*He pets his horse. His horse says “Life is an experiment, and we its guinea pigs. You, me, the other Umamusume—everyone!” You have no idea what that means*",
       "*His horse wants to race you. The rider has motion sickness*",
     ],
     salvage: [
@@ -866,6 +883,24 @@
   }
 
   // ---- C7 state: the 30-day absence -----------------------------------------
+  // presence state rides the same per-player compound as the phase
+  function stateOf(server, player) {
+    var all = stateAll(server), u = String(player.uuid)
+    var rec = all.contains(u) ? all.getCompound(u) : null
+    return {
+      hour: rec ? rec.getInt('hour') : -1,
+      present: rec ? rec.getBoolean('present') : false,
+    }
+  }
+  function setPresence(server, player, hour, present) {
+    var all = stateAll(server), u = String(player.uuid)
+    var rec = all.getCompound(u)
+    rec.putInt('hour', hour)
+    rec.putBoolean('present', present)
+    all.put(u, rec)
+    server.persistentData.put(STATE, all)
+  }
+
   function absentUntil(server, player) {
     var all = stateAll(server), u = String(player.uuid)
     return all.contains(u) ? all.getCompound(u).getInt('absentUntil') : 0
@@ -1041,7 +1076,23 @@
       return
     }
 
-    // THE COMPANION: a tamed dog. Present, and kept on a leash.
+    // THE COMPANION: present only when the hour rolls its way.
+    var hourNow = Math.floor((b.dayTime !== undefined ? b.dayTime : (b.day * 24000)) / HOUR_TICKS)
+    var st = stateOf(server, player)
+    if (st.hour !== hourNow) {
+      var span = (PRESENCE_AT_74 - PRESENCE_AT_25) / (74 - 25)
+      var chance = PRESENCE_AT_25 + (Math.min(74, Math.max(25, n)) - 25) * span
+      var want = Math.random() < chance
+      setPresence(server, player, hourNow, want)
+      if (!want && cur) {
+        console.info('[stalker] companion left ' + player.username +
+          ' (hour ' + hourNow + ', chance ' + Math.round(chance * 100) + '%)')
+        dismiss(uuid); cur = null
+      }
+      st.present = want
+    }
+    if (!st.present) { if (cur) dismiss(uuid); return }
+
     if (!cur) {
       if (!scanned) return                          // the scan failed: never summon blind
       var e = summon(player, myPath, DIST_FAR)

@@ -53,6 +53,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
   var dayWarned = false
 
+  // the raw tick count, not the day - the Companion rolls once per in-game HOUR
+  function rawDayTime(server) {
+    try {
+      var d = server.overworld().dayTime()
+      if (typeof d === 'number' && isFinite(d)) return d
+    } catch (e) { }
+    return null
+  }
+
   function rateFor(harvestCount) {
     var i = harvestCount < 0 ? 0 : (harvestCount >= RATES.length ? RATES.length - 1 : harvestCount)
     return RATES[i]
@@ -138,6 +147,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       since: since,
       rate: rate,
       day: day,
+      dayTime: rawDayTime(server),                 // for the Companion's hourly roll
       lastHarvestDay: last,
       harvestCount: hc,
       dominant: (xp !== null && xp > floor) ? 'xp' : 'floor',
