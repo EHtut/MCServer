@@ -1401,11 +1401,6 @@ hash = "689739dbc65768a51d31729598352c5cac3fd9369203bea125d745112bba23b0"
 metafile = true
 
 [[files]]
-file = "mods/voice-chat-recording.pw.toml"
-hash = "0b544987dcc0f8995d940a5d692f42283f86971be7520c65be25869feca9b992"
-metafile = true
-
-[[files]]
 file = "mods/waterframes.pw.toml"
 hash = "59e15d108b41b10145596a3ef899ad20ef8c8885504eef10cd89225aef87daef"
 metafile = true
