@@ -133,7 +133,7 @@
   // your brother not believing you is the whole point.
   var WHISPER_CHANCE = 0.03               // per second of being looked at
   var WHISPER_COOLDOWN = 1200             // ticks (60s) between whispers per player
-  var NAUSEA_TICKS = 80                   // 4s, amplifier 0 - light
+  var NAUSEA_TICKS = 40                   // 2s, amplifier 0 - a blink, not a bout
   // ETHAN'S LINES (2026-08-05). "We cannot commit fully to the horror, the
   // server still needs to have my brand of humor everywhere plus im author so
   // i can reference my books."
@@ -145,8 +145,8 @@
   // being able to predict which one you are about to get.
   //
   var RARE_CHANCE = 0.08                  // of a whisper: same line, ruinous nausea
-  var RARE_NAUSEA_TICKS = 240             // 12s
-  var RARE_NAUSEA_AMP = 3
+  var RARE_NAUSEA_TICKS = 120             // 6s, was 12
+  var RARE_NAUSEA_AMP = 2   // was 3
   var WHISPERS = {
     forge: [
       "*The goat accidentally spills his entire bag, you try not to look*",
