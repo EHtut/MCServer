@@ -79,8 +79,27 @@ EntityEvents.death(event => {
   // instant-respawn. The worst outcome is a vanilla death screen, which is a
   // feature not firing rather than a player cemented to their bed.
   // ---------------------------------------------------------------------------
+  // ⚠️ NORMALISE BOTH SIDES BEFORE COMPARING.
+  //
+  // The first version of this guard compared the raw strings and was therefore
+  // ALWAYS unequal, silently disabling instant respawn in every dimension while
+  // logging a tidy reason:
+  //
+  //   death: minecraft:the_nether
+  //   bed:   ResourceKey[minecraft:dimension / minecraft:overworld]
+  //
+  // Same shape of mistake as Long.MAX_VALUE-as-damage and a Holder-as-biome-id:
+  // both values were about the right THING and in different FORMS. Pull the last
+  // namespaced id out of whatever wrapper each side arrives in.
+  function dimId(v) {
+    if (v === null || v === undefined) return null
+    var s = String(v)
+    var m = s.match(/[a-z0-9_.-]+:[a-z0-9_./-]+/g)
+    return m ? m[m.length - 1] : null
+  }
+
   var deathDim = null, bedDim = null
-  try { deathDim = String(player.level.dimension) } catch (e) { }
+  try { deathDim = dimId(player.level.dimension) } catch (e) { }
   var dimCands = [
     ['getRespawnDimension()', function () { return player.getRespawnDimension() }],
     ['respawnDimension', function () { return player.respawnDimension }],
@@ -90,7 +109,7 @@ EntityEvents.death(event => {
     try {
       var v = dimCands[i][1]()
       if (v) {
-        bedDim = String(v)
+        bedDim = dimId(v)
         if (!dimLogged) { dimLogged = true; console.info('[instant_respawn] respawn dimension read via ' + dimCands[i][0]) }
         break
       }
