@@ -50,7 +50,7 @@
       'Combat Roll is bound in your controls. It is the difference between deep and dead.',
       'The Blade is the only power carried on your body. It cannot be raided.',
       'Your kills pay in iron, bronze and eventually diamond. Kill deeper.',
-      'L2Hostility scales with depth and days. Your curve and its curve are the same curve.',
+      'Nothing scales with depth any more. What is down there is simply MORE of it.',
     ],
     salvage: [
       'You cannot craft a gun. Not one recipe makes one. You find it, then you feed it forever.',

@@ -98,9 +98,21 @@ they replace rather than stack.
 Ethan, 2026-08-05: *"that's the idea. you're becoming stronger. you're becoming
 closer to godhood. And the stalker likes their meals ripe."*
 
-This settles what looked like a balance problem. XP-as-power runs alongside
-**L2Hostility**, which already scales mobs by depth and days, and the obvious
-worry was that a scaling player makes the deep get *easier* over time.
+✅ **L2 IS GONE, 2026-08-11.** This section used to argue that XP-as-power sat
+safely alongside L2Hostility's depth-and-days mob scaling. Ethan cut all three L2
+jars, and the argument below is *why that was fine*: its job had already been
+reassigned to the stalker, so removing it removes a redundant curve rather than
+the only one.
+
+It had also earned it — L2 caused the immortal wither skeletons, and it was
+winning the fight against the Harvest stat block (`244 vs 250 — something is
+re-applying after us`), which now simply stops.
+
+⚠️ **One live consequence to watch.** L2's `expDropFactor = 0.05` was suppressing
+XP from every leveled mob. With it gone, **XP income rises sharply** — and since
+notoriety *is* your XP level, everyone climbs toward the Harvest faster than the
+rate table in §4a was tuned for. The pacing there assumed the suppressed income.
+Re-measure before trusting those day counts.
 
 **That is not a fault, it is the design.** A player climbing toward 100 is meant
 to outgrow the horde — that is precisely the Vermintide feeling in §7, where

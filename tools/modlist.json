@@ -165,8 +165,6 @@
       "monolib": "neoforge-1.21.1-4.1.0",
       "uranus": "2.4.1",
       "jupiter": "2.3.7-1.21.1-neoforge",
-      "l2library": "3.0.8",
-      "l2-complements": "3.1.3",
       "cerbons-api": "1.3.0",
       "deimos": "1.21.1-neoforge-2.7",
       "polytone": "1.21-3.11.0",
@@ -237,7 +235,6 @@
       "combat-roll": "2.0.6+1.21.1-neoforge",
       "not-enough-animations": "1.12.4",
       "epic-knights-shields-armor-and-weapons": "10.12",
-      "l2hostility": "3.0.18",
       "legendary-monsters": "1.21.1",
       "bosses-of-mass-destruction-forge": "1.3.3",
       "l_enders-cataclysm": "3.32",
@@ -690,16 +687,6 @@
           "core"
         ],
         [
-          "l2library",
-          "Required by l2hostility",
-          "core"
-        ],
-        [
-          "l2-complements",
-          "Required by l2hostility",
-          "core"
-        ],
-        [
           "cerbons-api",
           "Required by bosses-of-mass-destruction-forge",
           "core"
@@ -1112,11 +1099,6 @@
         [
           "epic-knights-shields-armor-and-weapons",
           "The definitive medieval arms and armour set, and it carries Epic Fight support",
-          "major"
-        ],
-        [
-          "l2hostility",
-          "Enemy traits and difficulty progression - the knob that keeps combat scary at hour 200",
           "major"
         ],
         [

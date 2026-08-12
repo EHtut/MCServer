@@ -54,7 +54,6 @@
     ars:       ['Tattered Tome (Ars)',     "patchouli:guide_book[patchouli:book='ars_nouveau:worn_notebook']"],
     goety:     ['Black Book (necromancy)', "patchouli:guide_book[patchouli:book='goety:black_book']"],
     brews:     ['Witches Brew',            "patchouli:guide_book[patchouli:book='goety:witches_brew']"],
-    hostility: ['Hostility Guide (levels)', "patchouli:guide_book[patchouli:book='l2hostility:hostility_guide']"],
     security:  ['SecurityCraft Manual',    'securitycraft:sc_manual'],
     banking:   ['Banking Guide',           'numismatics:banking_guide'],
     monsters:  ['Monster Guide',           'legendary_monsters:guide_book'],
@@ -73,8 +72,8 @@
   const PATH_BOOKS = {
     forge:   ['enchanting', 'banking'],
     art:     ['ars', 'hermetica', 'brews'],
-    salvage: ['hostility'],
-    blade:   ['hostility', 'monsters'],
+    salvage: ['monsters'],
+    blade:   ['monsters'],
     crown:   ['goety'],
     wall:    ['security'],
   }

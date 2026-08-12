@@ -846,21 +846,6 @@ hash = "99bea71046529d65463fc12acb505ab363c91133ebbcc1d976e49a5d33150702"
 metafile = true
 
 [[files]]
-file = "mods/l2-complements.pw.toml"
-hash = "9fc7c2eefc34c5aad250388688e55f539a0eb506d2971561bb1d27bef5ac1631"
-metafile = true
-
-[[files]]
-file = "mods/l2hostility.pw.toml"
-hash = "723cadc13c6b4f45211a48e26f550edbba335e217fffe91a65de4ad5107ffb07"
-metafile = true
-
-[[files]]
-file = "mods/l2library.pw.toml"
-hash = "084c968377b79038daf8ce77bee9d86c3be4b2895ccab6f4a50915743d1533e9"
-metafile = true
-
-[[files]]
 file = "mods/l_enders-cataclysm.pw.toml"
 hash = "1adf24c4207f2e7c99be3b5d4aaef206fbc3725441c14e1f7ea77d2648fc10ee"
 metafile = true
