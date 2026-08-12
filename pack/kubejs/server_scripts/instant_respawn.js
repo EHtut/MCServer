@@ -47,10 +47,28 @@ EntityEvents.death(event => {
     if (player.server.persistentData.getBoolean(INVASION_FLAG)) return
   } catch (e) { /* no flag, no invasion, carry on */ }
 
-  // One tick later. Respawning inside the death event fights the server's own
-  // death handling; letting the tick finish is also what guarantees the nemesis
-  // tally's write lands BEFORE the respawn copies the player's data.
-  player.server.scheduleInTicks(1, () => {
+  // ---------------------------------------------------------------------------
+  // 15 TICKS, NOT 1.
+  //
+  // Ethan, 2026-08-11: "on respawn blocks appeared under me causing me to shake
+  // violently ontop of my bed."
+  //
+  // At 1 tick the server moved him to his bed 80ms after death - before the
+  // client had processed the death packet at all. The log names it exactly:
+  //
+  //   18:02:05.15  Rehykt was killed
+  //   18:02:05.23  Rehykt moved too quickly!  266.4, -44.4, 284.9
+  //
+  // The client still believed it was at the death position, so every movement
+  // packet disagreed with the server: that is the shake. "Blocks appearing under
+  // me" is the chunks around the bed streaming in once the client caught up.
+  //
+  // 15 ticks (0.75s) is still "back at your bed a moment later" - the thing
+  // actually asked for - but it lets the death sequence finish and the client
+  // acknowledge it before the position changes. The nemesis tally's write still
+  // lands first, which was the original reason for delaying at all.
+  // ---------------------------------------------------------------------------
+  player.server.scheduleInTicks(15, () => {
     try {
       // Verified against neoforge-21.1.247-server.jar:
       //   MinecraftServer.getPlayerList() -> PlayerList
