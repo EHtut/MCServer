@@ -35,6 +35,7 @@
 // ---------------------------------------------------------------------------
 
 const INVASION_FLAG = 'invasion_active'   // set by D4 later; absent for now
+var dimLogged = false
 
 EntityEvents.death(event => {
   const player = event.entity
@@ -46,6 +47,65 @@ EntityEvents.death(event => {
   try {
     if (player.server.persistentData.getBoolean(INVASION_FLAG)) return
   } catch (e) { /* no flag, no invasion, carry on */ }
+
+  // ---------------------------------------------------------------------------
+  // SAME DIMENSION ONLY.
+  //
+  // Ethan, 2026-08-11: "i die in the nether then im cemented on my bed cannot
+  // move and right clicking causes me to place down netherack."
+  //
+  // That symptom names the cause precisely. Right-clicking placing NETHERRACK
+  // while frozen means the client still held the Nether's world state - it never
+  // processed the death at all, so its dimension and position disagreed with the
+  // server's and every movement packet was rejected.
+  //
+  // The reason is structural, not timing. Vanilla's flow is:
+  //
+  //   die -> server tells client -> client shows the screen -> CLIENT ASKS to
+  //   respawn -> server calls PlayerList.respawn()
+  //
+  // We skip the client's request. Within one dimension that mostly survives,
+  // because only the position changes. Across dimensions the client needs a full
+  // dimension-change handshake it never agreed to, and it ends up stranded. No
+  // amount of extra delay fixes it, because the client is never going to ask.
+  //
+  // So the feature keeps the scope it was actually designed for. Ethan asked for
+  // it so that DYING UNDERGROUND is cheap - "death costs the run, never the base"
+  // - and every one of those deaths is in the same dimension as the bed. A Nether
+  // death is exactly the case where a death screen is correct: you have just lost
+  // your gear in another world and a beat to register that is not a cost.
+  //
+  // FAILS SAFE: if the respawn dimension cannot be read at all, we decline to
+  // instant-respawn. The worst outcome is a vanilla death screen, which is a
+  // feature not firing rather than a player cemented to their bed.
+  // ---------------------------------------------------------------------------
+  var deathDim = null, bedDim = null
+  try { deathDim = String(player.level.dimension) } catch (e) { }
+  var dimCands = [
+    ['getRespawnDimension()', function () { return player.getRespawnDimension() }],
+    ['respawnDimension', function () { return player.respawnDimension }],
+    ['respawnPosition.dimension', function () { return player.respawnPosition.dimension }],
+  ]
+  for (var i = 0; i < dimCands.length; i++) {
+    try {
+      var v = dimCands[i][1]()
+      if (v) {
+        bedDim = String(v)
+        if (!dimLogged) { dimLogged = true; console.info('[instant_respawn] respawn dimension read via ' + dimCands[i][0]) }
+        break
+      }
+    } catch (e) { }
+  }
+  if (!deathDim || !bedDim) {
+    console.info('[instant_respawn] cannot compare dimensions (death=' + deathDim +
+      ' bed=' + bedDim + ') - leaving the death screen alone')
+    return
+  }
+  if (deathDim !== bedDim) {
+    console.info('[instant_respawn] cross-dimension death (' + deathDim + ' -> ' + bedDim +
+      ') - vanilla owns this one')
+    return
+  }
 
   // ---------------------------------------------------------------------------
   // 15 TICKS, NOT 1.
