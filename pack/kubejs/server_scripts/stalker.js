@@ -85,7 +85,21 @@
   var BAND = 14                           // slack before we bother repositioning
   var TELEPORT_AT = 128                   // the boundary itself: past it, snap
   var SCAN_RADIUS = DIST_FAR + 48         // the cull must cover the whole ring
-  var VIEW_HALF_ANGLE = 80                // degrees either side of where you face
+  // TWO CONES, because the two uses want opposite errors.
+  //
+  // 80 degrees either side is a 160-degree arc - wider than a screen, and it
+  // includes things past your shoulders. That is CORRECT for deciding whether a
+  // teleport is safe: erring wide means we decline to snap when there is any
+  // chance you would catch it, and a stalker briefly out of position costs
+  // nothing.
+  //
+  // It is WRONG for the whisper, whose entire premise is "you looked too long".
+  // At a 100-block ring a 160-degree arc counts almost anything ahead of you as
+  // looking at it, so whispers fired while it was nowhere near your screen -
+  // which is why one appeared to arrive when somebody ELSE looked at it. It was
+  // never Ben's gaze; it was Ethan's own, counted far too generously.
+  var VIEW_HALF_ANGLE = 80                // teleport/look-back: err WIDE, fail safe
+  var WHISPER_HALF_ANGLE = 32             // whisper: err NARROW, you must really look
   var CANNOT_BE_SEEN = 192                // view-distance 12; past this, nothing renders
   var HARVEST = 'veldora_harvest'         // entity flag: this one CAN die
   var ABSENT_DAYS = 30                    // gone this long after a Harvest, either way
@@ -636,7 +650,8 @@
   // Fails CLOSED. If the yaw cannot be read we answer "yes, they can see it" and
   // decline to teleport - a stalker briefly out of position is nothing; a stalker
   // seen blinking is the illusion gone.
-  function inView(player, e) {
+  function inView(player, e, halfAngle) {
+    var arc = (typeof halfAngle === 'number') ? halfAngle : VIEW_HALF_ANGLE
     var yaw = yawOf(player)
     if (yaw === null) return true
     var dx, dz
@@ -647,7 +662,7 @@
     var f = yaw * Math.PI / 180
     var fx = -Math.sin(f), fz = Math.cos(f)       // the direction they face
     var dot = (dx / d) * fx + (dz / d) * fz
-    return dot > Math.cos(VIEW_HALF_ANGLE * Math.PI / 180)
+    return dot > Math.cos(arc * Math.PI / 180)
   }
 
   // IT LOOKS BACK (Ethan, 2026-08-05).
@@ -660,6 +675,7 @@
   // look, there is a beat, and THEN it turns. Instant would read as a scripted
   // trigger; the delay reads as something noticing.
   var lastWhisper = {}
+  var recentLines = {}
   function maybeWhisper(player, e) {
     var uuid = String(player.uuid)
     var now = sweepCount
@@ -676,7 +692,17 @@
     // amplifier-3 nausea instead of 4 of amplifier 0. Same words, and you will
     // never be sure whether the goat noise or the crimson eyes is the one that
     // does it to you.
-    var line = pool[Math.floor(Math.random() * pool.length)]
+    // Ethan got the same goat line three times running. The hints have had a
+    // no-repeat guard since they were written; the whispers never did, and with
+    // three lines in a pool a repeat is the likeliest outcome, not a rare one.
+    var seen = recentLines[uuid] || []
+    var fresh = pool.filter(function (l) { return seen.indexOf(l) < 0 })
+    var from = fresh.length ? fresh : pool
+    var line = from[Math.floor(Math.random() * from.length)]
+    seen.push(line)
+    while (seen.length > 2) seen.shift()
+    recentLines[uuid] = seen
+
     var rare = Math.random() < RARE_CHANCE
     try {
       player.tell(Text.of((rare ? '§f' : '§8§o') + line))
@@ -730,7 +756,13 @@
     } catch (x) { return }
     // Looked at => look back, and do NOT reposition. Both halves of that matter:
     // it holds still under your gaze and it meets it.
-    if (inView(player, e)) { faceOwner(player, e); maybeWhisper(player, e); return }
+    if (inView(player, e)) {
+      faceOwner(player, e)
+      // the narrow cone here: it must be genuinely on your screen, not merely
+      // somewhere ahead of you
+      if (inView(player, e, WHISPER_HALF_ANGLE)) maybeWhisper(player, e)
+      return
+    }
 
     if (Math.abs(d - want) <= BAND) return          // close enough; leave it be
 
