@@ -119,6 +119,39 @@
     apply(event.server, event.player, true)
   })
 
+  // ---------------------------------------------------------------------------
+  // RESPAWN MUST INVALIDATE THE CACHE.
+  //
+  // Ethan, 2026-08-11: "after i died in the nether the hearts and armor
+  // disappeared but then came back after a relog."
+  //
+  // Death builds a NEW ServerPlayer, and the attribute modifiers do not come with
+  // it. But `lastApplied[uuid]` survived - it is keyed by UUID in our own memory,
+  // not on the player - so the next sweep read "already applied at notoriety N",
+  // took the early return on the force check, and never re-applied. The bonuses
+  // stayed gone until loggedIn forced them back, which is exactly why relogging
+  // looked like the fix.
+  //
+  // The cache was an optimisation to avoid writing four attributes every 5s. It
+  // was correct about the NUMBER not changing and wrong about the PLAYER being the
+  // same one. Any event that replaces the player object has to drop it.
+  //
+  // Both `respawned` and `cloned` are hooked: cloned fires when the player data is
+  // copied to the new entity, respawned when they are back in the world. Doing
+  // both is deliberate - one of them is redundant, and which one is redundant is
+  // not worth being wrong about for a bonus the player can see missing.
+  // ---------------------------------------------------------------------------
+  function reapply(player) {
+    if (!player) return
+    delete lastApplied[String(player.uuid)]
+    try { apply(player.server, player, true) } catch (e) {
+      console.warn('[power] re-apply after respawn failed :: ' + e)
+    }
+  }
+
+  PlayerEvents.respawned(function (event) { reapply(event.player) })
+  PlayerEvents.cloned(function (event) { reapply(event.player) })
+
   // ---------------------------------------------------------------- commands
   ServerEvents.commandRegistry(function (event) {
     var Commands = event.commands

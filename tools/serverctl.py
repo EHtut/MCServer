@@ -18,6 +18,14 @@ double-start happened), never infer it from a log line.
 
 WHAT RELOADS AND WHAT DOES NOT - measured, not assumed
 
+    /kubejs reload server-scripts   KubeJS server scripts   YES, and no restart.
+                       NOTE THE HYPHEN. `server_scripts` and `scripts` are both
+                       rejected as an incorrect argument, which cost several
+                       needless restarts before `/help kubejs` was consulted.
+                       Event handlers re-register on reload; COMMANDS registered
+                       via ServerEvents.commandRegistry do NOT, so a new command
+                       still needs a real restart.
+
     /reload            KubeJS server scripts   YES  (script count changes)
                        world datapacks         YES
                        In Control spawn.json   NO   - verified by counting
