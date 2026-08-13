@@ -559,11 +559,21 @@ they are worth less. The punishment self-balances: it is a real fight rather tha
 an execution, and it stays winnable exactly when it fires. Nothing had to be built
 for that.
 
-### Open questions
+### ✅ DECIDED 2026-08-12
+* **The cooldown is 3 in-game days.** At 20 minutes per Minecraft day that is
+  roughly **one hour of real play** — long enough to be felt, short enough not to
+  end somebody's evening.
+* **The subclass drops with the primary.** Losing the path loses everything
+  attached to it.
+* **Wall keeps "love" and "darling".** She is the only patron who uses pet names,
+  and that is now deliberate — it is the clearest signal that her register is
+  intimacy rather than menace.
+* **Taking a path STRIPS ALL EXISTING XP.** The largest of the four; see §9.1c.
+
+### Still open
 * **Does the path open to OTHERS during the cooldown?** If Lehykt loses Blade for
   three days, may Ben take it? Yes is more dramatic and creates real table
-  politics; no is kinder. Unresolved.
-* **What happens to a SUBCLASS when the primary is revoked?**
+  politics; no is kinder. **Unresolved.**
 * 🚨 **The kick must clear the tag AND the claim atomically**, and the cooldown
   must be stored as **world day**, never `tickCount` — this is the third place the
   P1 desync bug and the K9 uptime bug can be born.
@@ -571,7 +581,60 @@ for that.
   The legibility law in §2 says yes — the player must be able to see the thing
   that is about to take their path.
 
+## 9.1c TAKING A PATH STRIPS YOUR XP
+
+Ethan, 2026-08-12: *"taking a path strips you of all your existing xp."*
+
+Small sentence, large consequences — three of them, and two come free.
+
+### It kills path-hopping before it exists
+Notoriety is `max(xpLevel, daysSinceHarvest × rate)`. Without this a player could
+bank levels on one path, switch, and arrive somewhere new already fat. Now every
+path starts you at nothing. **You cannot carry a fortune between patrons.**
+
+### It pushes players INTO the system early
+The cost of taking a path is everything accumulated so far — so the cheapest
+moment to take one is **immediately**, before there is anything to lose. A player
+who hoards levels while staying pathless is building a bigger and bigger entry
+fee. That is precisely the right incentive for a server whose actual problem was
+players not engaging with the system.
+
+### 🚨 It MERGES with the introduction, and simplifies it
+§9.2 has each patron demanding something at the door, under a rule that the price
+must be payable by somebody who owns nothing. **The XP strip IS that price.**
+
+There is no longer any need for six separate demands. The patron's first act is
+simply to take everything the player has, and each patron needs only a *line*
+about taking it. That is thematically perfect for all six at once, and it is one
+mechanic instead of seven. A refusal still costs the path — and now costs nothing
+else, because the strip has not happened yet.
+
+### The punishment compounds by itself
+`recordHarvest` already escalates `RATES` by harvest count: each Harvest makes the
+next arrive faster. So the full loss loop is —
+
+```
+die too often -> forced Harvest -> XP wiped, notoriety reset, rate raised
+              -> path revoked + subclass dropped
+              -> 3 in-game days of nothing
+              -> retake the path, XP stripped (already zero)
+              -> and the next Harvest now comes FASTER than the last
+```
+
+A player who keeps losing paths accelerates toward the next Harvest every time,
+**and none of that needed new code.** It falls out of machinery that already ships.
+
+⚠️ **Requires:** the forced Harvest must call
+`recordHarvest(server, player, won=false)`. That is what resets the day term and
+raises the rate. Skip it and the player walks out of a forced Harvest still
+carrying the accumulated days that caused it — and straight back into another one.
+
 ## 9.2 Introductions — meeting your patron
+
+> ⚠️ **SUPERSEDED IN PART by §9.1c.** The per-patron demand table below is no
+> longer needed: **the XP strip IS the price of entry.** Each patron now needs
+> only a LINE about taking everything you have, not a separate mechanic. Keep the
+> table as voice guidance; do not build six demands.
 
 Ethan: *"when you choose a path your patron blinds, and slows you. Then it talks
 to you. It demands something and if you don't give in you're kicked off the path."*
