@@ -1905,12 +1905,7 @@
           "watermedia",
           "Required media backend for waterframes",
           "core"
-],
-        [
-          "grassier-grass",
-          "Wind shader for grass. Purely visual and CLIENT ONLY - never reaches the server. Added 2026-08-12",
-          "minor"
-        ]
+]
       ]
     },
     "classes": {

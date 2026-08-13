@@ -1349,6 +1349,27 @@
 
     var cur = live[uuid]
     if (!alive(cur)) { delete live[uuid]; cur = null }
+
+    // RECASTING MIGRATION. Changing CAST only changes what summon() CREATES - an
+    // instance already bound to a player keeps its owner tag, so the sweep goes on
+    // recognising it as a perfectly good stalker and never replaces it. When Blade
+    // was recast from lord_pumpkinhead to fallen_chaos_knight, Lehykt's pumpkin
+    // would have followed him around for good.
+    //
+    // Exempt during the Harvest: swapping the body mid-fight would delete the
+    // thing that is currently trying to kill him.
+    if (cur && !isHarvestInstance(cur)) {
+      var wantType = CAST[myPath] ? CAST[myPath][0] : null
+      var haveType = null
+      try { haveType = String(cur.type) } catch (x) { }
+      if (wantType && haveType && haveType.indexOf(wantType) < 0) {
+        console.info('[stalker] ' + player.username + ' carries a RETIRED casting (' +
+          haveType + '), ' + myPath + ' is now ' + wantType + ' - retiring it')
+        leaveQuietly(player, uuid)
+        cur = null
+      }
+    }
+
     // adopt orphans and kill duplicates - the costly scan, so not every pass
     var scanned = true
     if (sweepCount % CULL_EVERY === 0 || !cur) {
@@ -1433,6 +1454,33 @@
 
     keepDistance(player, cur)
   }
+
+  // ---------------------------------------------------------------------------
+  // A STALKER MUST NOT OUTLIVE ITS OWNER'S SESSION.
+  //
+  // Found live 2026-08-12: Ethan reported a Lord Pumpkinhead parked at his base.
+  // Its NBT read
+  //     KubeJSPersistentData: {veldora_stalker_path: "blade",
+  //                            veldora_stalker_owner: "Lehykt"}
+  // - Lehykt's stalker, still standing there while Lehykt was OFFLINE.
+  //
+  // The sweep only runs for players who are logged in, so everything that keeps
+  // a stalker honest - the phase logic, the distance leash, the recasting
+  // migration - simply stops when its owner leaves. The entity is left in the
+  // world, unkillable (the damage guard cancels everything outside a Harvest),
+  // haunting somebody else's base with a boss bar over its head.
+  //
+  // It re-summons the moment they log back in, so standing it down costs nothing.
+  // ---------------------------------------------------------------------------
+  PlayerEvents.loggedOut(function (event) {
+    var p = event.player
+    if (!p) return
+    var uuid = String(p.uuid)
+    if (!live[uuid]) return
+    console.info('[stalker] ' + p.username + ' logged out - standing their stalker down')
+    dismiss(uuid)
+    delete helperCooling[uuid]
+  })
 
   // The owner got hit. This is what makes a Helper appear, and what makes a
   // Companion retaliate - INCLUDING against another player, which is the whole

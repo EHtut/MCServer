@@ -711,11 +711,6 @@ hash = "d74bb165b999594235390d0284d2c6f75af5df65c44592a510a4df6ceb74fc21"
 metafile = true
 
 [[files]]
-file = "mods/grassier-grass.pw.toml"
-hash = "43b824f4aa5834bbec2488986bbe3b637e20affc8e4d2c4ae52c516130aa44ee"
-metafile = true
-
-[[files]]
 file = "mods/grim-and-bleak.pw.toml"
 hash = "d42dec80bfb5a534ac0b6971ca80b3310aab9d9a49f6a9f78419ebfddf1b43ab"
 metafile = true
