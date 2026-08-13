@@ -237,7 +237,7 @@ in while reading a single line of text.
 |---|---|---|---|---|
 | **Forge** | Krampus | `krampus` | 250 / 14 | the thief of Christmas. The Forge builds; Krampus takes. |
 | **Art** | Nightmare Stalker | `nightmare_stalker` | 70 / 7 | the realm of nightmare against the realm of dreams. They cannot coexist. |
-| **Blade** | Lord Pumpkinhead | `lord_pumpkinhead` | **600** | a challenger, here to test a would-be hero's mettle. The heaviest entity in the mod, which is right. |
+| **Blade** | Fallen Chaos Knight | `fallen_chaos_knight` | **600** | a dead duelist for the path about mastering one weapon. **Swapped from `lord_pumpkinhead` 2026-08-11 — see THE BLADE RECAST below.** |
 | **Salvage** | Dire Hound Leader | `dire_hound_leader` | 100 / 10 | the wolf hunts its prey. |
 | **Crown** | Missioner | `missioner` | 150 / 9 | the false king, lord of the dead. The Crown's hero is an intruder. |
 | **Wall** | Mother Spider | `mother_spider` | 90 / 6 | **there's a spider on your wall.** |
@@ -265,7 +265,11 @@ a flip during the C4 re-audit because it was the *no-toggle control*, and so it
 never got one.
 
 ✅ **FIXED 2026-08-05 by a different route.** Lord Pumpkinhead is denied through
-**In Control** instead, keyed on that one entity. Safe because In Control filters
+**In Control** instead, keyed on that one entity. *(2026-08-11: that same rule now
+also denies `fallen_chaos_knight`, which likewise has no config key — it ships a
+biome modifier at `"biomes": any`, weight 5. Both are denied; the pumpkin stays
+suppressed even though he is no longer a casting, because re-admitting a mounted
+boss to natural spawns is a content change nobody asked for.)* Safe because In Control filters
 `finalizeSpawn` and our KubeJS summon path does not run it — and that was
 *measured*, not assumed: a probe spawned him our way while the deny was live and
 he was alive at t+20, t+100 and t+200. Same method as the C4 re-audit, because a
@@ -424,3 +428,42 @@ S1 and S2 are safe to build now and need nothing decided above.
 - **Path release on death of the stalker** must not corrupt the claim store —
   `paths.js` guards payouts on the claim, so a half-released path stops paying.
 - **TPS under horde density** (§7).
+
+---
+
+## THE BLADE RECAST — 2026-08-11
+
+Ethan, watching his own stalker: *"when pumpkin head spawns he also gains a boss
+bar. part of me wonders if he's even a good candidate."*
+
+He was right, and it is measurable. Checked every casting's class in the jar:
+
+| casting | entity | `ServerBossEvent` | summons | mounted |
+|---|---|---|---|---|
+| Forge | `krampus` | no | no | no |
+| Art | `nightmare_stalker` | no | no | no |
+| **Blade** | **`lord_pumpkinhead`** | **YES** | no | **yes** |
+| Salvage | `dire_hound_leader` | no | **yes** — BabySkeleton, BoneImp, Bonescaller | no |
+| Crown | `missioner` | no | MissionaryCharge | no |
+| Wall | `mother_spider` | no | **yes** — BloodyGadfly, CorpseFly, Maggot | no |
+
+**Lord Pumpkinhead was the only one of the six carrying a boss bar**, and the only
+one besides `sir_pumpkinhead` with a `WithoutaHorse` variant in the jar — meaning
+the default form is mounted. He was authored as an *encounter*. A boss health bar
+across the top of the screen is the exact opposite of the thing this design wants:
+something at the edge of vision that you are never quite sure about.
+
+**Replacement: `fallen_chaos_knight`.** Chosen from a pool of 33 Born in Chaos
+entities that have no boss bar, no summons and melee behaviour. Clean on every
+axis, and a dead duelist is the most direct reading of *The Challenger* for the
+path about mastering one weapon. The 600 HP in the table above is imposed by the
+`STATS` block at summon time, so the swap does not weaken it.
+
+**Migration is safe without touching the world:** `isStalker()` keys on the
+`veldora_stalker_owner` persistentData tag, not on entity type, so any
+Lord Pumpkinhead still standing is recognised and culled by the ordinary sweep.
+
+**One line of Ethan's whisper table is now orphaned** — the Blade pool contains
+*"His horse wants to race you. The rider has motion sickness"*, and the knight has
+no horse. Left in place deliberately: those lines are Ethan's own writing and are
+his to rewrite.

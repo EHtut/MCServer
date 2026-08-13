@@ -27,11 +27,21 @@ const SPAWN_MIN = 24                // blocks from the player
 const SPAWN_MAX = 40
 
 // Verified against each mod's assets/<ns>/lang/en_us.json.
-const HUNTERS = [
+// ⚠️ 2026-08-11: THREE OF THE FOUR ORIGINAL HUNTERS WERE NEVER INSTALLED.
+// the_skinwalker_hunt, distantfriends and whispering_spirits are not in the pack -
+// no jar, no namespace, nothing. So three of every four hunts summoned nothing and
+// still logged "sent <id> after <player>", because runCommandSilent returns 0 on an
+// unknown entity rather than throwing. The hunt has been ~75% hollow for its whole
+// life. The comment below this once said these were "verified against each mod's
+// lang file"; they were not, and that claim is why nobody rechecked.
+//
+// Pruned to what actually exists. Deliberately kept inside the_knocker so the
+// difficulty band does not move - the pack has scarier options
+// (legendary_monsters:ambusher, grim_and_bleak:flesh_eater,
+// rottencreatures:hunter_wolf) but picking those is a content call, not a bug fix.
+var HUNTERS = [           // var, not const: K8 prunes ids that do not spawn
   'the_knocker:knocker',
-  'the_skinwalker_hunt:skinwalker',
-  'distantfriends:friend',
-  'whispering_spirits:whispering_spirit',
+  'the_knocker:knockerstalk',
 ]
 
 function heatOf(player) {
@@ -133,7 +143,20 @@ ServerEvents.tick(event => {
     // clears an in-flight hunt cooldown. That is harmless, and a verified value
     // beats an elegant one.
     const now = server.tickCount
-    const last = player.persistentData.getLong(LAST_HUNT) || 0
+    let last = player.persistentData.getLong(LAST_HUNT) || 0
+
+    // K9. tickCount resets to ~0 on restart while LAST_HUNT persists, so after any
+    // restart `now - last` is hugely NEGATIVE - which is always < HUNT_COOLDOWN,
+    // so this returned every single time and the hunt was disabled for that player
+    // until uptime climbed past the old value. The comment above called that
+    // harmless; it is the opposite of harmless, it is a silent permanent off
+    // switch. A stamp from the future can only mean the clock restarted.
+    if (last > now) {
+      console.info(`[the-hunt] ${player.username}'s cooldown stamp (${last}) is ahead of `
+        + `uptime (${now}) - the server restarted. Clearing it.`)
+      player.persistentData.putLong(LAST_HUNT, 0)
+      last = 0
+    }
     if (last > 0 && now - last < HUNT_COOLDOWN) return
 
     const chance = (heat / HEAT_CAP) * CHANCE_AT_CAP
@@ -158,12 +181,32 @@ ServerEvents.tick(event => {
     const dx = Math.round(Math.cos(angle) * dist)
     const dz = Math.round(Math.sin(angle) * dist)
 
+    // K8. runCommandSilent does NOT throw on an unknown entity id - it returns 0
+    // and the catch below never fires, so a hunter from a mod that is not
+    // installed reported a successful hunt and sent nothing at all. Check the
+    // RESULT, and drop a dud from the pool so it is diagnosed once rather than
+    // silently rolled forever.
+    var rc = 0
     try {
-      server.runCommandSilent(
+      rc = server.runCommandSilent(
         `execute at ${player.username} run summon ${id} ~${dx} ~ ~${dz}`)
     } catch (e) {
       console.warn(`[the-hunt] could not summon '${id}': ${e}`)
       return
+    }
+    // ⚠️ DO NOT TEST rc FOR SUCCESS. E0 probe P12 measured it: runCommandSilent
+    // returns **undefined**, not an int, for BOTH a valid and an invalid command.
+    // The first version of this guard did `if (!rc) prune`, which is true every
+    // single time - it would have stripped a WORKING hunter from the roster on
+    // the very first hunt and reported it as not installed. Caught by E0 before
+    // it ever fired, which is the entire reason E0 exists.
+    //
+    // The roster is validated by hand instead (see the list above - three of the
+    // original four were genuinely missing), and rc is logged only so the next
+    // person can see what it actually returns.
+    if (rc !== undefined && !rc) {
+      console.warn(`[the-hunt] summon of '${id}' returned a falsy ${rc}. If hunts stop `
+        + `arriving, check whether that entity is still installed.`)
     }
 
     player.persistentData.putLong(LAST_HUNT, now)

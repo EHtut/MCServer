@@ -147,20 +147,38 @@ built.*
 
 ## 3. What the audit says is MISSING
 
-**⚠️ The Wall — CORRECTION, 2026-08-04.** I previously wrote that reinforced
-blocks are Vault loot and the Wall is therefore gated behind unbuilt D2. **That
-was wrong.** It repeated the *proposal* in `10-DEPTH-LOOP.md` as if it were the
-shipped state. Checked against the jar: SecurityCraft has **846 recipes, 665 of
-them reinforced blocks, and ZERO worldgen entries.**
+**⚠️ The Wall — CORRECTED TWICE. Read the second one.**
 
-So the Wall is fully craftable today. Ethan's actual report — "no one has run
-into anything from security" — is explained by the second half of that number:
-**SecurityCraft generates nothing in the world.** There is nothing to run into.
-It is a build-it mod in a pack where everything else is a find-it mod, so it is
-invisible by default rather than gated.
+*2026-08-04 (WRONG).* I wrote: "SecurityCraft has 846 recipes, 665 of them
+reinforced blocks, and ZERO worldgen entries — **so the Wall is fully craftable
+today**", and concluded it was a signage problem, not a content one.
 
-That makes it a **signage** problem, not a content one, and the guidebook's Wall
-entry is the fix. It stays a path.
+*2026-08-11 (the actual state).* That was wrong, and wrong in a way worth naming
+because the same mistake produced the same false claim a second time in
+`help.js`. I counted the recipes that **produce** a reinforced block and never
+checked whether their **inputs** were reachable. All 665 take a reinforced block
+or a Universal Block Reinforcer as input, and **`mcserver_buried_tech` disables
+all three reinforcer recipes.** The one recipe that looks like a way in —
+`reinforced_crystal_quartz_block` from `block_pocket_wall` — is circular and its
+other half is disabled too. Machine-checked every loot table in all 234 jars, all
+four buried_tech injectors, `paths.js` and `instance/config`: **no source
+existed. The Wall had no entry point at all.** Full working in
+`20-AUDIT-2026-08-11.md` §B1.
+
+*The fix, same day.* Ethan chose deep salvage plus a path drop, which keeps the
+buried-tech doctrine intact — the reinforcer is modern tech, so it is **found,
+never crafted**:
+
+* **Deep salvage** — two global loot modifiers in `mcserver_buried_tech` put
+  `universal_block_reinforcer_lvl1` in deep structures: 10% in abandoned
+  mineshafts, stronghold corridors and crossings, Better Dungeons and Galosphere
+  forgotten ruins; 30% in the ancient city. Anyone deep can find one.
+* **Path drop** — it is in the Wall's tier-2 and tier-3 kill drops, so the walker
+  is reliably paid one for going down rather than left to loot rolls.
+
+lvl2 and lvl3 stay buried. The signage claim above still holds on its own terms —
+SecurityCraft really does generate nothing and really is invisible by default —
+but it was never the whole problem. It stays a path.
 
 **⚠️ The Beasts are not a path.** Ice and Fire is listed as "dragons as a
 late-game target", but there are no rungs — a dragon is a wall, not a ladder,

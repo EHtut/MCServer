@@ -39,6 +39,7 @@
   ]
 
   var lastApplied = {}     // uuid -> notoriety, so a sweep only writes on CHANGE
+  var lastMax = {}         // uuid -> last max health, so a GAIN can be topped up
 
   // ---------------------------------------------------------------- rollback
   // Written first, on purpose. If anything below misbehaves this is the undo.
@@ -53,6 +54,7 @@
       }
     }
     delete lastApplied[String(player.uuid)]
+    delete lastMax[String(player.uuid)]
     return done
   }
 
@@ -85,6 +87,21 @@
         console.warn('[power] could not set ' + list[i][0] + ' :: ' + e)
       }
     }
+    // K14. A max-health bonus does NOT heal you into it - vanilla leaves the new
+    // hearts empty. So the moment power was granted, the player saw their heart
+    // bar grow and immediately read as damaged, which is alarming at exactly the
+    // wrong moment. Top up by the INCREASE only: never a free heal, just the
+    // hearts we ourselves just added, and only when max health actually went up.
+    try {
+      var newMax = player.getAttribute('minecraft:generic.max_health').getValue()
+      var prevMax = lastMax[uuid]
+      if (typeof prevMax === 'number' && newMax > prevMax) {
+        var gain = newMax - prevMax
+        player.setHealth(Math.min(newMax, player.health + gain))
+      }
+      lastMax[uuid] = newMax
+    } catch (e) { /* cosmetic only - never let this block the buff itself */ }
+
     lastApplied[uuid] = b.value
     return b
   }
@@ -144,6 +161,7 @@
   function reapply(player) {
     if (!player) return
     delete lastApplied[String(player.uuid)]
+    delete lastMax[String(player.uuid)]
     try { apply(player.server, player, true) } catch (e) {
       console.warn('[power] re-apply after respawn failed :: ' + e)
     }

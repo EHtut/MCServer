@@ -40,8 +40,12 @@
   var SWEEP = 20                          // ticks between phase sweeps (1s)
   var CULL_EVERY = 10                     // sweeps between duplicate scans
   var HYST = 3                            // notoriety points of stickiness at every edge
+  var CAP_VALUE = 100                     // notoriety's hard ceiling - hysteresis may never exceed it
   var HELPER_AT = 0.35                    // owner health fraction that summons the Helper
   var HELPER_STAY = 100                   // ticks the Helper lingers (5s)
+  var HELPER_COOLDOWN = 600               // ticks before the Helper may answer again (30s)
+  var MINION_RADIUS = 12                  // blocks: a mob spawning this close to a live
+                                          // stalker is treated as ITS summon, not nature's
 
   // PRESENCE IS A ROLL, NOT A GUARANTEE (Ethan, 2026-08-11): "what if they didn't
   // show up everyday? Instead a percentage chance every in-game hour."
@@ -84,7 +88,13 @@
   var DIST_NEAR = 12                      // at death's door
   var BAND = 14                           // slack before we bother repositioning
   var TELEPORT_AT = 128                   // the boundary itself: past it, snap
-  var SCAN_RADIUS = DIST_FAR + 48         // the cull must cover the whole ring
+  // K5. This was DIST_FAR + 48 = 148, but simulation-distance 8 loads exactly
+  // 128 blocks - so the scan claimed a ring 20 blocks wider than the world it can
+  // actually see. Entities past the edge are not merely missed, they do not exist
+  // in memory, so cull() reported "no stalker" and the sweep summoned a second
+  // one; the original reappeared when its chunk loaded. That is where duplicate
+  // stalkers came from. 120 keeps the whole scan inside loaded space.
+  var SCAN_RADIUS = 120                   // < 128, the real simulation edge
   // TWO CONES, because the two uses want opposite errors.
   //
   // 80 degrees either side is a 160-degree arc - wider than a screen, and it
@@ -197,7 +207,14 @@
   var CAST = {
     forge:   ['born_in_chaos_v1:krampus', 'The Thief'],
     art:     ['born_in_chaos_v1:nightmare_stalker', 'The Nightmare'],
-    blade:   ['born_in_chaos_v1:lord_pumpkinhead', 'The Challenger'],
+    // Was lord_pumpkinhead until 2026-08-11. He is the ONLY one of the six with a
+    // ServerBossEvent - a boss health bar across the top of the screen - and the
+    // only one besides sir_pumpkinhead with a "WithoutaHorse" variant in the jar,
+    // meaning the default form is MOUNTED. He was built as an encounter, and a
+    // boss bar is the exact opposite of a thing lurking at the edge of vision.
+    // fallen_chaos_knight is clean on every axis: no boss bar, no summons, no
+    // mount. A dead duelist for the path about mastering one weapon.
+    blade:   ['born_in_chaos_v1:fallen_chaos_knight', 'The Challenger'],
     salvage: ['born_in_chaos_v1:dire_hound_leader', 'The Hound'],
     crown:   ['born_in_chaos_v1:missioner', 'The False King'],
     wall:    ['born_in_chaos_v1:mother_spider', 'The Mother'],
@@ -211,13 +228,45 @@
     ['harvest', 100, Infinity],
   ]
 
+  // SERVER is set by ServerEvents.loaded - which does NOT re-fire on
+  // `/kubejs reload server-scripts`. After a reload the event handlers are
+  // re-registered from a fresh scope where this is still null, which silently
+  // disabled the death handler, the owner-damage hard stop and the flee schedule
+  // until the next full restart. Resolve it lazily from whatever object is to
+  // hand instead of trusting the boot hook to have run.
   var SERVER = null
   var sweepCount = 0
   var live = {}                 // uuid -> stalker entity (in-memory; always re-checked)
+  var helperLive = {}           // uuid -> the Helper the DAMAGE HOOK summoned.
+                                // The sweep must not cull this one; see sweepPlayer.
+  var helperCooling = {}        // uuid -> true while the Helper may not answer again
+  var minions = {}              // uuid -> [entities its stalker summoned], so culling
+                                // the parent also culls what the parent left behind
   var damageAccessorLogged = false
   var sourceAccessorLogged = false
 
   // ------------------------------------------------------------------ helpers
+  function ensureServer(o) {
+    if (SERVER) return SERVER
+    var cands = [
+      function () { return o.server },
+      function () { return o.level.server },
+      function () { return o.player.server },
+      function () { return o.entity.level.server },
+    ]
+    for (var i = 0; i < cands.length; i++) {
+      try {
+        var s = cands[i]()
+        if (s) {
+          SERVER = s
+          console.info('[stalker] server handle recovered lazily (a reload had left it null)')
+          return SERVER
+        }
+      } catch (x) { }
+    }
+    return null
+  }
+
   function isStalker(e) {
     try { return !!e && !!e.persistentData.getString(OWNER) } catch (x) { return false }
   }
@@ -299,6 +348,16 @@
     ['source.getDirectEntity()', function (s) { return s.getDirectEntity() }],
   ]
   var attackerPick = -1
+  // K13. attackerOf() required alive() on the candidate, so a mob that died in
+  // the same tick as its killing blow - a creeper, anything finished by thorns or
+  // a counter-hit - read as NO attacker at all. Environmental death and "killed by
+  // something that then died" became the same answer, which is exactly the
+  // failure mode this file keeps hitting. An attacker only has to BE an entity.
+  function isEntityish(q) {
+    if (!q || typeof q === 'function') return false
+    try { return !!q.uuid } catch (x) { return false }
+  }
+
   function attackerOf(event) {
     var src = null
     try { src = event.source } catch (x) { return null }
@@ -309,7 +368,7 @@
     if (attackerPick >= 0) {
       try {
         var q = ATTACKER_CANDS[attackerPick][1](src)
-        if (q && typeof q !== 'function' && alive(q)) return q
+        if (isEntityish(q)) return q
       } catch (x) { }
       // FALL THROUGH, do not return null. The cache locks onto whichever
       // accessor answered FIRST - and if the first live event of a boot was
@@ -326,7 +385,7 @@
     for (var i = 0; i < cands.length; i++) {
       try {
         var v = cands[i][1]()
-        if (v && typeof v !== 'function' && alive(v)) {
+        if (isEntityish(v)) {
           attackerPick = i
           if (!sourceAccessorLogged) {
             sourceAccessorLogged = true
@@ -347,9 +406,24 @@
     try { e.potionEffects.add('minecraft:invisibility', 60, 0, false, false) } catch (x) { }
     try { e.potionEffects.add('minecraft:speed', 60, 3, false, false) } catch (x) { }
     try { e.setTarget(null) } catch (x) { }
-    var srv = SERVER
-    if (srv) srv.scheduleInTicks(30, function () { try { if (alive(e)) e.discard() } catch (x) { } })
-    else { try { e.discard() } catch (x) { } }
+    // FLEEING IS ALSO A REMOVAL, so it has to take the summons with it too.
+    // dismiss() was fixed for the pumpkin incident, but this is the OTHER way a
+    // stalker leaves the world - C5 drives it off at 35% health - and it would
+    // have orphaned minions in exactly the same way, with exactly the same
+    // result: a boss-tier mob left behind with no idea whose side it was on.
+    // Reaped in the callback rather than up front, so anything it summons during
+    // the 30-tick retreat is caught as well.
+    var okey = ownerKeyOf(e)
+    function reap() {
+      try { if (alive(e)) e.discard() } catch (x) { }
+      if (okey) {
+        var m = clearMinions(okey)
+        if (m) console.info('[stalker] the fleeing stalker took ' + m + ' summon(s) with it')
+      }
+    }
+    var srv = SERVER || ensureServer(e)
+    if (srv) srv.scheduleInTicks(30, reap)
+    else reap()
   }
 
   // --------------------------------------------------------------- THE GUARD
@@ -404,6 +478,7 @@
 
   EntityEvents.death(function (event) {
     var e = event.entity
+    if (!SERVER) ensureServer(event)
     if (!SERVER) return
 
     // --- a stalker died ---
@@ -474,15 +549,31 @@
       console.info('[stalker] ' + e.username + ' died mid-Harvest with no attacker - no wipe')
       return
     }
+    // K3. The rule stated directly above is "killed BY A MOB", and the code did
+    // not check it. Another PLAYER landing the killing blow while your Harvest
+    // instance happened to be alive and within 48 blocks cost you everything -
+    // a PvP death charged as a Harvest loss. Fail toward the lesser penalty.
+    var killerIsPlayer = false
+    try { killerIsPlayer = !!killer.player } catch (x) { }
+    if (killerIsPlayer) {
+      console.info('[stalker] ' + e.username + ' was killed by a player mid-Harvest - no wipe')
+      return
+    }
     var mine = live[String(e.uuid)]
     if (!alive(mine) || !isHarvestInstance(mine)) {
       console.info('[stalker] ' + e.username + ' died mid-Harvest but their instance is gone - no wipe')
       return
     }
+    // K12. This compared raw coordinates with no dimension test, so a stalker
+    // standing at x/z in the Overworld read as "12 blocks away" from a player at
+    // the same x/z in the Nether. Nether coordinates are the Overworld's divided
+    // by eight, which puts the two of them near each other constantly.
     var near = false
     try {
-      var ax = mine.x - e.x, ay = mine.y - e.y, az = mine.z - e.z
-      near = (ax * ax + ay * ay + az * az) <= (48 * 48)
+      if (String(mine.level.dimension) === String(e.level.dimension)) {
+        var ax = mine.x - e.x, ay = mine.y - e.y, az = mine.z - e.z
+        near = (ax * ax + ay * ay + az * az) <= (48 * 48)
+      }
     } catch (x) { }
     if (!near) {
       console.info('[stalker] ' + e.username + ' died mid-Harvest far from their instance - no wipe')
@@ -621,6 +712,30 @@
   // Place it BEHIND the player rather than at a random bearing. A snap you can
   // see is a bug; a snap at your back is the mod working, and when you turn
   // around it is simply there.
+  // E0 probe P11 measured this, three times, on three different blocks:
+  //     .isAir()            TypeError: Cannot find function isAir   <- DOES NOT EXIST
+  //     .isAir (property)   undefined
+  //     .id === air         works
+  //     .getId()            works
+  //     .blockState.isAir() works
+  //
+  // K7's footing probe shipped using .isAir() and therefore threw on its FIRST
+  // call every time, fell into its own catch, and silently used the player's y -
+  // exactly the behaviour K7 was written to replace. It never worked once.
+  //
+  // Use blockState.isAir(), NOT the string compare the probe happened to try
+  // first: underground blocks are `minecraft:cave_air`, so `id === 'minecraft:air'`
+  // reads every cave as solid rock and the probe would never find footing in the
+  // one place a stalker actually stands. Vanilla's isAir covers air, cave_air and
+  // void_air together.
+  function blockIsAir(b) {
+    try { return !!b.blockState.isAir() } catch (x) { }
+    try {
+      var id = String(b.id)
+      return id === 'minecraft:air' || id === 'minecraft:cave_air' || id === 'minecraft:void_air'
+    } catch (x) { return false }
+  }
+
   function placeBehind(player, e, dist) {
     var yaw = yawOf(player)
     var ang
@@ -631,8 +746,36 @@
       // +/-50 degrees so it is not mechanically dead-centre.
       ang = (yaw + 180) * Math.PI / 180 + (Math.random() - 0.5) * (100 * Math.PI / 180)
     }
+    var tx = player.x - Math.sin(ang) * dist
+    var tz = player.z + Math.cos(ang) * dist
+
+    // K7. This used the PLAYER's y at a horizontal offset, so on any slope the
+    // stalker arrived either sealed inside rock or hanging in the air over a
+    // drop. Probe a short vertical window for a spot with two blocks of headroom
+    // standing on something solid, nearest the player's own level first.
+    //
+    // Falls back to player.y on ANY failure, so the worst case is exactly the old
+    // behaviour rather than a stalker that never spawns.
+    var ty = player.y
     try {
-      e.setPos(player.x - Math.sin(ang) * dist, player.y, player.z + Math.cos(ang) * dist)
+      var lvl = player.level
+      var base = Math.floor(player.y)
+      var best = null
+      for (var dy = 0; dy <= 4 && best === null; dy++) {
+        var tries = (dy === 0) ? [0] : [dy, -dy]
+        for (var k = 0; k < tries.length; k++) {
+          var cy = base + tries[k]
+          var feet = lvl.getBlock(Math.floor(tx), cy, Math.floor(tz))
+          var head = lvl.getBlock(Math.floor(tx), cy + 1, Math.floor(tz))
+          var floor = lvl.getBlock(Math.floor(tx), cy - 1, Math.floor(tz))
+          if (blockIsAir(feet) && blockIsAir(head) && !blockIsAir(floor)) { best = cy; break }
+        }
+      }
+      if (best !== null) ty = best
+    } catch (x) { /* no probe, no problem - use the player's own level */ }
+
+    try {
+      e.setPos(tx, ty, tz)
       e.setTarget(null)
     } catch (x) { }
   }
@@ -872,6 +1015,14 @@
     var all = stateAll(server), u = String(player.uuid)
     return all.contains(u) ? all.getCompound(u).getString('phase') : ''
   }
+  // Published for paths.js, which must refuse /path release mid-Harvest (K2).
+  // NOT VELDORA.phaseLabel - that maps a raw notoriety NUMBER to a band name and
+  // knows nothing about the stored, hysteresis-damped phase a player is actually
+  // in. The two disagree exactly where it matters.
+  VELDORA.stalkerPhase = function (server, player) {
+    try { return phaseStored(server, player) } catch (x) { return '' }
+  }
+
   function phaseStore(server, player, phase) {
     var all = stateAll(server), u = String(player.uuid)
     var rec = all.getCompound(u)
@@ -900,7 +1051,18 @@
     for (var i = 0; i < BANDS.length; i++) {
       if (BANDS[i][0] !== prev) continue
       var lo = BANDS[i][1] - HYST
-      var hi = BANDS[i][2] + HYST
+      // 🚨 THE STICKY EDGE MUST NOT EXTEND PAST THE VALUE CAP.
+      //
+      // absence is [75,100) and notoriety is hard-capped at 100. Widening it by
+      // HYST gave [72,103) - and since n can never reach 103, the sticky test was
+      // true FOREVER. A player who entered absence never left it, so THE HARVEST
+      // WAS UNREACHABLE BY PLAY: at n=100 the band said 'harvest' and hysteresis
+      // overruled it every second, silently.
+      //
+      // Same family as the other four: the value was the right thing (a notoriety)
+      // in the wrong range (one the cap makes impossible), and the check confirmed
+      // the comparison without asking whether it could ever be false.
+      var hi = Math.min(BANDS[i][2] + HYST, CAP_VALUE)
       if (n >= lo && n < hi) return prev      // still inside the sticky range
     }
     return now
@@ -1022,10 +1184,114 @@
     return keep
   }
 
+  function sameEntity(a, b) {
+    if (!a || !b) return false
+    try { return String(a.uuid) === String(b.uuid) } catch (x) { return false }
+  }
+
+  // ---------------------------------------------------------------------------
+  // CULLING THE PARENT MUST CULL WHAT THE PARENT SUMMONED.
+  //
+  // Ethan, 2026-08-11: "path of blade's pumpkin head showed up for half a second,
+  // flickered, then summoned a small minion which promptly killed my brother."
+  //
+  // The log agrees exactly: `Lehykt was slain by Senor Pumpkin`. Senor Pumpkin is
+  // a minion born_in_chaos summons from lord_pumpkinhead's OWN mob AI - we never
+  // asked for it and hold no reference to it. discard()ing the pumpkin head left
+  // the minion standing, with no owner relation and no idea it was ever on
+  // anyone's side. It killed the player its parent was summoned to protect.
+  //
+  // There is no hook for "this mob summoned that mob", so we infer it: a living
+  // mob that appears within MINION_RADIUS of a live stalker is that stalker's.
+  // The inference can only ever over-collect things standing next to a stalker
+  // that we ourselves put there, and it is bounded to a 12-block ball around it.
+  // ---------------------------------------------------------------------------
+  function ownerKeyOf(e) {
+    var keys = Object.keys(live)
+    for (var i = 0; i < keys.length; i++) {
+      if (sameEntity(live[keys[i]], e)) return keys[i]
+    }
+    return null
+  }
+
+  function clearMinions(uuid) {
+    var list = minions[uuid]
+    delete minions[uuid]
+    if (!list) return 0
+    var n = 0
+    for (var i = 0; i < list.length; i++) {
+      if (alive(list[i])) { try { list[i].discard(); n++ } catch (x) { } }
+    }
+    return n
+  }
+
   function dismiss(uuid) {
     var e = live[uuid]
     delete live[uuid]
+    delete helperLive[uuid]
+    var m = clearMinions(uuid)
+    if (m) console.info('[stalker] culled ' + m + ' orphaned minion(s) along with the stalker')
     if (alive(e)) { try { e.discard() } catch (x) { } }
+  }
+
+  function isStalkerType(e) {
+    try {
+      var id = String(e.type)
+      var keys = Object.keys(CAST)
+      for (var i = 0; i < keys.length; i++) {
+        if (id.indexOf(CAST[keys[i]][0]) >= 0) return true
+      }
+    } catch (x) { }
+    return false
+  }
+
+  EntityEvents.spawned(function (event) {
+    try {
+      var e = event.entity
+      if (!e) return
+      var keys = Object.keys(live)
+      if (!keys.length) return                 // nothing of ours is out there
+      if (e.player) return
+      try { if (!e.living) return } catch (x) { return }
+      if (isStalkerType(e)) return             // a stalker is not another one's minion
+      if (isStalker(e)) return                 // ...nor is a RETIRED casting still
+                                               // wearing the owner tag, e.g. a
+                                               // lord_pumpkinhead left over from
+                                               // before the blade swap
+      for (var i = 0; i < keys.length; i++) {
+        var s = live[keys[i]]
+        if (!alive(s)) continue
+        if (sameEntity(s, e)) return
+        var dx, dy, dz
+        try {
+          if (String(s.level.dimension) !== String(e.level.dimension)) continue
+          dx = s.x - e.x; dy = s.y - e.y; dz = s.z - e.z
+        } catch (x) { continue }
+        if (dx * dx + dy * dy + dz * dz > MINION_RADIUS * MINION_RADIUS) continue
+        ;(minions[keys[i]] = minions[keys[i]] || []).push(e)
+        return
+      }
+    } catch (x) { }
+  })
+
+  // K6. When the hour rolled against them the Companion was discard()ed on the
+  // spot - it vanished mid-stride while you were looking straight at it. The
+  // teleport path already refuses to move a stalker inside the player's view cone
+  // for exactly this reason; the LEAVE path never asked. flee() already exists and
+  // is the graceful exit (invisibility, speed, gone in 30 ticks), so: seen ->
+  // walk away, unseen -> simply cease to have been there.
+  function leaveQuietly(player, uuid) {
+    var e = live[uuid]
+    if (!alive(e)) { dismiss(uuid); return }
+    var seen = true
+    try { seen = inView(player, e) } catch (x) { seen = true }   // fail closed
+    if (seen) {
+      flee(e, 'the hour turned')        // ownerKeyOf() resolves NOW, while live still maps it
+      delete live[uuid]
+      delete helperLive[uuid]
+    } else {
+      dismiss(uuid)
+    }
   }
 
   var warnedNoC1 = false
@@ -1118,6 +1384,14 @@
     // 20 was leaving their Companion standing there indefinitely, which made
     // "the Helper appears ONLY at low health" plainly untrue.
     if (phase === 'helper') {
+      // An ACTIVE Helper - summoned by the damage hook seconds ago - is NOT a
+      // leftover Companion, and culling it here is what made the Helper useless
+      // for its entire existence. The sweep runs every 20 ticks and this branch
+      // discarded the Helper about one second after it arrived: Ethan saw it
+      // "showed up for half a second, flickered". With it gone, `cur` was null on
+      // the next hit, so the damage hook summoned ANOTHER one - nine of them in a
+      // single fight, from 7 hp down to -1.
+      if (cur && sameEntity(cur, helperLive[uuid])) return
       if (cur && !isHarvestInstance(cur)) dismiss(uuid)
       return
     }
@@ -1133,11 +1407,11 @@
       if (!want && cur) {
         console.info('[stalker] companion left ' + player.username +
           ' (hour ' + hourNow + ', chance ' + Math.round(chance * 100) + '%)')
-        dismiss(uuid); cur = null
+        leaveQuietly(player, uuid); cur = null
       }
       st.present = want
     }
-    if (!st.present) { if (cur) dismiss(uuid); return }
+    if (!st.present) { if (cur) leaveQuietly(player, uuid); return }
 
     if (!cur) {
       if (!scanned) return                          // the scan failed: never summon blind
@@ -1167,7 +1441,9 @@
     var p = event.entity
     var isPlayer = false
     try { isPlayer = !!p && !!p.username } catch (x) { }
-    if (!isPlayer || !SERVER) return
+    if (!isPlayer) return
+    if (!SERVER) ensureServer(p)
+    if (!SERVER) return
 
     // YOUR OWN STALKER CANNOT HURT YOU outside the Harvest. Clearing its target
     // on a 2s sweep is cosmetic; between sweeps its AI re-acquires and swings,
@@ -1204,6 +1480,15 @@
     var after = (dmg === null) ? hp : (hp - dmg)
     if (after > max * HELPER_AT) return
 
+    // A blow that kills outright does not get a bodyguard. The old code summoned
+    // one anyway - the log carries "helper answered ... at 0 hp" and "at -1 hp",
+    // a boss-tier mob spawned next to a corpse with nobody left to protect.
+    if (after <= 0) return
+
+    // ONE visit per cooldown. Without this the Helper re-answered on every single
+    // hit, because the sweep had already culled the previous one.
+    if (helperCooling[uuid]) return
+
     var pathKey = ''
     try { pathKey = p.persistentData.getString('veldora_path') } catch (x) { }
     if (!pathKey || !CAST[pathKey]) return
@@ -1215,9 +1500,18 @@
     // make sure it does not default to the owner it came to help
     if (attacker) { try { e.setTarget(attacker) } catch (x) { } }
     else { try { e.setTarget(null) } catch (x) { } }
+    helperLive[uuid] = e
+    helperCooling[uuid] = true
     console.info('[stalker] helper answered for ' + p.username + ' at ' + Math.round(after) + ' hp')
+    SERVER.scheduleInTicks(HELPER_COOLDOWN, function () { delete helperCooling[uuid] })
     SERVER.scheduleInTicks(HELPER_STAY, function () {
-      if (live[uuid] === e) { delete live[uuid]; if (alive(e)) flee(e, 'helper visit over') }
+      if (sameEntity(live[uuid], e)) {
+        delete live[uuid]
+        delete helperLive[uuid]
+        var m = clearMinions(uuid)
+        if (m) console.info('[stalker] the Helper took ' + m + ' summon(s) with it')
+        if (alive(e)) flee(e, 'helper visit over')
+      }
     })
   })
 

@@ -990,6 +990,11 @@
           "create-aeronautics",
           "Buildable airships and planes - spectacular, still alpha",
           "risky"
+],
+        [
+          "create-bionics",
+          "Three fuelled robot animals. The Anole repels spiders and insects; the Oxhauler is a rideable pack mule. Added 2026-08-12 as a Forge-path boon - power the builder MANUFACTURES rather than is given",
+          "minor"
         ]
       ]
     },
@@ -1900,6 +1905,11 @@
           "watermedia",
           "Required media backend for waterframes",
           "core"
+],
+        [
+          "grassier-grass",
+          "Wind shader for grass. Purely visual and CLIENT ONLY - never reaches the server. Added 2026-08-12",
+          "minor"
         ]
       ]
     },

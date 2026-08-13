@@ -1,0 +1,13 @@
+name = "Grassier Grass"
+filename = "grassiergrass-neoforge-1.4.5+mc1.21.1.jar"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/3jCB9cn2/versions/hWKkBn3u/grassiergrass-neoforge-1.4.5%2Bmc1.21.1.jar"
+hash-format = "sha512"
+hash = "5e1085f8039b9e42ce9a11ce3bdfc668e14f86b7b8240940cc4c922640af1dcf0c294a2a5853194fd6625b2f6f3fe8029f6cf405abb9ab496e274971bb36b0fd"
+
+[update]
+[update.modrinth]
+mod-id = "3jCB9cn2"
+version = "hWKkBn3u"

@@ -214,7 +214,7 @@ within tolerance of 8% / 18% / 28%. **Measured, not reasoned.**
 
 ## C4 — Stop the six spawning naturally
 
-**Build:** five `*_SPAWNING_ENABLED = false` (Lord Pumpkinhead has no such key — he is denied via In Control instead) in
+**Build:** five `*_SPAWNING_ENABLED = false` (Lord Pumpkinhead has no such key — he is denied via In Control instead; **2026-08-11** the Blade casting became `fallen_chaos_knight`, which also has no key, so it joined that same In Control deny rule) in
 `borninconfiguration-general.toml`, tracked into `pack/config/`.
 
 ### ⚠️ C4 RE-AUDITED 2026-08-05 — the first pass was a FALSE PASS

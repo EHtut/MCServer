@@ -101,9 +101,21 @@
     }
   }
 
+  // K11. getBiome() hands back a Holder, and String() on it yields something like
+  // `Holder$Reference{ResourceKey[minecraft:worldgen/biome / minecraft:plains]}`
+  // - or, when the holder is direct, a bare java.lang.Object identity hash. Every
+  // biome sample recorded so far is that, not a biome. Same shape of mistake as
+  // the dimension compare and the Traveler's Titles id: right THING, wrong FORM.
+  //
+  // Pull the LAST namespaced id out of whatever wrapper it arrives in - for the
+  // ResourceKey form that is `minecraft:plains`, discarding the registry name in
+  // front of it - and refuse anything that does not look like an id at all.
   function biomeOf(entity) {
     try {
-      return String(entity.level.getBiome(entity.blockPosition()))
+      var raw = String(entity.level.getBiome(entity.blockPosition()))
+      var m = raw.match(/[a-z0-9_.-]+:[a-z0-9_./-]+/g)
+      if (!m || !m.length) return UNREADABLE
+      return m[m.length - 1]
     } catch (e) {
       return UNREADABLE
     }
@@ -315,15 +327,21 @@
     const player = event.player
     if (!player || !player.username) return
     try {
-      const name = player.username
-      const cx = event.block.x >> 4
-      const cz = event.block.z >> 4
-      const key = dimOf(player) + '|' + cx + ',' + cz
-      if (!builds[name]) builds[name] = {}
-      if (!builds[name][key]) builds[name][key] = { n: 0, blocks: {} }
-      const c = builds[name][key]
+      // K10. This said `const name`, and so does the sampler at the top of the
+      // file. Rhino hoists both into the same function scope and throws
+      // "redeclaration of var name" the FIRST time a block is placed - after
+      // which this handler is dead for the rest of the session. `player.build`
+      // has therefore recorded zero events for its entire existence. Confirmed
+      // live 2026-08-11: exactly one such error per boot, then silence.
+      var who = player.username
+      var cx = event.block.x >> 4
+      var cz = event.block.z >> 4
+      var key = dimOf(player) + '|' + cx + ',' + cz
+      if (!builds[who]) builds[who] = {}
+      if (!builds[who][key]) builds[who][key] = { n: 0, blocks: {} }
+      var c = builds[who][key]
       c.n += 1
-      const id = String(event.block.id)
+      var id = String(event.block.id)
       c.blocks[id] = (c.blocks[id] || 0) + 1
     } catch (e) {
       // Placement fires constantly; a per-event error log would be a denial of

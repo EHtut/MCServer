@@ -88,10 +88,30 @@
   //     0.08 + 0.002 x min(notoriety, 100)   ->  8% at 0, 11% at 15, 18% at 50, 28% at 100
   // The old flat 11% survives as roughly notoriety 15, so today's feel becomes
   // the EARLY game rather than the whole game.
-  const CHANCE_BASE = 0.08
-  const CHANCE_PER = 0.002
+  // E1, 2026-08-12. Ethan: "i can't find iron and i've been just spawning it in."
+  //
+  // Measured before changing anything: at his notoriety of 62 the rate was 20.4%,
+  // and forge tier 0 paid an iron NUGGET as one of three items. That is
+  //     0.204 x 1/3 = one nugget every 15 kills, and NINE make an ingot
+  //     = 132 MONSTER KILLS PER IRON INGOT.
+  // On top of which his path claim was empty, so he was earning exactly nothing.
+  //
+  // The nugget was the load-bearing problem, not the rate - swapping it for an
+  // ingot alone takes 132 kills down to 15. The rate rise and the stack counts
+  // below are what turn 15 into roughly 5.
+  const CHANCE_BASE = 0.25     // was 0.08
+  const CHANCE_PER = 0.0025    // was 0.002  -> 50% at notoriety 100
   const CHANCE_CAP = 100
   const CHANCE_FLAT = 0.11     // pre-C2 rate. Used ONLY when notoriety is unreadable.
+  // How many of the rolled item, by depth tier. Deeper is not just better loot,
+  // it is MORE of it - which is the descent doctrine expressed in the payout
+  // rather than only in the item list.
+  const COUNTS = [[1, 2], [1, 3], [2, 4]]
+
+  // E1 verification: "did you produce anything" must be answerable without
+  // watching a player's inventory. Counted per path, reported every 5 minutes.
+  var paidOut = {}
+
   var warnedKill = false
   var warnedNotoriety = false
 
@@ -130,7 +150,7 @@
       name: 'The Forge',
       blurb: 'Throughput. Power that works while you sleep - and stays at home.',
       drops: [
-        ['minecraft:iron_nugget', 'create:andesite_alloy', 'minecraft:copper_ingot'],
+        ['minecraft:iron_ingot', 'create:andesite_alloy', 'minecraft:copper_ingot'],
         ['create:andesite_alloy', 'create:zinc_ingot', 'create:iron_sheet'],
         ['create:brass_ingot', 'create:electron_tube', 'create:precision_mechanism'],
       ],
@@ -148,7 +168,7 @@
       name: 'The Salvage',
       blurb: 'You cannot make a gun. You find it, then you feed it forever.',
       drops: [
-        ['minecraft:gunpowder', 'minecraft:iron_nugget', 'minecraft:copper_ingot'],
+        ['minecraft:gunpowder', 'minecraft:iron_ingot', 'minecraft:copper_ingot'],
         ['minecraft:gunpowder', 'gunpowderore:gun_powder_ore', 'minecraft:iron_ingot'],
         ['gunpowderore:gun_powder_ore', 'gunpowderore:gun_powder_ore', 'minecraft:netherite_scrap'],
       ],
@@ -157,7 +177,9 @@
       name: 'The Blade',
       blurb: 'The only power carried on your person. It cannot be raided.',
       drops: [
-        ['minecraft:iron_nugget', 'minecraft:leather', 'minecraft:iron_ingot'],
+        // iron_ingot twice is DELIBERATE weighting, not a copy-paste slip: the
+        // fighter needs iron most and Blade's drop coefficient goes DOWN later.
+        ['minecraft:iron_ingot', 'minecraft:leather', 'minecraft:iron_ingot'],
         ['minecraft:iron_ingot', 'magistuarmory:bronze_ingot', 'minecraft:gold_ingot'],
         ['minecraft:diamond', 'magistuarmory:bronze_ingot', 'minecraft:netherite_scrap'],
       ],
@@ -174,10 +196,18 @@
     wall: {
       name: 'The Wall',
       blurb: 'It wins nothing. It only refuses to lose.',
+      // The reinforcer is in tiers 2 AND 3 because it is the Wall's ENTRY item,
+      // not a reward for finishing it: every reinforced block in SecurityCraft
+      // bootstraps from one, and buried_tech disables all three of its recipes.
+      // Before this it was obtainable NOWHERE and the whole path was dead - see
+      // docs/20-AUDIT-2026-08-11.md B1. It stays a deep drop rather than becoming
+      // craftable again because it is modern tech, and modern tech is salvage.
       drops: [
-        ['minecraft:iron_nugget', 'minecraft:copper_ingot', 'minecraft:redstone'],
-        ['minecraft:iron_ingot', 'securitycraft:keycard_lv1', 'minecraft:redstone_block'],
-        ['securitycraft:keycard_lv3', 'securitycraft:keycard_lv2', 'minecraft:diamond'],
+        ['minecraft:iron_ingot', 'minecraft:copper_ingot', 'minecraft:redstone'],
+        ['minecraft:iron_ingot', 'securitycraft:keycard_lv1', 'minecraft:redstone_block',
+         'securitycraft:universal_block_reinforcer_lvl1'],
+        ['securitycraft:keycard_lv3', 'securitycraft:keycard_lv2', 'minecraft:diamond',
+         'securitycraft:universal_block_reinforcer_lvl1'],
       ],
     },
   }
@@ -203,6 +233,7 @@
   // offline.
   // ---------------------------------------------------------------------------
   const CLAIM = 'veldora_claim_'
+  var warnedMismatch = {}   // username -> already shouted about a claim mismatch
 
   function holderOf(server, key) {
     try { return server.persistentData.getString(CLAIM + key) || '' } catch (e) { return '' }
@@ -265,6 +296,16 @@
   function escrowFor(server, player) {
     var cur = pathOf(player)
     if (!cur) return ''
+    // K4. This wrote the escrow marker from the PLAYER's tag alone. A stale tag -
+    // and P1 proved those exist - would stamp '!escrow!theirName' over whoever
+    // genuinely holds that path, evicting a walker who did nothing wrong. Only
+    // the actual holder may put a path into escrow.
+    if (holderOf(server, cur) !== player.username) {
+      console.warn('[paths] refused to escrow ' + cur + ' for ' + player.username +
+        ' - it is held by "' + holderOf(server, cur) + '"')
+      try { player.persistentData.putString(KEY, '') } catch (e) { }
+      return ''
+    }
     setHolder(server, cur, ESCROW + player.username)
     try { player.persistentData.putString(KEY, '') } catch (e) { }
     return cur
@@ -365,6 +406,20 @@
     root = root.then(Commands.literal('release').executes(ctx => {
       const p = ctx.source.player
       if (!p) return 0
+      // K2. Releasing mid-Harvest cancelled it for free: the stalker unbinds, the
+      // wipe can never land, and the path can be re-taken afterwards. The Harvest
+      // is the whole point of the design and it must not have an /command exit.
+      // Read through VELDORA so paths.js does not need to know how phase is stored.
+      try {
+        if (typeof VELDORA !== 'undefined' && typeof VELDORA.stalkerPhase === 'function') {
+          if (VELDORA.stalkerPhase(ctx.source.server, p) === 'harvest') {
+            p.tell('§4It is already coming for you.')
+            p.tell('§7You cannot set down a path mid-Harvest. Finish it, or it finishes you.')
+            return 0
+          }
+        }
+      } catch (e) { /* unreadable phase must not brick the command */ }
+
       var gone = releasePath(ctx.source.server, p)
       if (!gone) { p.tell('§7You walk no path.'); return 0 }
       p.tell('§7You set down ' + PATHS[gone].name + '§7. It is open to the others.')
@@ -551,7 +606,46 @@
     // The SERVER's claim is authoritative, not the player's copy. If the claim
     // was cleared while they still carry the key, they stop being paid - so a
     // stale tag can never quietly keep earning.
-    if (holderOf(event.server, key) !== killer.username) return
+    // ---------------------------------------------------------------------
+    // TAG SAYS ONE THING, CLAIM SAYS ANOTHER.
+    //
+    // Ethan, 2026-08-11: "mobs arent dropping any of the items they should."
+    // Measured from world data: his tag was veldora_path="forge" while
+    // veldora_claim_forge was the EMPTY STRING, so this guard returned on every
+    // kill he ever made - no drop, no message, no log line. Silent for days.
+    //
+    // The state comes from /path forcerelease, which clears the server claim but
+    // NOT the holder's own tag. And it was unrecoverable in game: re-running
+    // /path forge hits the "you already walk that path" short-circuit BEFORE it
+    // would rewrite the claim, so the player is stuck earning nothing forever.
+    //
+    // An EMPTY claim means nobody holds the path. A player carrying its tag is
+    // therefore its rightful walker, so ADOPT instead of silently paying nothing.
+    // This cannot steal: a real holder is a non-empty name, and escrow is the
+    // non-empty '!escrow!Name', both of which still fall through to the return.
+    //
+    // The audit's own rule, applied to itself: "I failed" and "I found nothing"
+    // must never share a return value.
+    // ---------------------------------------------------------------------
+    var held = holderOf(event.server, key)
+    if (held !== killer.username) {
+      if (held === '') {
+        setHolder(event.server, key, killer.username)
+        console.warn('[paths] ' + killer.username + ' carried the ' + key +
+          ' tag while its claim was EMPTY - adopted. They were being paid nothing.')
+        try {
+          killer.tell(Text.of('§e' + PATHS[key].name + '§7 had no registered walker.'))
+          killer.tell(Text.of('§7It is yours again. Your kills pay from now on.'))
+        } catch (e) { }
+      } else {
+        if (!warnedMismatch[killer.username]) {
+          warnedMismatch[killer.username] = true
+          console.warn('[paths] ' + killer.username + ' walks ' + key +
+            ' but the claim is held by "' + held + '" - they are earning NOTHING.')
+        }
+        return
+      }
+    }
     if (Math.random() > dropChanceFor(event.server, killer)) return
 
     // THE ANTI-FARM RULE: the mob's death height decides the tier, so a basement
@@ -562,8 +656,13 @@
 
     var table = PATHS[key].drops[tier]
     var item = table[Math.floor(Math.random() * table.length)]
+    var span = COUNTS[tier]
+    var n = span[0] + Math.floor(Math.random() * (span[1] - span[0] + 1))
     try {
-      event.server.runCommandSilent('give ' + killer.username + ' ' + item + ' 1')
+      // NOTE: runCommandSilent's return is USELESS - E0 probe P12 measured it
+      // returning undefined for valid AND invalid commands alike. Do not test it.
+      event.server.runCommandSilent('give ' + killer.username + ' ' + item + ' ' + n)
+      paidOut[key] = (paidOut[key] || 0) + n
     } catch (e) {
       console.warn('[paths] could not pay out ' + item + ': ' + e)
     }
@@ -592,6 +691,42 @@
       console.error('[paths] CLAIM STORE NOT WORKING - paths will NOT be exclusive. '
                     + 'Two players could hold the same path.')
     }
+
+    // ---------------------------------------------------------------------
+    // E1 VERIFICATION. `run_all`-style harnesses cannot see a subsystem that is
+    // configured on and producing nothing - a whole go-live once passed green
+    // while the live path returned zero. So the payout counter reports itself,
+    // out loud, on a timer. A path with a walker and a flat zero here is a BUG,
+    // not a quiet day.
+    // ---------------------------------------------------------------------
+    console.info('[paths] E1 drop economy: base ' + Math.round(CHANCE_BASE * 100) +
+      '% +' + (CHANCE_PER * 100) + '%/notoriety, counts by tier ' +
+      COUNTS.map(function (c) { return c[0] + '-' + c[1] }).join(' / '))
+
+    function report(server) {
+      var keys = Object.keys(paidOut)
+      if (keys.length) {
+        var bits = []
+        for (var i = 0; i < keys.length; i++) bits.push(keys[i] + '=' + paidOut[keys[i]])
+        console.info('[paths] items paid out since boot: ' + bits.join('  '))
+      } else {
+        // Say the zero OUT LOUD. Silence and "nothing happened" must not look alike.
+        var walked = []
+        try {
+          var ps = server.players
+          for (var j = 0; j < ps.length; j++) {
+            var k = pathOf(ps[j])
+            if (k) walked.push(ps[j].username + ':' + k)
+          }
+        } catch (e) { }
+        if (walked.length) {
+          console.warn('[paths] ZERO payouts since boot, but these players walk a path: ' +
+            walked.join(', ') + ' - if this persists, E1 is not working.')
+        }
+      }
+      server.scheduleInTicks(6000, function () { report(server) })   // 5 min
+    }
+    event.server.scheduleInTicks(6000, function () { report(event.server) })
   })
 
   console.info('[paths] active - ' + Object.keys(PATHS).length + ' paths, depth-tiered payouts')

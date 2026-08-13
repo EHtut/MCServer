@@ -171,11 +171,6 @@ hash = "74143850a12b0f9daf3ef2c503e61141319f3715a48a2fde53bc31b3c9719788"
 metafile = true
 
 [[files]]
-file = "mods/travelers-titles.pw.toml"
-hash = "01cab903b1a7f77aa4f28c7fab24e7fa09b376b18c77b487b7ba34e0afc57813"
-metafile = true
-
-[[files]]
 file = "shaderpacks/bsl-shaders.pw.toml"
 hash = "f91c2ec79366b4607d93928a07c223cbaa4a2e18fe0c110e68a3fc064e69b65a"
 metafile = true
@@ -303,6 +298,11 @@ metafile = true
 [[files]]
 file = "mods/create-big-cannons.pw.toml"
 hash = "a0e9ff95570cd9af3374ca8b44aa095447baf94e565f46ae99819d52a9b48dc1"
+metafile = true
+
+[[files]]
+file = "mods/create-bionics.pw.toml"
+hash = "a72d8383532abbab352021f75bd6eb0cd7b1a7661438a61ad73c2fc495eaab13"
 metafile = true
 
 [[files]]
@@ -708,6 +708,11 @@ metafile = true
 [[files]]
 file = "mods/goety.pw.toml"
 hash = "d74bb165b999594235390d0284d2c6f75af5df65c44592a510a4df6ceb74fc21"
+metafile = true
+
+[[files]]
+file = "mods/grassier-grass.pw.toml"
+hash = "43b824f4aa5834bbec2488986bbe3b637e20affc8e4d2c4ae52c516130aa44ee"
 metafile = true
 
 [[files]]
@@ -1373,6 +1378,11 @@ metafile = true
 [[files]]
 file = "resourcepacks/tras-fresh-player.pw.toml"
 hash = "32fe0fe8941110f8fba07ce7768faa1797de6b28e961ab65b483c380fc0a365a"
+metafile = true
+
+[[files]]
+file = "mods/travelers-titles.pw.toml"
+hash = "01cab903b1a7f77aa4f28c7fab24e7fa09b376b18c77b487b7ba34e0afc57813"
 metafile = true
 
 [[files]]

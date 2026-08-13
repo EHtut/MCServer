@@ -18,13 +18,26 @@ double-start happened), never infer it from a log line.
 
 WHAT RELOADS AND WHAT DOES NOT - measured, not assumed
 
-    /kubejs reload server-scripts   KubeJS server scripts   YES, and no restart.
-                       NOTE THE HYPHEN. `server_scripts` and `scripts` are both
-                       rejected as an incorrect argument, which cost several
-                       needless restarts before `/help kubejs` was consulted.
-                       Event handlers re-register on reload; COMMANDS registered
-                       via ServerEvents.commandRegistry do NOT, so a new command
-                       still needs a real restart.
+    /kubejs reload server-scripts   ⚠️ RELOADS, BUT IS NOT SAFE HERE.
+                       The command exists and takes a HYPHEN (`server_scripts`
+                       and `scripts` are both rejected). It reloads the files.
+                       But for the Veldora scripts it leaves the server in a
+                       WORSE state than not reloading at all, measured 2026-08-11:
+
+                         · ServerEvents.loaded DOES NOT RE-FIRE. Anything set up
+                           there - the `SERVER` handle, the sweep chains - is
+                           null/unstarted in the new scope. That silently killed
+                           the death handler, the "your own stalker cannot hurt
+                           you" hard stop, and the flee schedule.
+                         · scheduleInTicks chains from the OLD scope keep running,
+                           holding the OLD `live` entity map. The new handlers read
+                           a fresh empty one. Split brain.
+                         · commands registered via commandRegistry do not
+                           re-register either.
+
+                       Use a real restart. The scripts now recover the server
+                       handle lazily as defence, but the split-brain state map
+                       cannot be fixed from inside a reload.
 
     /reload            KubeJS server scripts   YES  (script count changes)
                        world datapacks         YES

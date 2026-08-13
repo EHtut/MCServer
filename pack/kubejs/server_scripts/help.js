@@ -28,6 +28,8 @@
     '§f/guide§7 hands you every book in this world. Most are better than this hint.',
     'Your notoriety is the XP level you are carrying, plus the days. §f/path§7 shows it.',
     'Something is following you. It is not hostile. Not yet.',
+    'Iron is richest between y54 and y120 - and nothing hostile spawns above y40.',
+    'Above y40 the dark is empty. Below y0 nothing holds it back. Choose your depth.',
   ]
 
   var HINTS = {
@@ -36,6 +38,7 @@
       'Water wheels before steam. Speed and stress are the only two numbers that matter.',
       'A millstone and a press will carry you further than any amount of cogs.',
       'Your kills pay in cogs, zinc and brass - and pay better the deeper you kill.',
+      'Iron ore is thickest y54-y120, where nothing hostile spawns. Mine there, fight lower.',
       'The Forge scales without you present. Nothing else here does.',
     ],
     art: [
@@ -50,6 +53,7 @@
       'Combat Roll is bound in your controls. It is the difference between deep and dead.',
       'The Blade is the only power carried on your body. It cannot be raided.',
       'Your kills pay in iron, bronze and eventually diamond. Kill deeper.',
+      'If you need ore rather than a fight, y54-y120 is safe and rich. Nothing spawns up there.',
       'Nothing scales with depth any more. What is down there is simply MORE of it.',
     ],
     salvage: [
@@ -67,8 +71,8 @@
       'Guard Villagers and Automaticons are the Crown too. Numbers are numbers.',
     ],
     wall: [
-      'Reinforced blocks are craftable RIGHT NOW - six hundred and sixty five recipes.',
-      'SecurityCraft generates nothing in the world. There is nothing to find. Only to build.',
+      'You cannot craft the reinforcer. Find one deep - mineshafts, strongholds, the city.',
+      'One reinforcer turns ordinary stone into your wall. Everything else follows it.',
       'A keypad is worthless if the wall beside it is ordinary stone.',
       'Your kills pay in redstone, keycards and diamond.',
       'The Wall wins nothing. It only refuses to lose. That is a real answer to creepers.',
@@ -152,6 +156,12 @@
       p.tell(Text.of('§e§lTHE DESCENT§r'))
       p.tell(Text.of('§8  0 to -64 the old diggings · -64 to -120 the deep works'))
       p.tell(Text.of('§8  -120 to the floor, the sealed floor. Deeper kills pay more.'))
+      p.tell(Text.of(''))
+      p.tell(Text.of('§e§lWHERE THE IRON IS§r §8- nothing else in this world says so'))
+      p.tell(Text.of('§8  Richest at §fy54 to y120§8, and §fnothing hostile spawns'))
+      p.tell(Text.of('§8  above y40§8 - that whole band is safe to mine.'))
+      p.tell(Text.of('§8  y0 to y39 is capped. Below y0 nothing is capped at all.'))
+      p.tell(Text.of('§8  Deeper pays better and kills you faster. Both are true.'))
       p.tell(Text.of(''))
       p.tell(Text.of('§8Commands: §f/path §8· §f/guide §8· §f/notoriety §8· §f/power §8· §f/veldora'))
       p.tell(Text.of('§8A hint will find you every half hour or so. You are not alone.'))
