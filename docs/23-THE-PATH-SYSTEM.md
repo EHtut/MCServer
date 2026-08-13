@@ -501,6 +501,76 @@ never below the days-since-harvest term, which cannot be dodged).
   gear. Corpse then never triggers, which is fine; it simply is not the design any
   more.
 
+## 9.1b THE LOSE CONDITION — the patron gets tired of you
+
+Ethan: *"the more levels you lose the more irritated the patron becomes, dying too
+many times in a short period causes the entity to force a harvest then kick you
+off the path on a cooldown. That being said it should be on a degrading counter
+with messages from the patron."*
+
+This is what makes death **cumulative** rather than merely priced. A single death
+costs levels; a *pattern* of deaths costs the path.
+
+### The counter is NEUTRAL. Six patrons interpret it differently.
+
+Calling it "irritation" is right for four of them and wrong for two, and that
+difference is the best thing in this mechanic. It is **one number with six
+readings**:
+
+| patron | what the number means to them | direction |
+|---|---|---|
+| **Blade** | contempt. You keep failing a test he set. | anger |
+| **Forge** | debt. A dead builder builds nothing; this is lost output. | anger |
+| **Crown** | embarrassment. A king does not swing the sword — this reflects on *him*. | disdain |
+| **Wall** | **grief.** Every death is you leaving her. She is not angry, she is hurt. | need |
+| **Salvage** | **opportunity.** A dying player NEEDS something. She profits from your bad night, right up until you are a bad investment. | appetite |
+| **Art** | **readiness.** Death is a kind of sleep, and she has always wanted you to sleep. She gets *happier*. | delight |
+
+Wall, Salvage and Art escalate the **wrong way** on purpose. A patron who becomes
+more affectionate, more generous, or more *pleased* as you die is far more
+frightening than one who gets angry — and it costs nothing extra to build,
+because the number is the same.
+
+### 🚨 The counter must not be fed by the spiral it creates
+
+E0 probe P8, measured live 2026-08-12:
+
+```
+at the DEATH SITE : 7 living mobs within 24 blocks, ALL 7 hostile
+at the bed        : 1 mob, 0 hunting you
+```
+
+§9.1 wakes you **where you fell** — which by that measurement is in front of seven
+hostiles. Combine that with a counter that rises on every death and the failure
+mode writes itself: die → wake in the pack → die → wake → die → forced Harvest →
+lose the path. **One bad cave becomes a lost path**, through no decision the
+player ever made. That is positive feedback on a punishment ladder, which is how a
+bad session becomes somebody quitting.
+
+**Rule: a death within the grace window of a respawn does not advance the
+counter.** A spiral counts once. The counter is meant to measure *carelessness
+over time*, not a single moment going wrong, and those must not be the same
+signal. The grace window has to exist for §9.1 anyway; this reuses it.
+
+### A property worth keeping, discovered rather than designed
+Dying drains levels → notoriety falls → **the Harvest scales with notoriety**. So
+the forced Harvest arrives *weaker* for the player who has been dying, because
+they are worth less. The punishment self-balances: it is a real fight rather than
+an execution, and it stays winnable exactly when it fires. Nothing had to be built
+for that.
+
+### Open questions
+* **Does the path open to OTHERS during the cooldown?** If Lehykt loses Blade for
+  three days, may Ben take it? Yes is more dramatic and creates real table
+  politics; no is kinder. Unresolved.
+* **What happens to a SUBCLASS when the primary is revoked?**
+* 🚨 **The kick must clear the tag AND the claim atomically**, and the cooldown
+  must be stored as **world day**, never `tickCount` — this is the third place the
+  P1 desync bug and the K9 uptime bug can be born.
+* Should the counter be visible on demand (`/path` showing your patron's mood)?
+  The legibility law in §2 says yes — the player must be able to see the thing
+  that is about to take their path.
+
 ## 9.2 Introductions — meeting your patron
 
 Ethan: *"when you choose a path your patron blinds, and slows you. Then it talks
