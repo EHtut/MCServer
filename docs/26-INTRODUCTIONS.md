@@ -370,12 +370,12 @@ Design is `26-INTRODUCTIONS.md`. **One chunk, then a checkpoint**, same as E2.
 | art | `ars_nouveau:enchanters_sword` | kept and re-inscribed, never replaced |
 | crown | `goety:dark_wand` | |
 | wall | `securitycraft:universal_block_reinforcer_lvl1` | also fixes B1's entry point |
-| **salvage** | **`tacz:modern_kinetic_gun` + `GunId: db_short`, plus 2× `tacz:12g`** | ⭐ see below |
+| **salvage** | **`tacz:modern_kinetic_gun[custom_data={GunId:"tacz:db_short",GunFireMode:"SEMI"}]` + 2× `tacz:ammo[custom_data={AmmoId:"tacz:12g"}]`** | ⭐ see below. Exact forms verified in I0 |
 
 **Salvage solved itself.** A sawn-off double barrel holds exactly two shells, so
 "a shotgun and two shots" is a gun plus **exactly one full load**. Fire twice and
 she is the only supply in the world - guns cannot be crafted and 12g comes only
-from deep salvage or from her. And `tacz:12g` is **already in our loot injectors**,
+from deep salvage or from her. And that ammo is **already in our loot injectors**,
 so no new loot work and the earlier revolver ammo problem is gone.
 
 ---
@@ -394,6 +394,85 @@ here, and three chunks depend on them:
 
 **Verify:** each logs a result. Anything unproven becomes a design change, not a
 TODO.
+
+### ✅ I0 RESULTS — measured 2026-08-13, three boot rounds
+
+Probe: `_probe_intro.js`. **J0–J3 all pass. Only J4 still needs a player.**
+
+#### J0 — every flagship exists, and the durability numbers are the real finding
+
+A wrong id fails as **AIR**: a patron solemnly hands you nothing and nothing is
+logged. All seven resolved.
+
+| path | item | maxDamage | what it means |
+|---|---|---|---|
+| forge | `create:wrench` | **0** | no durability — cannot break |
+| blade | `born_in_chaos_v1:darkwarblade` | **4000** | ~2× a netherite sword |
+| art | `ars_nouveau:enchanters_sword` | 2031 | netherite tier |
+| crown | `goety:dark_wand` | **0** | cannot break (wands spend soul energy) |
+| wall | `securitycraft:...reinforcer_lvl1` | **300** | ⚠️ **low.** Without Mending this is a consumable, not a gift |
+| salvage | `tacz:modern_kinetic_gun` | **0** | ⚠️ TaCZ ignores vanilla durability entirely |
+| salvage | `tacz:ammo` | 0 | — |
+
+🚨 **The docs were wrong about the ammo.** There is no item called `tacz:12g`. It is
+**`tacz:ammo`** carrying `custom_data={AmmoId:"tacz:12g"}` — the form our own
+`tacz_loot_injectors` already use.
+
+#### J1 + J2 — components round-trip. Four working builders, five working readers.
+
+```
+Item.of('tacz:modern_kinetic_gun[minecraft:custom_data={GunId:"tacz:db_short",GunFireMode:"SEMI"}]')
+stack.get('minecraft:custom_data')   ->  {GunFireMode:"SEMI",GunId:"tacz:db_short"}
+```
+
+* **Works:** bracket syntax with or without the `minecraft:` prefix · `stack.set(...)`
+  · the `{id, components}` object form.
+* **Dead:** `Item.of(id, nbt)` throws — **the second argument is COUNT**
+  (*"Cannot convert {GunId…} to int"*). `withNBT` does not exist. `stack.nbt` returns
+  **null on everything, including the control** — 1.21 removed it. Do not use it.
+* **Readers:** `get('minecraft:custom_data')` is the cleanest; `componentString`,
+  `getComponentString()`, `toItemString()` and `components` all work too.
+
+🚨 **`String(stack)` DOES NOT RENDER COMPONENTS** — it returns
+`"1 tacz:modern_kinetic_gun"` for a fully-loaded gun. **Round 1 of this probe
+reported "J1 FAILED, no candidate answered" purely because its validator tested
+`String(v)`.** The API was working the whole time. That is
+[[measure-the-column-thats-read]] again, and it was caught only because round 2
+replaced the pass/fail judgement with a matrix that prints every reader's raw
+output next to a known-good control row. **A probe that judges can lie. A probe
+that prints cannot.**
+
+#### J3 — all six hold Mending/Unbreaking, by both routes
+
+`.enchant()` and force-setting the `minecraft:enchantments` component both stick on
+every flagship. But **enchantability is not the interesting half** — read it with
+the maxDamage column above:
+
+* **Blade, Art:** Mending works and matters.
+* **Wall:** Mending works and is **required**. 300 uses is a consumable otherwise.
+* **Forge, Crown, Salvage:** maxDamage=0, so Mending is decoration — **but the
+  promise still holds**, because an item with no durability cannot break either.
+
+So *"It will not break"* is true for all six, by two different mechanisms. No gift
+line needs rewriting. The TaCZ concern that motivated J3 turned out to be real
+(guns do ignore vanilla durability) and harmless.
+
+#### J4 — ⏳ NOT YET RUN. Needs a player to disconnect mid-window.
+
+`/introprobe logout`, then disconnect within 2s and stay out ~15s. Answers three
+separate questions: does a scheduled callback still fire after its player leaves,
+does the captured player reference go stale, and does `loggedOut` fire in time to
+clear effects. **This is the one that can hurt someone** — a disconnect during a 30s
+blind scene must not strand the player blind, slowed and rooted on return.
+
+#### ⚠️ Operational note — an intermittent Create boot race
+
+One of the three restarts crashed during `RegisterEvent`:
+`NullPointerException: Trying to access unbound value: ResourceKey[minecraft:item /
+create:chest_minecart_contraption]`, thrown from Create's own `AllAdvancements`
+static initializer. **Not a KubeJS fault** — it happens long before server scripts
+load. The same unchanged files booted fine on either side of it. If a restart dies
+this way, just start again. Worth watching if it becomes frequent.
 
 ## I1 — the attention ritual (was E4)
 

@@ -98,7 +98,8 @@ Ozymandias. Never one per line.
 
 ## SALVAGE — The Hound
 `born_in_chaos_v1:dire_hound_leader` · **she** · flagship: **sawn-off double barrel**
-(`tacz:modern_kinetic_gun`, `GunId: db_short`) **+ exactly 2× `tacz:12g`**
+(`tacz:modern_kinetic_gun`, `GunId: tacz:db_short`) **+ exactly 2× `tacz:ammo`
+carrying `AmmoId: tacz:12g`** — there is no item called `tacz:12g` (I0)
 
 > **CANON:** *"Sneaky, bartering. Trade with her if you dare."*
 
