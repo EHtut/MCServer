@@ -293,3 +293,64 @@ branch is beautiful writing with no weight behind it.
 
 **4. Ambient SFX** under the black screen (Forge's bells and chains especially).
 Would need a resource pack or existing sound events — unexplored.
+
+---
+
+# THE FLAGSHIP ITEMS
+
+Ethan, 2026-08-12: *"these items should have enchantments, mending durability, and
+they cannot leave your inventory... the idea is that these are sort of Flagship
+items that each class needs to have and will keep on them. And when the path is
+lost, they lose them."*
+
+Not introductory trinkets and not high-tier trophies — **the signature tool of the
+path**, carried permanently, taken away when the patron gives up on you.
+
+| path | item | why it is the flagship |
+|---|---|---|
+| **forge** | `create:wrench` | ✅ Ethan. THE Create tool — rotate, dismantle, relocate. Never put down. |
+| **blade** | `magistuarmory:steel_zweihander` | Epic Knights, steel tier — above bronze, below netherite. A two-hander for The Challenger. |
+| **art** | `ars_nouveau:enchanters_sword` | ✅ Ethan. A tome was rejected because tomes get REPLACED as you upgrade; the sword is kept forever and merely **re-inscribed**. |
+| **salvage** | `tacz:modern_kinetic_gun` + `GunId: rhino357` | ✅ Ethan wants a revolver. Three exist: `rhino357`, `taurus500`, `taurus943`. |
+| **crown** | `goety:dark_wand` | The command interface for servants — the whole path runs through it. |
+| **wall** | `securitycraft:universal_block_reinforcer_lvl1` | The one tool that defines the path. |
+
+**Wall resolves the B1 tension rather than reopening it.** The reinforcer was made
+deep-salvage-only to fix the dead path; as a *flagship* the walker is handed one and
+**loses it on the fall**, while deep salvage stays as how anybody else finds one —
+or how a fallen walker claws back a spare during their cooldown.
+
+## Binding: RESTORATION, not prevention
+
+**Nothing in the pack can bind an item to a player.** Every enchantment in every jar
+was checked — no soulbound, no binding, nothing. So it must be scripted, and the
+robust form is not intercepting drops, chest inserts, item frames, lava and death in
+turn. It is simply:
+
+> **If you walk a path and do not have your flagship, it comes back.**
+
+Ethan, refining it: *"maybe instead it returns to your inventory if lost after a day
+instead."* — **AFTER ONE IN-GAME DAY**, not instantly. Losing it should sting for a
+session, and having the patron hand it back is far more characterful than a lock
+that never let it go.
+
+**The fall simply stops restoring it.** No confiscation code needed beyond a flag.
+
+## Open
+
+* ⚠️ **TaCZ guns may not accept vanilla Mending/Unbreaking** — they use their own
+  durability model. Verify before promising the revolver never breaks.
+* ⚠️ **AMMO SUPPLY.** Ethan: *"for salvage add all the ammo to their drops... idk if
+  its possible to scale per equipped gun though."*
+  * Our deep-salvage injectors currently supply only **7.62×39, 5.56×45, 12g**.
+  * A revolver takes none of them, so as it stands she hands you a gun you can
+    never feed.
+  * Only **4** gun→ammo pairs could be extracted (`9mm`, `45acp`, `50ae`, `12g`);
+    the rest of the 54 guns keep their ammo somewhere else in the gun-pack
+    structure. **The full map needs another extraction pass.**
+* ⚠️ **Per-gun ammo scaling is PLAUSIBLE BUT UNPROVEN.** TaCZ guns are one item
+  (`tacz:modern_kinetic_gun`) carrying `GunId` in `minecraft:custom_data` — our own
+  loot tables write exactly that. Reading it back means reading item components from
+  KubeJS, which has never been tested here. **This needs an E0-style probe before
+  anything is designed on it** — that is the whole reason E0 exists, and it has
+  already caught two shipped defects today.
