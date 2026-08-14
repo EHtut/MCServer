@@ -395,10 +395,13 @@ unconditional sources would cancel each other out.
 
 
 ### Still untested by a player
-* the fall end-to-end (, then  should refuse for 3 days)
-* the entry strip (take a path at a known level)
-* the whisper ladder ()
-* E2c spiral rule (die twice fast -> charged and counted once)
+* **the fall end-to-end** — `/fall_test`, then `/path forge` should refuse for 3
+  in-game days, and the claim should read EMPTY so somebody else can take it
+* **the entry strip** — take a path at a known level; confirm 0 and the entry line
+* **the whisper ladder** — `/whisper_test 1` through `4`, checking the anchored
+  refrain mutates (for Art: rest → safe → warm → here)
+* **the E2c spiral rule** — die twice within 5s; expect ONE level charge, ONE
+  counter step, and the bed on the second respawn
 
 
 ---
