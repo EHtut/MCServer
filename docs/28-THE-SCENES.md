@@ -5,7 +5,8 @@
 there as the first draft. Mechanic and build plan stay in `26`.*
 
 > **CANDIDATES.** The patrons' words are Ethan's. Curation notes are marked; the
-> ✂️ items are changes I would make before building.
+> ✂️ items were changes to make before building, and are now **applied** — this
+> file is the CURRENT TEXT, not a proposal.
 
 **Scene shape:** black screen, rooted, ~2.5s between lines, ≈25–35s total.
 **Every scene carries a false shared history and a distinct manipulation
@@ -13,7 +14,7 @@ technique** (`27` §MANIPULATION AXIS).
 
 ---
 
-## ✂️ THE ONE CROSS-CUTTING FIX
+## ✅ THE ONE CROSS-CUTTING FIX *(applied)*
 
 **Three gift lines converged on the same move** — applying the item's
 can't-be-lost property to the *player*:
@@ -57,7 +58,7 @@ it and need no change.
 **ON REFUSAL**
 1. Of course.
 2. Better men than you have refused me. I have forgotten every one.
-3. ✂️ ~~Run.~~ → **Go.**
+3. Go.
 
 **THE GIFT** *(steel greatsword)*
 1. Take it. Two hands. Even that will not be enough.
@@ -85,7 +86,7 @@ it and need no change.
 **DEMAND**
 1. Give me what you've grown into out here — everything you've climbed to be since you arrived. I only want to hold it.
 2. It travels lighter with me than loose in your own two hands.
-3. Let me hold some of it for you. ✂️ *(cut the third "friend")* I am good at holding things.
+3. Let me hold some of it for you. I am good at holding things.
 
 **OPTIONS** — `Let her hold it.` / `Not yet.`
 
@@ -141,7 +142,7 @@ it and need no change.
 
 **THE GIFT** *(wrench)*
 1. Here. Call it an advance, not a gift — I don't give things away, I lend them a longer leash.
-2. It will not break. It will not stay lost. ✂️ *(see the cross-cutting fix)*
+2. It will not break. It will not stay lost.
 
 > ⭐ **The purest gaslight line in the batch.** *"We shook on it. Maybe not with
 > hands — you don't recall, and that is not my concern."* He concedes you do not
@@ -266,7 +267,7 @@ Lose it if you must — it does not stay lost. The court does not misplace what 
 
 **THE GIFT** *(enchanter's sword)*
 1. Take this, so she won't have to worry. So you won't have to be afraid out there, and can always find your way back to her.
-2. It will not break. It will not stay lost ✂️ *(see the cross-cutting fix)*
+2. It will not break. It will not stay lost.
 
 > ⭐ **Third person throughout**, alone among the six — derived from Ethan's own
 > canon line, which already does it.
@@ -287,61 +288,107 @@ Lose it if you must — it does not stay lost. The court does not misplace what 
 
 | | change | why |
 |---|---|---|
-| 🚨 | Blade: `Run.` → `Go.` | canon-reserved for the beat before a real Harvest |
-| ✂️ | Salvage: cut the third *friend* | the brief capped it at two so it lands |
-| ✂️ | Forge + Art: drop the "and neither will you" clause | three of six converged; keep Wall's |
+| ✅ | Blade: `Run.` → `Go.` | canon-reserved for the beat before a real Harvest |
+| ✅ | Salvage: cut the third *friend* | the brief capped it at two so it lands |
+| ✅ | Forge + Art: dropped the "and neither will you" clause | three of six converged; keep Wall's |
 | ✅ | Forge's commercial vocabulary | over the cap but ancient, not corporate — leave |
 
-**Still open from `26`:** does refusing cost anything? As written the player can
-re-run the command immediately, which makes six carefully-built refusal branches
-decorative. Note that **four of six patrons do not treat a refusal as final** —
-Wall asks again for less, Salvage circles, Forge drags the chain past your door,
-Art simply waits. Only Blade and Crown close the door. That asymmetry is a design
-opportunity, not a bug.
+**RESOLVED — refusing costs the patron.** The concern below stood: the player could
+re-run the command immediately, which made six carefully-built refusal branches
+decorative. Ethan's answer was that the patron **walks away**, and coming back too
+soon returns nothing but absence. See **THE SILENCE** at the end of this file.
+
+It also fits the asymmetry that was the worry in the first place — **four of six
+patrons do not treat a refusal as final.** Wall asks again for less, Salvage circles,
+Forge drags the chain past your door, Art simply waits; only Blade and Crown close
+the door. A cooldown of silence lets all six stay in character: the four who never
+leave are still out there, they are simply not answering yet.
 
 ---
 
-# DECISIONS — 2026-08-12, late
+# THE SILENCE — what a refused patron sounds like
 
-## ✅ Refusal: the patron walks away
+*Ethan's seed is CANON and is the register for all of it:*
+**`"You hear nothing but the wind."`**
 
-Ethan: *"refusal costs should maybe be the patron walking away and not engaging.
-Attempting to summon that patron again in a short period returns 'You hear nothing
-but the wind'."*
+## How it fires
 
-This is better than a cooldown message because **it is the only punishment that
-fits all six characters at once.** Nobody is angry, nobody explains, and no system
-announces anything. The patron simply is not there.
+* Refusing sets a short cooldown **on that patron only**. Another path may be taken
+  immediately — the one you turned down is the one who has gone quiet.
+* **The canon line is always FIRST.** Attempt one after a refusal returns
+  *"You hear nothing but the wind."* verbatim, for every patron. It teaches the rule
+  in a form the player will recognise the next time they see it. The flavoured pools
+  below are for attempt two onward.
+* 🚨 **NOT in the red event text.** Red is reserved for *something happening*, and
+  this is the absence of one. Grey italic, one line, no header, no name.
+* Nothing ever states that you were refused, or that a cooldown exists, or how long
+  it lasts. Six writers' worth of lines were cut for saying so.
 
-* Refusing sets a **short per-patron** cooldown — you may still take a *different*
-  path immediately. The patron you turned down is the one who has gone quiet.
-* Coming back too soon yields one flat line of **absence**, never a rejection
-  message. `"You hear nothing but the wind."` is the seed and the register.
-* **Absence is characterful**, so each patron's silence differs: Blade's is
-  indifference, Salvage's is patient amusement, Forge's is a deliberate snub,
-  Wall's is hurt, Crown's is protocol, Art's is her still being there and simply
-  not answering.
-* Variations are generated so it stays fresh rather than becoming a string players
-  learn to skim.
+**Cooldown clock.** `fall.js` already proves the pattern — `dayTime()` is absolute
+and monotonic, so it survives restarts where `tickCount` does not (finding K9). The
+fall stores it floored to whole days; this one is far shorter than a day, so it
+stores the **raw `dayTime()` tick** and compares against it. Same clock, finer read.
+Proposed length: **one in-game day** ≈ 20 minutes of play — long enough that you
+cannot bounce off a patron and straight back, short enough that it never eats a
+session.
 
-**This also rescues the refusal branches.** Six well-written refusals were
-decorative while the player could re-run the command instantly; now declining has
-a real, quiet consequence that never has to be explained.
+## The pools
 
-## ✅ Subclasses unlock FREE, from the start
+Absence is characterful. None of these are the patron speaking — the patron is the
+one thing that is not there.
 
-Ethan: *"they should be free."* No notoriety gate. Any primary, any secondary,
-whenever — consistent with §8, where exclusivity was already retired because there
-will never be six players.
+**BLADE** — *indifference. Nothing registers that you came.*
+1. You hear only your own breathing.
+2. The air is still. No footsteps answer.
+3. Somewhere, metal settles. Then nothing.
+4. Whatever was here has forgotten you already.
 
-## 📝 Authorship — the drafts are the WORKING TEXT
+**SALVAGE** — *patient amusement. She is near, and unbothered.*
+1. You sense movement just beyond sight, then nothing.
+2. A distant sound of panting fades into quiet.
+3. Something large passes nearby. It does not stop.
+4. The ground remembers weight. Then stillness.
 
-Ethan: *"i admit i have it in me to do that much generative work creatively with
-these patrons. it may be a later thing."*
+**FORGE** — *a deliberate snub. The noise that never stops has stopped.*
+1. A bell tolls once. Silence.
+2. Chains fall still.
+3. Metal strikes once and falls silent.
+4. The bells do not ring. Nothing here is owed.
 
-The standing tone ruling **stands** — the patrons are his characters and his lines
-outrank anything written for them. But the drafts in `25`, `26` and `28` are no
-longer blocked on him: **they are the working text and should be built with.**
-Revision is welcome whenever he wants it and is not a prerequisite for shipping.
+**WALL** — *hurt. She is withholding, and wants it felt.*
+1. The space around you feels tender. You do not move.
+2. Something is here but turned away from you.
+3. You sense presence in the dark, choosing silence.
+4. Stillness so deliberate it aches.
 
-Practically: stop marking scenes "awaiting Ethan". Mark them "current text".
+**CROWN** — *protocol. Not a refusal; a matter closed.*
+1. The hall remains empty. Your petition passes unnoticed.
+2. The court does not stir.
+3. Nothing here heeds your presence.
+4. Silence heavy as a shut door.
+5. This matter stands concluded.
+
+**ART** — *she never left. She simply is not answering.*
+1. Something breathes in the black space beside you.
+2. You feel her attention like a hand on your shoulder.
+3. Stillness, but not empty. She watches, very patiently.
+4. The dark is comfortable. Too comfortable.
+
+## Curation notes
+
+* **Cut for stating the mechanic:** *"He is not coming."* · *"No reply."* ·
+  *"She does not leave. She simply will not hear."* Each was a system message wearing
+  a costume. The silence must never be self-aware.
+* **Cut as weaker twins:** Blade's *"What stood here has moved on"* (a flatter
+  *"forgotten you already"*), Salvage's *"Waiting, you hear nothing. Being watched,
+  you feel it"*, Art's *"The darkness hums."*
+* **Forge was the hardest** and came back thinnest — his entire presence is *sound*,
+  so his absence is four ways of saying a noise stopped. His fourth line was rewritten
+  to snub the debt instead of the noise: refusing to collect from you is worse, from
+  him, than being angry.
+* ⚠️ **`"This matter stands concluded."`** is the one line that risks reading as Crown
+  *answering* — and he is meant to be absent. Kept because the alternative reading is
+  better than the risk: the court has closed the file, and no one needed to attend to
+  do it. Cut it if it plays as a reply.
+* **Art keeps her pronouns** where every other pool had them stripped. Hers is the
+  only silence that is occupied, so naming her is the point.
