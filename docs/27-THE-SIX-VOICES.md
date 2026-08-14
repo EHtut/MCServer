@@ -69,7 +69,8 @@ you already answers to me."*
 ---
 
 ## BLADE — The Challenger
-`born_in_chaos_v1:fallen_chaos_knight` · **he** · flagship: `magistuarmory:steel_zweihander`
+`born_in_chaos_v1:fallen_chaos_knight` · **he** · flagship: `born_in_chaos_v1:darkwarblade`
+(**Dark Warblade** — his own mod, dark metal, `two_handed: true`)
 
 > **CANON:** *"Hostile, antagonistic. He tests the player almost repeatedly."*
 

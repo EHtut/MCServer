@@ -60,9 +60,33 @@ it and need no change.
 2. Better men than you have refused me. I have forgotten every one.
 3. Go.
 
-**THE GIFT** *(steel greatsword)*
+**THE GIFT** *(Dark Warblade — two-handed, dark metal, deliberately too heavy)*
 1. Take it. Two hands. Even that will not be enough.
 2. It will not break, and it will not stay lost — lose it in a river and it finds your hand again by the second sunrise. I did not forge it to keep you alive. I forged it to still be standing when you are not.
+
+> ⭐ **THE GIFT IS A WEAPON YOU ARE NOT STRONG ENOUGH FOR.**
+> Ethan: *"it shouldn't be oh here's a sword. No it should be here's a sword that
+> feels wrong to use."* `born_in_chaos_v1:darkwarblade` was already that item before
+> we touched it, and it is better than the netherite zweihander on every axis he
+> named:
+> * **It is from Blade's own mod.** He is `born_in_chaos_v1:fallen_chaos_knight`; he
+>   hands you a blade made of the same stuff he is.
+> * **`"two_handed": true`** — the line *"Take it. Two hands."* stops being flavour
+>   and becomes the item's actual attribute. Better Combat is installed and shipped,
+>   so the two-handed pose, the claymore swing and the 3-block reach all really play.
+> * **The drawback is the mod author's, not ours.** Its tooltip warns in the mod's own
+>   red: *"This weapon is excessively heavy, making it difficult to use without a
+>   strength effect."* We did not bolt a cost onto a good sword. We found the sword
+>   whose cost was already written.
+> * **The internal model is literally named `greatdarksword`.**
+>
+> The reason it is the right gift is character, not stats. Blade's whole thesis is
+> that you are not equal to what you reached for — and he hands you the proof, then
+> says nothing about it. **He must never warn you it is heavy.** You find out mid-swing.
+> *"Even that will not be enough"* was written before the item was chosen and is now
+> a much better line than it was.
+> Overcoming it means getting Strength — arguing with him, which is the only
+> conversation he accepts.
 
 > 🚨 **`"Run."` IS CANON-RESERVED** and must be cut here. It fires **once**,
 > immediately before a real Harvest. Spending it on a declined introduction burns
@@ -304,91 +328,77 @@ Forge drags the chain past your door, Art simply waits; only Blade and Crown clo
 the door. A cooldown of silence lets all six stay in character: the four who never
 leave are still out there, they are simply not answering yet.
 
+
 ---
 
 # THE SILENCE — what a refused patron sounds like
 
-*Ethan's seed is CANON and is the register for all of it:*
-**`"You hear nothing but the wind."`**
+*Rewritten 2026-08-13 on Ethan's correction. The first version characterised each
+patron's absence; that was wrong, and the reason it was wrong is the whole design.*
 
-## How it fires
+## 🚨 ONE POOL. ALL SIX PATRONS. NOTHING IS THERE.
 
-* Refusing sets a short cooldown **on that patron only**. Another path may be taken
-  immediately — the one you turned down is the one who has gone quiet.
-* **The canon line is always FIRST.** Attempt one after a refusal returns
-  *"You hear nothing but the wind."* verbatim, for every patron. It teaches the rule
-  in a form the player will recognise the next time they see it. The flavoured pools
-  below are for attempt two onward.
-* 🚨 **NOT in the red event text.** Red is reserved for *something happening*, and
-  this is the absence of one. Grey italic, one line, no header, no name.
-* Nothing ever states that you were refused, or that a cooldown exists, or how long
-  it lasts. Six writers' worth of lines were cut for saying so.
+> Ethan: *"those patron reject lines should be used for all of them and it should
+> not be like 'he is not coming' it should just be silence. ex 'The wind blows
+> around you' 'You hear your own heartbeat' 'You take a breath'. It should be your
+> actions."*
 
-**Cooldown clock.** `fall.js` already proves the pattern — `dayTime()` is absolute
-and monotonic, so it survives restarts where `tickCount` does not (finding K9). The
-fall stores it floored to whole days; this one is far shorter than a day, so it
-stores the **raw `dayTime()` tick** and compares against it. Same clock, finer read.
-Proposed length: **one in-game day** ≈ 20 minutes of play — long enough that you
-cannot bounce off a patron and straight back, short enough that it never eats a
-session.
+The six-pool version **broke its own premise.** If Blade's silence sounds like Blade
+and Art's silence sounds like Art, then the patron is still present — still
+performing, still characterised, still paying the player attention. Which means
+refusing cost nothing. A characterised absence is just a quieter appearance.
 
-## The pools
+The correction: **the lines are about YOU.** Your breath, your heartbeat, your
+weight on the ground, the wind that was always going to blow whether you called
+anybody or not. The player is returned to their own body in an ordinary world.
 
-Absence is characterful. None of these are the patron speaking — the patron is the
-one thing that is not there.
+**Nothing in the pool may:**
+* name or imply a patron — no *he*, no *she*, no *it*, no *something*
+* imply being watched, waited for, or attended to in any way
+* be supernatural, ominous, or atmospheric
+* refer to the refusal, the cooldown, or the fact that a command was run
 
-**BLADE** — *indifference. Nothing registers that you came.*
-1. You hear only your own breathing.
-2. The air is still. No footsteps answer.
-3. Somewhere, metal settles. Then nothing.
-4. Whatever was here has forgotten you already.
+**The horror is that nothing happens.** Every one of these six characters has spent
+a scene insisting the relationship was already underway and you were merely slow to
+notice it. The punishment for declining is the world quietly demonstrating that this
+was never true. Nobody is angry with you. Nobody is anywhere.
 
-**SALVAGE** — *patient amusement. She is near, and unbothered.*
-1. You sense movement just beyond sight, then nothing.
-2. A distant sound of panting fades into quiet.
-3. Something large passes nearby. It does not stop.
-4. The ground remembers weight. Then stillness.
+## The pool
 
-**FORGE** — *a deliberate snub. The noise that never stops has stopped.*
-1. A bell tolls once. Silence.
-2. Chains fall still.
-3. Metal strikes once and falls silent.
-4. The bells do not ring. Nothing here is owed.
+Drawn at random. Grey italic — **never the red event text**, which throughout has
+meant *something is happening*, and this is the deliberate absence of one.
 
-**WALL** — *hurt. She is withholding, and wants it felt.*
-1. The space around you feels tender. You do not move.
-2. Something is here but turned away from you.
-3. You sense presence in the dark, choosing silence.
-4. Stillness so deliberate it aches.
+1. You hear nothing but the wind.   ← **CANON, Ethan's line**
+2. The wind blows around you.
+3. You hear your own heartbeat.
+4. You take a breath.
+5. Your own breathing sounds loud to you.
+6. You shift your weight. The ground creaks.
+7. You lower your hands.
+8. The air is cold on your face.
+9. Somewhere far off, water is running.
+10. You stand there a while longer.
+11. You listen. The world makes its usual sounds.
+12. Nothing happens.
 
-**CROWN** — *protocol. Not a refusal; a matter closed.*
-1. The hall remains empty. Your petition passes unnoticed.
-2. The court does not stir.
-3. Nothing here heeds your presence.
-4. Silence heavy as a shut door.
-5. This matter stands concluded.
+## Notes
 
-**ART** — *she never left. She simply is not answering.*
-1. Something breathes in the black space beside you.
-2. You feel her attention like a hand on your shoulder.
-3. Stillness, but not empty. She watches, very patiently.
-4. The dark is comfortable. Too comfortable.
-
-## Curation notes
-
-* **Cut for stating the mechanic:** *"He is not coming."* · *"No reply."* ·
-  *"She does not leave. She simply will not hear."* Each was a system message wearing
-  a costume. The silence must never be self-aware.
-* **Cut as weaker twins:** Blade's *"What stood here has moved on"* (a flatter
-  *"forgotten you already"*), Salvage's *"Waiting, you hear nothing. Being watched,
-  you feel it"*, Art's *"The darkness hums."*
-* **Forge was the hardest** and came back thinnest — his entire presence is *sound*,
-  so his absence is four ways of saying a noise stopped. His fourth line was rewritten
-  to snub the debt instead of the noise: refusing to collect from you is worse, from
-  him, than being angry.
-* ⚠️ **`"This matter stands concluded."`** is the one line that risks reading as Crown
-  *answering* — and he is meant to be absent. Kept because the alternative reading is
-  better than the risk: the court has closed the file, and no one needed to attend to
-  do it. Cut it if it plays as a reply.
-* **Art keeps her pronouns** where every other pool had them stripped. Hers is the
-  only silence that is occupied, so naming her is the point.
+* **The canon-first rule is dropped.** It existed to make one recognisable line
+  teach the rule before the flavoured pools started. With a single pool in a single
+  register there are no flavoured pools to introduce, so the rule was scaffolding for
+  a structure that no longer exists. Draw at random, canon line included.
+* **`12. Nothing happens.`** is the bluntest line in the file and probably the best
+  one. It is the only line that states the situation directly, and it can do that
+  precisely because it credits nothing with the silence.
+* ⚠️ **The one real risk: this is indistinguishable from a broken command.** A player
+  who types the command and gets *"You take a breath."* may reasonably conclude
+  nothing fired. Mitigations: the register is authored enough to read as intentional,
+  it is always the same channel, and the player just refused that patron a few
+  minutes ago. If it still plays as a bug in testing, the fix is **not** to explain
+  the mechanic in the line — it is to make the refusal scene end more conclusively.
+* Sound is the other lever, and better than words. `sound-physics-remastered` is
+  installed; a single wind gust or a distant, ordinary ambient cue underneath the
+  line would do more than any amount of text.
+* **Retired:** the six characterised pools, ~26 lines. Kept in git history at
+  `9ef1ac1` if the per-patron idea is ever wanted for something that is genuinely
+  present.

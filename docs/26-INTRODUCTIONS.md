@@ -309,7 +309,7 @@ path**, carried permanently, taken away when the patron gives up on you.
 | path | item | why it is the flagship |
 |---|---|---|
 | **forge** | `create:wrench` | ✅ Ethan. THE Create tool — rotate, dismantle, relocate. Never put down. |
-| **blade** | `magistuarmory:steel_zweihander` | Epic Knights, steel tier — above bronze, below netherite. A two-hander for The Challenger. |
+| **blade** | `born_in_chaos_v1:darkwarblade` | ⭐ **Dark Warblade.** Born in Chaos — *his own mod*. Dark metal, `two_handed: true`, `bettercombat:claymore` parent, 3-block reach, a 1.5× two-handed slam. Its own tooltip warns in red that it is **excessively heavy and hard to use without Strength**. |
 | **art** | `ars_nouveau:enchanters_sword` | ✅ Ethan. A tome was rejected because tomes get REPLACED as you upgrade; the sword is kept forever and merely **re-inscribed**. |
 | **salvage** | `tacz:modern_kinetic_gun` + `GunId: rhino357` | ✅ Ethan wants a revolver. Three exist: `rhino357`, `taurus500`, `taurus943`. |
 | **crown** | `goety:dark_wand` | The command interface for servants — the whole path runs through it. |
@@ -366,7 +366,7 @@ Design is `26-INTRODUCTIONS.md`. **One chunk, then a checkpoint**, same as E2.
 | path | item | notes |
 |---|---|---|
 | forge | `create:wrench` | |
-| blade | `magistuarmory:steel_zweihander` | Mending + Unbreaking |
+| blade | `born_in_chaos_v1:darkwarblade` | Mending + Unbreaking — ⚠️ enchantability unproven, add to I0/J3 |
 | art | `ars_nouveau:enchanters_sword` | kept and re-inscribed, never replaced |
 | crown | `goety:dark_wand` | |
 | wall | `securitycraft:universal_block_reinforcer_lvl1` | also fixes B1's entry point |
