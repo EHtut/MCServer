@@ -354,3 +354,97 @@ that never let it go.
   KubeJS, which has never been tested here. **This needs an E0-style probe before
   anything is designed on it** — that is the whole reason E0 exists, and it has
   already caught two shipped defects today.
+
+---
+
+# INTRODUCTIONS — the build plan
+
+Design is `26-INTRODUCTIONS.md`. **One chunk, then a checkpoint**, same as E2.
+
+## The flagship set — FINAL
+
+| path | item | notes |
+|---|---|---|
+| forge | `create:wrench` | |
+| blade | `magistuarmory:steel_zweihander` | Mending + Unbreaking |
+| art | `ars_nouveau:enchanters_sword` | kept and re-inscribed, never replaced |
+| crown | `goety:dark_wand` | |
+| wall | `securitycraft:universal_block_reinforcer_lvl1` | also fixes B1's entry point |
+| **salvage** | **`tacz:modern_kinetic_gun` + `GunId: db_short`, plus 2× `tacz:12g`** | ⭐ see below |
+
+**Salvage solved itself.** A sawn-off double barrel holds exactly two shells, so
+"a shotgun and two shots" is a gun plus **exactly one full load**. Fire twice and
+she is the only supply in the world - guns cannot be crafted and 12g comes only
+from deep salvage or from her. And `tacz:12g` is **already in our loot injectors**,
+so no new loot work and the earlier revolver ammo problem is gone.
+
+---
+
+## I0 — PROBE FIRST (no gameplay)
+
+E0 has already caught two shipped defects by refusing to assume. Four unknowns
+here, and three chunks depend on them:
+
+| # | assumption | why it matters |
+|---|---|---|
+| J1 | an item can be given with **components/NBT** (`GunId`) from KubeJS or `/give` | Salvage's gun is one item + NBT. If this fails she has nothing to hand over |
+| J2 | an item's components can be **read back** off a held stack | per-gun ammo scaling, and knowing whether the flagship is still carried |
+| J3 | **Mending/Unbreaking apply to a TaCZ gun** | they use their own durability model; do not promise unbreakable until measured |
+| J4 | a **timed, cancellable** chat prompt survives logout mid-scene | the ritual roots the player for 30s; a logout must not strand them blind |
+
+**Verify:** each logs a result. Anything unproven becomes a design change, not a
+TODO.
+
+## I1 — the attention ritual (was E4)
+
+The primitive, **not an introduction feature**. Three known consumers: this,
+Salvage's trades, Wall's requests.
+
+* blind + slow(max) + invisible + **repeated** detarget (E2a's single sweep
+  measured 0 releases against 9 hostiles - sweep across the window)
+* staggered line delivery, **seconds apart** - three writing agents independently
+  demanded this and a wall of red text wastes the black screen entirely
+* clickable options (P3 proved `clickRunCommand`)
+* logout mid-ritual clears everything on login
+* `/ritual test` so it can be exercised without waiting on an event
+
+## I2 — introductions proper (was E5)
+
+Path selection opens the ritual instead of granting instantly.
+
+* the six scenes: arrival -> demand -> two options -> accept/refuse
+* **accept** = XP strip (E2e, already live) + path granted + flagship given
+* **refuse** = no path. 🚨 **the tag AND claim must both stay clear** - this is the
+  fourth place the P1 desync can be born
+* ⚠️ **OPEN: does refusing cost anything?** If the command can be re-run instantly,
+  the refusal branch is fine writing with no weight behind it. Three patrons do not
+  treat a refusal as final in the fiction (Wall asks again for less, Salvage is
+  certain you will return, Art simply waits) - only Crown and Blade close the door.
+
+## I3 — the flagship system
+
+* granted on acceptance, with enchantments where the item supports them (J3)
+* **restored one in-game day after it goes missing** - Ethan: losing it should
+  sting for a session, and the patron handing it back is better than a lock
+* **the fall stops restoring it**, so confiscation needs no code beyond a flag
+* stored as WORLD DAY, never tickCount (K9)
+
+## I4 — the reset
+
+Ethan intends to kick all four players off their paths once introductions exist, so
+everybody meets their patron properly and pays the entry price for the first time.
+`/fall_test` already does the whole revoke, but a clean `/path forcereset <player>`
+without the 3-day cooldown is the right tool - the reset is not a punishment.
+
+---
+
+## Still owed before I1 starts
+
+* **the scene rewrite** - speeches rather than fragment lists, and the gaslight
+  premise: each patron asserts a false shared history the player cannot dispute
+  (*you already reached for it* / *you asked me here* / *we agreed, you have
+  forgotten* / *you left it open for me* / *you were recommended to me* /
+  *you have been here before, every night*). Art's agent wrote that last one
+  unprompted and it is the best line in the batch.
+* **E3, the coefficient substrate**, is still unbuilt. Introductions do not need it,
+  but every per-path identity in `23` §7 does.
