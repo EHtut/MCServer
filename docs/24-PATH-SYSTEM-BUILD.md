@@ -268,6 +268,95 @@ Then die in the Nether and confirm no cementing, no netherrack, no shaking.
 
 ---
 
+---
+
+## E2 — chunked, 2026-08-12
+
+All four E2 decisions are settled (`23` §9.1b/§9.1c). **The path stays OPEN during
+the 3-day cooldown** — anyone may take it, so losing a path can cost it for good.
+That is the political version and it is deliberate.
+
+Six sub-chunks. **One chunk, then a checkpoint.**
+
+| # | chunk | what it does | verified by |
+|---|---|---|---|
+| **E2a** | **wake where you fell** | respawn in place + grace window + detarget. Deletes the cross-dimension branch. | die underground in a pack; wake at the death coords, survive 5s |
+| **E2b** | death costs levels | ~5 levels on death, floored so notoriety never drops below `days × rate` | die at a known level, read the delta |
+| **E2c** | the regard counter | one number, six readings, decays over time. **A death inside the grace window must not advance it** | `/path` shows it; kill yourself twice fast, confirm it moves once |
+| **E2d** | the fall | forced Harvest → `recordHarvest(won=false)` → revoke path + subclass → 3-day cooldown, path left open | force the counter to max; confirm tag AND claim both clear |
+| **E2e** | entry strips XP | taking a path zeroes accumulated levels; this IS the introduction's price | take a path at level 30, confirm 0 |
+| **E2f** | the voices | wire `25`'s dialogue + the ambient layer, incl. **anchored refrains** | watch them escalate across a real ladder |
+
+### E2a is first because everything else sits on its grace window
+E2c's "a spiral counts once" rule reuses the same window, and P8 measured why it
+must exist: **7 hostiles at the death site against 1 at the bed.**
+
+### Hazard rule for E2a — the one thing that would make it worse than today
+Waking where you fell is a death loop if you fell in **lava**, in **fire**, or out
+of the **world**. The death site is normally survivable-by-definition (you were
+standing in it), but the exceptions are exactly the deaths people rage-quit over.
+**If the death site is hazardous, fall back to the bed and say so in chat.** Never
+silently — the §2 legibility law applies to a feature declining to fire.
+
+---
+
+---
+
+## E0 — CLOSED 2026-08-12. Probe retired.
+
+P4 confirmed by eye (the screen goes dark). P8 re-measured at a real death site:
+**10 living mobs within 24 blocks, 9 of them hostile** — worse than the 7 first
+recorded, and the respawn point had 1 and none hunting.
+
+`_probe_paths.js` is **deleted**. It had started actively lying: its
+`PlayerEvents.respawned` handler runs *before* E2a's, so it measured the bed and
+reported
+
+```
+[probe]   died 470,-41,227 -> woke 295,66,240   distance=206
+[respawn] Rehykt woke where they fell (470,-41,227)
+```
+
+Two contradictory lines in one chat window, one of them describing a moment that
+no longer exists. Recoverable from git if E1x-style probing is ever needed again.
+
+## E2a / E2b / E2c — BUILT, DEPLOYED, VERIFIED LIVE
+
+| chunk | evidence |
+|---|---|
+| **E2a** wake where you fell | `Rehykt woke where they fell (470,-41,227)`, and the player saw *"You wake where you fell."* |
+| **E2a** hazard fallback | `Rehykt died in minecraft:lava - waking at their bed instead`, and the player was told *"lava was there"* |
+| **E2b** death costs levels | `Rehykt lost 5 levels (34 -> 29)` then `(29 -> 24)` |
+| **E2c** the counter | `Rehykt forge debt 0 -> 15 (beat 0 -> 1)` then `15 -> 30 (beat 1 -> 2)` |
+| **E2c** the voice | *"Late. Again."* then *"You die like it is routine."* — beats firing on CHANGE, not per death |
+| **E2c** the six readings | `/regard` renders **"Your patron holds 30/100 debt"** for a Forge walker |
+
+### 🚨 The first live test found a real defect: THE DETARGET DID NOTHING
+
+```
+[respawn] Rehykt woke where they fell (470,-41,227) - 0 mob(s) detargeted
+[probe]   10 living mobs within 24 blocks of where you died, 9 hostile
+```
+
+Nine hostiles present, zero released. The single sweep ran **immediately after the
+teleport**, which is the one instant where nothing has acquired the player yet —
+their previous target died a moment earlier and they re-acquire over the following
+ticks. The sweep fired into a guaranteed-empty window and reported success.
+
+That is the same shape as the C4 false pass (measuring `isAlive()` in the same
+tick as `spawn()`): **the measurement was taken at the only moment it could not
+show the thing being measured.**
+
+**Fixed:** the detarget now sweeps at **0, 20, 40, 60 and 80 ticks** across the
+whole grace window, so anything that locks on gets released again. Only targets
+pointing at *this* player are cleared, so somebody else's fight nearby is left
+alone. Each sweep that releases anything logs it, so "it did nothing" can never
+again look like "there was nothing to do".
+
+Without this, Resistance III was carrying the entire grace window by itself.
+
+---
+
 ## E3 — The coefficient substrate
 
 **Depends on:** E0 P9 for the spawn axis only; the rest can go first.

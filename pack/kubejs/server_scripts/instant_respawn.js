@@ -1,163 +1,363 @@
-// A5 - no death screen for ordinary death.
+// instant_respawn.js — E2a of the Path System build. docs/24
 //
-// Ethan, 2026-08-01:
-//   "Normal deaths shouldn't have a death screen and it should be youre back at
-//    your bed a moment later"
+// YOU WAKE WHERE YOU FELL.
 //
-// Not a convenience feature - it is the expedition loop expressed as UX. With
-// Corpse holding your gear where you fell, dying underground becomes: you are at
-// base immediately, your stuff is still down there, and the cost is THE TRIP
-// BACK. That is "death costs the run, never the base" as something felt rather
-// than written down.
+// Ethan, 2026-08-11: "What if dying doesn't bring you back to your bed? you just
+// wake up where you fell?"
 //
-// It also makes D4's invasion rule land harder. When every ordinary death is a
-// two-second inconvenience, being HELD dead in spectator during an invasion is
-// an unmistakable signal that this one is different.
+// This REPLACES the old behaviour (respawn, then teleport to the bed 0.75s later)
+// and in doing so DELETES a whole class of bug rather than working around it. The
+// cross-dimension guard, the dimId() normaliser and the "vanilla owns this one"
+// branch are all gone: if you never move the player to another dimension, the
+// client never needs a dimension-change handshake it did not agree to, and the
+// cemented-to-the-bed / placing-netherrack / shaking failures cannot happen.
 //
-// ---------------------------------------------------------------------------
-// v1 OF THIS FILE DID NOTHING AT ALL
+// ── WHY THIS IS NOT SIMPLY CRUELLER ──────────────────────────────────────────
+// The documented design was "death costs the run, never the base - the cost is
+// THE TRIP BACK". Waking in place removes the trip back entirely and replaces it
+// with something better: THERE IS NO SAFE RESET. You are still in the room, with
+// whatever is in it.
 //
-// It hooked `PlayerEvents.death`, WHICH DOES NOT EXIST. KubeJS's registered
-// PlayerEvents names are loggedIn/loggedOut/cloned/respawned/tick/decorateChat/
-// chat/advancement/inventory*/chest*/stage* - no `death`.
+// ── THE MEASUREMENT THIS IS BUILT ON ─────────────────────────────────────────
+// E0 probe P8, taken live on 2026-08-12 from a real death:
 //
-// And KubeJS does not throw on an unknown event name. EventGroupWrapper.get()
-// logs "Unknown event 'PlayerEvents.death'!" once and returns a bare no-op
-// function, so the file registered nothing and ran forever without complaint
-// beyond that single startup line nobody reads.
+//     at the DEATH SITE : 7 living mobs within 24 blocks, ALL 7 hostile
+//     at the bed        : 1 mob, 0 hunting the player
 //
-// It also called `player.respawn()`, which does not exist on ServerPlayer
-// either - so even a correct hook would have done nothing.
-//
-// Both are the same failure this project keeps producing: an API that LOOKS
-// right, fails quietly, and leaves behind something indistinguishable from a
-// feature nobody triggered.
-// ---------------------------------------------------------------------------
+// So waking in place drops the player in front of seven hostiles. Without a grace
+// window this is not a risk of a death spiral, it is a guarantee of one - and the
+// first version of that probe measured the BED and would have reported it safe.
+;(function () {
+  var INVASION_FLAG = 'invasion_active'   // set by D4 later; absent for now
 
-const INVASION_FLAG = 'invasion_active'   // set by D4 later; absent for now
-var dimLogged = false
+  var GRACE_TICKS = 100                   // 5s of Resistance on waking
+  var GRACE_AMP = 2                       // Resistance III
+  var DETARGET_RADIUS = 24                // matches what P8 sampled
+  var RESPAWN_DELAY = 15                  // ticks; see THE 15-TICK NOTE below
 
-EntityEvents.death(event => {
-  const player = event.entity
-  if (!player || !player.player) return     // EntityEvents fires for everything
-
-  // D4 hook: while an invasion runs, ordinary respawn is suspended and the
-  // spectator rule owns death instead. Reading a flag that does not exist yet
-  // is harmless - it is simply never true until D4 sets it.
-  try {
-    if (player.server.persistentData.getBoolean(INVASION_FLAG)) return
-  } catch (e) { /* no flag, no invasion, carry on */ }
+  // Where each player died, remembered only between death and respawn.
+  var fell = {}
 
   // ---------------------------------------------------------------------------
-  // SAME DIMENSION ONLY.
+  // THE SECOND-DEATH RULE — the general answer to "what if I cannot get out?"
   //
-  // Ethan, 2026-08-11: "i die in the nether then im cemented on my bed cannot
-  // move and right clicking causes me to place down netherack."
+  // Ethan, 2026-08-12: "what if you die in lava or are stuck in a hole with no way
+  // out?"
   //
-  // That symptom names the cause precisely. Right-clicking placing NETHERRACK
-  // while frozen means the client still held the Nether's world state - it never
-  // processed the death at all, so its dimension and position disagreed with the
-  // server's and every movement packet was rejected.
+  // Lava is handled below by hazardAt(). The hole is not, and CANNOT be, by
+  // inspection: a sealed pocket, a ravine with nothing left to pillar with, no
+  // pickaxe, suffocating inside a block, a mob pack unsurvivable at any health -
+  // the list of ways a spot can be inescapable has no end, and every hazard we
+  // fail to enumerate becomes an infinite death loop that costs a level a cycle.
   //
-  // The reason is structural, not timing. Vanilla's flow is:
+  // So do not predict the trap. DETECT THE LOOP. If a player dies twice in
+  // essentially the same place in quick succession, the place is the problem, and
+  // the second respawn goes to the bed. That covers every hazard at once,
+  // including the ones nobody has thought of yet.
   //
-  //   die -> server tells client -> client shows the screen -> CLIENT ASKS to
-  //   respawn -> server calls PlayerList.respawn()
-  //
-  // We skip the client's request. Within one dimension that mostly survives,
-  // because only the position changes. Across dimensions the client needs a full
-  // dimension-change handshake it never agreed to, and it ends up stranded. No
-  // amount of extra delay fixes it, because the client is never going to ask.
-  //
-  // So the feature keeps the scope it was actually designed for. Ethan asked for
-  // it so that DYING UNDERGROUND is cheap - "death costs the run, never the base"
-  // - and every one of those deaths is in the same dimension as the bed. A Nether
-  // death is exactly the case where a death screen is correct: you have just lost
-  // your gear in another world and a beat to register that is not a cost.
-  //
-  // FAILS SAFE: if the respawn dimension cannot be read at all, we decline to
-  // instant-respawn. The worst outcome is a vanilla death screen, which is a
-  // feature not firing rather than a player cemented to their bed.
+  // It also composes with E2c: a death inside the grace window must not advance
+  // the regard counter, so a spiral costs a path nothing either.
   // ---------------------------------------------------------------------------
-  // ⚠️ NORMALISE BOTH SIDES BEFORE COMPARING.
-  //
-  // The first version of this guard compared the raw strings and was therefore
-  // ALWAYS unequal, silently disabling instant respawn in every dimension while
-  // logging a tidy reason:
-  //
-  //   death: minecraft:the_nether
-  //   bed:   ResourceKey[minecraft:dimension / minecraft:overworld]
-  //
-  // Same shape of mistake as Long.MAX_VALUE-as-damage and a Holder-as-biome-id:
-  // both values were about the right THING and in different FORMS. Pull the last
-  // namespaced id out of whatever wrapper each side arrives in.
-  function dimId(v) {
-    if (v === null || v === undefined) return null
-    var s = String(v)
-    var m = s.match(/[a-z0-9_.-]+:[a-z0-9_./-]+/g)
-    return m ? m[m.length - 1] : null
+  var REPEAT_RADIUS = 8         // blocks; "essentially the same place"
+  var REPEAT_TICKS = 2400       // 2 minutes of server uptime
+  var recent = {}               // uuid -> {x,y,z,dim,tick}
+
+  function diedHereBefore(player, x, y, z, dim) {
+    var r = recent[String(player.uuid)]
+    if (!r || r.dim !== dim) return false
+    var now = 0
+    try { now = player.server.tickCount } catch (e) { return false }
+    // A stamp from the FUTURE means the server restarted between the two deaths -
+    // that is finding K9 exactly, where uptime was compared across a restart and
+    // silently disabled a whole system. Treat it as no prior death.
+    if (r.tick > now) return false
+    if (now - r.tick > REPEAT_TICKS) return false
+    var dx = r.x - x, dy = r.y - y, dz = r.z - z
+    return (dx * dx + dy * dy + dz * dz) <= (REPEAT_RADIUS * REPEAT_RADIUS)
   }
 
-  var deathDim = null, bedDim = null
-  try { deathDim = dimId(player.level.dimension) } catch (e) { }
-  var dimCands = [
-    ['getRespawnDimension()', function () { return player.getRespawnDimension() }],
-    ['respawnDimension', function () { return player.respawnDimension }],
-    ['respawnPosition.dimension', function () { return player.respawnPosition.dimension }],
-  ]
-  for (var i = 0; i < dimCands.length; i++) {
+  // ---------------------------------------------------------------------------
+  // THE HAZARD RULE — the one thing that would make this WORSE than the bed.
+  //
+  // The death site is normally survivable by definition: the player was standing
+  // in it a moment ago. The exceptions are precisely the deaths people rage-quit
+  // over - lava, fire, and falling out of the world. Waking a player into lava is
+  // an infinite loop that costs them a level every cycle.
+  //
+  // Block reads use `.id`, NOT `.isAir()`. E0 probe P11 measured `.isAir()` three
+  // times on three different blocks and got
+  //     TypeError: Cannot find function isAir
+  // every time. That is the same call the K7 footing probe shipped on, which is
+  // why K7 never worked once.
+  // ---------------------------------------------------------------------------
+  function hazardAt(level, x, y, z) {
+    if (y < -100) return 'the void'
     try {
-      var v = dimCands[i][1]()
-      if (v) {
-        bedDim = dimId(v)
-        if (!dimLogged) { dimLogged = true; console.info('[instant_respawn] respawn dimension read via ' + dimCands[i][0]) }
-        break
+      var here = String(level.getBlock(Math.floor(x), Math.floor(y), Math.floor(z)).id)
+      var below = String(level.getBlock(Math.floor(x), Math.floor(y) - 1, Math.floor(z)).id)
+      var bad = function (id) {
+        return id.indexOf('lava') >= 0 || id.indexOf('fire') >= 0 || id.indexOf('magma') >= 0
+      }
+      if (bad(here)) return here
+      if (bad(below)) return below
+    } catch (e) {
+      return 'unreadable'                 // fail toward the bed, never into a guess
+    }
+    return null
+  }
+
+  // ---------------------------------------------------------------------------
+  // THE GRACE WINDOW — Resistance, plus a REPEATED detarget.
+  //
+  // ⚠️ The first version swept once, immediately after the teleport, and the very
+  // first live test proved it useless:
+  //
+  //     [respawn] Rehykt woke where they fell (470,-41,227) - 0 mob(s) detargeted
+  //
+  // ...while the probe had measured TEN living mobs, NINE hostile, at that exact
+  // spot. Nothing was cleared because at the instant of arrival nothing had
+  // acquired the player YET - their previous target died a moment ago, and they
+  // re-acquire over the following ticks. A single sweep fires into the one window
+  // where there is provably nothing to clear.
+  //
+  // So sweep REPEATEDLY across the whole grace period. Anything that locks on gets
+  // let go again, which is what "they have to find you again" actually requires.
+  // Only targets pointing at THIS player are cleared, so a nearby fight belonging
+  // to somebody else is left alone.
+  // ---------------------------------------------------------------------------
+  var SWEEPS = [0, 20, 40, 60, 80]        // ticks into the window
+
+  function detargetOnce(player) {
+    var cleared = 0
+    try {
+      var near = player.level.getEntitiesWithin(player.boundingBox.inflate(DETARGET_RADIUS))
+      for (var i = 0; i < near.length; i++) {
+        var m = near[i]
+        try {
+          if (!m || m.player || !m.living) continue
+          var t = null
+          try { t = m.getTarget() } catch (x) { try { t = m.target } catch (y) { } }
+          if (t && String(t.uuid) === String(player.uuid)) { m.setTarget(null); cleared++ }
+        } catch (x) { }
       }
     } catch (e) { }
-  }
-  if (!deathDim || !bedDim) {
-    console.info('[instant_respawn] cannot compare dimensions (death=' + deathDim +
-      ' bed=' + bedDim + ') - leaving the death screen alone')
-    return
-  }
-  if (deathDim !== bedDim) {
-    console.info('[instant_respawn] cross-dimension death (' + deathDim + ' -> ' + bedDim +
-      ') - vanilla owns this one')
-    return
+    return cleared
   }
 
-  // ---------------------------------------------------------------------------
-  // 15 TICKS, NOT 1.
-  //
-  // Ethan, 2026-08-11: "on respawn blocks appeared under me causing me to shake
-  // violently ontop of my bed."
-  //
-  // At 1 tick the server moved him to his bed 80ms after death - before the
-  // client had processed the death packet at all. The log names it exactly:
-  //
-  //   18:02:05.15  Rehykt was killed
-  //   18:02:05.23  Rehykt moved too quickly!  266.4, -44.4, 284.9
-  //
-  // The client still believed it was at the death position, so every movement
-  // packet disagreed with the server: that is the shake. "Blocks appearing under
-  // me" is the chunks around the bed streaming in once the client caught up.
-  //
-  // 15 ticks (0.75s) is still "back at your bed a moment later" - the thing
-  // actually asked for - but it lets the death sequence finish and the client
-  // acknowledge it before the position changes. The nemesis tally's write still
-  // lands first, which was the original reason for delaying at all.
-  // ---------------------------------------------------------------------------
-  player.server.scheduleInTicks(15, () => {
+  function grace(player) {
+    try { player.potionEffects.add('minecraft:resistance', GRACE_TICKS, GRACE_AMP, false, false) } catch (e) { }
+    var total = detargetOnce(player)
+    var server = null
+    try { server = player.server } catch (e) { }
+    if (server) {
+      for (var s = 1; s < SWEEPS.length; s++) {
+        (function (delay) {
+          server.scheduleInTicks(delay, function () {
+            try {
+              if (!player.alive) return
+              var n = detargetOnce(player)
+              if (n) console.info('[respawn] grace sweep +' + delay + 't released ' +
+                n + ' mob(s) from ' + player.username)
+            } catch (e) { }
+          })
+        })(SWEEPS[s])
+      }
+    }
+    return total
+  }
+
+  EntityEvents.death(function (event) {
+    var player = event.entity
+    if (!player || !player.player) return    // EntityEvents fires for everything
+
+    // D4 hook: while an invasion runs, the spectator rule owns death instead.
+    // Reading a flag that does not exist yet is harmless - it is simply never
+    // true until D4 sets it.
     try {
-      // Verified against neoforge-21.1.247-server.jar:
-      //   MinecraftServer.getPlayerList() -> PlayerList
-      //   PlayerList.respawn(ServerPlayer, boolean, Entity$RemovalReason)
-      player.server.playerList.respawn(player, false, 'killed')
+      if (player.server.persistentData.getBoolean(INVASION_FLAG)) return
+    } catch (e) { }
+
+    try {
+      var uuid = String(player.uuid)
+      var dim = String(player.level.dimension)
+      var repeat = diedHereBefore(player, player.x, player.y, player.z, dim)
+      fell[uuid] = {
+        x: player.x, y: player.y, z: player.z,
+        dim: dim,
+        repeat: repeat,          // second death in the same spot -> take the bed
+      }
+      var tick = 0
+      try { tick = player.server.tickCount } catch (e2) { }
+      recent[uuid] = { x: player.x, y: player.y, z: player.z, dim: dim, tick: tick }
+    } catch (e) { }
+
+    // ---------------------------------------------------------------------------
+    // THE 15-TICK NOTE, kept from the previous version because the reason still
+    // holds. At 1 tick the server moved the player before the client had processed
+    // the death packet at all, and the log named it exactly:
+    //     18:02:05.15  Rehykt was killed
+    //     18:02:05.23  Rehykt moved too quickly!  266.4, -44.4, 284.9
+    // The client still believed it was at the death position, so every movement
+    // packet disagreed with the server. That is the shake. 15 ticks lets the death
+    // sequence finish and be acknowledged first.
+    // ---------------------------------------------------------------------------
+    player.server.scheduleInTicks(RESPAWN_DELAY, function () {
+      try {
+        // Verified against neoforge-21.1.247-server.jar:
+        //   MinecraftServer.getPlayerList() -> PlayerList
+        //   PlayerList.respawn(ServerPlayer, boolean, Entity$RemovalReason)
+        player.server.playerList.respawn(player, false, 'killed')
+      } catch (e) {
+        // Loud. A respawn that quietly stops working is indistinguishable from a
+        // player choosing to sit on the death screen, which is how this class of
+        // bug survives for months.
+        console.error('[respawn] respawn failed, players will see the death screen: ' + e)
+      }
+    })
+  })
+
+  // The player is back in the world - at their bed. Move them to where they fell.
+  PlayerEvents.respawned(function (event) {
+    var p = event.player
+    if (!p) return
+    var uuid = String(p.uuid)
+    var at = fell[uuid]
+    delete fell[uuid]
+    if (!at) return
+
+    // ---------------------------------------------------------------------------
+    // CROSS-DIMENSION DEATH FALLS BACK TO THE BED.
+    //
+    // I first wrote this with no dimension check, and a comment claiming the
+    // distinction did not exist here. It does, and getting it wrong would be worse
+    // than the bug this rewrite was meant to remove:
+    //
+    //   After respawn the player is at their BED. If they died in the Nether and
+    //   the bed is in the Overworld, p.level is the OVERWORLD - so reading the
+    //   block at the death coords reads a different dimension entirely, and
+    //   teleportTo(x,y,z) would drop them at those coordinates in the WRONG WORLD.
+    //   Nether coordinates are Overworld coordinates divided by eight, so that
+    //   lands somewhere real, somewhere arbitrary, and somewhere they have never
+    //   been.
+    //
+    // A dimension-aware teleport exists in principle, but the API is unproven in
+    // this runtime and E0 exists precisely because unproven APIs here fail
+    // SILENTLY. Same-dimension is the overwhelmingly common case and the one this
+    // feature was designed for - "dying underground is cheap". The rare
+    // cross-dimension death takes the bed, and is told so.
+    // ---------------------------------------------------------------------------
+    // /unstuck asked for the bed explicitly.
+    if (forceBed[uuid]) {
+      delete forceBed[uuid]
+      console.info('[respawn] ' + p.username + ' woke at their bed via /unstuck')
+      grace(p)
+      return
+    }
+
+    // THE SECOND DEATH. Whatever is there, it has now killed them twice inside two
+    // minutes, so it wins and they get the bed. This runs BEFORE the hazard check
+    // because it does not care what the hazard was - that is the entire point.
+    if (at.repeat) {
+      console.info('[respawn] ' + p.username + ' died twice in the same place - ' +
+        'taking the bed rather than feeding a loop')
+      try {
+        p.tell(Text.of('§8Twice in the same place. §7You wake at your bed instead.'))
+      } catch (e) { }
+      grace(p)
+      return
+    }
+
+    var nowDim = null
+    try { nowDim = String(p.level.dimension) } catch (e) { }
+    if (!nowDim || nowDim !== at.dim) {
+      console.info('[respawn] ' + p.username + ' died in ' + at.dim + ' but woke in ' +
+        nowDim + ' - cross-dimension, taking the bed')
+      try {
+        p.tell(Text.of('§8You died in another world. You wake at your bed.'))
+      } catch (e) { }
+      grace(p)
+      return
+    }
+
+    var haz = null
+    try { haz = hazardAt(p.level, at.x, at.y, at.z) } catch (e) { haz = 'unreadable' }
+
+    if (haz) {
+      // DECLINE, OUT LOUD. The legibility law applies to a feature choosing not to
+      // fire just as much as to one that does: a player who expected to wake where
+      // they fell and did not must be told why, or it reads as a bug.
+      console.info('[respawn] ' + p.username + ' died in ' + haz +
+        ' - waking at their bed instead')
+      try {
+        p.tell(Text.of('§8You did not wake where you fell. §7' + haz.replace('minecraft:', '') +
+          '§8 was there.'))
+      } catch (e) { }
+      grace(p)
+      return
+    }
+
+    var moved = false
+    try {
+      p.teleportTo(at.x, at.y, at.z)
+      moved = true
     } catch (e) {
-      // Loud. A respawn that quietly stops working is indistinguishable from a
-      // player choosing to sit on the death screen, which is how this class of
-      // bug survives for months.
-      console.error('[instant_respawn] respawn failed, players will see the death screen: ' + e)
+      try { p.setPos(at.x, at.y, at.z); moved = true } catch (e2) {
+        console.warn('[respawn] could not move ' + p.username + ' to the death site :: ' + e2)
+      }
+    }
+
+    var cleared = grace(p)
+    if (moved) {
+      console.info('[respawn] ' + p.username + ' woke where they fell (' +
+        Math.round(at.x) + ',' + Math.round(at.y) + ',' + Math.round(at.z) +
+        ') - ' + cleared + ' mob(s) detargeted, ' + (GRACE_TICKS / 20) + 's grace')
+      try {
+        p.tell(Text.of('§8You wake where you fell.'))
+      } catch (e) { }
     }
   })
-})
+
+  // ---------------------------------------------------------------------------
+  // /unstuck — the manual escape, for being trapped while still ALIVE.
+  //
+  // The second-death rule only fires after the place has killed you twice. If you
+  // are merely sealed in with no way out and in no danger, nothing kills you and
+  // nothing rescues you either. This is that door.
+  //
+  // It is deliberately NOT a free teleport: it marks the next respawn as bed-bound
+  // and then kills you. Escaping costs a death, which is exactly what giving up
+  // should cost, and it means the command cannot be used as fast travel or as a
+  // combat exit - dying is strictly worse than running.
+  //
+  // Implemented with proven calls only. A bed-teleport would need the respawn
+  // position API, which is unproven in this runtime, and E0 exists because
+  // unproven APIs here fail silently.
+  // ---------------------------------------------------------------------------
+  var forceBed = {}
+
+  ServerEvents.commandRegistry(function (event) {
+    var Commands = event.commands
+    event.register(Commands.literal('unstuck').executes(function (ctx) {
+      var p = ctx.source.player
+      if (!p) return 0
+      forceBed[String(p.uuid)] = true
+      p.tell(Text.of('§7You give up. §8It costs you a death.'))
+      console.info('[respawn] ' + p.username + ' used /unstuck')
+      try {
+        ctx.source.server.runCommandSilent('kill ' + p.username)
+      } catch (e) {
+        console.warn('[respawn] /unstuck could not kill ' + p.username + ' :: ' + e)
+        p.tell(Text.of('§cThat did not work. Tell Ethan.'))
+        delete forceBed[String(p.uuid)]
+        return 0
+      }
+      return 1
+    }))
+  })
+
+  ServerEvents.loaded(function () {
+    console.info('[respawn] E2a active - you wake WHERE YOU FELL, not at your bed')
+    console.info('[respawn] grace ' + (GRACE_TICKS / 20) + 's Resistance ' + (GRACE_AMP + 1) +
+      ', detarget radius ' + DETARGET_RADIUS + ', lava/fire/void falls back to the bed')
+  })
+})()
