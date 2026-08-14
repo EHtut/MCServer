@@ -232,6 +232,19 @@
   // question "is the Forge taken" has to be answerable while its owner is
   // offline.
   // ---------------------------------------------------------------------------
+  // E2e — what the patron says as it takes everything you have. DRAFTS; the tone
+  // ruling is that the patrons' words are Ethan's, and E5's introduction ritual
+  // will carry the real scene. Each one is the same act read six ways: the Thief
+  // calls it owed, the Mother calls it closeness, the Nightmare calls it rest.
+  const ENTRY_LINE = {
+    blade: 'Everything you were is nothing. Begin.',
+    salvage: 'I will hold what you have, friend. Call it a deposit.',
+    forge: 'Whatever you had is mine. Now build me something.',
+    wall: 'Give it to me. All of it. There. Nothing between us.',
+    crown: 'Your holdings are noted, and reassigned. Serve.',
+    art: 'Empty hands. Good. Now you can sleep.',
+  }
+
   const CLAIM = 'veldora_claim_'
   var warnedMismatch = {}   // username -> already shouted about a claim mismatch
 
@@ -487,6 +500,22 @@
         const p = ctx.source.player
         if (!p) return 0
         var srv = ctx.source.server
+
+        // E2d: a patron that gave up on you locks you out of EVERY path, not only
+        // the one you lost - otherwise the punishment is a two-second detour into
+        // a different patron and means nothing. Being pathless IS the sentence.
+        try {
+          if (VELDORA.pathBlocked) {
+            var cd = VELDORA.pathBlocked(srv, p)
+            if (cd.blocked) {
+              p.tell('§cNo patron will have you yet.')
+              p.tell('§7' + cd.daysLeft + ' more day' + (cd.daysLeft === 1 ? '' : 's') +
+                '§7. They are all still watching what you did.')
+              return 0
+            }
+          }
+        } catch (e) { /* a broken cooldown must never brick path selection */ }
+
         var held = holderOf(srv, key)
         var esc = escrowHolder(held)
         if (esc) {
@@ -516,6 +545,51 @@
         p.persistentData.putString(KEY, key)
         setHolder(srv, key, p.username)
         if (old) p.tell('§8You set down ' + PATHS[old].name + '.')
+
+        // ---------------------------------------------------------------------
+        // E2e — TAKING A PATH STRIPS YOUR XP.
+        //
+        // Ethan, 2026-08-12: "taking a path strips you of all your existing xp."
+        //
+        // Three things at once (docs/23 §9.1c):
+        //
+        //  * It kills path-hopping. notoriety is max(xpLevel, days x rate), so
+        //    without this a player could bank levels on one path and arrive at the
+        //    next already fat.
+        //  * It pushes players INTO the system early - the entry fee is everything
+        //    accumulated so far, so the cheapest moment to take a path is
+        //    IMMEDIATELY. Hoarding levels while pathless just builds a bigger bill.
+        //  * It IS the introduction's price. §9.2 wanted each patron to demand
+        //    something at the door, payable by someone who owns nothing. This is
+        //    that demand, and it means six separate demands collapse into one
+        //    mechanic plus six lines about taking it.
+        //
+        // The patron's first act is to take everything you have.
+        // ---------------------------------------------------------------------
+        var had = 0
+        try { had = p.xpLevel || 0 } catch (e) { }
+        if (had > 0) {
+          var wiped = false
+          try { p.xpLevel = 0; wiped = true } catch (e) {
+            try { srv.runCommandSilent('xp set ' + p.username + ' 0 levels'); wiped = true }
+            catch (e2) { console.error('[paths] E2e could not strip xp from ' + p.username + ' :: ' + e2) }
+          }
+          // Verify at the point of use - "I set it to 0" and "it is 0" are
+          // different claims, and this project has shipped the first as the second.
+          var now = -1
+          try { now = p.xpLevel } catch (e) { }
+          if (wiped && now !== 0) {
+            console.warn('[paths] E2e xp strip did not stick for ' + p.username +
+              ' - wanted 0, read back ' + now)
+          }
+          console.info('[paths] E2e ' + p.username + ' entered ' + key + ' - stripped ' +
+            had + ' levels')
+        }
+        // The patron speaks as it takes. DRAFT lines - Ethan's own writing outranks
+        // these, and the full introduction ritual (E5) will carry the real scene.
+        p.tell(Text.of('§4§l' + ENTRY_LINE[key]))
+        if (had > 0) p.tell('§c§lIt took everything you had. §8(' + had + ' levels)')
+
         p.tell('§6You walk ' + PATHS[key].name + '§7.')
         p.tell('§7' + PATHS[key].blurb)
         p.tell('§8Kills now pay in your path - and pay better the deeper you are.')

@@ -217,10 +217,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     }
 
     if (after >= MAX) {
-      // E2d owns what happens next: forced Harvest -> recordHarvest(won=false) ->
-      // revoke the path and the subclass -> 3 in-game days, path left OPEN.
-      console.warn('[regard] ' + p.username + ' has reached MAX regard on ' + key +
-        ' - E2d (the fall) is not built yet, so nothing further happens.')
+      // E2d owns what happens next. Called rather than inlined so the fall has one
+      // implementation and one place to be wrong.
+      if (typeof VELDORA.theFall === 'function') {
+        VELDORA.theFall(server, p, key)
+      } else {
+        // A gate ships with a live consumer or not at all. If fall.js is missing,
+        // say so LOUDLY rather than leaving a counter that maxes out and silently
+        // does nothing - which is precisely the failure this project spent a day
+        // auditing out of itself.
+        console.error('[regard] ' + p.username + ' MAXED regard on ' + key +
+          ' but VELDORA.theFall is MISSING. The fall did not happen. This is a BUG.')
+      }
     }
   })
 

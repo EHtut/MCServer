@@ -357,6 +357,52 @@ Without this, Resistance III was carrying the entire grace window by itself.
 
 ---
 
+
+
+---
+
+
+## E2 — ALL SIX CHUNKS BUILT, 2026-08-12
+
+
+| chunk | what | state |
+|---|---|---|
+| **E2a** | wake where you fell | BUILT + VERIFIED LIVE |
+| **E2b** | death costs levels | BUILT + VERIFIED LIVE |
+| **E2c** | the regard counter | BUILT + VERIFIED LIVE |
+| **E2d** | the fall | BUILT, /fall_test only |
+| **E2e** | entry strips xp | BUILT, untested |
+| **E2f** | the voices | BUILT, untested |
+
+
+**E2d is a REPOSSESSION, not a fight.** Design call worth stating: the earned
+Harvest (notoriety 100) is a battle you are meant to lose several times and
+eventually win. The forced one is the patron collecting and leaving - there is
+nothing to beat. Same name, opposite events. Making it fightable means deferring
+the revoke until the fight resolves, which needs cross-file state in stalker.js.
+
+
+**E2e absorbed the introduction.** Taking a path strips all XP, and that IS the
+price §9.2 wanted each patron to demand at the door. Six demands collapsed into
+one mechanic plus six lines about taking it.
+
+
+**E2f ships ANCHORED refrains**, the structural idea the Art agent found: one line
+per patron that mutates by tier, so the player recognises it AND hears it change.
+Fires ~34% of whispers. Silent below regard 10, so it is pressure you earned
+rather than weather - stalker.js already whispers unconditionally and two
+unconditional sources would cancel each other out.
+
+
+### Still untested by a player
+* the fall end-to-end (, then  should refuse for 3 days)
+* the entry strip (take a path at a known level)
+* the whisper ladder ()
+* E2c spiral rule (die twice fast -> charged and counted once)
+
+
+---
+
 ## E3 — The coefficient substrate
 
 **Depends on:** E0 P9 for the spawn axis only; the rest can go first.
