@@ -52,6 +52,15 @@
     console.info(TAG + id + ': ' + verdict + (detail ? '  ' + detail : ''))
   }
 
+  // The damage listener below is DISARMED by default and stays that way unless
+  // /introprobe xp is run. A probe that logs on every hit in normal play is a
+  // performance problem and a log flood, and this one also WRITES damage - which
+  // must never happen to somebody who did not ask for it.
+  var ARMED_UNTIL = 0
+  var ATTR_MOD = '[minecraft:attribute_modifiers={modifiers:[{type:"minecraft:generic.attack_damage",' +
+    'id:"mcserver:xp_coupling",amount:5,operation:"add_value",slot:"mainhand"}]}]'
+  function nowTick(p) { try { return p.level.time } catch (e) { return 0 } }
+
   function tell(p, s) { try { p.tell(Text.of(s)) } catch (e) { } }
 
   // Try a list of [label, fn] and report which one answered. The E0 pattern: in
@@ -198,7 +207,45 @@
       say('J3.' + lbl, 'RESULT', bits.join('  '))
     }
 
-    console.info(TAG + 'boot done. Only J4 (logout) still needs a player.')
+    // ------------------------------------------------------------------------
+    // J5 / J6 - THE XP COUPLING.  docs/29-THE-XP-COUPLING.md
+    //
+    // Ethan wants the flagships to scale damage off experience. Route B writes
+    // minecraft:attribute_modifiers onto the stack, which is the only route where
+    // the number SHOWS ON THE ITEM - this codebase has a standing legibility law.
+    //
+    // Two different claims, and conflating them is exactly the I0 mistake:
+    //   J5a  the component can be WRITTEN and read back   <- provable at boot
+    //   J5b  the game APPLIES it to a real swing          <- needs a player
+    // A stack that holds a modifier it does not honour looks identical to success
+    // from here, so J5a passing proves nothing on its own and says so.
+    // ------------------------------------------------------------------------
+    console.info(TAG + '--- J5 attribute_modifiers on a stack ---')
+    var ATTR = '[minecraft:attribute_modifiers={modifiers:[{type:"minecraft:generic.attack_damage",' +
+      'id:"mcserver:xp_coupling",amount:5,operation:"add_value",slot:"mainhand"}]}]'
+    var attrSubjects = ['create:wrench', 'born_in_chaos_v1:darkwarblade']
+    for (var m = 0; m < attrSubjects.length; m++) {
+      try {
+        var sm = Item.of(attrSubjects[m] + ATTR)
+        var cs = String(sm.componentString)
+        say('J5a.' + attrSubjects[m], cs.indexOf('xp_coupling') >= 0 ? 'HELD' : 'ABSENT',
+          cs.substring(0, 100))
+      } catch (e) { say('J5a.' + attrSubjects[m], 'THREW', String(e).substring(0, 100)) }
+    }
+    console.info(TAG + '  J5b (does a swing actually hit harder) NEEDS A PLAYER - /introprobe xp')
+
+    // J6 - is there an XP-change event, or must the refresh poll? Enumerate rather
+    // than guess: a wrong event name logs one startup line and then never fires,
+    // which is finding C0.1 and cost real time once already.
+    var evNames = ['xpLevelChange', 'xpChange', 'levelUp', 'experienceChange', 'pickupXp']
+    var present = []
+    for (var q = 0; q < evNames.length; q++) {
+      try { if (typeof PlayerEvents[evNames[q]] === 'function') present.push(evNames[q]) } catch (e) { }
+    }
+    say('J6.xpEvents', present.length ? 'FOUND' : 'NONE', present.length ? present.join(',') :
+      'no xp event on PlayerEvents - the refresh must POLL or hook level-up another way')
+
+    console.info(TAG + 'boot done. J4 + J5b/J7/J8 need a player.')
   })
 
   // ==========================================================================
@@ -357,8 +404,26 @@
       }
     })
 
+    // -------------------------------------------------------------------- xp
+    // J5b / J7 / J8. Arms the damage listener below for 60s, and hands over a
+    // wrench carrying a +5 attack_damage component so the difference is visible
+    // by swinging rather than by reading a log.
+    var xpCmd = sub('xp', function (p) {
+      ARMED_UNTIL = nowTick(p) + 1200
+      try {
+        p.give(Item.of('create:wrench' + ATTR_MOD))
+        p.give(Item.of('create:wrench'))
+      } catch (e) { say('J5b', 'give-threw', String(e)) }
+      tell(p, '§7Armed for 60s. Two wrenches given:')
+      tell(p, '§8 · the FIRST carries a +5 attack_damage component')
+      tell(p, '§8 · the SECOND is plain, as the control')
+      tell(p, '§7Hover both. §fDoes the modified one show higher damage?§7 Then hit')
+      tell(p, '§8something with each and compare. Then shoot the TaCZ gun at a mob.')
+      tell(p, '§8Every hit while armed is logged with weapon, damage and your level.')
+    })
+
     event.register(Commands.literal('introprobe')
-      .then(giveCmd).then(readCmd).then(enchCmd).then(logoutCmd)
+      .then(giveCmd).then(readCmd).then(enchCmd).then(logoutCmd).then(xpCmd)
       .executes(function (ctx) {
         var p = ctx.source.player
         if (!p) return 0
@@ -371,6 +436,72 @@
         tell(p, '§8Results go to the server log, not here.')
         return 1
       }))
+  })
+
+  // ==========================================================================
+  // J7 / J8 - THE DAMAGE LISTENER.  Disarmed unless /introprobe xp was run.
+  //
+  // J7  does a TaCZ gun's damage reach a vanilla hook AT ALL? If it does not,
+  //     Salvage cannot scale damage by any route and her coupling becomes ammo
+  //     instead - which docs/29 argues is the better mechanic anyway, but the
+  //     decision has to rest on a measurement, not on a preference.
+  // J8  can the damage be WRITTEN? stalker.js's damageOf() already proves reading.
+  //     Writing is a different claim and is assumed by route C.
+  //
+  // NEVER CALLS event.cancel() - C0 found that cancel() unwinds by THROWING, so a
+  // probe that cancelled would corrupt the very hit it was trying to measure.
+  // ==========================================================================
+  EntityEvents.beforeHurt(function (event) {
+    if (!ARMED_UNTIL) return
+    var lvl = null
+    try { lvl = event.entity.level } catch (e) { }
+    var t = 0
+    try { t = lvl.time } catch (e) { }
+    if (t > ARMED_UNTIL) { ARMED_UNTIL = 0; console.info(TAG + 'J7/J8 window closed'); return }
+
+    var src = null
+    try { src = event.source } catch (e) { }
+    if (!src) return
+
+    // Who swung? Only log PLAYER-dealt hits; mob-on-mob would flood.
+    var who = null
+    try { who = src.player } catch (e) { }
+    if (!who) { try { who = src.getDirectEntity() } catch (e) { } }
+    var isPlayer = false
+    try { isPlayer = !!(who && who.username) } catch (e) { }
+    if (!isPlayer) return
+
+    var bits = []
+    try { bits.push('victim=' + event.entity.type) } catch (e) { bits.push('victim=?') }
+    try { bits.push('xpLevel=' + who.xpLevel) } catch (e) { bits.push('xpLevel=UNREADABLE') }
+    try { bits.push('held=' + String(who.mainHandItem.id)) } catch (e) { bits.push('held=?') }
+    // J7: the source type is what tells us whether TaCZ routed through vanilla.
+    try { bits.push('srcType=' + String(src.type)) } catch (e) {
+      try { bits.push('srcType=' + String(src.getMsgId())) } catch (x) { bits.push('srcType=?') }
+    }
+
+    // Read, then attempt to WRITE, then READ BACK. The read-back is the whole
+    // point: "the setter did not throw" is not evidence that it took.
+    var before = null
+    try { before = event.damage } catch (e) { }
+    if (before === null || before === undefined) { try { before = event.getDamage() } catch (e) { } }
+    bits.push('damage=' + before)
+
+    var wrote = 'no-route'
+    if (typeof before === 'number') {
+      try { event.damage = before + 100; wrote = 'assign' } catch (e) { }
+      if (wrote === 'no-route') { try { event.setDamage(before + 100); wrote = 'setDamage()' } catch (e) { } }
+      if (wrote !== 'no-route') {
+        var after = null
+        try { after = event.damage } catch (e) { }
+        if (after === null || after === undefined) { try { after = event.getDamage() } catch (e) { } }
+        wrote += (after === before + 100) ? ' TOOK' : ' IGNORED(readback=' + after + ')'
+        // put it back - a probe must not actually buff the hit
+        try { event.damage = before } catch (e) { try { event.setDamage(before) } catch (x) { } }
+      }
+    }
+    bits.push('write=' + wrote)
+    console.info(TAG + 'J7/J8 hit :: ' + bits.join('  '))
   })
 
   // J4 (c) - does loggedOut fire, and is the player still readable inside it?
