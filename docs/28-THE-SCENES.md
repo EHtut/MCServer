@@ -298,3 +298,50 @@ decorative. Note that **four of six patrons do not treat a refusal as final** �
 Wall asks again for less, Salvage circles, Forge drags the chain past your door,
 Art simply waits. Only Blade and Crown close the door. That asymmetry is a design
 opportunity, not a bug.
+
+---
+
+# DECISIONS — 2026-08-12, late
+
+## ✅ Refusal: the patron walks away
+
+Ethan: *"refusal costs should maybe be the patron walking away and not engaging.
+Attempting to summon that patron again in a short period returns 'You hear nothing
+but the wind'."*
+
+This is better than a cooldown message because **it is the only punishment that
+fits all six characters at once.** Nobody is angry, nobody explains, and no system
+announces anything. The patron simply is not there.
+
+* Refusing sets a **short per-patron** cooldown — you may still take a *different*
+  path immediately. The patron you turned down is the one who has gone quiet.
+* Coming back too soon yields one flat line of **absence**, never a rejection
+  message. `"You hear nothing but the wind."` is the seed and the register.
+* **Absence is characterful**, so each patron's silence differs: Blade's is
+  indifference, Salvage's is patient amusement, Forge's is a deliberate snub,
+  Wall's is hurt, Crown's is protocol, Art's is her still being there and simply
+  not answering.
+* Variations are generated so it stays fresh rather than becoming a string players
+  learn to skim.
+
+**This also rescues the refusal branches.** Six well-written refusals were
+decorative while the player could re-run the command instantly; now declining has
+a real, quiet consequence that never has to be explained.
+
+## ✅ Subclasses unlock FREE, from the start
+
+Ethan: *"they should be free."* No notoriety gate. Any primary, any secondary,
+whenever — consistent with §8, where exclusivity was already retired because there
+will never be six players.
+
+## 📝 Authorship — the drafts are the WORKING TEXT
+
+Ethan: *"i admit i have it in me to do that much generative work creatively with
+these patrons. it may be a later thing."*
+
+The standing tone ruling **stands** — the patrons are his characters and his lines
+outrank anything written for them. But the drafts in `25`, `26` and `28` are no
+longer blocked on him: **they are the working text and should be built with.**
+Revision is welcome whenever he wants it and is not a prerequisite for shipping.
+
+Practically: stop marking scenes "awaiting Ethan". Mark them "current text".

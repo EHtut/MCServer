@@ -416,7 +416,10 @@ Path selection opens the ritual instead of granting instantly.
 * **accept** = XP strip (E2e, already live) + path granted + flagship given
 * **refuse** = no path. 🚨 **the tag AND claim must both stay clear** - this is the
   fourth place the P1 desync can be born
-* ⚠️ **OPEN: does refusing cost anything?** If the command can be re-run instantly,
+* ✅ **RESOLVED: refusing makes the patron WALK AWAY.** A short per-patron
+  cooldown; coming back too soon yields a flat line of absence, never a rejection
+  message. See 28. Original concern kept below for the reasoning:
+* ~~OPEN: does refusing cost anything?~~ If the command can be re-run instantly,
   the refusal branch is fine writing with no weight behind it. Three patrons do not
   treat a refusal as final in the fiction (Wall asks again for less, Salvage is
   certain you will return, Art simply waits) - only Crown and Blade close the door.
