@@ -28,6 +28,7 @@
 ;(function () {
   var OWNER = 'veldora_stalker_owner'
   var PATHKEY = 'veldora_stalker_path'
+  var BENCH = 'veldora_bench'   // a /patron summon: exempt from distance-keeping
   var FLEEING = 'veldora_stalker_fleeing'
   var STATE = 'veldora_stalker_state'     // server.persistentData: uuid -> { phase }
   var FLEE_AT = 0.35
@@ -1321,6 +1322,15 @@
       if (live[uuid] && !sameEntity(live[uuid], entity)) dismiss(uuid)
       entity.persistentData.putString(OWNER, String(player.username))
       entity.persistentData.putString(PATHKEY, String(pathKey))
+      // A bench summon must STAY PUT and STAY EXISTING. Adopting it made every
+      // guard apply, which was the point - but it also handed it to keepDistance,
+      // whose job is to hold a stalker DIST_FAR (100 blocks) away and out of your
+      // view. So the spider spawned, was adopted, and was instantly teleported out
+      // of the world you were standing in. It was working perfectly and that is
+      // precisely why it vanished. Ordinary stalkers also carry no persistence and
+      // despawn on purpose, which would have finished the job.
+      entity.persistentData.putBoolean(BENCH, true)
+      try { entity.mergeNbt({ PersistenceRequired: 1 }) } catch (x) { }
       live[uuid] = entity
       delete angered[uuid]
       console.info('[stalker] adopted a bench summon for ' + player.username + ' as ' + pathKey)
@@ -1580,7 +1590,11 @@
       }
     }
 
-    keepDistance(player, cur)
+    // A bench summon holds its ground. keepDistance would put it 100 blocks away,
+    // which is correct for a stalker and useless for something you are inspecting.
+    var onBench = false
+    try { onBench = cur.persistentData.getBoolean(BENCH) } catch (x) { }
+    if (!onBench) keepDistance(player, cur)
   }
 
   // ---------------------------------------------------------------------------
