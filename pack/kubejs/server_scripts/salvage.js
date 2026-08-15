@@ -377,7 +377,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return null
   }
 
+  // ── the test override ──────────────────────────────────────────────────────
+  // E6b only runs for the salvage walker, and salvage is genuinely held by
+  // j0nesyboi223 with tag and claim agreeing. Moving the claim would leave HIM
+  // carrying a salvage tag against someone else's claim - the P1 desync - and
+  // paths.js has NO loggedIn reconciliation, so nothing would ever heal it.
+  //
+  // So testing borrows the gate instead of another player's path.
+  //
+  // IN MEMORY ON PURPOSE. It dies on restart, so it cannot be left on by accident
+  // and then mistaken for real behaviour six weeks later - which is how a test
+  // flag becomes a production bug.
+  var testAs = {}                  // uuid -> true
+
   function walksSalvage(p) {
+    try { if (testAs[String(p.uuid)]) return true } catch (e) { }
     try {
       if (VELDORA.paths && typeof VELDORA.paths.pathOf === 'function') {
         return VELDORA.paths.pathOf(p) === PATRON
@@ -528,7 +542,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
       var path = '?'
       try { if (VELDORA.paths) path = VELDORA.paths.pathOf(p) || 'none' } catch (e) { }
-      row(path === PATRON, 'you walk salvage', '(you walk ' + path + ')')
+      var over = false
+      try { over = !!testAs[String(p.uuid)] } catch (e) { }
+      row(path === PATRON || over, 'you walk salvage',
+        '(you walk ' + path + (over ? ', OVERRIDDEN by /trade_testas' : '') + ')')
 
       var busy = false
       try { busy = !!(VELDORA.ritual && VELDORA.ritual.active(p)) } catch (e) { }
@@ -565,6 +582,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       p.tell(Text.of('§8Even with every gate passed she rolls ' +
         Math.round(CHANCE_TROUBLE * 100) + '% / ' + Math.round(CHANCE_AFTER_DEATH * 100) +
         '% / ' + Math.round(CHANCE_DRY * 100) + '% - she chooses, you do not.'))
+      return 1
+    }))
+
+    event.register(Commands.literal('trade_testas').requires(ADMIN).executes(function (ctx) {
+      var p = ctx.source.player
+      if (!p) return 0
+      var k = String(p.uuid)
+      if (testAs[k]) {
+        delete testAs[k]
+        p.tell(Text.of('§7She no longer treats you as her walker.'))
+      } else {
+        testAs[k] = true
+        p.tell(Text.of('§6She will now treat you as her walker §8(this session only)'))
+        p.tell(Text.of('§8No claim was touched. Clears on restart.'))
+      }
       return 1
     }))
 

@@ -151,9 +151,27 @@ is the hardest kind of behaviour to test — when it does not fire there is noth
 see — so "she is quiet" and "she is broken" must be distinguishable. It is a read,
 never a bypass.
 
-⚠️ **Testing note:** the sampler only runs for the **salvage walker**, and salvage is
-claimed by `j0nesyboi223`. Rehykt walks forge, so `/trade_why` will correctly HOLD on
-*you walk salvage*. Test either as the salvage walker or by moving the claim.
+🔧 **`/trade_testas`** (admin) borrows the gate for one session so E6b can be tested
+without taking anyone's path. **In memory on purpose** — it dies on restart, so it
+cannot be left on and later mistaken for real behaviour.
+
+### ⚠️ Why the claim was NOT moved — live state read 2026-08-15
+
+| player | tag | claim |
+|---|---|---|
+| **Rehykt** | *(empty)* | forge *(empty)* — **pathless** |
+| j0nesyboi223 | `salvage` | `salvage` — consistent |
+| Lehykt | `blade` | `blade` — consistent |
+
+`/path forcerelease salvage` clears the **claim only**. Ben's *tag* would survive,
+leaving him carrying `salvage` against a claim belonging to someone else — the P1
+desync — and **`paths.js` has NO `loggedIn` reconciliation**, so nothing would ever
+heal it. He is offline and cannot consent to losing his path.
+
+**Recorded as a real gap:** there is no safe admin way to transfer a claim. A proper
+`/path transfer` would have to clear the old holder's tag and claim atomically, which
+needs them online or an offline-NBT write. Worth building before the world reset,
+which is the moment claims actually move.
 
 ### 2c. ⭐ THE TRADE IS THE UNIVERSAL INTERFACE — re-scopes PART VI
 
