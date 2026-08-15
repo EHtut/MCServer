@@ -26,10 +26,18 @@
 // zeroes all four on the caller, and is written and exposed before the applying
 // code below.
 
-// E6 note: this file previously only ever READ the shared namespace defensively
-// (`typeof VELDORA !== 'undefined'`) and never declared it. It now PUBLISHES
-// VELDORA.powerBoost, so the declaration is required - assigning onto an undefined
-// VELDORA throws at load and takes every script in the file down with it.
+// The shared-namespace idiom. This file only READS the namespace, but declares it
+// like every sibling so that publishing from here later is not a trap: assigning
+// onto an undefined VELDORA throws at load and takes the whole file with it, which
+// is exactly what nearly happened when E6 briefly added a VELDORA.powerBoost here.
+//
+// That boost is GONE, deliberately. It multiplied the E3 power axis to pay for
+// Salvage's sight trade, and Ethan's verdict on taking it was that an invisible
+// number is the wrong reward: "use strength and speed effects instead so the player
+// can see what they traded". The trade now grants potion effects, so this file has
+// no consumer for a boost - and a mechanism with no live consumer is a bug, not a
+// spare part. It is in git if it is ever wanted.
+//
 // The trailing semicolon is LOAD-BEARING (ASI), same as ritual.js and notoriety.js.
 var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
@@ -81,70 +89,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return out
   }
 
-  // ── E6: the temporary boost the sight trade buys ──────────────────────────
-  // "Give me your sight and i will grant you the power to kill." Rather than a new
-  // buff system, it rides the axis that already exists - so it shows up in
-  // /path coefficients and /power like everything else.
-  //
-  // ⚠️ PERSISTED, and deliberately. The PRICE (blindness) lives in player data and
-  // survives a restart; if the BENEFIT lived only in memory, a restart mid-trade
-  // would leave someone blind for five minutes having been given nothing. Stored
-  // against the world clock, never tickCount (K9) - dayTime() is cumulative and
-  // survives; tickCount is per-session and silently resets.
-  var BOOST_KEY = 'veldora_power_boost'
-  var BOOST_END = 'veldora_power_boost_end'
-
-  function worldTicks(server) {
-    try {
-      var d = server.overworld().dayTime()
-      if (typeof d === 'number' && isFinite(d)) return d
-    } catch (e) { }
-    return null
-  }
-
-  function boostOf(server, player) {
-    var now = worldTicks(server)
-    if (now === null) return 1.0
-    var end = 0, mult = 1.0
-    try { end = player.persistentData.getDouble(BOOST_END) } catch (e) { return 1.0 }
-    if (!end || !isFinite(end) || now >= end) {
-      // expired - clear it once so the cache stamp changes and power drops back
-      try {
-        if (end) {
-          player.persistentData.putDouble(BOOST_END, 0)
-          player.persistentData.putDouble(BOOST_KEY, 1.0)
-          console.info('[power] boost expired for ' + player.username)
-        }
-      } catch (e) { }
-      return 1.0
-    }
-    try { mult = player.persistentData.getDouble(BOOST_KEY) } catch (e) { return 1.0 }
-    return (typeof mult === 'number' && isFinite(mult) && mult > 0) ? mult : 1.0
-  }
-
-  // Returns true only if the boost was actually written. The caller charges a
-  // price, so "I failed" and "done" must not share an answer.
-  VELDORA.powerBoost = function (player, mult, seconds) {
-    var server = null
-    try { server = player.server } catch (e) { }
-    if (!server) return false
-    var now = worldTicks(server)
-    if (now === null) {
-      console.error('[power] no world clock - REFUSING a boost that could never expire')
-      return false
-    }
-    try {
-      player.persistentData.putDouble(BOOST_KEY, mult)
-      player.persistentData.putDouble(BOOST_END, now + (seconds * 20))
-    } catch (e) {
-      console.error('[power] could not write boost :: ' + e)
-      return false
-    }
-    apply(server, player, true)
-    console.info('[power] boost x' + mult + ' for ' + seconds + 's on ' + player.username)
-    return true
-  }
-
   function powerCoeff(server, player) {
     var c = 1.0
     try {
@@ -154,7 +98,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         if (typeof v === 'number' && isFinite(v)) c = v
       }
     } catch (e) { console.warn('[power] VELDORA.coeff threw :: ' + e) }
-    return c * boostOf(server, player)
+    return c
   }
 
   function apply(server, player, force) {

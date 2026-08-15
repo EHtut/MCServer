@@ -355,6 +355,15 @@ Three properties worth preserving:
   trading levels away is the only thing a player can *choose* to do to slow their
   march toward the Harvest. It buys survival now at the cost of the endgame later,
   which is the whole path in one line.
+* **The reward must be VISIBLE.** Ethan, 2026-08-15, having taken the trade:
+  *"instead of a flat buff we should use strength and speed effects instead so the
+  player can see what they traded."* The first build multiplied the E3 `power` axis,
+  which is invisible — you paid five minutes of blindness for a number you could only
+  find by typing `/power`. **That is the legibility law failing at the exact moment it
+  matters**, the moment you are deciding whether the price was worth it. It now grants
+  **Strength II + Speed**, which sit in the HUD and announce themselves. *Speed while
+  blind is deliberate: she gives you power you cannot steer.*
+
 * **"Your sight" follows you out of the room.** Ethan: *"Sight should be a
   temporary modifier that lasts up to 5 minutes."* Every other cost here resolves
   when the ritual closes; this one keeps running while you fight with it. Five

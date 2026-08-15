@@ -53,7 +53,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var LEVEL_COST = 5
   var AMMO_ROUNDS = 30
   var SIGHT_SECONDS = 300      // "up to 5 minutes", docs/23 PART V
-  var SIGHT_POWER = 2.0        // multiplier on the E3 power axis while blind
+
+  // What "the power to kill" actually IS.
+  //
+  // Ethan, 2026-08-15, having taken the trade: "instead of a flat buff we should use
+  // strength and speed effects instead so the player can see what they traded."
+  //
+  // The first version multiplied the E3 power axis, which is INVISIBLE - you paid
+  // five minutes of blindness for a number you could only find by typing /power.
+  // That is the legibility law failing in the one place it matters most: at the
+  // moment you are deciding whether the price was worth it. Potion effects sit in
+  // the HUD and announce themselves.
+  //
+  // Speed while blind is deliberate. She gives you power you cannot steer.
+  var SIGHT_EFFECTS = [
+    ['minecraft:strength', 1],   // amp 1 = Strength II
+    ['minecraft:speed', 0],
+  ]
 
   var DEBT_PER_TRADE = 1
 
@@ -221,11 +237,30 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         SIGHT_SECONDS + ' 0 true')
     } catch (e) { console.error(TAG + 'could not apply blindness: ' + e); return false }
 
-    try {
-      if (VELDORA.powerBoost) VELDORA.powerBoost(p, SIGHT_POWER, SIGHT_SECONDS)
-      else console.warn(TAG + 'VELDORA.powerBoost missing - the sight trade took ' +
-        'sight and gave NOTHING. That is a bug, not a bargain.')
-    } catch (e) { console.error(TAG + 'powerBoost threw :: ' + e) }
+    // The power, and it must be SEEN. Particles left ON (the trailing `false` is
+    // vanilla's hideParticles) so that when sight returns the buff is still
+    // visibly running - the trade should still be legible after its price ends.
+    //
+    // None of these are in ritual.js's EFFECTS list, so the release does not touch
+    // them; they expire on their own clock. Weakness IS in that list and is cleared
+    // on release, so it cancels the Strength for the last second of the scene only.
+    var granted = 0
+    for (var i = 0; i < SIGHT_EFFECTS.length; i++) {
+      try {
+        srv.runCommandSilent('effect give ' + name + ' ' + SIGHT_EFFECTS[i][0] + ' ' +
+          SIGHT_SECONDS + ' ' + SIGHT_EFFECTS[i][1] + ' false')
+        granted++
+      } catch (e) {
+        console.error(TAG + 'could not grant ' + SIGHT_EFFECTS[i][0] + ' :: ' + e)
+      }
+    }
+    if (granted === 0) {
+      // She took the sight already. Give it back rather than charge for nothing.
+      try { srv.runCommandSilent('effect clear ' + name + ' minecraft:blindness') } catch (e) { }
+      console.error(TAG + '!! sight trade granted NOTHING - blindness refunded')
+      speak(p, 'On second thought. Keep your eyes.')
+      return false
+    }
 
     // Claim the blindness NOW - this is the one outcome entitled to keep it.
     try {
@@ -234,7 +269,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { console.error(TAG + 'keepOnRelease threw :: ' + e) }
 
     speak(p, TOOK.sight)
-    note(p, 'Five minutes. You will not see them coming.')
+    note(p, 'Strength and speed, five minutes. You will not see them coming.')
     return true
   }
 
