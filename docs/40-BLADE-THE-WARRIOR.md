@@ -340,3 +340,63 @@ of your own insufficiency and says nothing about it. **A gift that is a judgemen
 
 **An audit can pick the actual items** — or Ethan digs, since he is in the server.
 Either way the rule is: nothing from a tier the champion has not already reached.
+
+---
+
+# PART 8 — ⭐ THE HUNT IS A CHALLENGE, NOT A COLLECTION
+
+*Ethan, 2026-08-15: **"im considering changing the hunt to be a challenge. The purpose
+of the blade's hunt is to challenge you against his strongest warrior. Win and he
+releases you telling you are ready. Gives you an offer to stay but lets you go. Fail
+and take a hit to trust - though this is intended."***
+
+**This is the best thing in his design.** Every other god's Harvest is a *collection* —
+they come to take what they fed. Blade's is a **graduation.**
+
+| | |
+|---|---|
+| **what arrives** | his strongest warrior — not the god, an actor sent to test you |
+| **you win** | **he releases you.** *You are ready.* He offers you the chance to stay, and lets you go if you do not take it |
+| **you lose** | a hit to trust. **Intended, not punished** — the test is meant to be failed before it is passed |
+
+### Why it is right for him specifically
+
+* **It is the only Harvest that can be WON**, which is exactly what separates the god
+  of war from four gods who feed on you. He wanted a champion, not a meal.
+* **The offer to stay is the whole character.** He does not need you and says so
+  constantly — and then, at the one moment he could keep you, he asks. That is the
+  warmth the trust arc has been building toward, spent once.
+* **Failure being intended** matches the drill sergeant: you are supposed to fail the
+  test before you pass it. A trust hit is a setback, never a revocation.
+* ⭐ It gives *"Run."* its real meaning. Reserved, fires once immediately before the
+  Harvest — and now it is not a threat, it is **the last thing he says before the
+  test begins.**
+
+⚠️ **This makes the Harvest per-god.** The engine cannot assume "the patron collects";
+each god's Harvest is its own thing, and Blade's is the first that is not a taking.
+
+---
+
+# PART 9 — ⏸️ OPEN: retire the release mechanic
+
+*Ethan, 2026-08-15: **"im halfway considering to remove the release mechanic. You can
+only be released by disappointing the patron too much or just not being on the server
+for a long time."***
+
+**Captured, not built.** Today `/path release` lets a walker set a path down at will
+(blocked mid-Harvest by the K2 guard).
+
+**Removing it leaves exactly three ways out:**
+
+1. **The fall** — disappointing the patron enough (`fall.js`, live)
+2. **Absence** — long enough away that the god loses interest ⚠️ **does not exist yet**
+3. **Blade only:** winning his challenge and taking his release (PART 8)
+
+**Why it is attractive:** a choice you cannot walk back is a real choice, and the
+whole introduction ceremony — the black screen, the price, *"Everything you were is
+nothing"* — is undercut by a `/path release` that costs nothing. It also removes the
+largest remaining **act-command** after `/path <name>` (`23` PART V.6).
+
+**What to watch:** four players, one path each. A player who picks wrong is stuck
+until they disappoint their way out, which is a slow and unpleasant exit. **The
+absence route matters more if this ships** — it becomes the only clean way out.

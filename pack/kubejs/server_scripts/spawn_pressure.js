@@ -50,10 +50,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     crown: [],
   }
 
-  // How much of (coeff - 1) turns into an ambient wave, per PRESSURE_TICKS.
-  // Blade at ×4 -> 3.0 excess -> a wave of ~3 every 30s while it is above ground.
+  // ⚠️ AMBIENT PRESSURE IS OFF. Measured in play 2026-08-15 and Ethan's verdict was
+  // one word: "noise". Two mobs every thirty seconds is not a world that hunts you,
+  // it is a tap left running - and a constant trickle makes the DELIBERATE waves
+  // (a reckoning, a Gauntlet, the Mark) indistinguishable from background.
+  //
+  // "it shouldn't be a 2 mob spawner unless this is testing. it should be event
+  // related."
+  //
+  // So the above-1 half of the axis now sends NOTHING on its own. The spawner and
+  // VELDORA.pressure.send() remain, and EVENTS call them - which is the whole point
+  // of having built it modular. Set AMBIENT true to restore the trickle.
+  var AMBIENT = false
   var WAVE_PER_EXCESS = 1.0
-  var WAVE_CAP = 6                // ambient never becomes a raid; raids are events
+  var WAVE_CAP = 6
 
   var cache = {}                  // uuid -> {x,y,z,coeff,path}
   var anyNonNeutral = false       // the fast path: nobody on a path, do nothing
@@ -145,7 +155,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ── PRESSURE: the above-1 half ────────────────────────────────────────────
   function pressureTick(server) {
     try {
-      if (!GATE || !anyNonNeutral) { schedule(server); return }
+      if (!GATE || !AMBIENT || !anyNonNeutral) { schedule(server); return }
       for (var k in cache) {
         if (!cache.hasOwnProperty(k)) continue
         var c = cache[k]
@@ -197,8 +207,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       event.server.scheduleInTicks(CACHE_TICKS, tick)
     })
     schedule(event.server)
-    console.info(TAG + 'spawns axis LIVE - suppression via checkSpawn (<1), ' +
-      'pressure via spawner (>1), cadence ' + PRESSURE_TICKS + 't, cap ' + WAVE_CAP)
+    console.info(TAG + 'spawns axis LIVE - suppression via checkSpawn (<1) is ON. ' +
+      'Ambient pressure (>1) is OFF by design: waves are EVENT-driven now, through ' +
+      'VELDORA.pressure.send(). Set AMBIENT=true to restore the trickle.')
     console.info(TAG + 'rosters: ' + Object.keys(ROSTER).filter(function (k) {
       return ROSTER[k].length
     }).join(', ') + ' - the rest are empty and send nothing')

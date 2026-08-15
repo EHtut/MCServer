@@ -3,6 +3,25 @@
 // The first god to get a real voice. Content written 2026-08-15; the grammar and
 // the tiers are docs/40 PART 2 and PART 4.
 //
+// ── ⚠️ REWRITTEN 2026-08-15. THE FIRST DRAFT HAD THE WRONG CHARACTER ────────
+// Ethan, reading it: "my only issue with the blade is he's condescending and he puts
+// you down... he is a complicated character because he wants the character to thrive
+// but he's tough."
+//
+// The first brief said "contemptuous, disappointed constantly", so the writing came
+// back contemptuous AT the champion - "Bread, so you last long enough to fail
+// properly", "Go. Disappoint me somewhere with witnesses." That is a bully.
+//
+// He is a DRILL SERGEANT: the edge is real and it is pointed at the champion's
+// weakness, never at the champion. He is INVESTED. Every hard word exists to make
+// them stronger, and he is impatient to see them try again rather than pleased when
+// they fail.
+//
+// And the register MOVES with trust: harsh at low, grudging at medium, and at high
+// he opens up - praising DISCREETLY, obliquely, never outright. "A leader you follow
+// despite the edge." He must never be actively encouraging; the warmth is in what he
+// does not say, and in the fact that he says anything at all.
+//
 // ── TRUST INVERTS, AND THAT IS THE CHARACTER ─────────────────────────────────
 // He gives MOST at LOW trust - the god of war arms the weak so they can fight -
 // then stops helping and starts testing. Generosity is contempt; danger is
@@ -36,76 +55,76 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ── the lines ──────────────────────────────────────────────────────────────
   var LINES = {
     low_gift: [
-      'Take this. You cannot yet feed yourself.',
-      'Eat. A corpse is no use to me.',
-      'Arrows, for hands too weak to make their own.',
-      'Iron, since yours could not survive a single blow.',
-      'I arm you the way one arms a child.',
-      'This is charity, not reward. Do not confuse them.',
-      'Take what I give. You have earned nothing.',
-      'Bread, so you last long enough to fail properly.',
-      'Even Icarus needed wax before he needed wings.',
-      'Here. Try not to lose it in the first hour.',
+      "Take it. You're no use to me dead.",
+      "Iron. Don't waste it standing still.",
+      "This keeps you breathing. Use it well.",
+      "Armour. Put it on before you bleed.",
+      "You need this more than I need to give it.",
+      "Take the blade. Earn the next one.",
+      "Supplies. Spend them like they matter.",
+      "You can't fight with empty hands. Here.",
+      "This isn't strength. It's a chance to reach it.",
+      "Gear up. I don't waste effort on corpses.",
     ],
     low_push: [
-      'Go. Bleed somewhere useful.',
-      'Move. Standing still will not make you stronger.',
-      'Find something and lose to it. Learn why.',
-      'Walk into danger. It is the only teacher I trust.',
-      'Fight. I did not arm a statue.',
-      'Go find your betters and be humbled.',
-      'There is a fall waiting for you. Go meet it.',
-      'Do not thank me. Go and bleed.',
-      'Test the edge I gave you. On something that bites.',
-      'Go. Disappoint me somewhere with witnesses.',
+      "Move. The fight won't come to you.",
+      "Enough standing. Fight.",
+      "Find something and kill it.",
+      "Draw your blade. Now.",
+      "There's no strength in waiting. Go.",
+      "Something out there needs killing. Find it.",
+      "You don't grow standing still. Move.",
+      "Get out there and bleed for it.",
+      "Fight now. Rest when you've earned it.",
+      "The only way through this is through it. Go.",
     ],
     medium_gift: [
-      'A little iron. You have earned a little.',
-      'Take this. Do not mistake it for trust.',
-      'Fewer arrows this time. You are wasting fewer.',
-      'This will do. Barely.',
-      'I give less because you need less. Do not preen.',
-      'Small mercy. It is still mercy.',
-      'Take it. I am not proud of you.',
-      'A scrap. You have climbed one rung.',
-      'This is not praise. It is arithmetic.',
-      'You broke less than expected. Here.',
+      "Not much. You don't need much anymore.",
+      "Small, but you've earned that much.",
+      "Take it. You're closer to not needing me.",
+      "This, and no more. You're managing well enough.",
+      "A little help. You've been managing without it.",
+      "This is less charity now, more habit.",
+      "Here. Call it a formality.",
+      "You need this less than you did. Take it anyway.",
+      "Small gift. Don't get comfortable.",
+      "This should cover what's left of your weakness.",
     ],
     medium_test: [
-      'I am testing you now. Do not embarrass me.',
-      'You are past charity. Now you are examined.',
-      'Something harder comes. Try not to fall.',
-      'I am watching more closely now. Mind yourself.',
-      'The easy part ends here.',
-      'You have my attention. That is not a gift.',
-      'Now I see what you are made of.',
-      'The floor rises. Try to keep pace.',
-      'I raise the height. Most fall from here.',
-      'This is the test. Most think they have already passed it.',
+      "This one's a test. Don't waste it.",
+      "I'm watching this fight closely.",
+      "Show me the last one wasn't luck.",
+      "This is a measure, not a gift.",
+      "I want to see how you handle this.",
+      "Consider this an exam.",
+      "Fight like I'm keeping score. I am.",
+      "This is harder on purpose. Show me why.",
+      "Let's see what you've actually learned.",
+      "I'm paying attention now. Don't waste it.",
     ],
     high_test: [
-      'Something worse hunts you now. Good.',
-      'I send you what I would fight myself.',
-      'Let us see if the sky still holds you.',
-      'This one will not go easy. Neither will I.',
-      'You climb high enough to be worth killing.',
-      'I send real danger now. Do not waste it.',
-      'The sun is closer now. Feel it.',
-      'Face this. I want to see if it breaks you.',
-      'You are close enough to the height that falling matters.',
-      'This is worth my attention. Do not waste that either.',
+      "Something worth your time, finally.",
+      "Let's see what you're really made of.",
+      "This might actually challenge you.",
+      "I sent something dangerous. Good.",
+      "Now we find your limit.",
+      "This one could kill you. Good.",
+      "Show me something I haven't seen.",
+      "Finally, an opponent worth the name.",
+      "Fly as high as you like. I'll be watching how you land.",
+      "This is the kind of fight I remember.",
     ],
     // What he uses INSTEAD of praise. His highest praise is silence, so these are
     // the lines that acknowledge without ever approving.
     high_silence: [
-      'I have nothing more to give you.',
-      'Stand there. I am not required to say more.',
-      'You are still standing. Note it yourself.',
-      'I watched. That is all you get.',
-      'Nothing broke. Say nothing about it.',
-      'You did not fall. I noticed.',
-      'There is nothing left to teach you here.',
-      'Silence, from me, is the whole of it.',
+      "Noted.",
+      "That's... not nothing.",
+      "Few make it this far.",
+      "I've stopped worrying about you.",
+      "You didn't need me for that one.",
+      "Keep that up and I'll run out of things to teach you.",
+      "I don't say this often.",
+      "You're becoming a problem for your enemies.",
     ],
     // THE MARK. {target} is substituted with the rival champion's name.
     mark_declare: [
@@ -293,42 +312,30 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           ]
       },
       "idling": {
-          "opens": [
-              "You are still standing here.",
-              "Nothing moves. Not even you.",
-              "This is not what strength looks like.",
-              "You have been idle long enough to insult me.",
-              "The ground remembers stillness. It does not reward it.",
-              "You call this rest. I call it rot.",
-              "Stillness suits corpses, not champions.",
-              "You have not moved in some time.",
-              "This is the version of you I despise.",
-              "Doing nothing is its own kind of failure."
-          ],
-          "closes": [
-              "Move, or explain why you have not.",
-              "I do not have patience for statues.",
-              "Stillness is the only thing I cannot forgive.",
-              "Even the dust is doing more than you.",
-              "This is how champions are forgotten.",
-              "Silence would insult me less than this.",
-              "Time is the only thing I never give back.",
-              "Idle hands do not become legends.",
-              "I have seen corpses with more urgency.",
-              "Begin. Or do not call yourself a champion."
-          ]
-      }
-  }
-
-  VELDORA.blade = {
-    tier: tierOf,
-    thresholds: { medium: MEDIUM_AT, high: HIGH_AT },
-    // Speak whatever this tier calls for. Returns false if he has nothing - which
-    // is a legitimate answer for him specifically, and callers must not substitute.
-    speakTier: function (player, kind) {
-      var t = tierOf(player)
-      if (!t) return false
-      return VELDORA.voice ? VELDORA.voice.say(player, GOD, t + '_' + kind) : false
+        "opens": [
+            "You've been standing there a while.",
+            "Nothing's died by your hand today.",
+            "I don't see a fight near you.",
+            "That's a long time doing nothing.",
+            "The arena's empty because you're not in it.",
+            "Your blade hasn't moved in a while.",
+            "You're still here.",
+            "Something should be dying right now.",
+            "This is not what strength looks like.",
+            "You've gone quiet for too long."
+        ],
+        "closes": [
+            "Go waste it on something that fights back.",
+            "Stillness won't make you stronger.",
+            "I didn't equip you to watch.",
+            "Find something worth killing.",
+            "You're wasting what you've got.",
+            "Move before I lose interest.",
+            "Something out there is waiting to test you.",
+            "Go earn something.",
+            "Every idle moment is one you don't get back.",
+            "Get moving."
+        ]
     },
   }
 
