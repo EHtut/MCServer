@@ -131,10 +131,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     try { server = p.server } catch (e) { }
     if (!server) { console.error(TAG + 'no server handle - refusing to blind a player I cannot release'); return false }
 
-    var speakFor = LEAD + (lines.length * gap) + TAIL
-    var whole = speakFor + (options.length ? TIMEOUT : 0)
+    // holdAfterChoice keeps the player in the dark for N ticks AFTER they pick, so
+    // the patron's closing lines land inside the scene instead of over the top of
+    // a world that has already come back. Added for I2, which is the first
+    // consumer that needed it - the primitive stays dumb about why.
+    var hold = spec.holdAfterChoice || 0
 
-    STATE[k] = { awaiting: false, options: options, onChoose: spec.onChoose, onTimeout: spec.onTimeout }
+    var speakFor = LEAD + (lines.length * gap) + TAIL
+    var whole = speakFor + (options.length ? TIMEOUT : 0) + hold
+
+    STATE[k] = {
+      awaiting: false, options: options, hold: hold,
+      onChoose: spec.onChoose, onTimeout: spec.onTimeout,
+    }
     try { p.persistentData.putBoolean(FLAG, true) } catch (e) { }
     applyEffects(p, whole + MARGIN)
 
@@ -205,8 +214,24 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var opt = st.options[idx - 1]
     if (!opt) return false
     var cb = st.onChoose
-    release(p, 'chose ' + (opt.id || idx))
-    try { if (cb) cb(p, opt.id || idx) } catch (e) { console.error(TAG + 'onChoose threw: ' + e) }
+    var id = opt.id || idx
+
+    // Consume the choice FIRST. Without this a double-click - which is exactly what
+    // a player does to a clickable option they are not sure registered - runs the
+    // accept branch twice, and the accept branch grants a path and strips XP.
+    st.awaiting = false
+
+    if (st.hold > 0) {
+      // Stay in the dark for the closing lines; the caller staggers them itself.
+      var server = null
+      try { server = p.server } catch (e) { }
+      if (server) server.scheduleInTicks(st.hold, function () { release(p, 'scene end after ' + id) })
+      else release(p, 'chose ' + id + ' (no server handle - released early)')
+      try { if (cb) cb(p, id) } catch (e) { console.error(TAG + 'onChoose threw: ' + e) }
+    } else {
+      release(p, 'chose ' + id)
+      try { if (cb) cb(p, id) } catch (e) { console.error(TAG + 'onChoose threw: ' + e) }
+    }
     return true
   }
 

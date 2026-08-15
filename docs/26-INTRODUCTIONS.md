@@ -510,7 +510,36 @@ must not be able to swing their way out of a conversation.
 * logout mid-ritual clears everything on login
 * `/ritual test` so it can be exercised without waiting on an event
 
-## I2 — introductions proper (was E5)
+## I2 — introductions proper ✅ BUILT 2026-08-14 (`introductions.js`)
+
+**Boot-verified:** 18/18 scripts, 0 errors, `VELDORA.intro published OK - 6 scenes,
+12 silence lines`. Interactive behaviour belongs to the full suite.
+
+**The scene text is GENERATED from `28-THE-SCENES.md`, not transcribed.** 102 lines
+by hand is 102 chances to fat-finger somebody's dialogue, and the curated fixes
+(Blade's `Run.` → `Go.`, Salvage's third *friend*) would have been easy to silently
+undo. **To change a line, edit the doc and regenerate** — the doc stays the source of
+truth for Ethan's writing.
+
+🚨 **P1 is closed structurally, not carefully.** `paths.js` was refactored so every
+mutation — `releasePath`, the tag, the claim, the escrow clearing, the XP strip —
+lives inside `commitPath()`, which is only reachable from the accept branch.
+**Refusing is not an accept that tidies up after itself; it is a path that never
+performs a write at all.** There is nothing left to desync. The escrow clearing moved
+inside too: turning a patron down must not quietly open the path you were holding.
+
+**Refusal** marks a per-patron cooldown of one in-game day on the raw `dayTime()`
+tick, and **the timeout counts as a refusal** — otherwise a player dodges the
+cooldown by closing their eyes for a minute. **The ritual gained `holdAfterChoice`**
+so the closing lines land inside the dark instead of over a world that already came
+back, and `choose()` now consumes the choice before running the callback — a
+double-click on a clickable option would otherwise have granted a path and stripped
+XP twice.
+
+**Fallback:** if `VELDORA.intro` is missing or throws, path selection grants the old
+way rather than leaving the player with a command that silently does nothing.
+
+## I2 — the original plan
 
 Path selection opens the ritual instead of granting instantly.
 

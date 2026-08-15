@@ -532,69 +532,100 @@
           return 0
         }
 
-        // Choosing a DIFFERENT path while holding one in escrow opens the old one.
-        Object.keys(PATHS).forEach(function (other) {
-          if (other === key) return
-          if (escrowHolder(holderOf(srv, other)) === p.username) {
-            setHolder(srv, other, '')
-            srv.tell('§8' + PATHS[other].name + ' is open. ' + p.username + ' did not go back.')
-          }
-        })
         if (pathOf(p) === key) { p.tell('§7You already walk that path.'); return 0 }
-        var old = releasePath(srv, p)          // a walker holds exactly one
-        p.persistentData.putString(KEY, key)
-        setHolder(srv, key, p.username)
-        if (old) p.tell('§8You set down ' + PATHS[old].name + '.')
 
         // ---------------------------------------------------------------------
-        // E2e — TAKING A PATH STRIPS YOUR XP.
+        // I2 - EVERY MUTATION LIVES IN HERE, AND THIS ONLY RUNS ON ACCEPTANCE.
         //
-        // Ethan, 2026-08-12: "taking a path strips you of all your existing xp."
+        // docs/26 called path selection "the fourth place the P1 desync can be
+        // born" - a player carrying veldora_path="forge" against an empty claim.
+        // It would have been: the tag write and the claim write sat inline, so
+        // putting a decision between them leaves them half-written on a refusal.
         //
-        // Three things at once (docs/23 §9.1c):
-        //
-        //  * It kills path-hopping. notoriety is max(xpLevel, days x rate), so
-        //    without this a player could bank levels on one path and arrive at the
-        //    next already fat.
-        //  * It pushes players INTO the system early - the entry fee is everything
-        //    accumulated so far, so the cheapest moment to take a path is
-        //    IMMEDIATELY. Hoarding levels while pathless just builds a bigger bill.
-        //  * It IS the introduction's price. §9.2 wanted each patron to demand
-        //    something at the door, payable by someone who owns nothing. This is
-        //    that demand, and it means six separate demands collapse into one
-        //    mechanic plus six lines about taking it.
-        //
-        // The patron's first act is to take everything you have.
+        // The fix is structural rather than careful. Refusing is not an accept
+        // that tidies up after itself - it is a path that never performs a write
+        // at all, so there is nothing to desync. That includes the escrow
+        // clearing below: turning a patron down must not quietly open the path
+        // you were already holding.
         // ---------------------------------------------------------------------
-        var had = 0
-        try { had = p.xpLevel || 0 } catch (e) { }
-        if (had > 0) {
-          var wiped = false
-          try { p.xpLevel = 0; wiped = true } catch (e) {
-            try { srv.runCommandSilent('xp set ' + p.username + ' 0 levels'); wiped = true }
-            catch (e2) { console.error('[paths] E2e could not strip xp from ' + p.username + ' :: ' + e2) }
+        function commitPath() {
+          // Choosing a DIFFERENT path while holding one in escrow opens the old one.
+          Object.keys(PATHS).forEach(function (other) {
+            if (other === key) return
+            if (escrowHolder(holderOf(srv, other)) === p.username) {
+              setHolder(srv, other, '')
+              srv.tell('§8' + PATHS[other].name + ' is open. ' + p.username + ' did not go back.')
+            }
+          })
+          var old = releasePath(srv, p)          // a walker holds exactly one
+          p.persistentData.putString(KEY, key)
+          setHolder(srv, key, p.username)
+          if (old) p.tell('§8You set down ' + PATHS[old].name + '.')
+
+          // ---------------------------------------------------------------------
+          // E2e — TAKING A PATH STRIPS YOUR XP.
+          //
+          // Ethan, 2026-08-12: "taking a path strips you of all your existing xp."
+          //
+          // Three things at once (docs/23 §9.1c):
+          //
+          //  * It kills path-hopping. notoriety is max(xpLevel, days x rate), so
+          //    without this a player could bank levels on one path and arrive at the
+          //    next already fat.
+          //  * It pushes players INTO the system early - the entry fee is everything
+          //    accumulated so far, so the cheapest moment to take a path is
+          //    IMMEDIATELY. Hoarding levels while pathless just builds a bigger bill.
+          //  * It IS the introduction's price. §9.2 wanted each patron to demand
+          //    something at the door, payable by someone who owns nothing. This is
+          //    that demand, and it means six separate demands collapse into one
+          //    mechanic plus six lines about taking it.
+          //
+          // The patron's first act is to take everything you have.
+          // ---------------------------------------------------------------------
+          var had = 0
+          try { had = p.xpLevel || 0 } catch (e) { }
+          if (had > 0) {
+            var wiped = false
+            try { p.xpLevel = 0; wiped = true } catch (e) {
+              try { srv.runCommandSilent('xp set ' + p.username + ' 0 levels'); wiped = true }
+              catch (e2) { console.error('[paths] E2e could not strip xp from ' + p.username + ' :: ' + e2) }
+            }
+            // Verify at the point of use - "I set it to 0" and "it is 0" are
+            // different claims, and this project has shipped the first as the second.
+            var now = -1
+            try { now = p.xpLevel } catch (e) { }
+            if (wiped && now !== 0) {
+              console.warn('[paths] E2e xp strip did not stick for ' + p.username +
+                ' - wanted 0, read back ' + now)
+            }
+            console.info('[paths] E2e ' + p.username + ' entered ' + key + ' - stripped ' +
+              had + ' levels')
           }
-          // Verify at the point of use - "I set it to 0" and "it is 0" are
-          // different claims, and this project has shipped the first as the second.
-          var now = -1
-          try { now = p.xpLevel } catch (e) { }
-          if (wiped && now !== 0) {
-            console.warn('[paths] E2e xp strip did not stick for ' + p.username +
-              ' - wanted 0, read back ' + now)
-          }
-          console.info('[paths] E2e ' + p.username + ' entered ' + key + ' - stripped ' +
-            had + ' levels')
+          // The patron speaks as it takes. DRAFT lines - Ethan's own writing outranks
+          // these, and the full introduction ritual (E5) will carry the real scene.
+          p.tell(Text.of('§4§l' + ENTRY_LINE[key]))
+          if (had > 0) p.tell('§c§lIt took everything you had. §8(' + had + ' levels)')
+
+          p.tell('§6You walk ' + PATHS[key].name + '§7.')
+          p.tell('§7' + PATHS[key].blurb)
+          p.tell('§8Kills now pay in your path - and pay better the deeper you are.')
+          givePathBooks(srv, p, key)
+          srv.tell('§8' + p.username + ' walks ' + PATHS[key].name + '.')
         }
-        // The patron speaks as it takes. DRAFT lines - Ethan's own writing outranks
-        // these, and the full introduction ritual (E5) will carry the real scene.
-        p.tell(Text.of('§4§l' + ENTRY_LINE[key]))
-        if (had > 0) p.tell('§c§lIt took everything you had. §8(' + had + ' levels)')
 
-        p.tell('§6You walk ' + PATHS[key].name + '§7.')
-        p.tell('§7' + PATHS[key].blurb)
-        p.tell('§8Kills now pay in your path - and pay better the deeper you are.')
-        givePathBooks(srv, p, key)
-        srv.tell('§8' + p.username + ' walks ' + PATHS[key].name + '.')
+        // The patron speaks first. open() returns false only if it cannot run at
+        // all, in which case we grant the old way rather than leave the player
+        // with a command that silently did nothing.
+        var staged = false
+        try {
+          if (VELDORA.intro && typeof VELDORA.intro.open === 'function') {
+            staged = VELDORA.intro.open(srv, p, key, commitPath)
+          }
+        } catch (e) {
+          console.error('[paths] the introduction threw, granting directly :: ' + e)
+          staged = false
+        }
+        if (!staged) commitPath()
         return 1
       }))
     })
