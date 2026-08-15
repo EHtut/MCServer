@@ -201,12 +201,50 @@
     // packet disagreed with the server. That is the shake. 15 ticks lets the death
     // sequence finish and be acknowledged first.
     // ---------------------------------------------------------------------------
-    player.server.scheduleInTicks(RESPAWN_DELAY, function () {
+    var deadUuid = null
+    try { deadUuid = String(player.uuid) } catch (e) { }
+    var srv = null
+    try { srv = player.server } catch (e) { }
+    if (!srv || !deadUuid) { console.error('[respawn] no server/uuid - cannot schedule'); return }
+
+    srv.scheduleInTicks(RESPAWN_DELAY, function () {
       try {
+        // 🚨 THE PLAYER MAY HAVE LEFT IN THESE 15 TICKS.
+        //
+        // Ethan, 2026-08-15: "the death respawn mechanic is blocking people from
+        // getting into the server."
+        //
+        // Dying and quitting to title inside 0.75s is not an edge case, it is what
+        // people DO on a death screen. The previous version captured `player` and
+        // called playerList.respawn() on it unconditionally, so a disconnected
+        // ServerPlayer got respawned - which corrupts the session server-side and
+        // the symptom is a player who cannot get back in.
+        //
+        // This is J4, the same hazard ritual.js built three independent layers
+        // against and explicitly recorded as UNPROVEN. This file had none of them.
+        //
+        // Re-resolve from the LIVE player list rather than trusting the captured
+        // reference: if they are gone, there is nothing to respawn and vanilla will
+        // place them normally on their next login.
+        var live = null
+        try {
+          var list = srv.players
+          for (var i = 0; i < list.length; i++) {
+            if (String(list[i].uuid) === deadUuid) { live = list[i]; break }
+          }
+        } catch (e) { console.warn('[respawn] could not read the player list :: ' + e) }
+
+        if (!live) {
+          console.info('[respawn] ' + deadUuid.substring(0, 8) +
+            ' left within ' + RESPAWN_DELAY + 't of dying - NOT respawning a ghost')
+          try { delete fell[deadUuid] } catch (e) { }
+          return
+        }
+
         // Verified against neoforge-21.1.247-server.jar:
         //   MinecraftServer.getPlayerList() -> PlayerList
         //   PlayerList.respawn(ServerPlayer, boolean, Entity$RemovalReason)
-        player.server.playerList.respawn(player, false, 'killed')
+        srv.playerList.respawn(live, false, 'killed')
       } catch (e) {
         // Loud. A respawn that quietly stops working is indistinguishable from a
         // player choosing to sit on the death screen, which is how this class of
