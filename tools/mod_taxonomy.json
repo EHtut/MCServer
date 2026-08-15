@@ -33,16 +33,11 @@
   "ars-lumos",
   "ars-nouveau",
   "arsdelight",
-  "berserker-rpg-class",
   "easy-magic",
-  "elemental-wizards-rpg",
-  "forcemaster-rpg-class",
   "magic-vibe-decorations",
   "runes",
   "spell-engine",
-  "spell-power",
-  "witcher-rpg-class",
-  "wizards"
+  "spell-power"
  ],
  "crown-minions": [
   "automaticons",
@@ -137,7 +132,6 @@
   "jurassic-reborn",
   "l_enders-cataclysm",
   "legendary-monsters",
-  "mimicked",
   "mowzies-mobs",
   "naturalist",
   "obsessed",
@@ -231,7 +225,6 @@
   "relics-mod",
   "searchables",
   "simple-voice-chat",
-  "skill-tree",
   "skills",
   "trade-cycling",
   "trading-post",

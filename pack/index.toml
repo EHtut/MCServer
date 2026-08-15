@@ -111,11 +111,6 @@ hash = "e1f4a53e3e52b534add5dd018597fefd345d9bd6350b9c46ef0ec281fc62af8e"
 metafile = true
 
 [[files]]
-file = "mods/berserker-rpg-class.pw.toml"
-hash = "d29e43039161cac96cee76f0b4bda1f14d93513de0f9a3fd2074e75006e45837"
-metafile = true
-
-[[files]]
 file = "mods/better-archeology.pw.toml"
 hash = "b3c09f5948d5ce7b121b3191d124a7a9fc6c482ad98af673e29f1554c9b64705"
 metafile = true
@@ -501,11 +496,6 @@ hash = "aa893b812f2075ff2bf084ddb869f9355313b9d763fb679aca86ceff835d5d58"
 metafile = true
 
 [[files]]
-file = "mods/elemental-wizards-rpg.pw.toml"
-hash = "61086e61aa5ff7968b71c1e49f367672818c9b98eea2ef44f149ed07d4eb5327"
-metafile = true
-
-[[files]]
 file = "mods/elytra-slot.pw.toml"
 hash = "9e2b351f3cabb1252259f5383e6f2fec3e3d90534dbecddef4ed183eba42f35a"
 metafile = true
@@ -623,11 +613,6 @@ metafile = true
 [[files]]
 file = "mods/flerovium.pw.toml"
 hash = "9ab20de2d63037f055d6b614013389e0198068bab536dfd62eebd913e5222fe1"
-metafile = true
-
-[[files]]
-file = "mods/forcemaster-rpg-class.pw.toml"
-hash = "d515d85273888d7a3d8f8a0941781d2546f58067233a69b64a0c73868a6c4229"
 metafile = true
 
 [[files]]
@@ -1221,11 +1206,6 @@ hash = "cca4b10598ae8cedcc2a6531a422453d624ceb4d1de1163ce46255415ccda045"
 metafile = true
 
 [[files]]
-file = "mods/skill-tree.pw.toml"
-hash = "6a099772843ac68b015418084beec5b94f87da6270809c731b349f47de3d755e"
-metafile = true
-
-[[files]]
 file = "mods/skills.pw.toml"
 hash = "87ce844ff87267bc95027b95c970c58298d4a6882bb2b620551c8a309f1c8e81"
 metafile = true
@@ -1418,16 +1398,6 @@ metafile = true
 [[files]]
 file = "mods/when-dungeons-arise.pw.toml"
 hash = "485906ff55a5d6ad06070abb80663d6adadc3e4b32f8b52240d8596e7aaef9fa"
-metafile = true
-
-[[files]]
-file = "mods/witcher-rpg-class.pw.toml"
-hash = "b993c3fb1a027bb2cb2afe1b03d3a2e2184b1d1218c5159a9f07b374cd400e98"
-metafile = true
-
-[[files]]
-file = "mods/wizards.pw.toml"
-hash = "c3080aaa8d8dd3f62b7c306f61ed53cc1a43cb03a1b069e2008c67657467d5ca"
 metafile = true
 
 [[files]]

@@ -831,11 +831,6 @@
           "core"
         ],
         [
-          "wizards",
-          "Base class mod behind elemental-wizards-rpg",
-          "core"
-        ],
-        [
           "formations",
           "Base mod behind formations-nether",
           "core"
@@ -1931,33 +1926,8 @@
           "major"
         ],
         [
-          "berserker-rpg-class",
-          "Melee rage class - the frontline for a 3-player group",
-          "major"
-        ],
-        [
-          "witcher-rpg-class",
-          "Hybrid melee/sign class",
-          "major"
-        ],
-        [
-          "elemental-wizards-rpg",
-          "Caster class",
-          "major"
-        ],
-        [
-          "forcemaster-rpg-class",
-          "Telekinetic control class",
-          "minor"
-        ],
-        [
           "skills",
           "Puffish skill framework - the progression spine",
-          "major"
-        ],
-        [
-          "skill-tree",
-          "Skill tree implementation",
           "major"
         ]
       ]
