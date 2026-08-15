@@ -154,3 +154,82 @@ happily rewrote `mimicked.pw.toml` from the stale cache. Both files must be edit
 then `gen_pack.py`, then **diff `pack/` and verify the `index.toml` hash still matches
 `pack.toml`.** This is the same mechanism that once deleted travelers-titles and
 resurrected two cut mods.
+
+---
+
+# 7. Ruled 2026-08-14 — colours, and going deaf
+
+## 7.1 Ambient arguments do NOT blind
+
+Ethan: *"Yes i agree don't blind them."* The Arrival earns a black screen because it
+happens once. Overheard argument is overheard **while you carry on** — anything else
+makes being undecided an interruption tax.
+
+## 7.2 🎨 A colour per patron
+
+> Ethan: *"Lets also give them all different colors."*
+
+Every patron line to date has been `§4§l` dark red, because one voice in the dark
+needs no label. **A five-way argument does**, and colour carries it better than a
+name prefix — you learn who is speaking without reading a tag.
+
+**Proposed, and easily overruled — this is a taste call:**
+
+| patron | code | colour | why |
+|---|---|---|---|
+| **Blade** | `§4` | dark red | steel and blood. The most event-like voice keeps the old colour |
+| **Salvage** | `§6` | gold | the deal, brass, coin, the cartridge |
+| **Forge** | `§2` | dark green | verdigris on brass, greed, the dragging chain |
+| **Wall** | `§d` | light purple | the mother, the web, intimacy |
+| **Art** | `§b` | aqua | sleep, cold, the dream. The only cool colour, and she is the one who ends arguments |
+
+⚠️ **One collision to resolve.** `§4§l` is currently the *system event* colour — the
+fall, the entry line, the whispers. If Blade takes dark red, then either events move
+to `§c`, or Blade takes another colour. **Recommend events move**, because the
+patrons are the more important speakers and dark red is the most patron-ish colour we
+have.
+
+## 7.3 🔑 Choosing a patron makes you DEAF to the others
+
+> Ethan: *"There should be ambient dialogue when you choose a patron because you are
+> then blind to the words of the other patrons."*
+
+This is the best mechanic in the whole ambient system, and it costs almost nothing to
+build.
+
+**Before you choose**, five voices argue over you. **The moment you accept**, four of
+them go silent — permanently. You hear only your patron from then on.
+
+Why it is good:
+
+* **Choosing finally costs something you can feel.** The XP strip is a number. This
+  is the world getting quieter, and you did it to yourself.
+* It makes the pre-path period **the loudest and most alive** the world will ever be,
+  which is exactly backwards from how these systems usually work — and it means a
+  player who dawdles is rewarded with content rather than nagged.
+* **It is the thesis.** Veldora offers you one relationship and takes the rest. You
+  belong to somebody now, and belonging is narrowing.
+* It gives the refusal cooldown a sibling: silence as the shape of consequence,
+  again.
+
+### The beat at the moment of choosing
+
+The four who lost should get **one last line each** as the door closes — then never
+again. That is the ambient dialogue Ethan is asking for, and it is the strongest
+possible use of it: the other four reacting to having lost you, once, and then gone.
+
+Blade would be indifferent. Wall would be *hurt*. Salvage would be certain you will
+be back. Forge would file it as a debt. Art would simply wait.
+
+### After the choice
+
+Your own patron keeps talking — that is the death-ladder material in `25`, and the
+whispers already built in E2f. **The system does not shrink, it narrows.**
+
+## 7.4 Open
+
+1. **Does the fall make you hearing again?** Losing your path should arguably reopen
+   all five voices — you are unclaimed, so they resume arguing. Recommend **yes**: it
+   makes the fall feel like being thrown back into the cold, and it reuses everything.
+2. Does a refused patron stay audible? Recommend **yes** — refusal is not choosing,
+   and the silence there is already handled by its own cooldown.
