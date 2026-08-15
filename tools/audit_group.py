@@ -3,7 +3,7 @@ import json, pathlib, re, zipfile, collections
 REPO = pathlib.Path(r'C:\MCServer\repo')
 CACHE = pathlib.Path(r'C:\MCServer\cache')
 tax = json.loads((REPO / 'tools' / 'mod_taxonomy.json').read_text(encoding='utf-8'))
-slugs = tax['salvage-ranged']
+slugs = tax['worldgen-structures']
 
 # slug -> jar filename, from the packwiz metafiles
 def jar_for(slug):
@@ -52,7 +52,7 @@ for s in sorted(slugs):
     d = scan(j) if j else None
     rows.append((s, j, d))
 
-print('A4b — SALVAGE / RANGED : %d mods\n' % len(rows))
+print('A5 — WORLDGEN : %d mods\n' % len(rows))
 print('%-32s %6s %6s %6s %6s %6s  %s' % ('slug', 'MB', 'items', 'blocks', 'recipe', 'lang', 'recipe types'))
 print('-' * 118)
 for s, j, d in rows:

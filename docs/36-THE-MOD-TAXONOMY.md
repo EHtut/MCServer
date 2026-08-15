@@ -872,3 +872,93 @@ it because I was counting registry entries and TaCZ hides its content in a datap
 ⭐ **The lesson for the remaining stages: an item count is not a content measure.**
 Wall's 14 mods looked healthy and were decoration; Salvage's one mod looked thin and
 is the deepest tree in the pack.
+
+---
+
+# A5 — WORLDGEN ✅ (done 2026-08-14), and the bucket splits three ways
+
+Ethan: *"lets seperate this up into biomes, structures, and worldgen."*
+41 mods went in; they come out as **13 biomes · 17 structures · 10 terrain**, with
+one filed back to Blade.
+
+## 🚨 Finding 1 — twelve of the 41 were not worldgen at all
+
+| mod | MB | what it is | moved to |
+|---|---|---|---|
+| **`distanthorizons`** | **28.8** | LOD terrain *rendering* | visuals/perf |
+| `chunky` | 0.3 | chunk pre-generation | perf |
+| `explorers-compass` / `natures-compass` | 0.2 | 32 items each, finder tools | qol |
+| **`medieval-siege-machines`** | 1.8 | trebuchets, ballistae, battering rams | **blade** |
+| `weather-storms-tornadoes` | 6.5 | weather events | terrain |
+| `seasonhud` | 0.2 | client UI | visuals |
+| `biolith` `terrablender` `structure-pool-api` `thermoo` `lithostitched` | — | APIs | library/biomes |
+
+## Finding 2 — the structure ranking, measured
+
+| mod | structures | pieces |
+|---|---|---|
+| **`ct-overhaul-village`** | **106** | **2,118** |
+| `when-dungeons-arise` | 53 | 877 |
+| `better-archeology` | 27 | 52 |
+| **`explorify`** | 23 | 330 |
+| `valarian-conquest` | 21 | 25 |
+| `structory` | 16 | 238 |
+| `grim-and-bleak` | 15 | 15 |
+
+**`ct-overhaul-village` rebuilds every village** — the single biggest contributor to a
+living overworld, already installed, and currently competing for placement with
+Explorify's filler.
+
+## Finding 3 — Explorify, the density problem in one number
+
+23 structures across **14 structure SETS**, 330 pieces, in **0.7 MB**. Fourteen
+independent placement rules at high frequency is why its generic ruins are what you
+actually meet.
+
+**Either cut it, or tame it with Structurify** — Structurify turns density into a dial
+for all 629 structures at once, which fixes the whole bucket rather than one mod.
+
+## 🚨 Finding 4 — do NOT swap Oh The Biomes We've Gone for Regions Unexplored
+
+Measured before recommending. **BWG is not a biome mod, it is a content mod:**
+
+> **935 items · 1,024 blocks · 153 biomes · 576 pieces · 19.5 MB**
+
+Regions Unexplored is biomes. The swap would cost roughly **2,000 registry entries**
+of woods, stones and plants the rest of the pack builds with — to solve a problem
+that is not variety. **"Bigger biomes" is a `tectonic` config value**, and Tectonic is
+already installed at 0.4 MB doing exactly that job.
+
+**Regions Unexplored is dropped from the wishlist.**
+
+## The three new candidates — audited, not added
+
+| mod | dl | MB | structures | sets | pools | verdict |
+|---|---|---|---|---|---|---|
+| **`abandoned-watchtowers`** | 44k | 0.2 | 2 | 2 | 12 | ⭐ **already in cache, never shipped.** Tiny, on-theme (*"forest biomes, perfect for horror"*) |
+| **`aures-farmers-structures`** | 424k | 0.5 | **20** | 20 | 26 | pairs with `farmers-delight`, which ships. 20 structures for 0.5 MB is excellent density-per-byte |
+| **`lukis-grand-capitals`** | 4.8M | 8.6 | 7 | 1 | 31 | rebuilt villages + illager structures, 434 pieces |
+
+### The collision test, run rather than assumed
+
+Luki's and `ct-overhaul-village` **both rebuild villages**, so I checked whether they
+overwrite each other:
+
+* `ct-overhaul-village` → namespace **`ctov`**, 181 template pools
+* `lukis-grand-capitals` → namespace **`revampedvillages`**, 31 pools
+
+**Neither overrides `minecraft:` village pools.** No technical conflict — but both
+would generate, giving the world **two different village art styles**. That is a taste
+call, not a crash.
+
+## A5 decisions
+
+| | | |
+|---|---|---|
+| 1 | the 12 misfiles | ✅ **MOVED** — no pack change |
+| 2 | `explorify` | CUT **or** tame with Structurify |
+| 3 | `oh-the-biomes-weve-gone` | ✅ **KEEP**, and Regions Unexplored dropped |
+| 4 | `abandoned-watchtowers` | recommend **SHIP** — cached, tiny, on-theme |
+| 5 | `aures-farmers-structures` | recommend **SHIP** — 20 structures, 0.5 MB |
+| 6 | `lukis-grand-capitals` | ⚠️ **Ethan's call** — two village styles at once |
+| 7 | **Structurify** | recommend **ADD** — the instrument for all 629 |
