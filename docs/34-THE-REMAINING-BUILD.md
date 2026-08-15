@@ -344,6 +344,28 @@ Patrons pick you by watching what you do. Fixes the flaw that the player typing
 
 ---
 
+## ⚠️ OPEN — the respawn mechanic may need to go
+
+*Ethan, 2026-08-15: **"i think the death mechanic may need to go. the one that messes
+with respawns because it bugs the server down."***
+
+`instant_respawn.js` (E2a) — wakes you where you fell in ~0.75s rather than at the bed.
+
+**Not yet diagnosed.** Before it is cut, measure: it schedules a respawn on a delay,
+runs a detarget sweep over `getEntitiesWithin(inflate(24))` at the death site, and E0
+P8 measured **seven hostiles** at a death site against one at a bed — so the sweep runs
+in the worst place at the worst time, repeatedly, and that is the obvious suspect.
+
+⚠️ **It is load-bearing for the design as written.** `23` PART I(b) is *"death costs
+the run, never the base"*, which depends on waking where you fell. Cutting it returns
+death to a bed teleport and makes dying cheaper again — the exact complaint the whole
+path system was built to answer.
+
+**Options, cheapest first:** raise the sweep interval or shrink its radius · sweep once
+rather than repeatedly · keep the instant respawn and drop only the detarget · cut it.
+
+---
+
 ## Still-open questions
 
 * **Do subclass spawn costs stack at 50%?** — E3 decides it.
