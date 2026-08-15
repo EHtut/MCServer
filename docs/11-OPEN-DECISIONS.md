@@ -3,6 +3,30 @@
 **Most of this was answered 2026-08-01.** What remains is at the top; the
 answered items are kept below with their resolutions so the reasoning survives.
 
+## RESOLVED — the Simply mods, and the skill system we already own
+
+**Ethan 2026-08-14:** *"look into the simply mods like simply swords, simply skills,
+etc to see if we can get that modern system to add or replace something."*
+
+* **Simply Skills — NOT AVAILABLE.** Fabric-oriented; no NeoForge 1.21.1 build found.
+  The modern system cannot be added as asked.
+* **Simply Swords — available (1.63.0-1.21.1) but STAYS CUT.** R4 cut it as
+  stat-sticks. The weapon types are genuinely varied, but this file already records
+  the trap: adding a mod to solve a tuning problem is how the pack reached 400. Per-path
+  weapon identity is better served by curating what is installed — which is how Blade
+  got the Dark Warblade, an item whose drawback the mod author wrote and no gem
+  system would have produced.
+* ⭐ **WE ALREADY SHIP THE SYSTEM, TWICE, AND CONFIGURE NEITHER.** `puffish_skills`
+  is the engine (0 data files). `skill_tree-neoforge` (RPG Series) is a content pack
+  for it — 254 datapack JSONs. `category.json` exposes **`unlocked_by_default`**
+  (the path unlocks its tree) and **`exclusive_root`** (the subclass choice). **The
+  six subclass trees are a datapack authoring job, not a build.** See `30` §6.
+* ⚠️ **Live R5 note:** two skill-tree mods where R5 says one system per verb. Benign —
+  engine plus content, not rivals — but the pack pays for a skill system and ships
+  none of it.
+
+---
+
 ## OPEN — a second world reset, to redo worldbuilding
 
 **Ethan, 2026-08-13:** *"im halfway kinda wanting to reset the server once again to
