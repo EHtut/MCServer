@@ -1457,10 +1457,27 @@
     }
 
     var prev = phaseStored(server, player)
-    var phase = resolvePhase(n, prev)
+
+    // E3. The `phase` coefficient scales notoriety BEFORE banding, so Blade (×2)
+    // meets its creature at half the fame. Deliberately NOT clamped to CAP_VALUE:
+    // harvest is the band [100, Infinity) and clamping the scaled value to 100
+    // would park a fast path in `absence` permanently - which is precisely the bug
+    // that made THE HARVEST UNREACHABLE BY PLAY (see resolvePhase above). The cap
+    // governs raw notoriety; it must not govern this.
+    var pn = n
+    try {
+      if (typeof VELDORA !== 'undefined' && VELDORA.coeff &&
+          typeof VELDORA.coeff.of === 'function') {
+        var pc = VELDORA.coeff.of(server, player, 'phase')
+        if (typeof pc === 'number' && isFinite(pc) && pc > 0) pn = n * pc
+      }
+    } catch (e) { console.warn('[stalker] VELDORA.coeff threw on phase :: ' + e) }
+
+    var phase = resolvePhase(pn, prev)
     if (phase !== prev) {
       phaseStore(server, player, phase)
-      console.info('[stalker] ' + player.username + ' ' + (prev || '-') + ' -> ' + phase + ' (n=' + n + ')')
+      console.info('[stalker] ' + player.username + ' ' + (prev || '-') + ' -> ' + phase +
+        ' (n=' + n + (pn !== n ? ', phase-scaled ' + (Math.round(pn * 10) / 10) : '') + ')')
     }
 
     var cur = live[uuid]

@@ -64,20 +64,25 @@ then it slots in below as the first path built on E3.
 Six paths become five. Design in `35` §6; do it **at the world reset** so no live
 claim needs migrating. Crown's written material is marked RETIRED, not deleted.
 
-### 1. E3 — the coefficient substrate 🚨 BLOCKS EVERYTHING BELOW
+### 1. E3 — the coefficient substrate ✅ **BUILT 2026-08-15 — E6–E10 UNBLOCKED**
 
-One table, four axes (`spawns`, `power`, `drops`, `phase`) × six paths, read by three
-consumers that **already exist**: `dropChanceFor`, `power.js CURVE`, `resolvePhase`.
+`coefficients.js` publishes `VELDORA.coeff`. `drops`, `power` and `phase` are wired
+into their live consumers; `/path coefficients` prints your effective numbers.
+**Five paths** — Crown merged into Wall, Wall stays mercantile. Subclasses stack half
+the *deviation*, not half the value (`23` §7b). Costs soften with players online.
+Boot-verified: 19/19 scripts, seam published, 0 errors.
+**Rollback:** every value to 1.0 restores prior behaviour exactly — no gate, no state.
 
-* subclass contributes 50%, primary 100%
-* costs scale by players online
-* `/path coefficients` prints your effective numbers — the legibility law
-* **Verify by measurement, not by reading the table**: set Blade's drop coefficient
-  to 0, measure zero payouts over 40 kills; set to 1, measure the expected rate.
-  Against the live path, never a fixture.
-* **Rollback:** all coefficients 1.0 restores today's behaviour exactly.
+⚠️ **Two things remain open on it.**
 
-E6–E10 all read from this. Building any of them first means building them twice.
+1. **The measurement has never run** — boot-verified is not verified. Bank notoriety,
+   take Blade, `/path sample`, confirm the rate moved by ×0.6. **Needs a player.**
+2. **`spawns` is INERT.** `checkSpawn` can only *cancel*, so it cannot produce Blade's
+   ×4 — that needs an **active spawner** (`the_hunt.js`'s ring-placement mechanism),
+   which is a build of its own and was deliberately NOT folded into E3. `23` §7a has
+   the argument. The value is in the table, served by `VELDORA.coeff`, printed as
+   INERT, and announced at boot — because a coefficient nobody reads must never look
+   like one that acts.
 
 ### 2. E6 — Salvage's economy
 

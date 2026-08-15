@@ -406,7 +406,33 @@ unconditional sources would cancel each other out.
 
 ---
 
-## E3 — The coefficient substrate
+## E3 — The coefficient substrate ✅ **BUILT 2026-08-15**
+
+**Built:** `coefficients.js` (new) publishing `VELDORA.coeff`, wired into all three
+live consumers, plus `/path coefficients`. **Boot-verified:** 19/19 scripts, seam
+published, 0 errors. ⚠️ **The measurement below has NOT been run** — it needs a
+player, and boot-verified means the script loaded and nothing more.
+
+**Three axes are live** (`drops`, `power`, `phase`). **`spawns` is INERT** — see
+`23` §7a: `checkSpawn` can only cancel, and cancelling cannot produce a coefficient
+above 1. Blade's ×4 needs an active spawner, which is a separate build.
+
+**Two bugs this chunk fixed on the way through:**
+
+* **`power.js` cached on notoriety alone.** Correct only while every path shared one
+  curve — taking a path changes the multiplier without moving the number, so a walker
+  would have kept the previous path's power until their notoriety happened to tick.
+  The cache key is now `notoriety|multiplier`.
+* **`/power` printed unmultiplied bonuses** while applying multiplied ones — the
+  readout-disagrees-with-reality class, hit for the third time in this codebase.
+
+**🚨 And the near-miss worth more than either.** The first restart reported
+`Loaded 18/18 KubeJS server scripts ... 0 errors` and E3 was **not running at all**:
+`repo/pack/kubejs/` and `instance/kubejs/` are separate copies with nothing linking
+them, so the whole chunk sat in the repo while the server ran the old code, looking
+perfectly healthy. Caught only by grepping for the subsystem's **own seam line**
+instead of trusting the error count. `tools/sync_scripts.py` now exists and refuses
+to copy over an instance-newer file.
 
 **Depends on:** E0 P9 for the spawn axis only; the rest can go first.
 

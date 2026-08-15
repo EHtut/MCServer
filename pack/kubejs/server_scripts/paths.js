@@ -126,12 +126,27 @@
   // Treating an unreadable value as 0 would pin every drop at 8% forever while
   // looking perfectly healthy - so the failure path returns the OLD flat rate and
   // says so out loud, once.
+  // E3. The path's `drops` coefficient multiplies the finished chance. Neutral is
+  // 1.0, so a pathless player and a coefficient-less build are the same arithmetic
+  // this function always did. Blade's is 0.6 ON PURPOSE - see coefficients.js.
+  function dropCoeff(server, player) {
+    try {
+      if (typeof VELDORA !== 'undefined' && VELDORA.coeff &&
+          typeof VELDORA.coeff.of === 'function') {
+        var c = VELDORA.coeff.of(server, player, 'drops')
+        if (typeof c === 'number' && isFinite(c)) return c
+      }
+    } catch (e) { warnOnce('VELDORA.coeff threw on drops :: ' + e) }
+    return 1.0
+  }
+
   function dropChanceFor(server, player) {
     try {
       if (typeof VELDORA !== 'undefined' && typeof VELDORA.notoriety === 'function') {
         var b = VELDORA.notoriety(server, player)
         if (b && typeof b.value === 'number' && isFinite(b.value)) {
-          return CHANCE_BASE + CHANCE_PER * Math.min(b.value, CHANCE_CAP)
+          var raw = CHANCE_BASE + CHANCE_PER * Math.min(b.value, CHANCE_CAP)
+          return Math.max(0, Math.min(1, raw * dropCoeff(server, player)))
         }
         warnOnce('VELDORA.notoriety returned no usable value')
         return CHANCE_FLAT
@@ -472,6 +487,35 @@
       var k = pathOf(p)
       if (!k || !PATH_BOOKS[k]) { p.tell('§7Declare a path first: §f/path <name>'); return 0 }
       givePathBooks(ctx.source.server, p, k)
+      return 1
+    }))
+
+    // E3 THE LEGIBILITY LAW. A player must be able to see the numbers acting on
+    // them. An axis with no live consumer is printed as INERT rather than quietly
+    // listed alongside the working ones - a coefficient nobody reads must never
+    // look like one that does.
+    root = root.then(Commands.literal('coefficients').executes(ctx => {
+      const p = ctx.source.player
+      if (!p) return 0
+      if (typeof VELDORA === 'undefined' || !VELDORA.coeff) {
+        p.tell('§ccoefficients are not loaded - every path is running identical. This is a bug.')
+        return 0
+      }
+      var e = VELDORA.coeff.explain(ctx.source.server, p)
+      p.tell('§8§m                                        ')
+      if (!e.path) {
+        p.tell('§7You walk no path. Everything is §fneutral §7(×1).')
+        return 1
+      }
+      p.tell('§6' + e.path + ' §8- §7' + e.role +
+        (e.sub ? ' §8+ subclass §7' + e.sub + ' §8(half weight)' : ''))
+      for (var i = 0; i < e.axes.length; i++) {
+        var a = e.axes[i]
+        var col = a.value > 1 ? '§a' : (a.value < 1 ? '§c' : '§f')
+        p.tell('§7  ' + a.axis + ' §8' + (a.live ? '' : '§8[INERT - nothing reads this yet] ') +
+          col + '×' + a.value + (a.base !== a.value ? ' §8(table ×' + a.base + ')' : ''))
+      }
+      if (e.online > 1) p.tell('§8  costs softened for ' + e.online + ' players online')
       return 1
     }))
 

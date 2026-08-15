@@ -126,19 +126,65 @@ Notoriety is ONE number driving THREE consumers: drop rate (`paths.js`
 (`stalker.js` `resolvePhase`). Every identity below is per-path weights on numbers
 that already exist. **This is the only structural change the design needs.**
 
+**✅ BUILT AND LIVE 2026-08-15** — `coefficients.js`, `VELDORA.coeff`. Five paths, not
+six: Crown merged into Wall (`35` §6, Ethan 2026-08-15) and **Wall stays mercantile
+because Wall is about building.**
+
 | path | role | spawns | power | drops | phase | alone |
 |---|---|---|---|---|---|---|
 | blade | combat | **×4** | ×3 | ×0.6 | ×2 | poor |
 | salvage | combat | **×4** | ×2.5 | ×0.8 + guns/ammo | ×1.5 | poor |
 | forge | mercantile | ×1 | **×0.4** | **×3** | ×1 | worst |
-| wall | mercantile | ×1 + raids | ×0.5 | ×2.5 | ×1 | safe only at home |
+| wall | mercantile | ×1.5 + raids | ×0.6 | ×2.5 + quests | ×1 | safe at home, supplies the server |
 | art | explorer | ×1.5 | ×1.2 | ×1 + maps | ×1 | **good** |
-| crown | explorer | ×1.5 | ×1.2 via servants | ×1 + quests | ×1 | **good** |
+
+*`crown` is aliased to `wall` in the table until the world reset removes the key from
+`paths.js`. A live Crown walker gets Wall's numbers rather than falling through to
+neutral — which would look exactly like "no path" and be invisible.*
 
 ⚠️ **Blade's drop coefficient goes DOWN.** All three consumers read the same
 number, so tripling XP would give Blade faster phases *and* more drops *and* more
 power — strictly the best path. The challenger does not loot; it fights, and
 somebody else arms it. That one coefficient is what makes Blade need Forge.
+
+## 7a. ⚠️ `spawns` is not a weighting — it is a mechanism that does not exist
+
+The other three axes multiply numbers that are already there. `spawns` does not, and
+the build found out why:
+
+> **E0 P9 proved `checkSpawn` fires and is CANCELLABLE. Cancelling can only ever
+> implement a coefficient BELOW 1.** You cannot cancel your way to *more* mobs, and
+> Blade's headline number is **×4**.
+
+A coefficient above 1 needs an **active spawner** near the player — the mechanism
+`the_hunt.js` already has (`SPAWN_MIN`/`SPAWN_MAX` ring placement). That is a build,
+not a multiply.
+
+So the `spawns` column is **live in the table and read by nothing.** `VELDORA.coeff`
+serves it the moment a consumer exists, `/path coefficients` prints it marked
+**INERT**, and the boot log says so out loud — because a gate with no live consumer
+is a bug, not a soak.
+
+## 7b. Subclasses stack half the DEVIATION, not half the value
+
+Ethan, 2026-08-15: subclass spawn costs stack at 50%. The naive reading —
+`primary + sub × 0.5` — is wrong: a subclass whose coefficient is a harmless ×1 would
+still add +0.5, so taking *any* subclass would make you more hunted. Coefficients are
+multipliers around a neutral 1.0, so what stacks is the deviation:
+
+```
+effective = 1 + (primary − 1) + (sub − 1) × 0.5
+```
+
+| build | axis | result |
+|---|---|---|
+| blade alone | spawns | ×4 — unchanged |
+| blade + a neutral subclass | spawns | ×4 — a harmless subclass stays harmless |
+| blade + salvage | spawns | **×5.5** — the double weather system |
+| forge + blade | drops | ×2.8 — a fighter dilutes the merchant |
+
+**Costs soften with players online** (the 2am decision), rewards never do:
+1 player ×1.00 · 2 ×0.87 · 3 ×0.77 · 4 ×0.69. Applied to `spawns` only.
 
 ## 8. Subclasses — OPEN
 

@@ -59,13 +59,29 @@
   }
 
   // ----------------------------------------------------------------- applying
-  function bonusesFor(n) {
+  // E3. `mult` is the walker's `power` coefficient - 1.0 for a pathless player and
+  // for anything that cannot read it, so this is byte-identical arithmetic to what
+  // shipped before coefficients existed. Forge's is 0.4: the merchant stays soft no
+  // matter how famous, which is what makes Forge need Blade.
+  function bonusesFor(n, mult) {
     var scale = Math.min(n, CAP) / CAP
+    var m = (typeof mult === 'number' && isFinite(mult) && mult >= 0) ? mult : 1.0
     var out = []
     for (var i = 0; i < CURVE.length; i++) {
-      out.push([CURVE[i][0], Math.round(CURVE[i][1] * scale * 100) / 100])
+      out.push([CURVE[i][0], Math.round(CURVE[i][1] * scale * m * 100) / 100])
     }
     return out
+  }
+
+  function powerCoeff(server, player) {
+    try {
+      if (typeof VELDORA !== 'undefined' && VELDORA.coeff &&
+          typeof VELDORA.coeff.of === 'function') {
+        var c = VELDORA.coeff.of(server, player, 'power')
+        if (typeof c === 'number' && isFinite(c)) return c
+      }
+    } catch (e) { console.warn('[power] VELDORA.coeff threw :: ' + e) }
+    return 1.0
   }
 
   function apply(server, player, force) {
@@ -77,9 +93,16 @@
     if (!b || typeof b.value !== 'number' || !isFinite(b.value)) return null
 
     var uuid = String(player.uuid)
-    if (!force && lastApplied[uuid] === b.value) return b      // nothing changed
 
-    var list = bonusesFor(b.value)
+    // E3. The cache used to key on notoriety ALONE, which was correct only while
+    // every path shared one curve. It no longer is: taking a path changes the
+    // multiplier without moving the number, so a walker would keep the previous
+    // path's power until their notoriety happened to tick. Key on both.
+    var mult = powerCoeff(server, player)
+    var stamp = b.value + '|' + mult
+    if (!force && lastApplied[uuid] === stamp) return b        // nothing changed
+
+    var list = bonusesFor(b.value, mult)
     for (var i = 0; i < list.length; i++) {
       try {
         player.modifyAttribute(list[i][0], MOD + '_' + i, list[i][1], 'add_value')
@@ -102,7 +125,7 @@
       lastMax[uuid] = newMax
     } catch (e) { /* cosmetic only - never let this block the buff itself */ }
 
-    lastApplied[uuid] = b.value
+    lastApplied[uuid] = stamp
     return b
   }
 
@@ -184,8 +207,13 @@
         p.tell(Text.of('§cnotoriety unreadable - no power applied. This is a bug.'))
         return 0
       }
-      p.tell(Text.of('§7Power at notoriety §f§l' + b.value))
-      var list = bonusesFor(b.value)
+      // E3. This readout MUST use the same multiplier apply() just used, or it
+      // reports numbers nobody has - the readout-disagrees-with-reality class of
+      // bug this codebase has now hit three times.
+      var pm = powerCoeff(ctx.source.server, p)
+      p.tell(Text.of('§7Power at notoriety §f§l' + b.value +
+        (pm === 1 ? '' : ' §8(path power ×' + (Math.round(pm * 100) / 100) + ')')))
+      var list = bonusesFor(b.value, pm)
       for (var i = 0; i < list.length; i++) {
         var attr = list[i][0]
         var shown = attr.replace('minecraft:generic.', '')
