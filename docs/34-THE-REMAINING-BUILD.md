@@ -33,7 +33,23 @@ the bar.
 
 ## THE QUEUE
 
-### 0. WALL REFRESH ⭐ NEXT — Ethan's call, 2026-08-14
+### 0a. THE STAGED MODPACK AUDIT ⭐ QUEUED — Ethan + me, together
+
+Eight sittings, one mod group each, protocol in **`36-THE-MOD-TAXONOMY.md` §8**.
+I bring what each mod actually registers (read out of the jar, not the blurb); he
+judges. Five questions per mod, the sharpest being **progression or filler** — Wall's
+fourteen looked healthy until that one was asked.
+
+**No mod in this pack has ever been asked which path it belongs to.** The 2026-07-31
+theme audit ran against rulings, before paths existed. And the taxonomy in `36` is
+regex — a hypothesis, not a verdict.
+
+Order: **A1** forge/Create (27) · **A2** wall + goety (~18) · **A3** art (14) ·
+**A4** blade + salvage (12, verdict will be GROW) · **A5** worldgen (39) ·
+**A6** mobs (25) · **A7** visuals + QoL (83) · **A8** perf + libraries (72).
+**A1 and A5 will change the pack most.**
+
+### 0b. WALL REFRESH ⭐ — Ethan's call, 2026-08-14
 
 > *"im going to target wall first because I do not think anyone will ever choose that
 > path because security craft is not a good base. It feels uninteresting compared to
@@ -42,6 +58,11 @@ the bar.
 Full brainstorm in **`35-WALL-REFRESH.md`**. Wall is the only path whose verb is
 *wait*, on a server whose founding complaint was that nobody explores. Design first,
 then it slots in below as the first path built on E3.
+
+### 0c. CROWN MERGES INTO WALL — ruled 2026-08-14
+
+Six paths become five. Design in `35` §6; do it **at the world reset** so no live
+claim needs migrating. Crown's written material is marked RETIRED, not deleted.
 
 ### 1. E3 — the coefficient substrate 🚨 BLOCKS EVERYTHING BELOW
 

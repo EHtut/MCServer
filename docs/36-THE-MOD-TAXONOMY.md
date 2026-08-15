@@ -205,3 +205,74 @@ generously or giving them overworld spawns — a measured change, not a config g
 2. Are champions **persistent landmarks** (this valley has a thing in it) or roaming?
    Landmarks are better for a group that does not explore — they become destinations.
 3. Do the patrons **react** to a champion kill? Blade certainly would.
+
+---
+
+# 8. THE STAGED MODPACK AUDIT — queued 2026-08-14
+
+> Ethan: *"I also want to stage a complete audit with both you and me looking at each
+> of the mods in their 'modpacks' to ensure the theming."*
+
+**Both of us, together, one group per sitting.** I prepare, he judges.
+
+## Why it is needed, stated plainly
+
+**The taxonomy above is REGEX. It is a first pass, not a verdict.** It buckets by
+filename, so it cannot tell a progression mod from a decoration mod, cannot see that
+two mods do the same job, and cannot know whether anyone has ever used one. Every
+number in §2 is a hypothesis. **The audit is where it becomes true.**
+
+There is also a specific thing to catch. `07-THEME-AUDIT.md` audited 411 mods against
+R1–R7 **before the first download** — against *rulings*, not against *paths*, because
+paths did not exist yet. **No mod in this pack has ever been asked "which path do you
+belong to, and do you carry your weight in it?"**
+
+## The rubric — five questions per mod
+
+1. **Does it belong to this path at all**, or did the regex put it here?
+2. 🚨 **Progression or filler?** The new principle: a path is a mod with a tech tree.
+   Decoration and convenience are *supporting content* — legitimate, but they must
+   not be counted as the path's substance. Wall's 14 looked healthy until this
+   question was asked.
+3. **Does it break a ruling?** R1 period · R2 Create ceiling · R5 one system per verb
+   · R6 kinetic storage · **R8 of Veldora** (proposed in `30`).
+4. **Has anyone ever used it?** Dead weight is the cheapest thing to cut and the
+   hardest to notice.
+5. **Verdict: KEEP · CUT · MOVE (to another group) · GROW (the path needs more here).**
+
+## The stages, in order
+
+| # | group | count | why this order |
+|---|---|---|---|
+| **A1** | **forge** — Create | 27 | biggest, and 25 addons is where redundancy hides |
+| **A2** | **wall** — building/resource **+ crown's goety** | ~18 | actively being redesigned; audit while it is open |
+| **A3** | **art** — magic | 14 | four RPG-class mods look like R5 risk |
+| **A4** | **blade + salvage** | 12 | small, and the verdict will be **GROW**, not cut |
+| **A5** | **worldgen / structures** | 39 | the Explorify cut and the biome additions land here |
+| **A6** | **mobs / enemies** | 25 | where *champions above, hordes below* gets built |
+| **A7** | **visuals / audio + QoL** | 83 | lower stakes, faster, mostly keep |
+| **A8** | **perf / server + libraries** | 72 | mechanical — hunt orphaned libraries whose parent was cut |
+
+**A1 and A5 are the two that will change the pack most.**
+
+## What I bring to each sitting
+
+Not the CurseForge blurb — **what the mod actually adds, read out of the jar.** That
+method is what found the Dark Warblade, whose drawback the mod author had already
+written and no description mentioned. Per mod:
+
+* what it registers — items, blocks, entities, recipe types, structures
+* whether it has a **progression chain** (recipe types, research, tiers) or is flat
+* **duplicate detection** — who else does this job
+* period/theme risk against the rulings
+* a recommendation, with the reasoning, for him to overrule
+
+## Rules for the audit itself
+
+* **A cut is a packwiz change and reaches players on relaunch. A config change does
+  not** (F37). Sort verdicts by which channel can deliver them.
+* **Cutting a mod can orphan its library and can break a datapack** — the
+  `gen_pack.py` incident deleted a mod and resurrected two cut ones from a stale
+  resolve cache. Re-run and diff the manifest after every batch.
+* **Nothing is cut mid-audit.** Verdicts are collected per stage, applied in one
+  reviewed batch, then booted.
