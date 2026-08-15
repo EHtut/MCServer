@@ -1,135 +1,93 @@
-# Wall — the refresh
+# Wall — the refresh. MineColonies.
 
 *Ethan, 2026-08-14: **"i do not think anyone will ever choose that path because
-security craft is not a good base. It feels uninteresting compared to the others so I
-want to brainstorm a complete refresh of it. It would need to fill an adventurer role
-like art."*** Brainstorm. Nothing decided, nothing built.
+security craft is not a good base... i got it wrong wall is a building/resource
+path"*** and then, cutting through a page of my wrong answers: **"I have an idea.
+Mine colonies."**
+
+**Available:** `minecolonies-1.1.1319-1.21.1` for NeoForge 1.21.1, May 2026.
+**Nothing built. Nothing added yet.**
 
 ---
 
-## 1. Why Wall is the weakest — and it is not her
+## 1. Why my first pass was wrong, recorded so it is not repeated
 
-**Her character is the best-written of the six.** Not one threat in the entire scene,
-across three writing passes. *"I will live in the walls you build. Even when you do
-not see me. Especially then."* The Mother works.
+I proposed waystones, camping and corpse retrieval — a "thread back" and a "house
+that follows". Ethan's correction was exact:
 
-**The problem is entirely what she asks you to DO.**
+> *"A mod like waystones is essentially furniture, camping is untrackable and side
+> content."*
 
-* **SecurityCraft is a base-defence mod, and base defence is static, solo and
-  reactive.** You build, then you wait for something to come to you.
-* **Every other path is a verb.** Blade *fights*. Salvage *trades*. Forge *builds*.
-  Crown *commands*. Art *sleeps*. Wall's verb is **wait** — and waiting is not a
-  playstyle, it is the absence of one.
-* 🚨 **She works against the founding problem.** This whole system exists because
-  Ethan said *"My friends and me have a habit of not exploring."* Wall is the one
-  path that **rewards staying home.** She is not merely uninteresting; she is
-  actively pulling against the thing the path system was built to fix.
-* And her fantasy is solitary — walls protect *you*, in *your* base, from things that
-  come to *you*. On a four-player server, that is one person having a quieter evening.
+He is right, and the reason matters: **every other path is anchored to a mod with a
+progression tree.** Blade has armour tiers, Salvage has gun crafting and ammo, Forge
+has all of Create, Art has Ars Nouveau, Crown has Goety. I offered Wall a *convenience*
+and called it a path. A path needs something to still be doing on night forty.
 
-## 2. 🔑 The reframe that fixes it without touching her character
+## 2. Why MineColonies is the right answer
 
-> **A mother's job is not to keep you in the house.**
-> **It is to make it possible for you to leave — and to make sure you come back.**
+**It is not a mod. It is a game**, and it is the only one of its kind in the space
+Wall occupies:
 
-That is an adventurer role, and it is **more** codependent, not less. She does not
-want you home. **She wants to be the thing that makes going out survivable, so that
-you can never go out without her.**
+* **A real progression tree** — a town hall, a builder, then hundreds of hours of
+  huts, schematics, research, levels, supply chains and citizens who need feeding.
+* **It is building AND resources at once**, which is exactly the domain Ethan
+  assigned Wall, and it splits cleanly from Forge: **Create automates so you do not
+  have to; MineColonies gives you people who do it for you.** Machines versus
+  citizens. Neither steals the other's fantasy.
+* **It scales with time, not gear** — so it does not compete with Blade or Salvage
+  for the combat power budget.
 
-Everything below keeps 100% of the Mother and replaces only the verb.
+### 🔑 And it is the Mother's fantasy made literal
 
----
+Wall is codependent. She wants to be closer, and closer, until nothing is between
+you. Her best line is:
 
-## 3. The themes
+> *"I will live in the walls you build. Even when you do not see me. Especially then."*
 
-### ⭐ THEME A — THE THREAD
-**She gives you the way back.**
+**A colony is a town full of walls, built by people who cannot leave, who depend on
+you utterly and who you come to depend on.** She does not want you to have a base.
+She wants you to have a **household** — and every building in it is one more wall she
+lives in.
 
-Spider, so: a line. You can always return — and the deeper you go, the more that
-matters. The role is **the deep diver**: you go further than anyone else on the
-server, because you are the only one who is never lost.
+There is a genuinely unsettling reading available for free: the colonists are people
+who arrived and stayed. They cannot die (`15-LORE`: neither can you). They work, they
+sleep, they need you. **The kindest patron gives you a family, and the family is a
+web.** Nothing about the mod has to be modified for that to be true — it only has to
+be *named*.
 
-* Fits the lore's spine exactly — the descent, the strata, the Vaults. `15-LORE`
-  says the watching *gets heavier the deeper you go*, and this is the path built to
-  go there.
-* **Already-shipped mods:** `waystones`, `corpse` (body retrieval), Xaero waypoints.
-* **The codependence:** the thread is two-way. She always knows where you are.
-* **The escalation:** at first it is a mercy. Later, something else uses it to find
-  you. Later still, you cannot cut it.
-* Her line writes itself: *"I will always know where you are, love. That is not a
-  threat. That is the whole of what I am for."*
+## 3. What it displaces
 
-### ⭐ THEME B — THE HOUSE THAT FOLLOWS
-**Wherever you stop, she makes it safe.**
+* **SecurityCraft is retired as Wall's base.** It has no other consumer in the pack.
+  Cut it, or leave it as an unaffiliated utility — but it stops being a path.
+* Wall's decoration mods (`chipped`, `framedblocks`, `macaws-*`, `handcrafted`,
+  `medieval-buildings`, `interiors`, `bellsandwhistles`) **stay and become
+  supporting content** — a colony is exactly what makes hundreds of building blocks
+  meaningful instead of decorative.
+* **`theurgy` stays with Wall** as the resource half — material transmutation feeding
+  a settlement that consumes materials endlessly.
 
-You never have to come home, because home arrives. Sleep in the deep. The role is
-**the one who can stay out** — everyone else must return; you never do.
+## 4. ⚠️ Risks, honestly
 
-* **Most emotionally on-character of the six ideas.** She tucks you in. That is the
-  whole gift and it is genuinely kind.
-* **Already shipped:** `lets-do-camping`.
-* **The escalation:** you wake and the door is on the wrong side. The shelters get
-  harder to leave. One of them, eventually, does not open.
-
-### THEME C — THE WEB
-**You are how she spreads.**
-
-Everywhere you go, you leave something of her behind. The map slowly becomes hers,
-and you are the one doing it. The role is **the coloniser** — you claim the world.
-
-* **The most original of the six and the most disturbing.** The other five patrons
-  want something *from* you. She wants to be carried *by* you. You are not her
-  victim, you are her **vector**, and you find that out late.
-* Pairs naturally with A and B — the thread and the shelters *are* the web.
-
-### THEME D — THE SKIN
-**She has been under it the whole time.**
-
-Grafts and mutations. Each gift makes you less human, more hers, and less able to
-take it off. The role is **the one who survives what kills others** — immune to the
-deep's hazards.
-
-* Literalises *"there is no reason for anything to stand between us"* completely.
-* ⚠️ Risk: body horror for its own sake, and it brushes against the lore's
-  "you cannot die" without adding to it.
-
-### THEME E — THE BROOD
-**You are never alone.**
-
-Spiderlings follow, fight, and die for you.
-
-* ⚠️ **Weakest — it collides with Crown.** Emotionally distinct (mothering vs
-  commanding) but mechanically it is "you have minions" on two of six paths. Would
-  need a very sharp separation to earn its slot.
-
----
-
-## 4. Recommendation: A → B → C as one three-act path
-
-They are not five options; **three of them are the same idea at three depths**, and
-run in order they are a complete character arc:
-
-| act | what she gives | what you realise |
-|---|---|---|
-| **I — the Thread** | you can always come back | she always knows where you are |
-| **II — the House** | you never have to come back | it is getting harder to leave |
-| **III — the Web** | the world is becoming safe | **you are the one spreading her** |
-
-Act I is a mercy. Act II is a habit. Act III is what you have been doing the whole
-time without noticing — which is exactly how she was written to work: the shrinking
-ask, the thing that is never a threat, the seam you left open once.
-
-And it answers Ethan's brief precisely: **it is an adventurer path.** It is, in fact,
-the *most* exploratory of the six — Blade goes where the fights are, Forge stays near
-his machines, and Wall goes everywhere, because she is what makes everywhere
-survivable.
+1. **Performance.** Colonists are entities with pathfinding and jobs. On a pack of
+   290 mods with `in-control` spawn pressure and four players, this is the single
+   biggest performance addition we would make. **Needs a measured soak, not a vibe
+   check.**
+2. **It is a huge mod to learn.** Ethan's brother is the combat player; whoever walks
+   Wall is signing up for a tutorial. The introduction should acknowledge that — the
+   Mother teaching you, patiently, is entirely in character.
+3. **Schematic style vs period.** MineColonies ships several styles; some are
+   modern/fantasy-generic. **R1 (period) and R8 (of Veldora) apply.** Pick the
+   medieval/dark styles, or the colony will look like it came from another server.
+4. **It wants a lot of space.** Interacts with the world reset and with claim/griefing
+   between four players.
 
 ## 5. Open
 
-1. **Which theme, or which combination?** A→B→C is the recommendation.
-2. **Does SecurityCraft leave the pack entirely, or just stop being Wall's base?**
-   It has no other consumer.
-3. **Does she keep the mother-spider casting** (`born_in_chaos_v1:mother_spider`)?
-   The thread/web reading makes the spider *more* apt, not less.
-4. **What replaces the reinforcer as her flagship**, if flagships ever come back?
-   A waystone-shaped thing, or something from `camping`.
+1. **Which schematic styles ship?** Needs a pass against R1.
+2. **Does the colony feed the other paths?** A settlement that supplies the server
+   makes Wall the person everyone needs — which is *exactly* what a codependent
+   wants, and gives the path a social role no other path has.
+3. **What are Wall's events** (`23` PART VI) in colony terms? Raids on the colony,
+   a citizen going missing, a building she insists you construct.
+4. **Does she gate buildings?** She could *ask* for structures — the shrinking ask,
+   made of stone.
