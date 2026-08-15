@@ -107,6 +107,38 @@ That last one is the whole sight trade and it only works because a probe caught
   what makes that survivable rather than a death sentence
 * debt persists across restart as a **world day**, never `tickCount`
 
+### 2b. ⭐ E6b — SHE OPENS HERSELF 🚨 the half that makes E6 a feature
+
+*Ethan, 2026-08-15: **"going forwards i want the player to actually use commands as
+little as possible."*** `23` PART V.6.
+
+**E6's trades work and were tested clean. `/trade_test` is a harness, not the
+feature.** `23` PART V has always said she opens **at the worst times** — mid-combat,
+low health, just after a death — and that half does not exist.
+
+* triggers: low health · mid-combat · just after a death · a long dry spell
+* **rate-limited by her counter**, so she does not become a vending machine
+* the ritual's detarget is what makes a mid-combat offer survivable rather than a
+  death sentence — that was designed in from the start
+* ⚠️ **must not fire during another patron's scene.** `VELDORA.ritual.active(p)`
+  already guards it; test it with two patrons wanting you at once.
+
+**This is cheap** — the trades, the counter and the ritual all exist. It is a trigger
+and a rate limit.
+
+### 2c. ⭐ THE TRADE IS THE UNIVERSAL INTERFACE — re-scopes PART VI
+
+*Ethan: **"this trade system is perfect for literally all of the patrons. We can
+integrate these into events."*** `23` PART V.5.
+
+**72 bespoke events was the wrong reading.** Most are `ritual + options + counter`
+with different words and numbers — Blade's *Sharpen* is a trade with its price
+stated, Wall's *"take out one wall"* is an offer, Forge's quota is an offer with a
+clock. Build the **offer** once and most of PART VI becomes authoring.
+
+**What stays bespoke:** the genuinely mechanical ones — Blade's waves, *Understudy*,
+Salvage's *Interest* raid, Art's pages. **Those need the spawner, not the ritual.**
+
 ### 3. E7 — Interest: the first raid
 
 The debt comes due; raid size scales with trades since the last one.

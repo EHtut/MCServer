@@ -399,6 +399,73 @@ E6 already carry. And "could not read the counter" must never return 0; that is 
 
 ---
 
+# PART V.5 — ⭐ THE TRADE IS THE UNIVERSAL PATRON INTERFACE
+
+*Ethan, 2026-08-15, after E6 tested clean: **"this trade system is perfect for
+literally all of the patrons. We can integrate these into events."***
+
+**Adopted.** The bargain was designed as Salvage's economy and it is not one. It is
+the shape every patron already wanted:
+
+> **ritual + named options + a per-patron counter = a patron talking to you.**
+
+Reading PART VI back against it, most of the 72 events are already trades wearing
+other words:
+
+| event | is really |
+|---|---|
+| **Blade** — *Sharpen*: a damage buff, spawns quadruple for its duration, **stated up front** | a trade. Power for danger, price named. |
+| **Blade** — *The Tithe of Steel*: double durability loss for a day | a trade you did not get to refuse |
+| **Wall** — *"Take out one wall. Just one."* | an offer, and the ritual is how she asks |
+| **Forge** — a quota with a deadline | an offer with a clock, compounding on a miss |
+| **Salvage** — *The Better Offer*: she buys something you need, **refusing raises regard** | a trade whose refusal is the content |
+| **Art** — *"the only patron who gives without asking"* | the same interface, zero-cost |
+
+**What this collapses.** Six patrons × twelve events was reading as 72 bespoke
+builds. Most are the same three pieces with different words, different numbers, and a
+different counter — which is why the per-patron counter landed first, and why it
+mattered that it was built general rather than as Salvage's debt.
+
+**What stays bespoke:** the events that are genuinely mechanisms rather than offers —
+Blade's waves and *Understudy* (a mob mirroring your gear), Salvage's *Interest*
+raid, Art's pages. Those need the **spawner**, not the ritual.
+
+⚠️ **The counter is what keeps them distinct.** If every patron uses one interface,
+the thing that makes Blade not-Forge is entirely in the numbers: what they ask for,
+what they pay, how fast their counter climbs, and what it calls down. That is E3 and
+`counters.js`, both live.
+
+# PART V.6 — ⭐ THE PLAYER SHOULD NOT BE TYPING COMMANDS
+
+*Ethan, 2026-08-15: **"going forwards i want the player to actually use commands as
+little as possible."***
+
+**Adopted as a standing rule.** The distinction that makes it buildable:
+
+| | |
+|---|---|
+| **commands to ACT** | must disappear. Taking a path, opening a trade, triggering an event. |
+| **commands to LOOK** | stay. `/path`, `/counters`, `/path coefficients`, `/notoriety`. |
+
+That is not a compromise — it is **the legibility law** already written into this
+design. A number that acts on you is a number you can read. Reading is not playing;
+typing `/trade_test` to be offered a bargain is.
+
+### What this makes real work, not polish
+
+* 🚨 **E6 is half-built by this standard.** The trades work; *she* does not open
+  them. `23` PART V already says she opens **at the worst times** — mid-combat, low
+  health, just after a death — and that half does not exist. **`/trade_test` is a
+  test harness, not the feature.**
+* **Taking a path must become `33` — being chosen.** `/path blade` is the largest
+  act-command in the game, and it already makes every *"you already reached for it"*
+  line literally false.
+* **Events must fire on their own**, which is what PART VI always meant.
+
+**Corollary:** every admin `_test` command stays, and stays admin. They are how we
+prove a thing works without waiting for it — `/trade_test`, `/fall_test`,
+`/whisper_test`, `/ritual test`. The rule is about the *player's* hands.
+
 # PART VI — THE EVENTS
 
 Twelve per path, early/cheap → late/expensive. `[M]` marks a non-obvious hook.
