@@ -715,3 +715,160 @@ Everything here is a **tool**, not content, so none of it touches R1 or R8 — b
 `Structurify` and `Biome Replacer` both alter worldgen, and **config does not ship
 through packwiz** (F37). Whatever they are set to reaches only players who re-import
 the instance zip. Plan delivery before tuning.
+
+---
+
+# A2 — THE WALL AUDIT ✅ (done 2026-08-14, after A3)
+
+*18 mods by the taxonomy. Wall came out of it as a completely different path.*
+
+## What Wall is now
+
+`goety` · `goety-cataclysm` · `occultism` · `automaticons` — **four mods, all minions.**
+
+> **Goety fights for you. Occultism works for you.**
+> Necromancy thralls versus summoned spirits bound to jobs. Different verbs, so no
+> R5 collision, and together they are a real anchor where SecurityCraft never was.
+
+## MineColonies: dropped, and the reason is the toolchain
+
+Modrinth carries **exactly one version** of MineColonies — 1.18.2 Forge. The real
+distribution is CurseForge, and `gen_pack.py` / `resolve.py` have **zero CurseForge
+support**; all 281 mods resolve through Modrinth. Shipping it means a hand-authored
+metafile outside the pipeline that breaks on the next regeneration.
+
+**A maintenance cost, not a gameplay one** — and the resource half of MineColonies was
+always Forge's job.
+
+## Occultism: already downloaded, never shipped
+
+R7 named it as one of the four designed alternatives and it sat in cache unused.
+602 items · 165 blocks · 3,587 lang keys · a four-tier summoning ladder
+(Foliot → Djinni → Afrit → Marid) · 20+ familiars · a golem · a **`miner` recipe type**
+for spirits that dig ore for you.
+
+⭐ **It resolves Ethan's own earlier objection rather than contradicting it.** He ruled
+Occultism too craft-heavy to be a *supplementary* — correct, and irrelevant, because
+as a path **anchor** craft-heavy is the requirement. It failed one test and passes the
+other.
+
+## Cut
+
+`theurgy` (*"this will never be touched ever and i can already tell"*) ·
+`security-craft` (same, and no longer Wall's base) · `guard-villagers` (redundant).
+
+## Resorted out of Wall
+
+* → **supplementary**: `chipped` (6,993 items!), `framedblocks`, `handcrafted`,
+  `macaws-furniture`, `macaws-roofs`, `storagedrawers`, `storage-delight`,
+  `interiors`, `bellsandwhistles`, `carry-on`
+* → **worldgen**: `medieval-buildings` (0 items, 5 structures), `oh-the-trees-youll-grow`
+  (a hard dependency of the biome mod, never Wall's)
+
+## 🚨 The procedure that now clears every cut
+
+A `mods.toml` dependency scan is **not sufficient**. It missed `archers_expansion`
+mixing into `net.more_rpg_classes.effect.MRPGCEffects` and the server crashed on boot
+with `ClassNotFoundException`.
+
+**Every cut is now cleared by: a byte-search of every shipped jar for the mod id, AND
+a check of every `.mixins.json` for the package.** Mixins reference classes directly
+and declare nothing.
+
+## Version discipline
+
+The pack resolved `occultism 1.224.2` while the cache held `1.224.1`. The resolved
+build was downloaded and its **sha512 verified against the metafile** before the
+server jar was replaced — server and clients agree exactly.
+
+---
+
+# A4 — BLADE + SALVAGE ✅ (done 2026-08-14)
+
+## The verdict for both: NOT A MOD PROBLEM
+
+> Ethan: *"Blade and salvage are the most boring mechanically, blade being you have a
+> sword or an axe and you swing it and don't die. So instead of targeting power, we
+> target animations and bosses."*
+>
+> And after the pass: *"i think blade relies more heavily on events than any other
+> class"* · *"same issue as blade that it needs events"*
+
+**Neither path is short of content. Both are short of EVENTS.** This is the only
+audit stage that ended with zero cuts and zero additions.
+
+## Blade — 7 mods, and six of them register nothing
+
+| mod | items | what |
+|---|---|---|
+| `epic-knights-shields-armor-and-weapons` | **718** | the only content. 420 recipes |
+| `better-combat` | 0 | the combat system — movesets |
+| `combat-roll` | 0 | dodge roll |
+| `cut-through` | 0 | sweep tweak (0.0 MB) |
+| `not-enough-animations` | 0 | visual |
+| `first-person-model` | 0 | visual |
+| `playeranimator` | 0 | animation library |
+
+**Filed elsewhere but Blade's:** `knight-lib` (7 items — Epic Knights' own library,
+sitting in `library`) and `medieval-siege-machines` (19 items — *"Trebuchet, catapult,
+ballista, battering ram, mortar"*, sitting in `worldgen`; it is siege **weaponry**).
+
+**One content mod plus a very good presentation layer.** The animations already work.
+There is no progression ladder and adding a ninth sword mod would not create one.
+
+### Marium's Soulslike Weaponry and Sengoku Jidai — passed on, with reason
+
+Ethan asked for a pass rather than a blind add. **Both are Fabric-only for 1.21.1** —
+Marium's has 7 builds for 1.21.1 and **zero NeoForge**; the only NeoForge-facing
+Sengoku project is `sjscp`, *"Sengoku Jidai + Sinytra Connector Patch"*.
+
+**Both route through Sinytra Connector**, which loads a Fabric runtime alongside
+NeoForge. Mature (22.5M downloads, real 1.21.1 support) but:
+
+* its known failure mode is **conflicts with mixin-heavy mods**, and this pack is
+  extremely mixin-heavy — we crashed the server tonight on a single mixin
+* it is **all-or-nothing**; every one of 281 mods becomes exposed to it
+* F37 precedent: one mod killed the entire GUI layer
+
+**Recommendation: not for two mods.** If wanted later, test on a **copied instance**,
+never the live one.
+
+Native alternatives were searched and are thin: the two best boss mods that came back
+(`l_enders-cataclysm`, `bosses-of-mass-destruction`) are **already installed**, and
+`weapons-of-miracles` — the strongest moveset mod — is built on **EpicFight**, which
+collides with Better Combat under R5.
+
+## Salvage — 5 mods, and the item count lies
+
+| mod | MB | items |
+|---|---|---|
+| `tacz` | **54.6** | **21** |
+| `archers` | 0.9 | 122 |
+| `archers-expansion` | 0.7 | 48 |
+| `gunpowder-ore` | 0.0 | 1 |
+| `ranged-weapon-api` | 0.1 | 0 (library) |
+
+🚨 **TaCZ registers 21 items because every gun is ONE item plus a `GunId` component.**
+What it actually ships:
+
+> **54 guns · 24 ammo types · 101 attachments · 1,352 sounds · 60 animations**
+
+Scopes, grips, extended mags, bayonets, and ammo mods (FMJ, HE, HP, incendiary,
+slug). **That is a deeper progression tree than Blade's 718 items** — and guns cannot
+be crafted, so every one of them is found.
+
+**I predicted Salvage would come back GROW. It does not.** The taxonomy could not see
+it because I was counting registry entries and TaCZ hides its content in a datapack.
+
+## What A4 actually produced
+
+**Zero cuts. Zero additions. Two GROW verdicts that cost no mods at all:**
+
+* **Blade → E8** — waves, the taunt ladder, `"Run."` before the Harvest
+* **Salvage → E6 + E7** — the three trades, the debt counter, the raid when it comes due
+* **Both → champions above, hordes below** — the bosses exist and are structure-locked,
+  which is the same placement problem as the cobblestone pillars
+
+⭐ **The lesson for the remaining stages: an item count is not a content measure.**
+Wall's 14 mods looked healthy and were decoration; Salvage's one mod looked thin and
+is the deepest tree in the pack.
