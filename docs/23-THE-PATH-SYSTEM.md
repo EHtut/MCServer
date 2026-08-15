@@ -870,6 +870,49 @@ state to ship in first.
 * **Does surviving a reckoning pay it off, or only end it?** Salvage's debt says
   paid; Blade's test says merely survived, and he sets another.
 
+# PART V.10 — CONTEXTUAL IDLE SPEECH ✅ BUILT 2026-08-15
+
+*Ethan: **"the base patron behaviors will extend to everyone."*** So `idle.js` is
+general from its first line — a god registers pools by CONTEXT TAG and the file
+decides which context a champion is in. Nothing in it knows anything about Blade.
+
+## Cadence
+
+> *"one a daily cooldown plus hour percentage call chance"*
+
+**At most once per in-game day, per god**, rolled on a slow tick so it lands at an
+unpredictable moment. **A god who speaks on a timer is a notification; a god who
+speaks when he happens to be watching is a presence.**
+
+## The contexts
+
+| axis | tags |
+|---|---|
+| what you **hold** | `hold_weapon` · `hold_food` · `hold_item` · `hold_none` |
+| **where** you are | `loc_above` · `loc_below` |
+| **combat** | `combat` |
+| another **champion** near | `near_<their path>` |
+
+All applicable contexts are gathered and one is chosen **weighted** — combat (6) and
+a nearby champion (5) outrank what you hold (2) and where you stand (1), because they
+are the rarer moment and the better line.
+
+⚠️ **A god with no pool for the chosen context says NOTHING.** No generic fallback:
+silence is a legitimate answer, and a wrong-context line is worse than none —
+especially for a god whose highest praise IS silence.
+
+## Two implementation notes worth keeping
+
+* **Location uses `canSeeSky`, not depth.** A deep ravine at y70 is still outside.
+  Falls back to `y >= 55` if unreadable rather than guessing wrong both ways.
+* **The hold check logs its shape once.** `stack.get('minecraft:food')` is the 1.21
+  route and had never been used here — J6's rule is that an unverified accessor
+  returning undefined is indistinguishable from a quiet subsystem.
+
+**`/idle_test`** prints every context that currently applies, marks which ones the
+god actually has a pool for, and forces a line — because *"he is quiet"* and *"he has
+no line for this"* look identical from the outside.
+
 # PART V.7 — THE INSTRUMENT PANEL
 
 *The build reference for every event in PART VI: what can be **noticed**, what can be

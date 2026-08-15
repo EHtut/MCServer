@@ -339,6 +339,102 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     },
   }
 
+  // -- CONTEXTUAL IDLE POOLS -------------------------------------------------
+  //
+  // Selected by idle.js from what the champion is holding, where they are,
+  // whether they are fighting, and who is standing next to them. Whole lines
+  // rather than fragments: a contextual remark is one thought, and splitting it
+  // would produce 'Technique over power. Get moving.'
+  //
+  // Register note: these are more FORMAL than the trust-tier lines. He declaims
+  // about the world and instructs the champion - the same split the canon
+  // arrival lines already had, where he is mythic when speaking of the world and
+  // clipped when speaking to you.
+  var CONTEXT = {
+      "hold_weapon": [
+          "The blade should be held like an extension of you.",
+          "This is a tool. Every weapon is a tool.",
+          "Technique over power.",
+          "That edge is only as good as the arm behind it.",
+          "Hold it properly. It knows when you do not.",
+          "A weapon you have not bled with is decoration."
+      ],
+      "hold_food": [
+          "Fuel yourself. Battle awaits.",
+          "Prioritise your macros.",
+          "Feast, for you need the strength.",
+          "Must you spend all your days consuming? You are growing fat.",
+          "Eat. Then move.",
+          "That is fuel, not a reward."
+      ],
+      "hold_item": [
+          "Idle hands.",
+          "That will not defend you.",
+          "You carry everything except a reason to use it.",
+          "Put that down and pick up something with an edge."
+      ],
+      "hold_none": [
+          "Idle hands.",
+          "If you wanted to do nothing, you should have invoked the spider instead of me.",
+          "Empty hands. Empty day.",
+          "You stand in a cursed world holding nothing at all."
+      ],
+      "loc_above": [
+          "I can feel the horde beneath. The trapped souls awaiting death.",
+          "You are my instrument of mercy.",
+          "The surface is quiet. That is not the same as safe.",
+          "Everything worth killing is below you."
+      ],
+      "loc_below": [
+          "The realms of death. Delve deeper, for we must slay the enemies of that fel goddess.",
+          "Trust not the silence. Things lurk down here.",
+          "Down here the world stops pretending.",
+          "Deeper. The dead do not climb to meet you."
+      ],
+      "combat": [
+          "Cut. Them. Down.",
+          "Show them the only mercy they deserve. Death.",
+          "Finish it.",
+          "Do not think. Strike.",
+          "This is what you are for."
+      ],
+      "near_salvage": [
+          "The emissary of the wolf. Do not trust them.",
+          "That one deals before they draw. Watch which they reach for first.",
+          "Their might is respectable. Their patron is noise."
+      ],
+      "near_forge": [
+          "It is only through the fires of industry that we are able to keep our march. Lean on them.",
+          "The engineer. Glory is not attained alone - use them.",
+          "That one builds what your arm cannot. Respect it."
+      ],
+      "near_art": [
+          "I have never trusted the goddess of magic. Their champion? Even less so.",
+          "She leads, and I follow. That does not mean I like her hand.",
+          "Magic answers to her. Keep your own answers closer."
+      ],
+      "near_wall": [
+          "The spider's underling. Keep distance from that one, lest they bore you.",
+          "They fight with borrowed strength. Do not learn it from them.",
+          "Mercy, dressed up as devotion. Walk on."
+      ],
+      "near_crown": [
+          "The spider's underling. Keep distance from that one, lest they bore you."
+      ]
+  }
+
+  VELDORA.blade = {
+    tier: tierOf,
+    thresholds: { medium: MEDIUM_AT, high: HIGH_AT },
+    // Speak whatever this tier calls for. Returns false if he has nothing - which
+    // is a legitimate answer for him specifically, and callers must not substitute.
+    speakTier: function (player, kind) {
+      var t = tierOf(player)
+      if (!t) return false
+      return VELDORA.voice ? VELDORA.voice.say(player, GOD, t + '_' + kind) : false
+    },
+  }
+
   ServerEvents.commandRegistry(function (event) {
     var Commands = event.commands
     function ADMIN(s) { try { return s.hasPermission(2) } catch (e) { return false } }
@@ -380,8 +476,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         tags++
       }
     }
-    console.info(TAG + 'The Warrior speaks - ' + n + ' fixed lines + ' + combo +
-      ' combinatorial, across ' + tags + ' tags. Tiers at ' + MEDIUM_AT + '/' +
-      HIGH_AT + ' slain.')
+    var ctxn = 0
+    for (var c in CONTEXT) {
+      if (!CONTEXT.hasOwnProperty(c)) continue
+      if (VELDORA.voice.registerLines(GOD, c, CONTEXT[c])) { ctxn += CONTEXT[c].length; tags++ }
+    }
+    console.info(TAG + 'The Warrior speaks - ' + n + ' fixed + ' + ctxn +
+      ' contextual + ' + combo + ' combinatorial, across ' + tags +
+      ' tags. Tiers at ' + MEDIUM_AT + '/' + HIGH_AT + ' slain.')
   })
 })();
