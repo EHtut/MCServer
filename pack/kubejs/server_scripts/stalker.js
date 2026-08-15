@@ -1303,6 +1303,34 @@
     console.info('[stalker] angered ' + String(stalkerUuid).substring(0, 8) + ' - ' + why)
   }
 
+  // ---------------------------------------------------------------------------
+  // THE BENCH SEAM. /patron summons a casting to be looked at, and the first
+  // version summoned it UNOWNED - no OWNER tag, so isStalker() was false, so the
+  // "your own stalker cannot hurt you" hard stop never fired, its minions were
+  // never registered, and the piglin rule could not see any of it. The bench was
+  // dropping genuinely hostile bosses on the person testing it, and Ethan died
+  // three times in four minutes before the respawn log gave it away.
+  //
+  // adopt() makes a bench summon a REAL stalker: tagged, owned, and in live[], so
+  // every guard applies exactly as it would in play. A bench that does not
+  // reproduce live conditions is not a bench, it is a hazard.
+  // ---------------------------------------------------------------------------
+  VELDORA.stalkerAdopt = function (player, entity, pathKey) {
+    try {
+      var uuid = String(player.uuid)
+      if (live[uuid] && !sameEntity(live[uuid], entity)) dismiss(uuid)
+      entity.persistentData.putString(OWNER, String(player.username))
+      entity.persistentData.putString(PATHKEY, String(pathKey))
+      live[uuid] = entity
+      delete angered[uuid]
+      console.info('[stalker] adopted a bench summon for ' + player.username + ' as ' + pathKey)
+      return true
+    } catch (e) {
+      console.error('[stalker] adopt failed :: ' + e)
+      return false
+    }
+  }
+
   function dismiss(uuid) {
     var e = live[uuid]
     delete live[uuid]

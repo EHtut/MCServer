@@ -15,6 +15,8 @@
 // /patron lineup     - all six at once, FROZEN, in a row. The comparison view.
 // /patron <key>      - one, LIVE, behind you, under real stalker conditions
 // /patron clear      - remove every test entity
+var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
+
 ;(function () {
   var TAG = '[patron] '
   var MARK = 'veldora_patron_test'
@@ -125,6 +127,21 @@
           try { e.addTag(MARK) } catch (x) { }
           e.setPosition(p.x, p.y, p.z + 4)
           e.spawn()
+
+          // 🚨 ADOPT IT. The first version of this bench summoned patrons UNOWNED,
+          // so isStalker() was false, the "your own stalker cannot hurt you" hard
+          // stop never fired, and their minions were never registered - meaning
+          // none of the protections that exist in real play applied. It killed
+          // Ethan three times in four minutes and the only reason we caught it was
+          // a Resistance III that kept re-granting.
+          //
+          // A bench that does not reproduce live conditions is not a bench.
+          if (VELDORA && typeof VELDORA.stalkerAdopt === 'function') {
+            VELDORA.stalkerAdopt(p, e, key)
+          } else {
+            tell(p, '§c⚠ stalker.js seam missing - this patron is UNOWNED and WILL kill you.')
+            console.error(TAG + 'VELDORA.stalkerAdopt missing - bench summon is unprotected')
+          }
         } catch (ex) {
           tell(p, '§cthrew: ' + ex)
           console.error(TAG + key + ' threw :: ' + ex)
