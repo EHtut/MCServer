@@ -45,6 +45,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var MAX_DIST = 40
   var MAX_PER_WAVE = 12           // TPS guard. Four players on one box.
   var SCAN_PAD = 16               // count radius = MAX_DIST + this
+  var MEASURE_DELAY = 10          // ticks - a summon is not queryable same-tick
 
   // id -> true/false, filled at boot. An id absent from here has never been checked.
   var VALID = {}
@@ -112,8 +113,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // opts: { ids: [..], count: n, minDist, maxDist, name }
   // Returns { asked, placed, valid } - `placed` is MEASURED, and is null if the
   // count could not be taken. null and 0 are different answers.
-  function wave(player, opts) {
-    if (!player || !opts || !opts.ids || !opts.ids.length) return { asked: 0, placed: 0, valid: [] }
+  function wave(player, opts, onMeasured) {
+    if (!player || !opts || !opts.ids || !opts.ids.length) return { asked: 0, placed: 0, valid: [], measured: true }
     var server = null
     try { server = player.server } catch (e) { }
     if (!server) { console.error(TAG + 'no server handle'); return { asked: 0, placed: null, valid: [] } }
@@ -161,21 +162,38 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       }
     }
 
-    var after = countNear(player, ids, hi + SCAN_PAD)
-    var placed = (before === null || after === null) ? null : Math.max(0, after - before)
-
-    if (placed === null) {
-      console.warn(TAG + 'wave for ' + name + ': asked ' + count +
-        ', COULD NOT MEASURE how many arrived')
-    } else {
-      say('wave for ' + name + ': asked ' + count + ', measured ' + placed +
-        ' (' + ids.join(', ') + ')')
-      if (placed === 0) {
-        console.error(TAG + '!! asked for ' + count + ' and NOTHING arrived. ' +
-          'Valid ids, so this is placement: no room, wrong dimension, or a mod veto.')
+    // ⚠️ MEASURE ON A LATER TICK. A /summon does not make the entity queryable in
+    // the same tick it is issued, so scanning immediately reports 0 for a wave that
+    // arrived perfectly - measured 2026-08-15, when the first Interest logged
+    // "asked 8 and NOTHING arrived" and the identical call 15s later measured 8.
+    //
+    // So `placed` cannot be returned synchronously and is delivered by callback.
+    // A caller that must know whether the wave landed - a reckoning deciding
+    // whether to settle - waits for it. One that does not can ignore it.
+    var result = { asked: count, placed: null, valid: ids, measured: false }
+    server.scheduleInTicks(MEASURE_DELAY, function () {
+      var after = countNear(player, ids, hi + SCAN_PAD)
+      var placed = (before === null || after === null) ? null : Math.max(0, after - before)
+      result.placed = placed
+      result.measured = true
+      if (placed === null) {
+        console.warn(TAG + 'wave for ' + name + ': asked ' + count +
+          ', COULD NOT MEASURE how many arrived')
+      } else {
+        say('wave for ' + name + ': asked ' + count + ', measured ' + placed +
+          ' (' + ids.join(', ') + ')')
+        if (placed === 0) {
+          console.error(TAG + '!! asked for ' + count + ' and NOTHING arrived. ' +
+            'Valid ids, so this is placement: no room, wrong dimension, or a mod veto.')
+        }
       }
-    }
-    return { asked: count, placed: placed, valid: ids }
+      if (typeof onMeasured === 'function') {
+        try { onMeasured(placed, count) } catch (e) {
+          console.warn(TAG + 'onMeasured threw :: ' + e)
+        }
+      }
+    })
+    return result
   }
 
   VELDORA.spawner = {

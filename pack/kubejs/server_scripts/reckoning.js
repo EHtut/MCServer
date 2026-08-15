@@ -144,16 +144,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (!VELDORA.spawner) { console.error(TAG + 'no spawner - Interest cannot fire'); return false }
     speak(p, 'You have been such good custom, friend.')
     speak(p, 'I have brought the family.')
-    var r = VELDORA.spawner.wave(p, {
+
+    // The count is measured a few ticks later (a summon is not queryable in the
+    // tick it is issued), so settlement waits for the callback. A reckoning that
+    // placed nothing must NOT settle - the pressure stands and she comes again.
+    VELDORA.spawner.wave(p, {
       ids: ['born_in_chaos_v1:dread_hound_not_despawn'],
       count: n,
+    }, function (placed, asked) {
+      if (placed === 0 && asked > 0) {
+        console.error(TAG + '!! Interest asked ' + asked + ' and placed NOTHING - ' +
+          'NOT settling, the debt stands')
+        return
+      }
+      settle(server, p, 'salvage')
+      console.info(TAG + 'Interest on ' + p.username + ' - asked ' + asked +
+        ', placed ' + placed + ' (pressure ' + Math.round(a.pressure) + ') - settled')
     })
-    if (r.placed === 0 && r.asked > 0) {
-      console.error(TAG + '!! Interest asked ' + r.asked + ' and placed NOTHING')
-      return false
-    }
-    console.info(TAG + 'Interest on ' + p.username + ' - asked ' + r.asked +
-      ', placed ' + r.placed + ' (pressure ' + Math.round(a.pressure) + ')')
     return true
   }
 
@@ -196,8 +203,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         try { ok = FIRE[patron](server, p, a) } catch (e) {
           console.error(TAG + patron + ' reckoning threw :: ' + e)
         }
-        if (ok) settle(server, p, patron)
-        else console.warn(TAG + patron + ' did not fire - NOT settling, pressure stands')
+        // NOTE: a handler that spawns settles itself from its measurement callback,
+        // because whether it landed is not known synchronously. `ok` here means only
+        // "it was issued". Handlers that need no measurement settle here.
+        if (!ok) console.warn(TAG + patron + ' did not fire - NOT settling, pressure stands')
         busy = false
       }
     } catch (e) { console.warn(TAG + 'tick threw :: ' + e); busy = false }

@@ -336,6 +336,15 @@ polish wants finished material to polish.
   several docs. The Mother speaks in *we* and *us*; Art repeats herself and *the
   doubling is the voice, not a typo*; Forge never thanks you. Those rules exist and
   have never been audited against the shipped lines together.
+* 🚨 **SALVAGE'S DIALOGUE NO LONGER FITS** — Ethan, 2026-08-15, watching Interest
+  fire. Her lines were written when she was *only* a trader: *"Lets do a deal."* ·
+  *"Friend. You look like you need something."* Since then she has become the one
+  patron whose **service and danger are the same act** — pleasing her accrues debt,
+  and her reckoning arrives **because you kept coming back**, not because you went
+  quiet (`23` PART V.9 §2). The trade voice is warm and the collection voice is
+  *"I have brought the family"*, and nothing connects them. **She needs the register
+  that makes the bargain and the raid obviously the same person** — the coaxing has
+  to already contain the appetite.
 * ⭐ **Sound.** `23` PART V.7 §5: **a patron has never made a noise.** `playsound` is
   available and has never once been run. Almost certainly the cheapest atmosphere win
   in the whole project.
