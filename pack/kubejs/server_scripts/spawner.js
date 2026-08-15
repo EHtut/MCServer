@@ -110,7 +110,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   // ── the wave ──────────────────────────────────────────────────────────────
-  // opts: { ids: [..], count: n, minDist, maxDist, name }
+  // opts: { ids: [..], count: n, minDist, maxDist, nbt }
+  //   nbt  an NBT string appended to the summon, e.g. '{Tags:["veldora_hollow"]}'.
+  //        Hollow Victory tags its wave so EntityEvents.drops can recognise it -
+  //        a mob you cannot tell apart from a natural one cannot be given special
+  //        rules later.
   // Returns { asked, placed, valid } - `placed` is MEASURED, and is null if the
   // count could not be taken. null and 0 are different answers.
   function wave(player, opts, onMeasured) {
@@ -156,7 +160,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // deliberately ignored: E0 P12 proved it is undefined either way, so the
         // scan below is the only honest evidence.
         server.runCommandSilent(
-          'execute at ' + name + ' run summon ' + id + ' ~' + dx + ' ~ ~' + dz)
+          'execute at ' + name + ' run summon ' + id + ' ~' + dx + ' ~ ~' + dz +
+          (opts.nbt ? ' ' + opts.nbt : ''))
       } catch (e) {
         console.warn(TAG + 'summon threw for ' + id + ' :: ' + e)
       }

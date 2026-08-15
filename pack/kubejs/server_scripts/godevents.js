@@ -15,6 +15,10 @@
 //   hostile   true if it sends danger. Hostile events obey the HEALTH FLOOR.
 //   cooldown  world days before this same event may repeat
 //   weight    relative likelihood among the eligible
+//   guard(server, player) -> bool, optional. A condition only this event cares
+//             about - Icarus only exists above y100. Kept per-event rather than in
+//             the framework, because the framework must not learn what altitude
+//             means to a god of falling.
 //   run(server, player, tier)  -> true if it actually happened
 //
 // ── THE HEALTH FLOOR ─────────────────────────────────────────────────────────
@@ -94,6 +98,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       hostile: !!ev.hostile,
       cooldown: (typeof ev.cooldown === 'number') ? ev.cooldown : 2,
       weight: (typeof ev.weight === 'number') ? ev.weight : 1,
+      guard: (typeof ev.guard === 'function') ? ev.guard : null,
       run: ev.run,
     })
     return true
@@ -146,6 +151,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (ev.hostile && !wellEnough) continue   // THE FLOOR
       var since = daysSince(p, K_LAST + god + '_' + ev.id, today)
       if (since !== null && since < ev.cooldown) continue
+      if (ev.guard) {
+        var ok = false
+        try { ok = !!ev.guard(server, p) } catch (e) {
+          console.warn(TAG + ev.id + ' guard threw :: ' + e)   // a throwing guard
+        }                                                       // is a CLOSED guard
+        if (!ok) continue
+      }
       out.push(ev)
     }
     return { tier: tier, list: out, wellEnough: wellEnough }
@@ -261,6 +273,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         if (ev.tiers.indexOf(e.tier) < 0) why = 'wrong tier'
         else if (ev.hostile && !e.wellEnough) why = 'below the health floor'
         else if (since !== null && since < ev.cooldown) why = 'cooldown ' + since + '/' + ev.cooldown + 'd'
+        else if (ev.guard) {
+          var g = false
+          try { g = !!ev.guard(srv, p) } catch (e) { }
+          if (!g) why = 'its own condition is not met'
+        }
         p.tell(Text.of((why ? '§8  --   ' : '§a  OK   ') + '§f' + ev.id +
           (ev.hostile ? ' §8(hostile)' : '') + (why ? ' §8' + why : '')))
       }

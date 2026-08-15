@@ -421,21 +421,21 @@ silence at low trust.
 **Needs:** `VELDORA.pressure.send()` in a loop with a delay. Nothing new.
 **Scale by tier:** low = 2 waves of 3; high = 5 waves of 6 with a miniboss last.
 
-### 2. ICARUS — *reckoning* · any tier
+### 2. ICARUS ✅ **BUILT 2026-08-15** — *reckoning* · any tier
 **Above y100 he sends fliers.** The one event that punishes going UP, and the only
 one whose trigger is a coordinate.
 **Needs:** a flying roster — phantoms, or Born in Chaos's winged entities. **Verify
 ids at boot**, the spawner does this already.
 🔑 *This is his myth made mechanical and should fire with the Icarus line.*
 
-### 3. HOLLOW VICTORY — *reckoning* · medium+
+### 3. HOLLOW VICTORY ✅ **BUILT 2026-08-15** — *reckoning* · medium+
 A full wave that **drops nothing, announced as such before it starts.**
 **Needs:** a drop suppression flag on spawned mobs, or `EntityEvents.drops` cancelling
 for entities tagged from this wave.
 🔑 *The announcement is the entire event. An unannounced dropless wave is a bug report;
 an announced one is a statement about why you fight.*
 
-### 4. THE BROKEN RUNG — *reckoning* · any tier
+### 4. THE BROKEN RUNG ✅ **BUILT 2026-08-15** — *reckoning* · any tier
 **Three of whatever killed you wait at your respawn.**
 **Needs:** record the killer's entity type on death (`death_cost.js` already hooks
 death), then spawn 3 on respawn. ⚠️ **Must respect the 75% floor** — you respawn at
@@ -553,3 +553,38 @@ punishment rather than a choice.
 tier, below the floor, or on cooldown. **`/events fire <id>`** forces one, and
 deliberately **still respects the health floor**, because a test that ignores the
 floor tests the wrong thing.
+
+---
+
+# PART 12 — FIVE OF TWELVE, BUILT 2026-08-15
+
+| event | tiers | how it fires |
+|---|---|---|
+| **Gauntlet** | all | swept · waves scale 2×3 → 5×6, elite last at high |
+| **Icarus** | all | swept · **guarded on `y >= 100`** |
+| **Hollow Victory** | medium+ | swept · tagged wave, `EntityEvents.drops` cancels |
+| **The Broken Rung** | all | ⭐ **reactive** — fires from `respawned`, not the sweep |
+| **The Mark** | medium+ | swept · 2 world days, kill attribution, no penalty |
+
+### Three things worth keeping from building them
+
+**The framework gained a per-event `guard`** for Icarus, because *only above y100* is
+a condition only Icarus cares about — **the framework must not learn what altitude
+means to a god of falling.** ⚠️ A guard that throws is a **closed** guard.
+
+**The Broken Rung is reactive, not swept.** It fires from `PlayerEvents.respawned` by
+name, and the framework still applies its cooldown — so an event can be summoned by a
+moment rather than waiting to be rolled. **That pattern is the one most of the
+remaining twelve will want.**
+
+**Hollow Victory needed the spawner to tag its wave.** `nbt` is now an option on
+`wave()`, because **a mob you cannot tell apart from a natural one cannot be given
+special rules later.** ⚠️ The drop suppression reads tags defensively and **leaves
+drops alone if it cannot read them** — silently eating a player's loot is far worse
+than an event that failed to be hollow.
+
+### Remaining: 7 of 12
+
+**First Blood · The Tithe of Steel** (⚠️ needs an item-damage probe) **· Sharpen**
+(the first true bargain — should use the ritual) **· The Duel · Understudy ·
+The Watcher** (needs the Harvest rework) **· Run.** (needs the Harvest rework)

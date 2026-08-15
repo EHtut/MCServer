@@ -205,6 +205,132 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     server.scheduleInTicks(1200, function () { markSweep(server) })
   }
 
+
+  // ── ICARUS ─────────────────────────────────────────────────────────────────
+  // docs/23 PART VI #2: "above y100 he sends fliers. The one event that punishes
+  // going UP."
+  //
+  // 🔑 His myth made mechanical. Every other event in the pack punishes going DOWN,
+  // because the whole depth loop rewards descending - this is the only one that
+  // says the sky is his too, and it is the god of Icarus saying it.
+  var ICARUS_Y = 100
+  var FLIERS = ['minecraft:phantom', 'born_in_chaos_v1:bloody_gadfly',
+    'born_in_chaos_v1:bone_imp']
+  var ICARUS_COUNT = { low: 3, medium: 4, high: 6 }
+
+  function aboveTheLine(server, p) {
+    try { return p.y >= ICARUS_Y } catch (e) { return false }
+  }
+
+  function runIcarus(server, p, tier) {
+    if (!VELDORA.spawner) return false
+    if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'icarus')
+    var n = ICARUS_COUNT[tier] || 3
+    // Spawned closer than a ground wave: fliers cover the distance instantly, and
+    // a ring at 40 blocks would arrive as a surprise rather than as a warning.
+    VELDORA.spawner.wave(p, { ids: FLIERS, count: n, minDist: 12, maxDist: 24 })
+    console.info(TAG + 'Icarus on ' + p.username + ' at y' + Math.round(p.y) +
+      ' - ' + n + ' fliers')
+    return true
+  }
+
+  // ── HOLLOW VICTORY ─────────────────────────────────────────────────────────
+  // docs/23 PART VI #7: "a full wave that drops NOTHING, announced as such."
+  //
+  // 🔑 THE ANNOUNCEMENT IS THE ENTIRE EVENT. An unannounced dropless wave is a bug
+  // report; an announced one is a statement about why you fight. 23 §2 is explicit
+  // that difficulty is good when it is legible and chosen.
+  var HOLLOW_TAG = 'veldora_hollow'
+  var HOLLOW_COUNT = { low: 4, medium: 5, high: 7 }
+
+  function runHollow(server, p, tier) {
+    if (!VELDORA.spawner) return false
+    if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'hollow')
+    var n = HOLLOW_COUNT[tier] || 4
+    VELDORA.spawner.wave(p, {
+      ids: GAUNTLET_ROSTER, count: n,
+      nbt: '{Tags:["' + HOLLOW_TAG + '"]}',
+    })
+    console.info(TAG + 'Hollow Victory on ' + p.username + ' - ' + n + ' that pay nothing')
+    return true
+  }
+
+  // The suppression. EntityEvents.drops is proven in paths.js.
+  // ⚠️ Tags are read defensively: if the tag cannot be read the drops are LEFT
+  // ALONE, because silently eating a player's loot is far worse than an event that
+  // failed to be hollow.
+  EntityEvents.drops(function (event) {
+    try {
+      var e = event.entity
+      if (!e) return
+      var tags = null
+      try { tags = e.tags } catch (x) { return }
+      if (!tags) return
+      var has = false
+      try { has = tags.contains ? tags.contains(HOLLOW_TAG) : (String(tags).indexOf(HOLLOW_TAG) >= 0) } catch (x) { return }
+      if (has) event.cancel()
+    } catch (e) { }
+  })
+
+  // ── THE BROKEN RUNG ────────────────────────────────────────────────────────
+  // docs/23 PART VI #10: "three of whatever killed you wait at your respawn."
+  //
+  // REACTIVE, not swept: it fires from the respawn hook rather than the sweep, so
+  // it is requested by name and the framework still applies its cooldown.
+  //
+  // 🔑 It is legal by construction under the health floor - you respawn at full
+  // hearts, so the rule and the event agree without being made to.
+  var K_KILLER = 'veldora_lastkiller'
+  var RUNG_COUNT = 3
+
+  EntityEvents.death(function (event) {
+    try {
+      var victim = event.entity
+      if (!victim || !victim.player) return
+      var src = event.source ? event.source.entity : null
+      if (!src) return
+      var id = ''
+      try { id = String(src.type) } catch (e) { return }
+      // String(entity.type) is NOT the bare id - the spawner learned this the hard
+      // way. Pull a namespaced id out of whatever shape it renders as.
+      var m = id.match(/([a-z0-9_.-]+:[a-z0-9_./-]+)/)
+      if (!m) return
+      if (m[1].indexOf('minecraft:player') >= 0) return    // PvP is the Mark, not this
+      try { victim.persistentData.putString(K_KILLER, m[1]) } catch (e) { }
+    } catch (e) { }
+  })
+
+  function runBrokenRung(server, p, tier) {
+    var killer = ''
+    try { killer = p.persistentData.getString(K_KILLER) || '' } catch (e) { }
+    if (!killer) return false
+    if (!VELDORA.spawner) return false
+    if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'broken_rung')
+    VELDORA.spawner.wave(p, { ids: [killer], count: RUNG_COUNT, minDist: 14, maxDist: 26 })
+    try { p.persistentData.putString(K_KILLER, '') } catch (e) { }
+    console.info(TAG + 'Broken Rung on ' + p.username + ' - ' + RUNG_COUNT + ' x ' + killer)
+    return true
+  }
+
+  PlayerEvents.respawned(function (event) {
+    var p = event.player
+    if (!p) return
+    var server = null
+    try { server = p.server } catch (e) { }
+    if (!server) return
+    // Delayed so it lands after the respawn settles rather than over the top of it,
+    // and so instant_respawn has finished moving the player.
+    server.scheduleInTicks(120, function () {
+      try {
+        if (!p.isAlive()) return
+        var killer = ''
+        try { killer = p.persistentData.getString(K_KILLER) || '' } catch (e) { }
+        if (!killer) return
+        if (VELDORA.events) VELDORA.events.attempt(p.server, p, true, 'broken_rung')
+      } catch (e) { console.warn(TAG + 'broken rung hook threw :: ' + e) }
+    })
+  })
+
   ServerEvents.loaded(function (event) {
     if (!VELDORA.events) { console.error(TAG + 'godevents.js missing'); return }
     VELDORA.events.register(GOD, {
@@ -215,8 +341,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       id: 'mark', hostile: false, cooldown: 3, weight: 2,
       tiers: ['medium', 'high'], run: runMark,
     })
+    VELDORA.events.register(GOD, {
+      id: 'icarus', hostile: true, cooldown: 2, weight: 3,
+      tiers: ['low', 'medium', 'high'], guard: aboveTheLine, run: runIcarus,
+    })
+    VELDORA.events.register(GOD, {
+      id: 'hollow', hostile: true, cooldown: 3, weight: 2,
+      tiers: ['medium', 'high'], run: runHollow,
+    })
+    VELDORA.events.register(GOD, {
+      id: 'broken_rung', hostile: true, cooldown: 1, weight: 1,
+      tiers: ['low', 'medium', 'high'], run: runBrokenRung,
+    })
     markSweep(event.server)
-    console.info(TAG + 'The Warrior sends: gauntlet (hostile, all tiers), ' +
-      'mark (medium+, ' + MARK_DAYS + 'd, no penalty on refusal)')
+    console.info(TAG + 'The Warrior sends: gauntlet, icarus (above y' + ICARUS_Y +
+      '), hollow (drops nothing), broken_rung (on respawn), mark (' + MARK_DAYS +
+      'd, no penalty on refusal)')
   })
 })();

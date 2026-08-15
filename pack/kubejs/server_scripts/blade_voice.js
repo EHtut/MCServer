@@ -126,6 +126,29 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "I don't say this often.",
       "You're becoming a problem for your enemies.",
     ],
+    // Event announcements. 23 §2: every event announces itself, and the cost is
+    // named before it is paid.
+    icarus: [
+      "For it was Icarus who flew too close to the sun. You will share his fate.",
+      "You climbed. Of course you climbed.",
+      "The sky was never yours. Come down, or be brought down.",
+      "Height is a debt. They are here to collect it.",
+      "Phaethon took the reins too. Look up.",
+    ],
+    hollow: [
+      "These carry nothing. Kill them anyway.",
+      "There is no reward in this. Fight.",
+      "Nothing drops from these. That was never the point.",
+      "You will gain nothing here but the doing of it.",
+      "No spoils. Only the work.",
+    ],
+    broken_rung: [
+      "The thing that killed you brought company.",
+      "It killed you once. Correct that.",
+      "You fell to this. Do not fall twice.",
+      "Three of them now. Learn faster.",
+      "It is waiting where you left it. So am I.",
+    ],
     // THE MARK. {target} is substituted with the rival champion's name.
     mark_declare: [
       '{target} fights with borrowed strength. Kill them within two days.',
