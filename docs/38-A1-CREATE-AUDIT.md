@@ -118,3 +118,79 @@ For contrast: Salvage has 5 and Crown had 4.
 **Has anyone used `create-railways-navigator`, `create-sound-of-steam`, or
 `create-dragons-plus`?** They are small and cheap, but question 4 of the rubric is
 *has anyone ever used it* — and only Ethan can answer that.
+
+---
+
+# ✅ A1 VERDICTS — Ethan, 2026-08-14
+
+## 🚨 THE PRINCIPLE THIS PRODUCED — it supersedes my recommendations
+
+> Ethan: *"Each of the mods should be in the same vein as the other paths. So forge
+> can fight, cast, have guns, and build minions... This should be standard for the
+> mods and we don't necessarily need a set amount of core but just keep the theming."*
+
+### EVERY PATH CAN DO EVERY VERB — IN ITS OWN IDIOM.
+
+Fight, cast, shoot, build, command. **No path is locked out of a playstyle; each one
+expresses it differently.** Forge does not borrow Blade's sword — he brings a cannon.
+Salvage does not learn Ars Nouveau — she has her own answer.
+
+**This reverses my proposal to move `create-big-cannons` to Blade**, and the reversal
+is right. I read 213 weapon items inside the building path as misfiling. It is not:
+**cannons are how Forge shoots.** Reading each mod as belonging to a *category* rather
+than to a *character* was the error, and it would have hollowed out five paths to
+tidy one taxonomy.
+
+It also kills "how many mods does a path need". There is **no target count** — the
+test is whether the mod is in that patron's voice.
+
+| verb | blade | forge | salvage | art | wall |
+|---|---|---|---|---|---|
+| fight | swords, armour | **cannons** | guns | spell combat | colonists, golems |
+| cast | — | **create-ars-nouveau** | — | Ars Nouveau | — |
+| build | — | Create | — | — | MineColonies |
+| command | — | **bionics** | — | — | Goety + citizens |
+
+Gaps in that table are the real audit output, and they are **GROW verdicts, not cuts.**
+
+## Core — keep, ruled
+
+`create` · `create-aeronautics` · `create-big-cannons` · `create-bionics` ·
+`create-ars-nouveau` · `numismatics`
+
+* **`numismatics` stays with Forge and grows.** Ethan: *"a nice currency system that I
+  want to build around more."* Not a misfiling — a future workstream. It also gives
+  Forge, the patron who claims *everything your pockets will ever hold*, an actual
+  economy to claim it in.
+* **Create's FPS work stays.** *"keep whatever fps improvements create has"* —
+  `createbetterfps` and `create-connected`'s performance features survive. The move to
+  the perf bucket is bookkeeping, not a cut.
+* **`create-aeronautics` keeps its physics engine** — measure it, do not remove it.
+
+## The decoration cut — ⚠️ TIME IT WITH THE WORLD RESET
+
+Ethan: *"we can cut a lot of the decor ones."* Agreed, and the proposed list is
+`create-design-n-decor` (846) · `create-deco` (389) · `create-framed` (569) ·
+`create-bits-n-bobs` (123) — while **keeping the functional three**: `create-encased`
+(encasing is a mechanic), `copycats` (shape-copying is a mechanic), `create-connected`
+(QoL + performance).
+
+### 🚨 But cutting a block mod deletes blocks that are already placed.
+
+The live world is **356 MB across 1,572 region files.** Every `create-deco` slab
+anyone has ever built with becomes air the next time that chunk loads. There is no
+migration and no warning — it is simply gone, and so is anything resting on it.
+
+**Recommendation: hold the decoration cuts until the world reset** (`11-OPEN-DECISIONS`
+records Ethan's intent to wipe and redo worldbuilding). At that moment they cost
+nothing. Before it, they cost whatever the four of you have built.
+
+**Everything else in A1 is non-destructive and can land immediately** — bucket moves
+change no blocks.
+
+## Still open from A1
+
+* **Has anyone used `create-railways-navigator`, `create-sound-of-steam`,
+  `create-dragons-plus`?** Rubric question 4, and only Ethan can answer it.
+* **`create-compatible-storage`** — a 0.1 MB shim; what does it bridge, and is that
+  thing still in the pack?

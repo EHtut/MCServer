@@ -19,6 +19,24 @@ This is why Wall failed and why my first refresh attempt failed with it. Wayston
 furniture. Camping is untrackable side content. Neither is a **tech tree**, and a
 path without one has nothing to *do* on night forty.
 
+### 🚨 REFINED BY A1 — every path can do every verb, in its own idiom
+
+> Ethan, 2026-08-14: *"Each of the mods should be in the same vein as the other paths.
+> So forge can fight, cast, have guns, and build minions... we don't necessarily need
+> a set amount of core but just keep the theming."*
+
+**Fight, cast, shoot, build, command — no path is locked out of a playstyle, each
+expresses it differently.** Forge does not borrow Blade's sword; he brings a cannon.
+
+This kills two of my instincts at once. **There is no target mod count** — the test is
+whether a mod is in that patron's voice, not how many they have. And **a mod is not
+misfiled just because its category sits elsewhere**: `create-big-cannons` is 213
+weapon items inside the building path and belongs exactly where it is, because cannons
+are how Forge shoots. Reading mods as belonging to *categories* rather than to
+*characters* would have hollowed out five paths to tidy one taxonomy.
+
+**The gaps in that matrix are GROW verdicts, not cuts.** See `38` §A1 VERDICTS.
+
 ## 2. The audit — 290 shipped mods, classified
 
 | bucket | count |
