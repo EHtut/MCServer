@@ -48,16 +48,21 @@
   // fieldguide:field_guide is deliberately absent - it does not resolve as an
   // item id despite having a lang entry, and a menu row that fails is worse than
   // one that is missing.
+  // ⚠️ EVERY ID HERE MUST BE FROM AN INSTALLED MOD. Audited 2026-08-15 and FOUR
+  // were not: securitycraft (cut in A2), legendary_monsters (A6), jurassicreborn
+  // (A7) and theurgy (A2). Four of the five paths were handing out a book that
+  // could not exist - the same failure as the guidebook icon that kicked a player
+  // off the server this morning, one layer along.
+  //
+  // Re-check this table after ANY mod cut. tools/check_datapack_refs.py does not
+  // read .js, so this one is on the reader.
   const BOOKS = {
     veldora:   ['Notes on Veldora',        'modonomicon:modonomicon[modonomicon:book_id="mcserver:veldora"]'],
-    hermetica: ['The Hermetica (alchemy)', 'modonomicon:modonomicon[modonomicon:book_id="theurgy:the_hermetica"]'],
+    spirits:   ['Dictionary of Spirits',   'modonomicon:modonomicon[modonomicon:book_id="occultism:dictionary_of_spirits"]'],
     ars:       ['Tattered Tome (Ars)',     "patchouli:guide_book[patchouli:book='ars_nouveau:worn_notebook']"],
     goety:     ['Black Book (necromancy)', "patchouli:guide_book[patchouli:book='goety:black_book']"],
     brews:     ['Witches Brew',            "patchouli:guide_book[patchouli:book='goety:witches_brew']"],
-    security:  ['SecurityCraft Manual',    'securitycraft:sc_manual'],
     banking:   ['Banking Guide',           'numismatics:banking_guide'],
-    monsters:  ['Monster Guide',           'legendary_monsters:guide_book'],
-    dinos:     ['InGen Field Guide',       'jurassicreborn:field_guide'],
     enchanting:['Blaze Enchanting Handbook', 'create_enchantment_industry:blazes_enchanting_handbook'],
   }
   const BOOK = BOOKS.veldora[1]
@@ -71,11 +76,15 @@
   // what do I do now", so that is when the books arrive.
   const PATH_BOOKS = {
     forge:   ['enchanting', 'banking'],
-    art:     ['ars', 'hermetica', 'brews'],
-    salvage: ['monsters'],
-    blade:   ['monsters'],
+    art:     ['ars', 'brews'],
+    // Blade and Salvage had 'monsters' (legendary_monsters, CUT in A6). Nothing
+    // installed replaces it - Cataclysm ships no guidebook - so they get NONE
+    // rather than a substitute that misdescribes their path. An empty list is
+    // honest; a wrong book is worse than no book.
+    salvage: [],
+    blade:   [],
     crown:   ['goety'],
-    wall:    ['security'],
+    wall:    ['goety', 'spirits'],
   }
 
   // How often to nudge someone who walks no path. Long enough not to nag, short
@@ -217,12 +226,16 @@
       // Before this it was obtainable NOWHERE and the whole path was dead - see
       // docs/20-AUDIT-2026-08-11.md B1. It stays a deep drop rather than becoming
       // craftable again because it is modern tech, and modern tech is salvage.
+      // ⚠️ REWRITTEN 2026-08-15. Every tier here was SecurityCraft, which was cut in
+      // the A2 Wall audit - so the path's entire payout was items that cannot
+      // exist. Wall is Goety + Occultism now (the household of the living and the
+      // dead), and these ids are verified present in those jars.
       drops: [
         ['minecraft:iron_ingot', 'minecraft:copper_ingot', 'minecraft:redstone'],
-        ['minecraft:iron_ingot', 'securitycraft:keycard_lv1', 'minecraft:redstone_block',
-         'securitycraft:universal_block_reinforcer_lvl1'],
-        ['securitycraft:keycard_lv3', 'securitycraft:keycard_lv2', 'minecraft:diamond',
-         'securitycraft:universal_block_reinforcer_lvl1'],
+        ['minecraft:iron_ingot', 'occultism:chalk_white', 'minecraft:redstone_block',
+         'occultism:burnt_otherstone'],
+        ['goety:blackstone_soul_brazier', 'occultism:book_of_binding_empty',
+         'minecraft:diamond', 'goety:dark_wand'],
       ],
     },
   }

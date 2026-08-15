@@ -126,7 +126,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     try { server = player.server } catch (e) { }
     var now = server ? dayNow(server) : null
     if (now === null) return null
-    return Math.max(0, now - then)
+    // ⚠️ A stamp from the future means the world clock moved backwards (admins run
+    // /time set; measured 2026-08-15). Clamping to 0 would freeze every dry-spell
+    // and neglect check silently forever, so RE-STAMP to today and say so - the
+    // ledger loses one interval rather than all of them.
+    if (then > now) {
+      console.warn(TAG + 'day stamp ' + then + ' > today ' + now +
+        ' for ' + patron + ' - clock moved, re-stamping')
+      try { player.persistentData.putInt(dayKeyOf(patron), now) } catch (e) { }
+      return 0
+    }
+    return now - then
   }
 
   VELDORA.counter = {

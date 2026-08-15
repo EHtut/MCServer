@@ -252,9 +252,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   function tell(p, s) { try { p.tell(Text.of(s)) } catch (e) { } }
 
-  // Absolute and monotonic, and it survives restarts where tickCount does not
-  // (finding K9). fall.js floors the same clock to whole days; this cooldown is
-  // shorter than a day, so it keeps the raw tick.
+  // Survives restarts where tickCount does not (finding K9). fall.js floors the
+  // same clock to whole days; this cooldown is shorter than a day, so it keeps the
+  // raw tick.
+  //
+  // ⚠️ IT IS NOT MONOTONIC, though this comment used to claim it was. /time set
+  // rewrites dayTime, and admins do - measured 2026-08-15, day 10004 to day 82 in
+  // an afternoon. See the guard in refusedUntil.
   function nowTicks(srv) {
     try {
       var d = srv.overworld().dayTime()
@@ -264,7 +268,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   function refusedUntil(p, key) {
-    try { return p.persistentData.getInt(CD_PREFIX + key) || 0 } catch (e) { return 0 }
+    var until = 0
+    try { until = p.persistentData.getInt(CD_PREFIX + key) || 0 } catch (e) { return 0 }
+    if (!until) return 0
+    // A stamp further ahead than the cooldown's own length means the clock moved
+    // backwards under it. Left alone, that patron is silent for ~10,000 days.
+    var srv = null
+    try { srv = p.server } catch (e) { }
+    var now = srv ? nowTicks(srv) : null
+    if (now !== null && until - now > CD_TICKS) {
+      console.warn(TAG + 'refusal stamp for ' + key + ' is impossibly far ahead - ' +
+        'the world clock moved. Clearing rather than silencing them for good.')
+      try { p.persistentData.putInt(CD_PREFIX + key, 0) } catch (e) { }
+      return 0
+    }
+    return until
   }
 
   function markRefused(srv, p, key) {

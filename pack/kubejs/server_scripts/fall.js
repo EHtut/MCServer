@@ -76,6 +76,26 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var until = blockedUntil(player)
     if (!until) return { blocked: false, daysLeft: 0 }
     var day = dayNow(server)
+
+  // ⚠️ THE WORLD CLOCK IS NOT MONOTONIC. Ethan, 2026-08-15: "admins keep messing
+  // with the server." Measured the same day - `time query day` read 10004 in the
+  // morning and 82 in the afternoon, because dayTime is absolute and /time set
+  // rewrites it.
+  //
+  // A cooldown stored as `now + duration` then becomes a stamp from the far future,
+  // and waiting for the clock to reach it is waiting ~10,000 in-game days. The
+  // symptom is a permanent lockout that looks exactly like a working cooldown.
+  //
+  // A cooldown can never legitimately sit further ahead than its own duration, so
+  // anything beyond that is a clock that moved, and is treated as EXPIRED.
+    if (day !== null && until - day > COOLDOWN_DAYS) {
+      console.warn('[fall] cooldown stamp ' + until + ' is impossibly far past day ' +
+        day + ' - the world clock moved. Clearing rather than locking ' +
+        (player.username || '?') + ' out for good.')
+      try { player.persistentData.putInt(CD_KEY, 0) } catch (e) { }
+      return { blocked: false, daysLeft: 0 }
+    }
+
     // No clock means we cannot prove the cooldown has expired. Fail toward the
     // PLAYER - a lockout that cannot be verified must not be enforced, or a broken
     // clock silently bans everyone from the whole system.

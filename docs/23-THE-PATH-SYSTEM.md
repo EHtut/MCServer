@@ -2,7 +2,14 @@
 
 *Consolidated 2026-08-11. Supersedes and folds in `21-THE-SIX-ROLES.md` and
 `22-THE-PATRONS.md`. Live state of what actually exists is
-`20-AUDIT-2026-08-11.md`. **Nothing in this document is built.***
+`20-AUDIT-2026-08-11.md`.*
+
+> ⚠️ *This header used to read "Nothing in this document is built." That stopped being
+> true on 2026-08-15.* **Built and live:** the coefficients (§7, all four axes) ·
+> the appeasement ledger (PART V.8) · the reckoning engine (PART V.9, Salvage
+> collecting) · the trades (PART V) · the attention ritual (PART IV) · the spawner.
+> **Still design only:** PART VI's events, and four of the five reckonings.
+> `34-THE-REMAINING-BUILD.md` is the live queue.
 
 ---
 

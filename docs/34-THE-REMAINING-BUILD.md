@@ -317,6 +317,29 @@ instrument rather than building the instrument.
 3. **Chat-only patrons or not** (`11-OPEN-DECISIONS.md`). It changes what an event
    *is*. Decide with the spawner built, so both options can be felt rather than argued.
 
+### 7. PART VI — the events: ⚠️ ONE PROJECT PER PATRON
+
+*Ethan, 2026-08-15: **"events are something that need to be planned out individually
+per event rather than assuming. Each patron's events are a whole project on their
+own."***
+
+**This corrects §2c.** The 2×2 taxonomy is real and it is not a shortcut: knowing an
+event is a BARGAIN or a RECKONING tells you its *shape*, not what it does. Twelve
+events is twelve designs, and a patron's twelve have to cohere as one character
+before any of them is built.
+
+**So each patron is its own project**, planned first, in this order of readiness:
+
+| patron | why it is ready or not |
+|---|---|
+| **Blade** | most ready — Lehykt walks it, eight of twelve are spawner calls, and the spawner is built |
+| **Salvage** | half-done already — the trades ARE four of her twelve, and Interest is live |
+| **Forge** | counter live (`crafted`+`smelted`); needs the container/quota mechanics |
+| **Wall** | needs the Core first — every one of her twelve hangs off it |
+| **Art** | needs the pages, and her voice is the hardest |
+
+*The original framing:*
+
 ### 7. PART VI — the events themselves: 72 designed, 0 built
 
 `23` PART VI holds **twelve events per patron**. Re-scoped by §2c: **most are offers**,
