@@ -198,6 +198,29 @@ clock. Build the **offer** once and most of PART VI becomes authoring.
 **What stays bespoke:** the genuinely mechanical ones — Blade's waves, *Understudy*,
 Salvage's *Interest* raid, Art's pages. **Those need the spawner, not the ritual.**
 
+### 2d. ⭐ THE ACTIVE SPAWNER ✅ **BUILT 2026-08-15**
+
+`spawner.js` — `VELDORA.spawner.wave(player, {ids, count, minDist, maxDist})`.
+**The piece four systems were waiting on:** E3's INERT `spawns` axis, eight of Blade's
+twelve, four of the five reckonings, and the chat-only decision.
+
+**Every hard-won lesson is baked in:**
+
+* **`/summon`, never `createEntity().spawn()`** — the latter bypasses `finalizeSpawn`,
+  where Born in Chaos sets hostility.
+* **The roster is VALIDATED AT BOOT** via E0 P13, not trusted. `the_hunt.js` validates
+  by hand, which is exactly how three of its four hunters were ids from mods that were
+  never installed — **75% of hunts sent nothing while logging success.**
+  Boot now prints `roster validated: N live, N dead`.
+* **It COUNTS WHAT ARRIVED.** `runCommandSilent` returns `undefined` for valid and
+  invalid alike (E0 P12), so every wave scans the ring before and after and reports
+  the delta. *"I asked for six"* and *"six are standing there"* are different claims.
+  **`placed: null` means could-not-measure and is never confused with `0`.**
+* **A wave of zero sends nothing** and says so — never a default wave.
+
+⏳ **No live consumer yet**, by design — it is a primitive like `ritual.js` was before
+I2. `/wave_test <n>` is its harness. **First consumer: E3's `spawns` axis**, then E7.
+
 ### 3. E7 — Interest: the first raid
 
 The debt comes due; raid size scales with trades since the last one.

@@ -147,7 +147,14 @@ number, so tripling XP would give Blade faster phases *and* more drops *and* mor
 power — strictly the best path. The challenger does not loot; it fights, and
 somebody else arms it. That one coefficient is what makes Blade need Forge.
 
-## 7a. ⚠️ `spawns` is not a weighting — it is a mechanism that does not exist
+## 7a. `spawns` is not a weighting — it is a mechanism, and it now EXISTS
+
+**✅ `spawner.js` BUILT 2026-08-15** — `VELDORA.spawner.wave(player, {ids, count})`.
+Boot-validated roster (5 live, 0 dead), `/summon` ring placement, and it **measures
+what actually arrived** rather than trusting the summon. The `spawns` coefficient
+still needs wiring to it; the mechanism is no longer the blocker.
+
+*The original argument, kept because it is why the axis was left INERT:*
 
 The other three axes multiply numbers that are already there. `spawns` does not, and
 the build found out why:
