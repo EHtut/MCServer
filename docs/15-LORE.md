@@ -41,9 +41,14 @@ which is what the Harvest has always meant.
 | **The Hound** | the dog — *appetite, the favour that is a debt* | salvage |
 | **The Thief** | the engineer's god — *never satisfied* | forge |
 | **The Mother** | the spider — *closer, and closer* | wall |
-| **The Nightmare** | *"the grand leader of the court"* ⚠️ see `40` §5 | art |
+| **The Nightmare** | ⭐ **the leader of the pantheon** — her realm is **magic** | art |
 
 Each god's full project lives in its own doc, **`40-BLADE-THE-WARRIOR.md`** first.
+
+⭐ **Art leads them, and is never present.** She works *through the shadow stalker* —
+`nightmare_stalker` is her instrument, not her body. The god the others answer to is
+the one no champion ever meets, and the god of war, who *"has knelt before nothing
+since the day I rose from it"*, defers to her without being asked.
 
 ⚠️ **The gods are not a pantheon that agrees.** They hold stances on each other, and
 those stances judge a god's *champions* separately from the god. Blade despises the

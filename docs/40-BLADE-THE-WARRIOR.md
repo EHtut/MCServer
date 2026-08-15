@@ -151,27 +151,74 @@ never lands on a Forge observation. Tag by subject, join within subject.
 
 ---
 
-# PART 5 — OPEN QUESTIONS
+# PART 5 — ANSWERED, 2026-08-15
 
-**1. ⭐ Is Art the leader of the pantheon?** *"The grand leader of the court"* — and
-*"She speaks. He follows."* reads as the god of war deferring to her. If so that is a
-significant beat: the Nightmare who gives without asking, and wants you to sleep, is
-the one the others answer to. It also inherits the *court* language that was Crown's.
-**Confirm before it is written into his lines.**
+## 5.1 ✅ Art leads the pantheon
 
-**2. 🚨 "Kill a hostile champion" — is this PvP?** Wall is HOSTILE to Blade, so
-rewarding Blade's champion for killing Wall's champion means the gods point players at
-each other. On a four-player server that is a real social mechanic, not a flavour one.
-**Deliberate, or does it mean hostile MOBS?**
+*Ethan: **"Art is the leader of the pantheon yes. She works through the shadow
+stalker. Her realm is the realm of magic."***
 
-**3. What are the trust thresholds?** LOW/MEDIUM/HIGH need kill counts. Lehykt is
-walking blade now and `counter_hooks.js` is already counting — **a session of real
-play gives us the curve rather than a guess.**
+**The god of war defers to her**, and *"She speaks. He follows. Simple."* is not
+indifference — it is the only obedience he has. He *"has knelt before nothing since
+the day I rose from it"*, and she does not need him to.
 
-**4. What is a "relic"?** MEDIUM's gift tier. Existing loot, an artifacts-mod item, or
-something new?
+Two consequences beyond Blade:
 
----
+* **She works THROUGH the shadow stalker.** `nightmare_stalker` is her instrument, not
+  her body. **Art is the one god who is never actually present**, which makes her the
+  natural first case for chat-only patrons (`11-OPEN-DECISIONS.md`) — she was already
+  written that way.
+* **Her realm is magic**, which reconciles her path (Ars Nouveau) with her character
+  (the Nightmare) — the two had been pulling apart since the counter discussion.
+
+**For Blade's lines:** he may mock any god except her. Of Art he is *brief*, and the
+brevity is deference rather than dismissal. That distinction has to survive into the
+writing or he reads as merely bored.
+
+## 5.2 ✅ THE GRUDGE — yes, it is PvP, and it is safe
+
+*Ethan: **"he'll randomly go 'Fuck that guy' and then tell you to kill them within 1-2
+days. If you do you get a buff. If not, nothing he just grumbles."***
+
+| | |
+|---|---|
+| **trigger** | random, at his whim |
+| **target** | another champion — Wall's by preference, since she is the one he despises |
+| **window** | 1–2 in-game days |
+| **success** | a buff |
+| **failure** | ⭐ **NOTHING.** He grumbles. |
+
+🔑 **The no-penalty is what makes it shippable.** Four friends on one server, and a
+god who *punished* refusal would be a god who forces PvP — which is a social problem,
+not a design one. **Costless refusal makes it an offer**, so it lands in the 2×2 as a
+**BARGAIN** rather than a DEMAND, and it is genuinely opt-in.
+
+*And the grumble is perfectly in voice: he never punishes, he loses interest. Contempt
+is the only sanction he has.*
+
+⚠️ **To settle when it is built:** does the target know? An announced grudge is a
+duel; a silent one is an ambush. Blade announces everything — *every cost is named
+before it is paid* — so it is probably announced to both, which turns it into a scene
+the whole server can watch.
+
+## 5.3 ✅ RELICS — maintenance, never power
+
+*Ethan: **"Food, Weapons, materials... it should be maintenance materials. The blade
+will never give you an overpowered weapon or something you did not earn."***
+
+**The constraint is the design.** He arms you to keep fighting; he does not make you
+strong. A gift that made you stronger would do the work he is testing whether you can
+do — and *"Even that will not be enough"* is the thesis of the only gift he has ever
+given.
+
+| tier | what it is |
+|---|---|
+| **LOW** | material gifts, drop rates — *keep fighting* |
+| **MEDIUM** | relics: food, weapons, materials — **maintenance grade** |
+| **HIGH** | **no gifts.** Spawns and minibosses. He has stopped helping. |
+
+**Never:** best-in-slot, enchanted-beyond-earning, or anything that skips a tier of
+progression. **Repair over reward.**
 
 # PART 6 — WHAT ALREADY EXISTS
 
