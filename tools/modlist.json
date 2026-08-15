@@ -279,6 +279,10 @@
       "hopo-better-ruined-portals": "1.4.4b",
       "improved-pillager-outpost": "5",
       "nether-depths-upgrade": "3.1.8",
+      "critters-and-companions": "2.7.0",
+      "untitled-duck-mod": "1.6.0+neoforge",
+      "fish-of-thieves": "21.1.2.1-neoforge",
+      "aquaculture": "2.7.21",
       "naturalist": "2.0.2+1.21.1-neoforge",
       "friends-and-foes-forge": "neoforge-4.0.26+mc1.21.1",
       "mowzies-mobs": "1.8.2",
@@ -331,7 +335,6 @@
       "no-chat-reports": "NeoForge-1.21.1-v2.9.1",
       "betterf3": "11.0.3",
       "forgiving-void": "21.1.7+neoforge-1.21.1",
-      "rpgtitles": "1.4.1+mod",
       "chipped": "4.0.2",
       "handcrafted": "4.0.3",
       "macaws-roofs": "2.3.2",
@@ -1329,6 +1332,26 @@
           "minor"
         ],
         [
+          "critters-and-companions",
+          "Small friendly creatures. Overworld animal life per the two-realm thesis",
+          "major"
+        ],
+        [
+          "untitled-duck-mod",
+          "Ducks and geese - ambient overworld life",
+          "major"
+        ],
+        [
+          "fish-of-thieves",
+          "Fish variety and fish feasts",
+          "major"
+        ],
+        [
+          "aquaculture",
+          "Biome-specific fishing overhaul",
+          "major"
+        ],
+        [
           "naturalist",
           "47 animals with real behaviours - the world feels inhabited",
           "major"
@@ -1341,11 +1364,6 @@
         [
           "mowzies-mobs",
           "A handful of exceptional set-piece creatures",
-          "major"
-        ],
-        [
-          "jurassic-reborn",
-          "97 prehistoric creatures. THE surface threat - fair, natural danger you can learn, track and outrun. Needs only citadel+geckolib, both present",
           "major"
         ],
         [
@@ -1629,11 +1647,6 @@
           "minor"
         ],
         [
-          "rpgtitles",
-          "Shows the biome name as a title when you enter one, and the dimension name when you switch. Chosen over BiomeInfo because BiomeInfo is a PERSISTENT on-screen HUD - the category Ethan cut as too gamey - while this fades. Server-side, so it works through vanilla title packets.",
-          "minor"
-        ],
-        [
           "automaticons",
           "Golem automation OUTSIDE Create - Ethan asked for exactly this",
           "minor"
@@ -1842,17 +1855,7 @@
           "camerapture",
           "Take, place and share photographs between players - the social half of a 4-player world",
           "minor"
-        ],
-        [
-          "waterframes",
-          "Screens that play video/images together. The 'watch things together' ask",
-          "minor"
-        ],
-        [
-          "watermedia",
-          "Required media backend for waterframes",
-          "core"
-]
+        ]
       ]
     },
     "classes": {

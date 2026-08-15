@@ -1,0 +1,13 @@
+name = "Untitled Duck Mod"
+filename = "untitledduckmod-1.6.0-neoforge-1.21.1.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/ojFjz7JF/versions/mZtigaUJ/untitledduckmod-1.6.0-neoforge-1.21.1.jar"
+hash-format = "sha512"
+hash = "9d12531b7aee54ccdedceddefd9aeed5e6ac540cb6eb7ea607c0a0ee690d521c914ecfdad530e32c85af5846cbcd1fbfc665779a39ff3df0856087223839e8bf"
+
+[update]
+[update.modrinth]
+mod-id = "ojFjz7JF"
+version = "mZtigaUJ"

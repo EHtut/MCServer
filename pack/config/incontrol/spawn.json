@@ -37,7 +37,6 @@
   {
     "dimension": "minecraft:overworld",
     "mod": [
-      "jurassicreborn",
       "shineals_prehistoric_expansion"
     ],
     "result": "default"

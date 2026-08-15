@@ -36,6 +36,11 @@ hash = "716d930feff599bf9ce732e05979fbae8025dc8a3c13ccf4f1cb207a70883bc6"
 metafile = true
 
 [[files]]
+file = "mods/aquaculture.pw.toml"
+hash = "6b26155807b2f3825db22e5be51a9ab330c8a70500a702740726053cb4678349"
+metafile = true
+
+[[files]]
 file = "mods/archers-expansion.pw.toml"
 hash = "da13585272fb79d71a7d7665066593aba7c8a3ab40e45f0c18ac945bf92e8f1c"
 metafile = true
@@ -406,6 +411,11 @@ hash = "08a334ae5565e122d26b819cba16ce784776a10fe100ab2b22de72a5a2bac653"
 metafile = true
 
 [[files]]
+file = "mods/critters-and-companions.pw.toml"
+hash = "b065a8cb99a887abb2c434b84e3fa84f1e62cf500b1b9f50c86a4b48e4bdcc4f"
+metafile = true
+
+[[files]]
 file = "mods/ct-overhaul-village.pw.toml"
 hash = "8e63fec28c22201636bd56f0170e9b85e26b558c4ec7215e068f53d3518dc5bb"
 metafile = true
@@ -596,6 +606,11 @@ hash = "4188848019233432861e98a5cc72aebed8c68a8a0909007967ab11827f8a6508"
 metafile = true
 
 [[files]]
+file = "mods/fish-of-thieves.pw.toml"
+hash = "5f24c41c3c24bb964efe348aefc99b739c9c11553251a56bcaf8d526c326c4d5"
+metafile = true
+
+[[files]]
 file = "mods/flerovium.pw.toml"
 hash = "9ab20de2d63037f055d6b614013389e0198068bab536dfd62eebd913e5222fe1"
 metafile = true
@@ -778,11 +793,6 @@ metafile = true
 [[files]]
 file = "mods/jupiter.pw.toml"
 hash = "3f44721c554a06b9e922c6102bed6402fed57d6d340de0299ee4237544724c48"
-metafile = true
-
-[[files]]
-file = "mods/jurassic-reborn.pw.toml"
-hash = "40853467cc0ea8179118a8ff3b56b66bdee98e1b042f66bcdda36b831ef652c3"
 metafile = true
 
 [[files]]
@@ -1096,11 +1106,6 @@ hash = "fffc4ce08823b44a89f5117fc3feabfa4a5ec92abf3ce18debd6017e04331aaf"
 metafile = true
 
 [[files]]
-file = "mods/rpgtitles.pw.toml"
-hash = "2594045f30a583ce010cdd02882fe24ef9886add5582a0f2cff18b3577c8c14e"
-metafile = true
-
-[[files]]
 file = "mods/rpl.pw.toml"
 hash = "7815e5a589de0c02a62ae83590e1f75f4d0c269e48f2435ce2ac448976ddf49f"
 metafile = true
@@ -1321,6 +1326,11 @@ hash = "01cab903b1a7f77aa4f28c7fab24e7fa09b376b18c77b487b7ba34e0afc57813"
 metafile = true
 
 [[files]]
+file = "mods/untitled-duck-mod.pw.toml"
+hash = "6029d4b8090c73cde5e0cc6a3c04836f92f85ccd181e3bea07bd5787ae91d55d"
+metafile = true
+
+[[files]]
 file = "mods/uranus.pw.toml"
 hash = "c16ee91eeb20999c83deedbf93ce3787bb9bfefad56abd242d90a94dc0534ca0"
 metafile = true
@@ -1333,16 +1343,6 @@ metafile = true
 [[files]]
 file = "mods/velvet-api.pw.toml"
 hash = "689739dbc65768a51d31729598352c5cac3fd9369203bea125d745112bba23b0"
-metafile = true
-
-[[files]]
-file = "mods/waterframes.pw.toml"
-hash = "59e15d108b41b10145596a3ef899ad20ef8c8885504eef10cd89225aef87daef"
-metafile = true
-
-[[files]]
-file = "mods/watermedia.pw.toml"
-hash = "9c14d2011a343872dfa72aee64ef7beb2f9f9e47867807b4b03726cfa8e429b7"
 metafile = true
 
 [[files]]

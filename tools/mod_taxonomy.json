@@ -123,12 +123,12 @@
   "borninchaos",
   "bosses-of-mass-destruction-forge",
   "cosy-critters",
+  "critters-and-companions",
   "deimos",
   "edf-remastered",
   "friends-and-foes-forge",
   "iceandfire-ce",
   "in-control",
-  "jurassic-reborn",
   "l_enders-cataclysm",
   "mowzies-mobs",
   "naturalist",
@@ -172,7 +172,6 @@
   "particle-core",
   "polytone",
   "reeses-sodium-options",
-  "rpgtitles",
   "rrls",
   "rsls",
   "sodium",
@@ -181,9 +180,7 @@
   "sound-physics-remastered",
   "subtle-effects",
   "tips",
-  "travelers-titles",
-  "waterframes",
-  "watermedia"
+  "travelers-titles"
  ],
  "qol-ui": [
   "accessories",
@@ -303,6 +300,9 @@
   "zeta"
  ],
  "UNCLASSIFIED": [
-  "regions-unexplored"
+  "aquaculture",
+  "fish-of-thieves",
+  "regions-unexplored",
+  "untitled-duck-mod"
  ]
 }
