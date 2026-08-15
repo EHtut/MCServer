@@ -168,16 +168,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // 3. The path goes. Tag and claim together.
     var clean = revoke(server, player, key)
 
-    // 4. The subclass goes with it. Ethan, 2026-08-12: "subclass drops."
-    //    Subclasses are not built yet (they are open in docs/23 §8), so this is the
-    //    hook and nothing more - written now so the requirement cannot be lost
-    //    between here and the chunk that adds them.
-    try {
-      if (player.persistentData.getString('veldora_subpath')) {
-        player.persistentData.putString('veldora_subpath', '')
-        console.info('[fall] subclass dropped with the primary')
-      }
-    } catch (e) { }
+    // 4. (was: drop the subclass with the primary - SUBCLASSES ARE CUT 2026-08-15,
+    //     see 23 §8. The veldora_subpath key is left unread rather than migrated;
+    //     it is inert data on a handful of players and reading it would only
+    //     resurrect a concept we removed.)
 
     // 5. The cooldown. WORLD DAY, never tickCount.
     if (day !== null) {
@@ -227,7 +221,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   })
 
   ServerEvents.loaded(function () {
-    console.info('[fall] E2d active - the fall revokes the path + subclass, wipes xp, ' +
+    console.info('[fall] E2d active - the fall revokes the path, wipes xp, ' +
       'records a LOST harvest, and locks path selection for ' + COOLDOWN_DAYS + ' in-game days')
     console.info('[fall] the lost path is left OPEN - anyone may take it before the cooldown ends')
   })

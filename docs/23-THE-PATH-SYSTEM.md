@@ -186,7 +186,19 @@ effective = 1 + (primary − 1) + (sub − 1) × 0.5
 **Costs soften with players online** (the 2am decision), rewards never do:
 1 player ×1.00 · 2 ×0.87 · 3 ×0.77 · 4 ×0.69. Applied to `spawns` only.
 
-## 8. Subclasses — OPEN
+## 8. Subclasses — ❌ **CUT 2026-08-15**
+
+*Ethan: **"cut subclasses."*** Full reasoning in **PART V.8 §5**. In short: they
+existed because six paths and four players orphans content, and **Crown merging into
+Wall makes it five and four** — near enough one each. Under the appeasement ledger
+they also had nowhere to stand, since a subclass would mean serving two patrons with
+two verbs and subclasses were ruled not to get patrons.
+
+`puffish_skills` stays as the **per-path** tree. The path unlocks its tree; there is
+no second choice.
+
+*Everything below is kept because the roster is still true and the reasoning is still
+the reason the question was asked.*
 
 Ethan: *"there will never be 6 players tbh."* Real roster:
 
@@ -474,6 +486,126 @@ typing `/trade_test` to be offered a bargain is.
 **Corollary:** every admin `_test` command stays, and stays admin. They are how we
 prove a thing works without waiting for it — `/trade_test`, `/fall_test`,
 `/whisper_test`, `/ritual test`. The rule is about the *player's* hands.
+
+# PART V.8 — THE APPEASEMENT LEDGER
+
+*Ethan, 2026-08-15: **"i'm thinking this should be a sorta appeasement system that
+dictates how the patron sees you. we can still keep the hunt on 100 levels though."***
+
+**Adopted.** This is the general form of what E6's counter was a special case of, and
+it re-scopes E7 from *Salvage's raid* into *the reckoning engine*.
+
+---
+
+## 1. Three numbers, and they are genuinely different
+
+The design already had two of these and they were being conflated.
+
+| number | measures | moved by | drives |
+|---|---|---|---|
+| **notoriety** | how **ripe** you are | levels held, days survived | the Harvest, power, drops. **Unchanged — the Hunt stays at 100.** |
+| **regard** | how the patron reads your **failure** | deaths (+), time (−25/day) | tone, the beats, the fall |
+| **counter** ⭐ | how the patron reads your **service** | **your path's verb** | the reckoning |
+
+**`regard.js` already is "how the patron sees you"** — its own header says
+*ONE NUMBER, SIX READINGS*, with Blade reading it as contempt, Wall as grief, Salvage
+as appetite. What it has never had is the other half: it only knows how you **fail**,
+never whether you are **doing what they want.**
+
+The counter is that half.
+
+## 2. 🔑 The rule: a patron reckons when you STOP
+
+Not when you do too much — **when you go quiet.**
+
+This was hiding in the written events the whole time. Art's fourth:
+
+> **"You Did Not Sleep — three nights awake and she comes to you."**
+
+A counter, a threshold and a reckoning, written before any of them existed.
+
+**Salvage is the deliberate inversion, and that is her character.** Pleasing her *is*
+accruing debt — trade with her and she is delighted, and that delight is exactly what
+calls the raid. *"She profits from your bad night."* Every other patron wants you to
+keep going; she wants you to keep needing. **She is the one path where service and
+danger are the same act**, which is why she was the right first build.
+
+## 3. The counters
+
+| patron | counter | hook | status |
+|---|---|---|---|
+| **Blade** | **enemies slain** | `EntityEvents.death` + `isMonster()` | hook live in `the_hunt.js`; ⚠️ use `isMonster()` **directly** — `getCategory()` threw on every kill and `getMobCategory()` exists on nothing |
+| **Salvage** | **trades taken** | — | ✅ **BUILT** |
+| **Forge** | **items crafted** | `ItemEvents.crafted` + `smelted` | exists, unhooked |
+| **Wall** | **blocks placed** | `BlockEvents.placed` | hooked; `telemetry.js` already aggregates `player.build` per chunk |
+| **Art** | **new biomes entered** | `biomeOf()` on the existing sampler | helper live in `telemetry.js` |
+
+Each counter is **the path's own verb**, which makes the verb mechanically
+load-bearing rather than flavour text.
+
+### ⚠️ Art is NOT sleep, and the reason is the server
+
+Sleep is her written demand and it was the obvious counter. **It is unbuildable here:**
+
+* **There is no sleep event** in any KubeJS group (`23` PART V.7 §4), and
+* **`playersSleepingPercentage = 50`** on this server — half of everyone must be in
+  bed. Ethan: *"on a multiplayer server sleep is annoying."*
+
+A counter that depends on other players cooperating is not a counter, it is a group
+vote. **So Art counts what she actually sends you to do: exploring.** Her events are
+maps and named biomes — *The Map*, *The Survey*, *The Biome*, *The Wrong Door* — and
+`telemetry.js` has tracked biome entry with dwell since 2026-08-02.
+
+**Sleep survives as flavour, not as the meter.** And note the asymmetry is easy in the
+direction her event needs: *detecting that somebody did NOT sleep* is a night-time
+sample, which is far cheaper than detecting that they did.
+
+*Rejected: Ars mana. Mana is Art's **mod**; the Nightmare is Art's **patron**. Every
+other counter would be a play-stat and hers would be a mod-usage stat.*
+
+## 4. What a reckoning is
+
+**Shared machinery, four steps:** raise → threshold → fire → settle.
+**Only the third is per-patron**, and every patron's is already written:
+
+| patron | its reckoning, from PART VI |
+|---|---|
+| Salvage | **Interest** — her pack collects |
+| Forge | **Seizure** · **Compound Interest** (+50% per miss) |
+| Wall | **The Siege** · **The Breach** |
+| Blade | the Gauntlet escalating → **"Run."** |
+| Art | **"You Did Not Sleep"** — she comes to you |
+
+**Rules that hold for all of them:**
+
+* 🚨 **A counter at zero produces NOTHING** — never a default wave. Same class as
+  "failed" and "found nothing" sharing a return value, and it is how a reckoning
+  system decays into ambient noise.
+* **Announced.** `23` §2: *a raid you saw coming and chose to provoke is content; the
+  same raid unannounced is a bug report.* `/counters` gives it legibility already.
+* **Only one reckoning at a time** (Ethan, 2026-08-15). The ritual guard covers
+  overlapping *scenes*; a raid and a seizure are not scenes and need their own.
+* **Never for non-walkers.** Crown's *Dead Men's Debts* — charging you for other
+  players' deaths — is **cut with Crown.**
+
+## 5. Subclasses are CUT
+
+*Ethan, 2026-08-15: **"cut subclasses."***
+
+They were introduced because *"six paths and four players orphans content"* (`23` §8).
+**Crown merging into Wall makes it five paths and four players** — near enough one
+each. The problem has dissolved.
+
+And under this design they had nowhere to stand: a subclass would mean serving **two
+patrons with two verbs**, and subclasses were ruled not to get patrons — leaving a
+skill tree with no patron, no counter and no reckoning.
+
+**Removed 2026-08-15:** `coefficients.js` half-deviation stacking · `fall.js`'s
+subpath drop · `veldora_subpath` is left unread rather than migrated, because reading
+it would only resurrect the concept.
+
+**`puffish_skills` stays** as the per-path tree: the path unlocks its tree, and there
+is no second choice.
 
 # PART V.7 — THE INSTRUMENT PANEL
 

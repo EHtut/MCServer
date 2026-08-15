@@ -43,7 +43,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 ;(function () {
   var TAG = '[coeff] '
   var PATH_KEY = 'veldora_path'
-  var SUB_KEY = 'veldora_subpath'   // reserved in fall.js; subclasses not built yet
 
   // ── THE TABLE ──────────────────────────────────────────────────────────────
   // docs/23 §7, as amended 2026-08-15: five paths, not six. Crown merged into Wall
@@ -75,21 +74,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // /path coefficients, so a number nobody reads is never presented as if it acts.
   var CONSUMED = { drops: true, power: true, phase: true, spawns: false }
 
-  // ── SUBCLASS: half the DEVIATION, not half the value ───────────────────────
-  // Ethan, 2026-08-15: subclass spawn costs stack at 50%.
+  // ⚠️ SUBCLASSES ARE CUT (Ethan, 2026-08-15). This used to stack half of a
+  // subclass's DEVIATION from neutral on top of the primary's. The mechanism was
+  // correct and the feature was not: a subclass would have meant serving two
+  // patrons with two verbs, and subclasses were ruled not to get patrons at all -
+  // which left them a skill tree with no patron, no counter and no reckoning.
   //
-  // The naive reading of "subclass contributes 50%" is `primary + sub * 0.5`, and
-  // it is wrong: a subclass whose coefficient is a harmless ×1 would still add
-  // +0.5, so taking ANY subclass would make you more hunted. Coefficients are
-  // multipliers around a neutral 1.0, so what stacks is the DEVIATION from neutral:
-  //
-  //     effective = 1 + (primary - 1) + (sub - 1) * 0.5
-  //
-  // blade alone           -> 1 + 3         = ×4     (unchanged)
-  // blade + neutral sub   -> 1 + 3 + 0     = ×4     (a harmless subclass is harmless)
-  // blade + salvage       -> 1 + 3 + 1.5   = ×5.5   (the double weather system)
-  // forge + blade (drops) -> 1 + 2 + (-0.2) = ×2.8  (a fighter dilutes the merchant)
-  var SUB_SHARE = 0.5
+  // They existed because six paths and four players orphans content. Crown merging
+  // into Wall makes it five and four, so the problem they solved has dissolved.
+  // See 23 §8. puffish_skills stays as the per-path tree; there is no second choice.
 
   // Floor. A stack of negative deviations must never reach zero, because zero is
   // indistinguishable from "the subsystem is broken" - the failure mode this whole
@@ -132,11 +125,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     catch (e) { warnOnce('could not read ' + PATH_KEY + ' :: ' + e); return null }
   }
 
-  function subOf(player) {
-    try { return player.persistentData.getString(SUB_KEY) || '' }
-    catch (e) { return '' }   // subclasses are not built; absence is not a fault
-  }
-
   // ── the one function everything else calls ─────────────────────────────────
   // Returns a NUMBER, always finite, always usable as a multiplier. Never null -
   // a consumer that has to null-check a multiplier will eventually forget to.
@@ -155,10 +143,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       return NEUTRAL
     }
 
-    var v = 1 + (row[axis] - 1)
-
-    var sk = subOf(player)
-    if (sk && sk !== key && TABLE[sk]) v += (TABLE[sk][axis] - 1) * SUB_SHARE
+    var v = row[axis]
 
     v *= onlineScale(server, axis)
     if (!isFinite(v) || v < FLOOR) v = FLOOR
@@ -168,9 +153,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // A whole-player readout, for /path coefficients and for the boot report.
   function explain(server, player) {
     var key = pathOf(player)
-    var sk = subOf(player)
     var out = {
-      path: key || '', sub: sk || '',
+      path: key || '', sub: '',
       role: (TABLE[key] && TABLE[key].role) || '',
       online: 1, axes: [],
     }
