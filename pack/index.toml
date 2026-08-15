@@ -211,11 +211,6 @@ hash = "1d5cc2b6dcfd1fc3adba4566b1c29b57ff1175316678c1f22e63cbc3e28a5ba0"
 metafile = true
 
 [[files]]
-file = "mods/citadel--1.21.1-port-.pw.toml"
-hash = "80d7af83c244304212b8d95ab2e3525b3eeae02f31e41474c2cdec2f4d370723"
-metafile = true
-
-[[files]]
 file = "mods/cloth-config.pw.toml"
 hash = "75181b55e0407d1fca1e2f346c6501f919f5109545990ddfb66db9cd1b771f8a"
 metafile = true
@@ -418,11 +413,6 @@ metafile = true
 [[files]]
 file = "mods/ct-overhaul-village.pw.toml"
 hash = "8e63fec28c22201636bd56f0170e9b85e26b558c4ec7215e068f53d3518dc5bb"
-metafile = true
-
-[[files]]
-file = "mods/cucumber.pw.toml"
-hash = "b2059d79bf6e41281a26b5b75a8f0cb20804079fe49a22042a26aa5ce28ba7f5"
 metafile = true
 
 [[files]]
@@ -886,11 +876,6 @@ hash = "96892a94024be0a16de0f65bb3388bd07d19cb43a7179cd5bedcedfe4023d13e"
 metafile = true
 
 [[files]]
-file = "mods/mmlib.pw.toml"
-hash = "65db1262f3d0823a0795b8b38328c0eceeb4632892f7c168e3c8e6abf4638735"
-metafile = true
-
-[[files]]
 file = "mods/modernfix.pw.toml"
 hash = "6d3ff3b7bbcc97fa06bdddcf2b3b7646168497ba6d7104bdea376f1bc65f9a93"
 metafile = true
@@ -948,11 +933,6 @@ metafile = true
 [[files]]
 file = "mods/nether-depths-upgrade.pw.toml"
 hash = "2104f30f90dbd5ff5eae8295f71f47227c9b1c96b4b5bb2ae196cd67d11e138a"
-metafile = true
-
-[[files]]
-file = "mods/nexuslib.pw.toml"
-hash = "fcff173bb66e38b8784881dd48616a69919778deff0b85be17feb72cd81bb132"
 metafile = true
 
 [[files]]
