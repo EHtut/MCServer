@@ -1044,6 +1044,130 @@ already in cache) · `untitled-duck-mod` · `fish-of-thieves` · `aquaculture`.
   for horror, but a big download for ambience.
 * **`waystones` ships with a manifest note saying `CUT 2026-08-03`** — a stale ruling
   or a silent revert. Unresolved.
-* **`figura_extrafight`** hooks Figura into **EpicFight**, which is not installed.
-  Likely inert.
-* **JEI** — free to cut, see above.
+* **`figura_extrafight`** — **CUT 2026-08-15.** Hooked EpicFight, which is not
+  installed. Verified inert first: nothing references it, no config names it.
+* **JEI** — **NOT free to cut.** 25 mods use it (Create, TaCZ, Goety, Cataclysm…);
+  only 18 use EMI. Corrected 2026-08-15, see above.
+
+---
+
+# A8 — PERFORMANCE + LIBRARIES (72 mods) — 2026-08-15, THE AUDIT CLOSES
+
+The last unrun stage, and the only one where the question is not *does this fit the
+theme* but **does anything actually use this.** So it was answered by measurement:
+a dependency graph over all 275 jars, built from **three independent instruments**
+because any one of them lies.
+
+| instrument | what it sees | what it misses |
+|---|---|---|
+| **declared dependencies** (`neoforge.mods.toml`) | mods that announce a requirement | mods that use a library without declaring it |
+| **class-byte scan** for the library's package | actual code references | jar-in-jar libraries with no package of their own |
+| **our own configs + datapacks** | the A6 failure mode | nothing — but it needs the modid, not the slug |
+
+**Each instrument caught something the other two could not.** That is the whole
+finding of this stage.
+
+## What the instruments caught
+
+**`forgified-fabric-api` looked orphaned and is required by five mods** —
+`frostiful`, `owo-lib`, `scorchful`, `spell-engine`, `thermoo`. It ships as a
+jar-in-jar container with no package of its own, so the byte scan saw nothing at all.
+Only the modid scan found it. **Cutting it would have taken out five mods.**
+
+**`cristel-lib` looked orphaned and is managing Cataclysm's structure configs** —
+`config/cristellib/cataclysm/structure_placement_config.json5`. No class references
+it. Only the config scan saw it. This is the `legendary-monsters` failure exactly:
+our own files are the fourth way a cut breaks the server.
+
+**Kotlin is real.** Six mods carry Kotlin metadata and need a runtime —
+`data-anchor`, `fzzy-config`, `inventory-profiles-next`, `libipn`, `particle-core`,
+`thermoo` — and **none of them declares one.** A dependency check said the 14.5 MB of
+Kotlin runtimes was free; the bytecode said six mods die without it.
+
+## ⚠️ The control row that caught a wrong belief, not a broken tool
+
+The first run flagged **`citadel`** as orphaned. I called that a bug, because Ice and
+Fire has always required Citadel.
+
+**It is not a bug. Ice and Fire 2.0 dropped Citadel** — it declares `uranus` and
+`jupiter` instead, and its class files never touch Citadel's package.
+
+The instrument was right and my belief was stale. Worth recording because the reflex
+was to "fix" the measurement until it agreed with what I already thought.
+
+## Verdict: the layer is healthy
+
+Of 72 mods, **68 earn their place.** The standalone performance mods —
+`ferrite-core`, `entityculling`, `alternate-current`, `saturn`, `servercore`,
+`lithium`, `modernfix`, `spark` — have no dependents **by design**: they act on the
+game, not on other mods. Zero dependents is what a correct perf mod looks like.
+
+**Four are genuinely orphaned**, confirmed unreferenced by all three instruments:
+
+| mod | MB | why it is orphaned |
+|---|---|---|
+| `citadel` | 2.9 | Ice and Fire 2.0 stopped requiring it |
+| `cucumber` | 0.3 | BlakeBr0's library; nothing from that family ships |
+| `mmlib` | 0.3 | no consumer |
+| `nexuslib` | 0.1 | no consumer |
+
+**3.6 MB.** Recommended cut, but the value is tidiness, not weight — and three server
+crashes this audit came from cutting things that looked unused. **Ethan's call.**
+
+## Open, needs a boot test rather than a scan
+
+**Two Kotlin runtimes ship** — `kotlin-for-forge` (6.9 MB) and `kotlin-lang-forge`
+(7.6 MB). Kotlin is required, but nothing declares *which*, so neither the graph nor
+the bytecode can say whether both are needed. Resolving it means booting without one
+and reading the crash. ~7 MB for a real crash risk: **not worth it now**, revisit at
+the world reset when a broken boot costs nothing.
+
+## Also ruled this stage
+
+* **`figura_extrafight` — CUT.** It hooks EpicFight, and **EpicFight is not
+  installed** (the only `epic` match is Epic Knights, an unrelated armour mod).
+  Nothing references it, no config mentions it. Client-side, so the server never
+  loaded it. Verified inert before cutting, not assumed.
+* **`ambientsounds` (80.9 MB) — KEPT.** Ethan: heavy but on-theme, and client-side.
+* **`waystones` — KEPT.** The manifest note saying `CUT 2026-08-03` is **stale**;
+  the mod ships and is wanted. Note left in place as a record of the reversed ruling.
+
+## Bookkeeping corrected
+
+`gen_pack.py` reports **280 metafiles**, which is not the mod count: it is
+**275 mods + 2 shaderpacks + 3 resourcepacks.** Two slugs also sanitize on the way to
+disk — `citadel-(1.21.1-port)` and `put-a-plug-in-it!` lose their punctuation. Any
+future count that compares the cache against `pack/mods` must expect both.
+
+---
+
+# THE AUDIT, CLOSED — 2026-08-15
+
+Eight stages, every mod in the pack asked which path it serves and whether anything
+uses it.
+
+| | |
+|---|---|
+| **mods** | 290 → **275** |
+| **pack download** | ~1,300 MB → **1,031 MB** |
+| **stages** | A1 Forge · A2 Wall · A3 Art · A4 Blade + Salvage · A5 Worldgen · A6 Mobs · A7 Visuals + QoL · A8 Perf + Libraries |
+| **groups** | 15, all rostered in `39-THE-ROSTERS.md` |
+
+## The one lesson, stated once
+
+**The name is not the mod, and the dependency list is not the usage.**
+
+Every real finding in this audit came from opening the thing rather than reading its
+label:
+
+* `spawn-mod` sat in the enemies bucket for eight stages. It registers **89 animals.**
+* `security-craft` looked like Wall's foundation and had no progression at all.
+* **JEI looked free to cut** because nothing declares it. **Twenty-five mods use it**,
+  including Create and TaCZ.
+* `structure-pool-api` and `more-rpg-library` both crashed the server after passing a
+  dependency scan — mixin targets and direct class references do not appear there.
+* Our own datapack named `legendary_monsters:bomber`, so cutting that mod broke
+  registry load.
+
+Four ways a cut breaks the server, and only the first is visible in a manifest:
+**declared dependency · mixin target · direct class reference · our own files.**

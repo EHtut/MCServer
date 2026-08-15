@@ -596,11 +596,6 @@ hash = "9d9e8c3276a1fc55afe27774bb063b473a615787b7cc13b2e1f5d46d03c7664c"
 metafile = true
 
 [[files]]
-file = "mods/figura_extrafight.pw.toml"
-hash = "3364f01663c74e02f439f048d8dc8fb9eceaef22528d308192d6abe25e5f016d"
-metafile = true
-
-[[files]]
 file = "mods/first-person-model.pw.toml"
 hash = "4188848019233432861e98a5cc72aebed8c68a8a0909007967ab11827f8a6508"
 metafile = true

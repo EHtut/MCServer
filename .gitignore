@@ -84,3 +84,6 @@ tools/.cache/mcq-index.json
 
 # the DM's event sink - runtime data, lives outside the world on purpose
 C:/MCServer/telemetry/
+tools/.a8.json
+tools/.a8tok.json
+tools/.depinfo.json

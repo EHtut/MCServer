@@ -313,7 +313,6 @@
       "3dskinlayers": "1.11.2",
       "figura": "0.1.6+1.21.1",
       "figura_extrabone": "0.0.3-neoforge+1.21.1",
-      "figura_extrafight": "0.0.41-neoforge+1.21.1",
       "emotecraft": "2.4.12+1.21.1-forge",
       "ambientsounds": "6.3.8",
       "sound": "2.4.22+lts+1.21.1-neoforge",
@@ -1529,11 +1528,6 @@
         [
           "figura_extrabone",
           "Model extensions for Figura",
-          "minor"
-        ],
-        [
-          "figura_extrafight",
-          "Hooks Figura avatars into Epic Fight's animation system, so custom models actually fight properly",
           "minor"
         ],
         [
