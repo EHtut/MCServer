@@ -76,16 +76,30 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   // Count entities of the given types near a player. This is the measurement half.
+  //
+  // 🚨 String(entity.type) IS NOT THE BARE ID. The first version of this function
+  // did an exact-match lookup and reported `measured 0` while four hounds were
+  // standing in the ring - an instrument that produced a confident false negative,
+  // which is the precise failure this file's header is about.
+  //
+  // stalker.js already knew: isStalkerType() compares with indexOf, not equality,
+  // and has done since it was written. The pattern was there to copy and I did not
+  // read it. SUBSTRING, always.
+  var FORM_LOGGED = false
   function countNear(player, types, radius) {
-    var want = {}
-    for (var i = 0; i < types.length; i++) want[types[i]] = true
     var n = 0
     try {
       var near = player.level.getEntitiesWithin(player.boundingBox.inflate(radius))
       for (var j = 0; j < near.length; j++) {
         var t = null
         try { t = String(near[j].type) } catch (e) { continue }
-        if (want[t]) n++
+        if (!FORM_LOGGED && t) {
+          FORM_LOGGED = true
+          say('entity.type renders as: "' + t + '" - matched by SUBSTRING, never equality')
+        }
+        for (var i = 0; i < types.length; i++) {
+          if (t.indexOf(types[i]) >= 0) { n++; break }
+        }
       }
     } catch (e) {
       console.warn(TAG + 'countNear threw :: ' + e)

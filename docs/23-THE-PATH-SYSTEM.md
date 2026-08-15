@@ -933,6 +933,7 @@ designing Art's events.**
 | give items | `p.give(stack)`, `give` | |
 | items with data | `Item.of('id[minecraft:custom_data={…}]', count)` | **2nd arg is COUNT**, not NBT |
 | **spawn a mob** | `execute at <player> run summon <id> ~dx ~ ~dz` | see the warning below |
+| **matching an entity type** | `String(entity.type).indexOf(id) >= 0` | 🚨 **SUBSTRING, never equality.** `String(entity.type)` is NOT the bare id. An exact-match count reported `measured 0` with four hounds standing in the ring — a confident false negative. `stalker.js` has used `indexOf` since it was written. |
 | aim / disarm a mob | `setTarget(player)` / `setTarget(null)` | |
 | cancel damage | `EntityEvents.beforeHurt` → `cancel()` | |
 | cancel a spawn | `EntityEvents.checkSpawn` | 828+ observed, `canCancel=true` |
