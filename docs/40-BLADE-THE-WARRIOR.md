@@ -443,7 +443,7 @@ full health, so this one is legal by construction, which is neat.
 
 ## The four that need one new mechanism each
 
-### 5. FIRST BLOOD — *demand* · low/medium
+### 5. FIRST BLOOD ✅ **BUILT 2026-08-15** — *demand* · all tiers
 The next mob you strike gets **×3 health**. 60 seconds, or the wave arrives.
 **Needs:** a one-shot flag on the next damaged entity + an attribute write. `power.js`
 proves `modifyAttribute` works.
@@ -453,13 +453,13 @@ proves `modifyAttribute` works.
 **Needs:** an item-damage hook. ⚠️ **Not in the instrument panel** — `ItemEvents` has
 `destroyed`, not a damage-taken event. **Probe before designing.**
 
-### 7. SHARPEN — *bargain* · any tier ⭐ the clearest 2×2 case
+### 7. SHARPEN ✅ **BUILT 2026-08-15** — *bargain* · any tier ⭐ the clearest 2×2 case
 Temporary damage buff; **spawns quadruple for its duration, stated up front.**
 **Needs:** a potion effect + a timed pressure window. Both live.
 🔑 *This is the one event that is unambiguously a TRADE, and it should use the ritual
 so the price is named before it is paid — exactly like Salvage's.*
 
-### 8. THE DUEL — *reckoning* · high
+### 8. THE DUEL ✅ **BUILT 2026-08-15** — *reckoning* · high
 **One named elite, no adds.** Flee and he taunts for a full day.
 **Needs:** a single strong spawn with a custom name, suppression of other spawns for
 the duration, and a flee-detection (distance from the spawn point over time).
@@ -556,7 +556,7 @@ floor tests the wrong thing.
 
 ---
 
-# PART 12 — FIVE OF TWELVE, BUILT 2026-08-15
+# PART 12 — EIGHT OF TWELVE, BUILT 2026-08-15
 
 | event | tiers | how it fires |
 |---|---|---|
@@ -588,3 +588,43 @@ than an event that failed to be hollow.
 **First Blood · The Tithe of Steel** (⚠️ needs an item-damage probe) **· Sharpen**
 (the first true bargain — should use the ritual) **· The Duel · Understudy ·
 The Watcher** (needs the Harvest rework) **· Run.** (needs the Harvest rework)
+
+## The second three
+
+| event | tiers | shape |
+|---|---|---|
+| **Sharpen** | all | ⭐ **a BARGAIN, through the ritual** |
+| **First Blood** | all | a demand — two-stage, and both outcomes cost |
+| **The Duel** | **high only** | a reckoning, with the only lasting consequence he has |
+
+**SHARPEN is the first event in the pack that is a genuine trade**, so it opens the
+ritual and names its price before it is paid — Strength II for three minutes, and
+everything within reach comes to see what changed.
+
+🔑 **The difference from Salvage's trades is who is paid.** She takes a piece of you
+and hands you something. **He hands you something and makes the world harder** — the
+price is not paid to him, it is paid to whatever arrives. Same interface, opposite
+economics, and that is the two gods in one mechanic.
+
+**FIRST BLOOD is two-staged and both stages cost.** The next thing you strike gets
+×3 health; strike nothing for sixty seconds and the wave arrives instead. You cannot
+wait it out — *"You did not swing at anything. So I sent something to swing at you."*
+
+**THE DUEL is high-trust only**, one named elite at 10–16 blocks, and fleeing past 64
+blocks earns a taunt. ⚠️ **The taunt is the entire penalty** — the only lasting
+consequence in his whole set is a line, which is correct for a god whose disappointment
+never costs him anything.
+
+## Remaining: 4 of 12
+
+**The Tithe of Steel** — 🚨 **blocked, and now provably.** `ItemEvents` has no
+damage-taken or durability event; the panel's list is `crafted · smelted · pickedUp ·
+dropped · destroyed · foodEaten · canPickUp · entityInteracted · the clicks · tooltips`.
+**It must be sampled** — read the held item's damage on a tick and add to it — rather
+than hooked. Design before building.
+
+**Understudy** — reading player attributes onto a spawn. The most technically
+ambitious of the twelve.
+
+**The Watcher · Run.** — both need the **Harvest rework** (`34` §2e), because both
+depend on a present body and Blade's Harvest is becoming a challenge (PART 8).

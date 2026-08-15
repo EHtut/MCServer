@@ -331,6 +331,187 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     })
   })
 
+
+  // ── SHARPEN ────────────────────────────────────────────────────────────────
+  // docs/23 PART VI #11: "temporary damage buff; spawns quadruple for its
+  // duration, stated up front."
+  //
+  // ⭐ THE ONLY EVENT OF HIS TWELVE THAT IS UNAMBIGUOUSLY A BARGAIN (23 §3b) - good
+  // for you, and YOU choose. So it runs through the ritual, exactly as Salvage's
+  // trades do, and the price is named before it is paid. `23` §2: every cost is
+  // named before it is paid, and a raid you chose to provoke is content.
+  //
+  // The difference from her trades is who benefits. She takes a piece of you and
+  // gives you something. He gives you something and makes the world harder - the
+  // price is not paid TO him, it is paid to whatever comes.
+  var SHARP_SECONDS = 180
+  var SHARP_WAVE_EVERY = 400          // 20s
+  var SHARP_WAVE_SIZE = { low: 2, medium: 3, high: 4 }
+
+  function runSharpen(server, p, tier) {
+    if (!VELDORA.ritual || typeof VELDORA.ritual.begin !== 'function') return false
+    if (VELDORA.ritual.active(p)) return false
+
+    var size = SHARP_WAVE_SIZE[tier] || 2
+    var mins = Math.round(SHARP_SECONDS / 60)
+
+    return VELDORA.ritual.begin(p, {
+      lines: [
+        'You are swinging like a man who expects to live.',
+        'I can fix that. Strength, for as long as it lasts.',
+        'And everything within a mile will come to see what changed.',
+        'Three minutes. Say yes or do not waste my time.',
+      ],
+      options: [
+        { id: 'yes', label: 'Sharpen me.' },
+        { id: 'no', label: 'Not now.' },
+      ],
+      holdAfterChoice: 40,
+      onChoose: function (player, id) {
+        if (id !== 'yes') {
+          if (VELDORA.voice) VELDORA.voice.say(player, GOD, 'idling')
+          return
+        }
+        var name = '?'
+        try { name = String(player.username) } catch (e) { }
+        var granted = 0
+        try {
+          server.runCommandSilent('effect give ' + name + ' minecraft:strength ' +
+            SHARP_SECONDS + ' 1 false')
+          granted++
+        } catch (e) { console.error(TAG + 'sharpen buff failed :: ' + e) }
+        if (!granted) {
+          // Took nothing, so nothing is owed - but say so rather than going quiet.
+          if (VELDORA.voice) VELDORA.voice.say(player, GOD, 'medium_gift')
+          return
+        }
+
+        // The price, and it starts immediately. Stated up front, so this is the
+        // bargain being honoured rather than a trap being sprung.
+        var waves = Math.floor((SHARP_SECONDS * 20) / SHARP_WAVE_EVERY)
+        for (var w = 1; w <= waves; w++) {
+          (function (n) {
+            server.scheduleInTicks(n * SHARP_WAVE_EVERY, function () {
+              try {
+                if (!player.isAlive()) return
+                if (VELDORA.spawner) {
+                  VELDORA.spawner.wave(player, { ids: GAUNTLET_ROSTER, count: size })
+                }
+              } catch (e) { }
+            })
+          })(w)
+        }
+        console.info(TAG + 'Sharpen on ' + name + ' - ' + mins + 'm Strength II, ' +
+          waves + ' waves of ' + size)
+      },
+      onTimeout: function (player) {
+        if (VELDORA.voice) VELDORA.voice.say(player, GOD, 'idling')
+      },
+    })
+  }
+
+  // ── FIRST BLOOD ────────────────────────────────────────────────────────────
+  // docs/23 PART VI #4: "the next mob you strike gets x3 health. 60s, or the wave
+  // arrives."
+  //
+  // A DEMAND, not a bargain: you did not choose it, and both outcomes cost you -
+  // kill it fast, or fight the wave you earned by being slow.
+  var FB_FLAG = 'veldora_firstblood'         // player: armed
+  var FB_WINDOW = 1200                       // 60s
+  var FB_MULT = 3
+  var armed = {}                             // uuid -> true, in memory
+
+  function runFirstBlood(server, p, tier) {
+    var uuid = null
+    try { uuid = String(p.uuid) } catch (e) { return false }
+    armed[uuid] = true
+    if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'first_blood')
+
+    server.scheduleInTicks(FB_WINDOW, function () {
+      try {
+        if (!armed[uuid]) return               // they struck something; it is live
+        delete armed[uuid]
+        if (!p.isAlive()) return
+        // Sixty seconds and they did not swing at anything. The wave arrives.
+        if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'first_blood_late')
+        if (VELDORA.spawner) {
+          VELDORA.spawner.wave(p, { ids: GAUNTLET_ROSTER, count: 4 })
+        }
+      } catch (e) { }
+    })
+    return true
+  }
+
+  // The next thing they hit gets three times the health. beforeHurt is the proven
+  // hook (stalker.js); `hurt` does not exist.
+  EntityEvents.beforeHurt(function (event) {
+    try {
+      var victim = event.entity
+      if (!victim || victim.player || !victim.living) return
+      var attacker = event.source ? event.source.player : null
+      if (!attacker) return
+      var uuid = null
+      try { uuid = String(attacker.uuid) } catch (e) { return }
+      if (!armed[uuid]) return
+      delete armed[uuid]
+
+      var max = 20
+      try { max = victim.getAttribute('minecraft:generic.max_health').getValue() } catch (e) { }
+      try {
+        victim.modifyAttribute('minecraft:generic.max_health',
+          'mcserver:veldora_firstblood', max * (FB_MULT - 1), 'add_value')
+        victim.setHealth(max * FB_MULT)
+      } catch (e) { console.warn(TAG + 'first blood scaling failed :: ' + e) }
+      if (VELDORA.voice) VELDORA.voice.say(attacker, GOD, 'first_blood_hit')
+      console.info(TAG + 'First Blood - ' + attacker.username + ' struck something at x' + FB_MULT)
+    } catch (e) { }
+  })
+
+  // ── THE DUEL ───────────────────────────────────────────────────────────────
+  // docs/23 PART VI #3: "one named elite, no adds. Flee and he taunts for a full
+  // day."
+  //
+  // HIGH TRUST ONLY. This is the fight he offers a champion he respects, and the
+  // taunt for fleeing is the only lasting consequence in his whole set - which is
+  // why it costs a day of comment rather than anything mechanical.
+  var DUEL_ELITE = 'born_in_chaos_v1:fallen_chaos_knight'
+  var DUEL_CHECK = 200                       // 10s
+  var DUEL_FLEE_DIST = 64
+  var DUEL_TIMEOUT = 6000                    // 5 minutes
+
+  function runDuel(server, p, tier) {
+    if (!VELDORA.spawner) return false
+    if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'duel')
+
+    var r = VELDORA.spawner.wave(p, {
+      ids: [DUEL_ELITE], count: 1, minDist: 10, maxDist: 16,
+      nbt: '{Tags:["veldora_duel"],CustomNameVisible:1b,CustomName:\'{"text":"The Challenger\\u0027s Champion","color":"dark_red","bold":true}\'}',
+    })
+
+    var ox = p.x, oy = p.y, oz = p.z
+    var elapsed = 0
+    function watch() {
+      try {
+        if (!p.isAlive()) return
+        elapsed += DUEL_CHECK
+        var dx = p.x - ox, dy = p.y - oy, dz = p.z - oz
+        var far = (dx * dx + dy * dy + dz * dz) > (DUEL_FLEE_DIST * DUEL_FLEE_DIST)
+        if (far) {
+          // Fled. He taunts - and the taunt is the whole penalty.
+          if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'duel_fled')
+          console.info(TAG + 'Duel: ' + p.username + ' left the ground')
+          return
+        }
+        if (elapsed >= DUEL_TIMEOUT) return
+        p.server.scheduleInTicks(DUEL_CHECK, watch)
+      } catch (e) { }
+    }
+    p.server.scheduleInTicks(DUEL_CHECK, watch)
+
+    console.info(TAG + 'Duel on ' + p.username + ' - one elite, flee radius ' + DUEL_FLEE_DIST)
+    return true
+  }
+
   ServerEvents.loaded(function (event) {
     if (!VELDORA.events) { console.error(TAG + 'godevents.js missing'); return }
     VELDORA.events.register(GOD, {
@@ -353,9 +534,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       id: 'broken_rung', hostile: true, cooldown: 1, weight: 1,
       tiers: ['low', 'medium', 'high'], run: runBrokenRung,
     })
+    VELDORA.events.register(GOD, {
+      id: 'sharpen', hostile: false, cooldown: 2, weight: 2,
+      tiers: ['low', 'medium', 'high'], run: runSharpen,
+    })
+    VELDORA.events.register(GOD, {
+      id: 'first_blood', hostile: true, cooldown: 2, weight: 2,
+      tiers: ['low', 'medium', 'high'], run: runFirstBlood,
+    })
+    VELDORA.events.register(GOD, {
+      id: 'duel', hostile: true, cooldown: 4, weight: 2,
+      tiers: ['high'], run: runDuel,
+    })
     markSweep(event.server)
     console.info(TAG + 'The Warrior sends: gauntlet, icarus (above y' + ICARUS_Y +
       '), hollow (drops nothing), broken_rung (on respawn), mark (' + MARK_DAYS +
-      'd, no penalty on refusal)')
+      'd, no penalty), sharpen (a BARGAIN, via the ritual), first_blood, duel (high only)')
   })
 })();

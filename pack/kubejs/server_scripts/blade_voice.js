@@ -149,6 +149,31 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "Three of them now. Learn faster.",
       "It is waiting where you left it. So am I.",
     ],
+    first_blood: [
+      "The next thing you swing at, I am making harder.",
+      "Pick your target carefully. I am about to improve it.",
+      "Whatever you strike next will strike back properly.",
+    ],
+    first_blood_hit: [
+      "There. Now it is worth killing.",
+      "Now finish what you started.",
+      "Better. Deal with it.",
+    ],
+    first_blood_late: [
+      "You did not swing at anything. So I sent something to swing at you.",
+      "A minute, and no fight in you. Here is one.",
+      "You waited. Now you do not have to look.",
+    ],
+    duel: [
+      "One of mine. No crowd, no help, no excuses.",
+      "This one is not a wave. It is a single opponent, and it is better than you.",
+      "Alone against one. That is the oldest test there is.",
+    ],
+    duel_fled: [
+      "You ran.",
+      "You left the ground. I will remember that longer than you will.",
+      "Noted. You had one opponent and chose distance.",
+    ],
     // THE MARK. {target} is substituted with the rival champion's name.
     mark_declare: [
       '{target} fights with borrowed strength. Kill them within two days.',
