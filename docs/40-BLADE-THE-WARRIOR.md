@@ -220,6 +220,28 @@ given.
 **Never:** best-in-slot, enchanted-beyond-earning, or anything that skips a tier of
 progression. **Repair over reward.**
 
+### The shortlist — from his own mod, and that is the point
+
+Scanned from `born_in_chaos_v1` (240 items). **Dark metal is the substance he is made
+of** — `fallen_chaos_knight` and the Dark Warblade are the same stuff — so a gift of
+dark metal is a gift of himself, which is the only generosity in character for him.
+
+| tier | candidate | why |
+|---|---|---|
+| **material** | `dark_metal_ingot` | ⭐ **the spine of the whole ladder.** His own substance; repairs the blade he gave you |
+| **material** | `armor_plate_from_dark_metal` | armour repair — maintenance in its purest form |
+| **food** | `smoked_monster_flesh` · `smoked_flesh` | ⭐ **he feeds you what you killed.** No farming, no cooking fire he did not light |
+| **food** | `monster_flesh` | the raw version — a LOW-trust gift, deliberately worse |
+| **consumable** | `potion_of_rampage` (Elixir of Rampage) | combat-only, temporary, wears off. Never a permanent gain |
+| **weapon** | `sharpened_dark_metal_sword` | mid-tier and unremarkable — ⚠️ **verify its damage in game before it ships**, since "never overpowered" is the rule it must not break |
+
+🔑 **The thematic result:** he gives you back what you killed, forged in the metal he
+is made of. Nothing that makes you stronger — only what keeps you swinging.
+
+⚠️ **Ethan to validate in game.** The scan proves these items exist and are on theme;
+it cannot prove `sharpened_dark_metal_sword` is not secretly best-in-slot, and that is
+the one line the relic rule must not cross.
+
 # PART 6 — WHAT ALREADY EXISTS
 
 Everything here is built and live unless marked.
