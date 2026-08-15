@@ -264,7 +264,6 @@
       "yungs-better-strongholds": "1.21.1-NeoForge-5.1.3",
       "yungs-cave-biomes": "1.21.1-NeoForge-3.1.1",
       "ct-overhaul-village": "3.6.3",
-      "ardas-sculks": "1.4.3.5_1",
       "spawn-mod": "4.0.7",
       "cosy-critters": "v0.3.3+1.21.1-neoforge",
       "respawning-animals": "v21.1.2-1.21.1-NeoForge",
@@ -278,7 +277,6 @@
       "battle-towers": "1.3.0+mod",
       "structory": "1.3.17",
       "weather-storms-tornadoes": "1.21.0-2.8.7",
-      "explorify": "v1.6.5",
       "hopo-better-ruined-portals": "1.4.4b",
       "improved-pillager-outpost": "5",
       "nether-depths-upgrade": "3.1.8",
@@ -1257,11 +1255,6 @@
           "major"
         ],
         [
-          "ardas-sculks",
-          "Overhauls the Ancient City and adds its portal. The Ancient City is already Minecraft's buried-civilisation set piece; this makes it the gateway",
-          "major"
-        ],
-        [
           "spawn-mod",
           "Overworld wilderness overhaul - many animals, ambience, biome life. A surface with no hostiles needs to be FULL of something, or peaceful just reads as empty",
           "major"
@@ -1325,11 +1318,6 @@
           "weather-storms-tornadoes",
           "Ethan's ruling 2026-08-02: the surface should be survived, not fought - 'deeper is fight. upper is survive against weather events'. Scorchful already covers deserts (sandstorms) and Frostiful the cold (freezing wind); nothing covered the temperate plains where people actually build. Adds tornadoes, severe storms and wind there.",
           "major"
-        ],
-        [
-          "explorify",
-          "Vanilla-faithful structure variety",
-          "minor"
         ],
         [
           "hopo-better-ruined-portals",
