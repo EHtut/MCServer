@@ -555,7 +555,18 @@ Path selection opens the ritual instead of granting instantly.
   treat a refusal as final in the fiction (Wall asks again for less, Salvage is
   certain you will return, Art simply waits) - only Crown and Blade close the door.
 
-## I3 — the flagship system
+## I3 — the flagship system ⏸️ HELD 2026-08-14
+
+Ethan no longer likes the idea; held, not cut. Spec kept in `31-I3-THE-FLAGSHIPS.md`.
+**The scenes are unaffected** — the gift beat was never generated into the running
+code, so acceptance ends on the patron's closing lines and promises no object.
+
+**Consequence worth noting: the path IS the gift.** Accepting now costs everything
+and hands back nothing physical, which is more on-thesis than the item was — you get
+drops, a subclass tree and `power.js` scaling, and the patron gives you no keepsake
+for it.
+
+### The original spec
 
 * granted on acceptance, with enchantments where the item supports them (J3)
 * **restored one in-game day after it goes missing** - Ethan: losing it should

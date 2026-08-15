@@ -4,6 +4,19 @@
 the rest of these items."*** Design only. Nothing built — the server is off and
 [[never-ship-unrun-code]] applies, so the unknowns below become probes first.
 
+> # ⏸️ HELD — 2026-08-14, with flagships
+> This design scaled the FLAGSHIP items, and flagships are held. So it is held too.
+>
+> **What survives the hold, if the idea is ever wanted without them:** the coupling
+> never actually needed a flagship. Its real claim is §1 — that XP is already this
+> system's currency and nothing pays out on it.  already scales
+> attack_damage off notoriety on a 5s sweep, so a per-path XP curve could ride there
+> and apply to whatever the player holds. **§2's invariant is the part worth keeping
+> whatever the vehicle:** scaling is a bonus, never a penalty, or the XP strip plus
+> a 5-level death cost becomes a spiral.
+>
+> J9/J10 are still answered and still true. J5b/J6/J7 no longer block anything.
+
 ---
 
 ## 1. Why this is the right mechanic, not just a buff

@@ -4,10 +4,20 @@
 was not one. I3 existed as a five-line stub in `26-INTRODUCTIONS.md` and a scaling
 design in `29-THE-XP-COUPLING.md`, and nowhere else. This is the spec.*
 
-**Status: DEFINED, NOT BUILT. Partially blocked — see §7.**
+> # ⏸️ HELD — 2026-08-14
+> **Ethan: *"i admit looking back i kinda don't like the idea of flagship items
+> anymore, so lets hold them for possible for now."*** Not cut, not built. Every
+> finding below stays valid and the probe results keep their value; nothing here is
+> wasted if it comes back.
+>
+> **Nothing shipped is affected.** The gift beat was never generated into
+> `introductions.js` — the scene generator only ever extracted arrival, demand,
+> options, acceptance and refusal — so the six introductions run today with no
+> reference to an item. There is no live promise to walk back.
+
+**Status: HELD. Defined, not built.**
 
 ---
-
 ## 1. What a flagship is
 
 The item a patron hands you at the end of your introduction. One per path, chosen
