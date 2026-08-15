@@ -78,10 +78,36 @@ the original pitch — *"things happen to you"*. The Hunt's dread depends partly
 having watched the thing get closer. And `stalker.js` is the single largest system
 in the build; retiring its live half is not a small edit.
 
-⚠️ **Decide BEFORE E8 (Blade's waves)**, not after — Blade's twelve events assume a
-creature that is present. **`spawns` is entangled with this too:** it is currently
-INERT and needs an active spawner, and if patrons become chat-only, that spawner is
-the *only* thing that would ever put a patron-flavoured mob near a player.
+### ⚠️ I had this backwards — corrected 2026-08-15
+
+I first flagged this as *"decide before E8, because Blade's twelve events assume a
+creature that is present."* **Ethan:** *"i interpreted blade's events as more of
+things that spawn enemies or increase spawn rates around you."*
+
+He is right, and reading `23` PART VI against that shows it plainly:
+
+| Blade's twelve | needs |
+|---|---|
+| Gauntlet · Icarus · Duel · Blindfold · Hollow Victory · Understudy · Broken Rung · Sharpen | **a spawner** |
+| First Blood · Tithe of Steel | a modifier |
+| **The Watcher** — *"he stands at range and does not attack"* | **presence** |
+| Run. — a chase, once ever, pre-Harvest | presence, arguably |
+
+**Ten of twelve never need the patron's body.** So E8 does not block this decision,
+and chat-only is far more viable than I said.
+
+### 🔑 What it actually depends on: the ACTIVE SPAWNER
+
+The real dependency is the thing E3 left INERT. `checkSpawn` can only cancel, so
+Blade's ×4 — and eight of his twelve events — need a spawner near the player, the
+`the_hunt.js` ring-placement mechanism.
+
+**That one build serves three things at once:** the `spawns` coefficient, most of
+Blade's event set, and — if patrons go chat-only — the only mechanism that would
+ever put a patron-flavoured mob near a player at all.
+
+**It is now the highest-leverage unbuilt piece in the system,** and it is required
+under BOTH answers to this decision. Build it before deciding, not after.
 
 ---
 
