@@ -28,8 +28,27 @@ player is.
 # PART 1 — WHO HE IS
 
 **THE WARRIOR** · god of war · he
-**His actor:** a *pantheon* — cast today as `born_in_chaos_v1:fallen_chaos_knight`,
-**and now recastable on looks alone** (`23` §4).
+**His actor:** a *pantheon*. **`born_in_chaos_v1:fallen_chaos_knight` — CONFIRMED
+2026-08-15**, name kept as **The Challenger**.
+
+*Recasting was surveyed against all 86 Born in Chaos entities: only Lord Pumpkinhead
+carries a boss bar and nothing summons, so the field was open. Rejected on looks —
+**Door Knight** (comedic, a villager with a door), **Scarlet Persecutor** (a ghost),
+**Lifestealer** (striking, but **arachnid** — spider iconography for the god who
+despises the spider reads as a mistake, and it has a `true_form` that transforms into
+a second casting nobody chose). The black knight is restrained rather than
+underwhelming, and restraint is his character: he does not perform.*
+
+⭐ **THE RED DRAGON GOES TO THE HARVEST.** `iceandfire:fire_dragon` — checked in the
+jar: **no boss bar**, and griefing is a config flag (`iaf-common.json`
+`"griefing": true` → false). But it **flies**, carries **its own** ownership model
+(`TamableAnimal`, `setOwnerUUID`) that would fight our owner tag, and is
+**multipart** (`PartEntity`), so `getEntitiesWithin` scans would count one dragon as
+several. **All three objections are leash problems — and the Harvest has no leash.**
+It arrives once and it is meant to be unsurvivable, so none of that machinery applies.
+
+> **The knight watches you. The dragon collects you.** The god sends what the occasion
+> deserves — which is the actor reframe doing real work.
 
 > ⭐ **He is never that mob.** The god is the voice; the pantheon is what he sends.
 > Every argument in `18-THE-STALKERS.md` about which entity he "is" was solving a

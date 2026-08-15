@@ -232,6 +232,54 @@ twelve, four of the five reckonings, and the chat-only decision.
 ⏳ **No live consumer yet**, by design — it is a primitive like `ritual.js` was before
 I2. `/wave_test <n>` is its harness. **First consumer: E3's `spawns` axis**, then E7.
 
+### 2e. ⭐ RETIRE THE STALKER, KEEP THE HARVEST — ruled 2026-08-15
+
+*Ethan: **"I am thinking we just get rid of the stalker mechanic tbh and just have the
+harvest."*** **`stalker.js` is 1851 lines — the largest file in the build.**
+
+**The dependency check makes this cheap.** Only two things outside it consume its
+seams, and both are about the Harvest, which survives:
+
+| consumer | uses |
+|---|---|
+| `death_cost.js` | `stalkerPhase(...) === 'harvest'` to skip the death cost |
+| `fall.js` | `recordHarvest()` — **which lives in `notoriety.js`, not here** |
+
+**`whispers.js` does not touch it at all** — the whispers escalate off `regard`. The
+voice half loses nothing.
+
+#### KEEP
+* `resolvePhase` + `BANDS` + the hysteresis — drives **E3's `phase` coefficient** and
+  the Harvest trigger. ⚠️ **Do not clamp the sticky edge past `CAP_VALUE`** — that is
+  the bug that made the Harvest unreachable for weeks.
+* `phaseStored` / `phaseStore`, and the `VELDORA.stalkerPhase` seam.
+* **The Harvest**, rebuilt as a **`spawner.js` call** rather than a state change on a
+  bound entity — it now *arrives* instead of having been standing there all along.
+
+#### DELETE
+the bound entity · `CAST` and the recasting migration · `keepDistance` /
+`DIST_NEAR` / `DIST_FAR` · **the Helper** · owner tagging, adoption and the bench ·
+the piglin/minion anger rule · the damage veto and its `beforeHurt` hard stops ·
+the detarget sweeps (`ritual.js` has its own) · C8 stalker-vs-stalker
+
+#### Why this is a gain and not a loss
+
+**Every bug this project produced in the entity half came from this one system** — the
+Helper culled by its own sweep having never once helped, `keepDistance` flinging the
+bench patron 100 blocks, minions permanently aggroed, the hostility veto cancelling
+damage on every swing. **None of that is content; all of it is leash.**
+
+And **the stalker was the first attempt at "things happen to you."** Everything built
+2026-08-15 does it better without a rope: the trades open themselves, the reckonings
+collect, the pressure system hunts, the spawner sends waves.
+
+**The whispers already carry the dread better than the mob does** — *"He is not
+looking at you any more. He is looking at where you will be"* beats a knight standing
+40 blocks away doing nothing, which is what he actually does most of the time.
+
+⚠️ **One casualty:** Blade's **The Watcher** (*"he stands at range and does not
+attack"*) genuinely needs presence. 1 of 12 — make it Harvest-adjacent instead.
+
 ### 3. E7 / THE RECKONING ENGINE ✅ **BUILT 2026-08-15**
 
 `reckoning.js` (the engine) + `counter_hooks.js` (the four missing counters).
