@@ -531,41 +531,70 @@ content, and Forge is the one path guaranteed a walker.
 
 ---
 
-## STATE OF THE BUILD
+## STATE OF THE BUILD — refreshed 2026-08-14
 
-*The distinction that matters is not built vs unbuilt. It is **built** vs
-**actually watched happening**. Everything below is currently neither.*
+*The table below said every row was unbuilt and unverified. It was written before
+anything existed and never updated, which is why the plan felt lost. This is true
+as of 2026-08-14.*
+
+*The distinction that matters is not built vs unbuilt. It is **built** vs **actually
+watched happening**.*
 
 | chunk | built | verified live | notes |
 |---|---|---|---|
-| E0 probes | ✗ | ✗ | eleven assumptions, all unproven |
-| E1 iron fix | ✗ | ✗ | independent; could go first |
-| E2 death | ✗ | ✗ | needs P7, P8 |
-| E3 coefficients | ✗ | ✗ | everything else sits on this |
-| E4 ritual | ✗ | ✗ | three consumers waiting |
-| E5 introductions | ✗ | ✗ | |
-| E6 salvage | ✗ | ✗ | the proof of the whole design |
-| E7 interest | ✗ | ✗ | |
-| E8 blade | ✗ | ✗ | |
-| E9 forge | ✗ | ✗ | |
-| E10 art/crown/wall | ✗ | ✗ | build when walked |
+| **E0** probes | ✅ | ✅ | closed 2026-08-12, probe retired |
+| **E1** iron fix | ✅ | ✅ | 8%→25% base, tier counts |
+| **E2a** wake where you fell | ✅ | ✅ | |
+| **E2b** death costs levels | ✅ | ✅ | |
+| **E2c** regard counter | ✅ | ✅ | |
+| **E2d** the fall | ✅ | ✅ | T9, clean revoke, no HALF-REVOKE |
+| **E2e** entry strips XP | ✅ | ⚠️ | **NEVER EXERCISED** — accepted at 0 levels, so the strip skipped |
+| **E2f** the voices | ✅ | ✅ | T8 |
+| **E3** coefficients | ✗ | ✗ | 🚨 **everything below sits on this** |
+| **E4** ritual → **I1** | ✅ | ✅ | `ritual.js`; T1–T4 |
+| **E5** introductions → **I2** | ✅ | ✅ | `introductions.js`; T5–T7 |
+| **E6** Salvage economy | ✗ | ✗ | the doc calls it *the proof of the whole design* |
+| **E7** interest / first raid | ✗ | ✗ | |
+| **E8** Blade | ✗ | ✗ | waves, taunt ladder, `"Run."` |
+| **E9** Forge | ✗ | ✗ | quotas, appraisal, compounding |
+| **E10** Art / Crown / Wall | ✗ | ✗ | build when walked |
+
+### 🚨 The honest headline
+
+**The six paths do not yet play differently.** Everything built so far is the
+*frame* — how you get a path, what a death costs, how you lose one, and the voice
+that talks to you. **The content that makes Blade feel unlike Forge is E3 and
+E6–E10, and none of it exists.** A walker today gets a different drop table and a
+different set of whispers. That is all.
+
+That was the original ask — *"we need things to happen to us"*, *"seperate each into
+classes. And hard"* — so the system is roughly **half built and the missing half is
+the point of it.**
+
+### Also unbuilt, from elsewhere
+
+* **PART VI — THE EVENTS** (`23`): ten event ideas per class, none implemented.
+* **Subclasses** — no longer a build. `30` §6 found the pack already ships
+  `puffish_skills` + Skill Tree RPG, and `unlocked_by_default` + `exclusive_root`
+  are exactly the mechanic. **A datapack authoring job.**
+* **I3 flagships** — ⏸️ HELD 2026-08-14.
+* **I4 the reset** — shrunk to `/path forcereset`; a world wipe does its job free.
+* **Being chosen** (`33`) — new, and it changes how E5 is entered.
+* **First-join world introduction** — flagged, not scheduled.
+* **The emphasis ladder** (titles) — `33` §A.
+
+### Blocking questions — refreshed
+
+* ~~When does a subclass unlock?~~ ✅ **FREE, from the start** (Ethan 2026-08-13).
+* ~~Ethan's rewrites of the draft lines~~ ✅ the drafts are the **working text**; his
+  revisions are welcome, not a prerequisite.
+* **Do subclass spawn costs stack at 50%?** still open — E3 decides it.
+* **The deliberate-death exploit** — floor it, or leave it as a desperate strategy?
+  Sharper now that Art is designed to notice repeated dying (`33` §3).
 
 ### Carried over, still unverified from 2026-08-11
-Not part of this plan, but nothing here should be built on top of them until
-someone has played on them:
 
-* The repaired **Helper** chain — expect `helper answered` at most once per 30s
-  (was nine times in one fight), and a `culled N orphaned minion(s)` line.
+* The repaired **Helper** chain — expect `helper answered` at most once per 30s.
 * The **Harvest**, reachable for the first time and **never once fought**.
-* The **In Control reorder** — did it make the deep too quiet or the shallows too
-  safe?
-* The **Blade recast** — the first `fallen_chaos_knight` should have no boss bar.
-* **P1 claim adoption** — Ethan either runs `/path release` + `/path forge`, or
-  kills something and gets adopted automatically.
-
-### Blocking questions
-* **When does a subclass unlock** — free, or at notoriety 25?
-* **Do subclass spawn costs stack** at 50%?
-* **The deliberate-death exploit** — floor it, or leave it as a desperate
-  strategy?
-* Ethan's **rewrites** of the draft patron lines (Forge, Wall, Crown, Art).
+* The **In Control reorder** — did it make the deep too quiet?
+* The **Blade recast** — `fallen_chaos_knight` should have no boss bar.
