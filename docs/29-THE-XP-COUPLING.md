@@ -78,11 +78,10 @@ A diamond sword is 7 damage, so these are large — **deliberately.** Ethan:
 the floor invariant means you still hold a full-strength weapon. The curve is
 gentlest exactly where the spiral would otherwise start.
 
-## 4. What each item scales — the recommendation
+## 4. What each item scales — ✅ RULED (see §7)
 
-Ethan asked for the wrench "and the rest of these items". Four of the six are
-melee-capable and take damage scaling directly. Two do not reach, and for those the
-honest answer is better than forcing it:
+Ethan asked for the wrench "and the rest of these items". The answer is uniform in
+principle and different in expression:
 
 > **Each patron's flagship scales the thing that patron actually cares about.**
 
@@ -91,13 +90,13 @@ honest answer is better than forcing it:
 | **Forge** | `create:wrench` | **damage** ⭐ asked for | ~1 base damage today. The tool that builds becomes the tool that takes — he claims your output, so your output arms you |
 | **Blade** | `darkwarblade` | **damage**, highest | proof is his entire currency |
 | **Art** | `enchanters_sword` | **damage**, medium | it is a sword, but she is about rest, not killing |
-| **Crown** | `goety:dark_wand` | **damage**, low | ⚠️ weakest fit. Better: **soul energy / servants** — he wants service, and rising should buy you more of his court. Reachability unknown |
-| **Wall** | reinforcer | ⚠️ **protection, not damage** | it is not a weapon. Her coupling is *what stands between you and the world* — which is her character exactly. Also solves the 300-use problem from I0 |
+| **Crown** | `goety:dark_wand` | ✅ **his court** — summon count/duration or soul energy | he wants service, so rising buys you more of it. Damage was the weakest fit of the six and is now retired. ⚠️ reachability unproven — J10 |
+| **Wall** | reinforcer | ✅ **protection** | it is not a weapon. Her coupling is *what stands between you and the world* — her character exactly. Also answers I0's 300-use problem. ⚠️ reachability unproven — J9 |
 | **Salvage** | TaCZ shotgun | ⚠️ **ammo, not damage** | TaCZ does its own damage and a vanilla hook probably never sees it. But **her canon line is already this**: *"Give me your levels and i shall grant you ammo."* Her gun does not hit harder as you rise — it **feeds** more |
 
-The two that "fail" produce better mechanics than the uniform version would have.
-If Ethan wants plain damage on all six instead, Wall's and Crown's are one config
-line each — but Salvage's genuinely may not be reachable regardless.
+Only **three of six are a damage number**, and the design is stronger for it. The
+items that refused the uniform treatment produced better mechanics than it would
+have.
 
 ## 5. Implementation — extend what is proven, invent nothing
 
@@ -130,17 +129,45 @@ Added to `_probe_intro.js` alongside J4:
 | **J6** | is there an XP-change event, or must we poll? | refresh strategy |
 | **J7** | does a TaCZ gun's damage pass through `beforeHurt` **at all**? | whether Salvage can scale damage |
 | **J8** | can `beforeHurt` damage be **written**, not just read? | route C |
+| **J9** | is SecurityCraft's **reinforcement strength** reachable from KubeJS? | Wall's coupling |
+| **J10** | is Goety's **soul energy / summon cap** reachable from KubeJS? | Crown's coupling |
+
+**J9 and J10 are expected to FAIL** — both are mod-internal. That is planned for, not
+feared: §7 rules that an unreachable stat becomes a KubeJS-side equivalent (scaled
+absorption on your own reinforced blocks; scaled summon duration), **never a silent
+downgrade back to damage.** The probe decides which of the two builds happens, not
+whether Wall and Crown get a coupling at all.
 
 I0 is the precedent for why: it reported `J1 FAILED` when the API had worked the
 whole time, purely because the probe judged instead of printing. **These probes
 print.**
 
-## 7. Open for Ethan
+## 7. ✅ Resolved (Ethan, 2026-08-13)
 
-1. **Wall and Crown** — take the character-appropriate scaling above, or plain
-   damage like the others?
-2. **Does the flagship scale when it is not the item that kills?** Blade's blade in
-   your off-hand, say. Recommend **no** — held, or nothing.
-3. **Does scaling survive the fall?** Recommend **no**: losing the path takes the
-   coupling with it, so the flagship becomes an ordinary weapon in your hands and
-   never says why.
+**1. Wall and Crown take CHARACTER SCALING, not plain damage.** So the rule is
+uniform in principle and different in expression: *each flagship scales the thing
+its patron actually cares about.* Blade, Forge and Art scale damage; Wall scales
+protection; Crown scales his court; Salvage scales ammo. Only three of six are a
+damage number, and the design is stronger for it — a spider-mother whose gift makes
+your walls harder is a better sentence than one who gives +6 attack.
+
+⚠️ **Two of the three now sit on unproven ground.** Damage has a proven route
+(`modifyAttribute`, `power.js`). Protection and soul-energy do not — they are
+mod-internal to SecurityCraft and Goety. **If they turn out unreachable, the answer
+is a KubeJS-side equivalent, never a silent downgrade to damage:** Wall can grant
+scaled absorption or resistance while you stand on your own reinforced blocks, which
+is arguably more her than editing a block's hit points. Crown can scale summon
+count or duration. Whatever is built must still be legible.
+
+**2. Losing the path takes the coupling with it.** The fall strips the flagship's
+scaling, and **the item never says why.** It simply stops being what it was. That is
+the correct shape for all six characters at once — none of them would explain, and a
+weapon quietly becoming ordinary in your hands is a better punishment than any
+message. Consistent with THE SILENCE: the system's worst moments are the ones where
+nothing announces itself.
+
+Implementation note: this must key off the **live path claim**, not off a flag
+written at grant time — otherwise the fall's revoke and the coupling's removal can
+desync, which is the P1 bug in a new costume and would be the fifth place it has
+been born.
+

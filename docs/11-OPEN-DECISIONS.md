@@ -3,7 +3,33 @@
 **Most of this was answered 2026-08-01.** What remains is at the top; the
 answered items are kept below with their resolutions so the reasoning survives.
 
-## NOTHING OPEN
+## OPEN — a second world reset, to redo worldbuilding
+
+**Ethan, 2026-08-13:** *"im halfway kinda wanting to reset the server once again to
+redo worldbuilding but lets finish and get all this working first."*
+
+**Captured, deliberately not scheduled.** The instruction is explicit: finish the
+introductions first. Nothing about it should be acted on, and no current work should
+be shaped around it — except the one place where it genuinely changes a decision:
+
+🚨 **A world reset does I4's job for free.** `26` §I4 exists only to kick all four
+players off their paths so everybody meets their patron properly and pays the entry
+price for the first time. A fresh world does that as a side effect — every player is
+pathless, every claim, cooldown, notoriety and regard value is gone, and the first
+`/path` anyone runs is a real introduction. **So if the reset happens, I4 stops being
+a ceremony and shrinks to a `/path forcereset <player>` admin tool for testing.**
+Build it that way regardless — the tool is useful either way and the ceremony is not.
+
+Two further notes for whenever it is taken up:
+
+* **The path system survives a world wipe.** It is KubeJS + persistent player data,
+  world-agnostic. Worldbuilding, structures and biome work do not touch it.
+* **The live roster dies with the world** — Rehykt=forge, Lehykt=blade,
+  j0nesyboi223=salvage. Anything written against those assignments is temporary.
+
+---
+
+## NOTHING ELSE OPEN
 
 Every decision from the 2026-07-31/08-01 audit and design sessions is answered.
 The build queue lives in `10-DEPTH-LOOP.md` §4.

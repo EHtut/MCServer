@@ -245,6 +245,35 @@
     say('J6.xpEvents', present.length ? 'FOUND' : 'NONE', present.length ? present.join(',') :
       'no xp event on PlayerEvents - the refresh must POLL or hook level-up another way')
 
+    // ------------------------------------------------------------------------
+    // J9 / J10 - are Wall's and Crown's couplings reachable at all?
+    //
+    // Ethan ruled character scaling for both, so these are no longer optional
+    // curiosities: protection for Wall, his court for Crown. Both live inside
+    // another mod's internals, so BOTH ARE EXPECTED TO FAIL. That is planned for -
+    // docs/29 SS7 says an unreachable stat becomes a KubeJS-side equivalent, never a
+    // silent downgrade back to damage. This probe only decides WHICH build happens.
+    //
+    // Enumerate what the runtime actually exposes rather than asserting a guess.
+    // ------------------------------------------------------------------------
+    function probeNamespace(id, label, needles) {
+      var hits = []
+      try {
+        var st = Item.of(id)
+        for (var k in st) {
+          for (var n = 0; n < needles.length; n++) {
+            if (String(k).toLowerCase().indexOf(needles[n]) >= 0) { hits.push(k); break }
+          }
+        }
+      } catch (e) { say(label, 'THREW', String(e).substring(0, 80)); return }
+      say(label, hits.length ? 'SURFACE FOUND' : 'NO SURFACE',
+        hits.length ? hits.slice(0, 8).join(',') : 'nothing on the item exposes it - use the KubeJS-side equivalent')
+    }
+    probeNamespace('securitycraft:universal_block_reinforcer_lvl1', 'J9.wall',
+      ['reinforce', 'strength', 'protect', 'owner'])
+    probeNamespace('goety:dark_wand', 'J10.crown',
+      ['soul', 'energy', 'summon', 'minion', 'servant', 'mana'])
+
     console.info(TAG + 'boot done. J4 + J5b/J7/J8 need a player.')
   })
 
