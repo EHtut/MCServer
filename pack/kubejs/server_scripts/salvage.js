@@ -22,8 +22,16 @@
 //  · AmmoId MUST be namespaced. 'tacz:12g' chambers; '12g' renders as a missing
 //    texture and never gains TaCZ's max_stack_size stamp.
 //  · blindness IS in ritual.js's clear list, so a plain release() wiped the sight
-//    cost. ritual.begin now takes spec.keep, and the sight trade uses it. Without
-//    that probe this trade would have shipped looking perfect and doing nothing.
+//    cost. Without that probe this trade would have shipped looking perfect and
+//    doing nothing.
+//
+// ── TWO BUGS FOUND IN THE FIRST LIVE RUN, 2026-08-15 ─────────────────────────
+//  · the ritual renders options[o].LABEL. This file passed `text`, so all four
+//    options rendered as the word "undefined".
+//  · a scene-level `keep` was WRONG. It applied to every outcome, so refusing -
+//    or being too poor to trade - left the player permanently blind having paid
+//    nothing. A price may only be kept by the choice that actually charged it,
+//    so tradeSight now claims it via VELDORA.ritual.keepOnRelease, on success only.
 //
 // ── ROLLBACK ─────────────────────────────────────────────────────────────────
 // GATE below to false. Nothing else consumes this file; the counter it writes is
@@ -219,6 +227,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         'sight and gave NOTHING. That is a bug, not a bargain.')
     } catch (e) { console.error(TAG + 'powerBoost threw :: ' + e) }
 
+    // Claim the blindness NOW - this is the one outcome entitled to keep it.
+    try {
+      if (!VELDORA.ritual.keepOnRelease(p, ['minecraft:blindness']))
+        console.warn(TAG + 'could not claim the blindness keep - sight may clear early')
+    } catch (e) { console.error(TAG + 'keepOnRelease threw :: ' + e) }
+
     speak(p, TOOK.sight)
     note(p, 'Five minutes. You will not see them coming.')
     return true
@@ -235,11 +249,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (VELDORA.ritual.active(p)) return false
 
     var gun = heldGun(p)
+    // `label` is the ritual's contract. Passing `text` rendered four options as
+    // the word "undefined" - measured live 2026-08-15.
     var options = [
-      { id: 'hunger', text: 'My hunger.' },
-      { id: 'levels', text: gun ? 'My levels.' : 'My levels. §8(hold a gun)' },
-      { id: 'sight', text: 'My sight.' },
-      { id: 'no', text: 'Nothing tonight.' },
+      { id: 'hunger', label: 'My hunger.' },
+      { id: 'levels', label: gun ? 'My levels.' : 'My levels. §8(hold a gun)' },
+      { id: 'sight', label: 'My sight.' },
+      { id: 'no', label: 'Nothing tonight.' },
     ]
 
     return VELDORA.ritual.begin(p, {
@@ -248,9 +264,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         'Give me your sight and i will grant you the power to kill.'],
       options: options,
       holdAfterChoice: 40,
-      // 🚨 The sight trade's whole price is blindness that outlives the scene.
-      // Measured: without this, release() cleared it and she took nothing.
-      keep: ['minecraft:blindness'],
+      // 🚨 NO scene-level `keep`. An earlier version put blindness here and it
+      // applied to EVERY outcome - refusing, a failed trade, being too poor - so a
+      // player who paid nothing was left permanently blind. A price may only be
+      // kept by the choice that actually charged it, so tradeSight sets it itself
+      // via VELDORA.ritual.keepOnRelease, and only on success.
       onChoose: function (player, id) {
         if (id === 'no') { speak(player, pick(REFUSED)); return }
         var ok = false

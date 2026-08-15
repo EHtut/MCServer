@@ -259,7 +259,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           for (var o = 0; o < options.length; o++) {
             // clickRunCommand ONLY. .click(String) throws a Throwable that escapes
             // the JS catch and takes the whole command with it (E0 P3).
-            var line = Text.of('  §f§n' + options[o].label)
+            // `label` is the contract. Accept `text` too rather than rendering the
+            // word "undefined" at a player - E6 passed `text` and four options came
+            // out as `undefined`, which looked like a scene bug rather than a
+            // one-word mismatch. Loud, not silent, and never unreadable.
+            var lab = options[o].label
+            if (lab === undefined || lab === null) lab = options[o].text
+            if (lab === undefined || lab === null) {
+              lab = '(unlabelled option ' + (o + 1) + ')'
+              console.error(TAG + '!! option ' + (o + 1) + ' has neither .label nor .text')
+            }
+            var line = Text.of('  §f§n' + lab)
             try { line = line.clickRunCommand('/ritual pick ' + (o + 1)) } catch (e) {
               console.error(TAG + 'clickRunCommand failed, options are unclickable: ' + e)
             }
@@ -417,6 +427,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     begin: begin,
     release: release,
     active: function (p) { var k = keyOf(p); return !!(k && STATE[k]) },
+
+    // Set what this scene's release must spare, DURING the scene.
+    //
+    // spec.keep on begin() was wrong for E6 and shipped a real bug: it applied to
+    // the whole scene, so blindness survived EVERY outcome - refusing, a failed
+    // trade, running out of levels - and left the player permanently blind for
+    // choices that cost them nothing. A price may only be kept by the choice that
+    // actually charged it.
+    //
+    // Safe to call from inside onChoose: with holdAfterChoice the release is
+    // SCHEDULED and onChoose runs before it fires, so this still lands in time.
+    keepOnRelease: function (p, ids) {
+      var k = keyOf(p)
+      if (!k || !STATE[k]) return false
+      STATE[k].keep = ids || null
+      return true
+    },
   }
 
   // Assert it at boot anyway. A silent failure here does not look like a failure -
