@@ -497,7 +497,35 @@ message. Then take it again and comply.
 
 ---
 
-## E6 — Salvage's economy
+## E6 — Salvage's economy ✅ **BUILT 2026-08-15**
+
+**Built:** `salvage.js` (the three trades) · `counters.js` (**the per-patron counter**,
+Ethan's design — Salvage's debt is its first instance, not a special case) ·
+`gun_ammo.js` (**generated** by `tools/gen_gun_ammo.py`) · `spec.keep` added to
+`ritual.js` · `VELDORA.powerBoost` added to `power.js`.
+**Boot-verified:** 23/23 scripts, all five seams published, 0 errors.
+⚠️ **Not measured** — the trades have never been taken. `/trade_test`.
+
+### What the probes settled, and what each one saved
+
+| probe | answer | what it prevented |
+|---|---|---|
+| **J1** | `stack.get('minecraft:custom_data')` is the accessor; `stack.nbt` is `undefined`. On an empty hand it returns **null** | reading "empty hand" as an error |
+| **J2** | `AmmoId` **must** be namespaced. TaCZ stamps `max_stack_size` onto a stack it recognises — free validation, now asserted in `mintAmmo` | handing out rounds that chamber in nothing |
+| **J3** | **blindness IS in `ritual.js`'s clear list**, so `release()` wiped the sight cost | the sight trade shipping perfect-looking and inert |
+
+### 🚨 Two near-misses inside this chunk
+
+**The gun→ammo map was silently 17% complete.** A held gun reports `GunId` but not
+its calibre, so `gen_gun_ammo.py` reads the jar. First run: **9 guns of 54** — because
+45 of TaCZ's gun files carry `//` and `/* */` comments and a strict `json.loads`
+threw, which the tool counted as "no ammo key". It would have handed the wrong
+calibre to 45 guns, silently. Same JSON5 trap as `instance/config/tectonic.json`.
+**The generator now refuses to write a partial map** rather than emitting one.
+
+**`power.js` never declared `VELDORA`.** It only ever *read* the namespace
+defensively. Publishing `VELDORA.powerBoost` onto an undefined object throws at
+load and takes the whole file with it — caught before the restart, not after.
 
 **Depends on:** E3, E4, E0 P5, P6.
 

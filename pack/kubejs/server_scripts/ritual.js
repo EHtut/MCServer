@@ -91,7 +91,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   //
   // The vanilla command is the proven route - `effect clear` cannot be missing.
   // Failure is now LOUD: a safety path may not fail quietly.
-  function clearEffects(p) {
+  function clearEffects(p, keep) {
     var name = null, srv = null
     try { name = String(p.username) } catch (e) { }
     try { srv = p.server } catch (e) { }
@@ -100,8 +100,29 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         'A player may be left blind and rooted.')
       return false
     }
+    // `keep` is an optional list of effect ids this release must NOT clear.
+    //
+    // Added for E6. Salvage's third trade is "give me your sight and i will grant
+    // you the power to kill", and its price is blindness that FOLLOWS YOU OUT - up
+    // to five minutes, still blind, holding something that kills better. Every
+    // other cost in the design resolves when the scene closes; that one IS the
+    // trade. Measured 2026-08-15 via /salvageprobe sight: blindness is in EFFECTS,
+    // so release() wiped it - the trade would have been built broken and looked
+    // completely fine.
+    //
+    // The primitive stays dumb about WHY, exactly as holdAfterChoice does. It is
+    // told what to spare, never what the scene means by it.
+    var spare = {}
+    if (keep && keep.length) {
+      for (var s = 0; s < keep.length; s++) spare[String(keep[s])] = true
+    }
+
     var failed = 0
     for (var i = 0; i < EFFECTS.length; i++) {
+      if (spare[EFFECTS[i][0]]) {
+        console.info(TAG + 'sparing ' + EFFECTS[i][0] + ' on release - caller asked')
+        continue
+      }
       try {
         // The FIRST clear of the session uses runCommand rather than the silent
         // form, because runCommand returns the command's FEEDBACK TEXT (E0 P12b)
@@ -124,11 +145,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
   var PROVEN = false
 
-  function release(p, why) {
+  // release(p, why)        - clears everything, the old behaviour
+  // release(p, why, keep)  - spares the listed effect ids
+  //
+  // If the caller passes nothing, the scene's own `keep` (from begin's spec) is
+  // used. An explicit [] therefore means "clear everything, I mean it" and is what
+  // the panic button and the login recovery pass.
+  function release(p, why, keep) {
     if (!p) return
-    clearEffects(p)
-    try { p.persistentData.putBoolean(FLAG, false) } catch (e) { }
     var k = keyOf(p)
+    var spare = keep
+    if (spare === undefined) spare = (k && STATE[k] && STATE[k].keep) || null
+    clearEffects(p, spare)
+    try { p.persistentData.putBoolean(FLAG, false) } catch (e) { }
     if (k && STATE[k]) delete STATE[k]
     if (why) console.info(TAG + 'released ' + safeName(p) + ' (' + why + ')')
   }
@@ -191,6 +220,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     STATE[k] = {
       awaiting: false, options: options, hold: hold,
       onChoose: spec.onChoose, onTimeout: spec.onTimeout,
+      // effect ids this scene's own release must not clear - see clearEffects
+      keep: spec.keep || null,
     }
     try { p.persistentData.putBoolean(FLAG, true) } catch (e) { }
     applyEffects(p, whole + MARGIN)
@@ -296,21 +327,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var stuck = false
     try { stuck = p.persistentData.getBoolean(FLAG) } catch (e) { }
     if (!stuck) return
-    release(p, 'LOGIN RECOVERY - was mid-ritual')
+    release(p, 'LOGIN RECOVERY - was mid-ritual', [])
     console.error(TAG + 'recovered ' + safeName(p) + ' from an interrupted ritual. ' +
       'If this fires often, something is ending scenes without releasing.')
     tell(p, '§8You come back to yourself.')
   })
 
   PlayerEvents.loggedOut(function (event) {
-    try { release(event.player, 'logged out') } catch (e) { }
+    try { release(event.player, 'logged out', []) } catch (e) { }
   })
 
   // A death mid-scene would otherwise leave the state map holding a corpse.
   EntityEvents.death(function (event) {
     try {
       var e = event.entity
-      if (e && e.player) release(e, 'died mid-ritual')
+      if (e && e.player) release(e, 'died mid-ritual', [])
     } catch (x) { }
   })
 
@@ -366,7 +397,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // unconditionally while clearing nothing, which is how a broken panic
         // button passed for a working one.
         var ok = clearEffects(p)
-        release(p, 'manual /ritual clear')
+        release(p, 'manual /ritual clear', [])
         p.tell(Text.of(ok ? '§7Released.'
           : '§c/ritual clear could not remove your effects. Tell Ethan, then use /unstuck.'))
         return 1

@@ -84,9 +84,21 @@ Boot-verified: 19/19 scripts, seam published, 0 errors.
    INERT, and announced at boot — because a coefficient nobody reads must never look
    like one that acts.
 
-### 2. E6 — Salvage's economy
+### 2. E6 — Salvage's economy ✅ **BUILT 2026-08-15, NOT YET MEASURED**
 
-`24` calls it *"the proof of the whole design"*.
+`salvage.js` + `counters.js` + generated `gun_ammo.js`, plus `spec.keep` in the
+ritual and `VELDORA.powerBoost` in `power.js`. Boot-verified 23/23, seams up.
+
+**The per-patron counter landed with it** — Ethan's call. Salvage's debt is
+`VELDORA.counter`'s first consumer, not a Salvage special case, so Forge's quota
+uses the same mechanism. `/counters` prints what each patron says you owe.
+
+⚠️ **Test it:** `/trade_test` — take each of the three, confirm the price is actually
+charged, that the ammo chambers, and that **you stay blind after the scene closes.**
+That last one is the whole sight trade and it only works because a probe caught
+`release()` clearing it.
+
+*Original scope, for reference:*
 
 * the three trades: **hunger → life**, **levels → ammo**, **sight → the power to
   kill** (blindness up to 5 min)
