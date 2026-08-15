@@ -400,3 +400,106 @@ largest remaining **act-command** after `/path <name>` (`23` PART V.6).
 **What to watch:** four players, one path each. A player who picks wrong is stuck
 until they disappoint their way out, which is a slow and unpleasant exit. **The
 absence route matters more if this ships** — it becomes the only clean way out.
+---
+
+# PART 10 — THE TWELVE, DRAFTED
+
+*Drafted 2026-08-15. Each event gets its quadrant (`23` §3b), its trust tier, its
+trigger, and what it still needs. **Nothing here is built.***
+
+⚠️ **THE FLOOR APPLIES TO EVERY HOSTILE ONE.** No negative event fires below **75%
+hearts AND hunger** (PART 2.1). He wants the glory of a real fight, not a kill.
+
+## The four he can have almost immediately
+
+These need only the spawner, the voice and the counter — all live.
+
+### 1. THE GAUNTLET — *reckoning* · any tier
+Escalating waves, narrated between them. **The reward for surviving is that he says
+nothing** — so the last wave is followed by a `high_silence` line, or by literal
+silence at low trust.
+**Needs:** `VELDORA.pressure.send()` in a loop with a delay. Nothing new.
+**Scale by tier:** low = 2 waves of 3; high = 5 waves of 6 with a miniboss last.
+
+### 2. ICARUS — *reckoning* · any tier
+**Above y100 he sends fliers.** The one event that punishes going UP, and the only
+one whose trigger is a coordinate.
+**Needs:** a flying roster — phantoms, or Born in Chaos's winged entities. **Verify
+ids at boot**, the spawner does this already.
+🔑 *This is his myth made mechanical and should fire with the Icarus line.*
+
+### 3. HOLLOW VICTORY — *reckoning* · medium+
+A full wave that **drops nothing, announced as such before it starts.**
+**Needs:** a drop suppression flag on spawned mobs, or `EntityEvents.drops` cancelling
+for entities tagged from this wave.
+🔑 *The announcement is the entire event. An unannounced dropless wave is a bug report;
+an announced one is a statement about why you fight.*
+
+### 4. THE BROKEN RUNG — *reckoning* · any tier
+**Three of whatever killed you wait at your respawn.**
+**Needs:** record the killer's entity type on death (`death_cost.js` already hooks
+death), then spawn 3 on respawn. ⚠️ **Must respect the 75% floor** — you respawn at
+full health, so this one is legal by construction, which is neat.
+
+## The four that need one new mechanism each
+
+### 5. FIRST BLOOD — *demand* · low/medium
+The next mob you strike gets **×3 health**. 60 seconds, or the wave arrives.
+**Needs:** a one-shot flag on the next damaged entity + an attribute write. `power.js`
+proves `modifyAttribute` works.
+
+### 6. THE TITHE OF STEEL — *reckoning* · medium+
+**Double durability loss for a day.** Fight with a ruined blade.
+**Needs:** an item-damage hook. ⚠️ **Not in the instrument panel** — `ItemEvents` has
+`destroyed`, not a damage-taken event. **Probe before designing.**
+
+### 7. SHARPEN — *bargain* · any tier ⭐ the clearest 2×2 case
+Temporary damage buff; **spawns quadruple for its duration, stated up front.**
+**Needs:** a potion effect + a timed pressure window. Both live.
+🔑 *This is the one event that is unambiguously a TRADE, and it should use the ritual
+so the price is named before it is paid — exactly like Salvage's.*
+
+### 8. THE DUEL — *reckoning* · high
+**One named elite, no adds.** Flee and he taunts for a full day.
+**Needs:** a single strong spawn with a custom name, suppression of other spawns for
+the duration, and a flee-detection (distance from the spawn point over time).
+
+## The four that need real design first
+
+### 9. UNDERSTUDY — *reckoning* · high
+**A mob mirrors your own gear and stats.**
+**Needs:** reading player attributes and writing them onto a spawn, plus equipping it.
+⚠️ Marked `[M]` in `23` as non-obvious. **The most technically ambitious of the twelve.**
+
+### 10. THE WATCHER — *reckoning* · high
+**He stands at range and does not attack. While he watches, everything else hits
+harder.**
+🚨 **This is the one casualty of retiring the stalker** (`34` §2e) — it genuinely
+needs a persistent present entity. **Rework it as Harvest-adjacent, or as a brief
+timed presence rather than a permanent one.**
+
+### 11. THE MARK — *demand* · any tier ⭐ his signature
+Already specified in **PART 4.5**. Name a rival champion of a hostile god, 1–2 days,
+buff on success, **grumbling on failure and no punishment.**
+**Needs:** the deadline on the world clock, a kill-attribution check, and the three
+line pools — **which are already written and registered** (`mark_declare`,
+`mark_success`, `mark_ignored`).
+⚠️ **Three design questions open:** does the target know, can a player opt out, and
+does the buff reward the kill or the attempt?
+
+### 12. RUN. — *reckoning* · the Harvest
+**Fires once, ever, immediately before the challenge.** Now that the Hunt is a
+challenge rather than a collection (PART 8), it is **not a threat — it is the last
+thing he says before the test begins.**
+**Needs:** the Harvest rework, and a permanent one-shot flag so it can never repeat.
+
+---
+
+## Build order, if it is built
+
+1. **Gauntlet** — proves the wave loop and the tier scaling with zero new mechanism.
+2. **The Mark** — his signature, and its lines already exist.
+3. **Icarus · Broken Rung · Hollow Victory** — cheap once the Gauntlet's plumbing is
+   there.
+4. **Sharpen** — the first true bargain, and the ritual is live.
+5. Everything else, after the Harvest rework settles what The Watcher becomes.

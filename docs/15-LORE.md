@@ -58,6 +58,50 @@ ambient arguments were the first sketch of it.
 
 ---
 
+## 0b. ⏸️ THE DEPTHS — the goddess of death, and the last voice beside her
+
+*Ethan, 2026-08-15. **Captured for later — "we increase the lore for the depths."**
+Not scheduled; the lore gets written once everyone is set up.*
+
+**The undead in the deep are servants of the goddess of death.** As you descend, a
+voice speaks to you. Whispering. Raging.
+
+> *"Stop. Leave."*
+> *"She didn't want this, my goddess. They forced her hand."*
+> *"They called us monsters, undead. We were a family."*
+> *"I'm all that is left by her side, the last of her falsehoods."*
+> *"The church tore us apart, and those gods you worship? They took what was left."*
+> *"Just leave. Please."*
+
+### 🚨 What this does to the world
+
+**It implicates the five.** *"Those gods you worship? They took what was left."* The
+pantheon a champion serves is not innocent of whatever happened down there — so the
+deeper a champion goes, the more the voice tells them their own god is complicit.
+
+That is a much sharper reason to descend than loot, and it gives the strata a moral
+gradient the depth loop never had: **the lower you go, the worse your patron looks.**
+
+* The voice **begs**, and it is the only thing in the world that does. Every god
+  demands. This one says *please*.
+* *"We were a family"* rhymes with Wall's household of the living and the dead —
+  worth deciding whether that is coincidence or connection.
+* **There is a church.** New, and it is neither the gods nor the champions.
+
+### 🔑 It is already in Blade's mouth
+
+His own contextual line for the deep, written by Ethan before this note:
+
+> *"The realms of death. Delve deeper, for we must slay the enemies of that fel
+> goddess."*
+
+**The god of war already calls her fel and already sends you down to kill.** Whether
+he is sending you against *her* enemies or against *her servants* is ambiguous in the
+line as written — and that ambiguity is worth resolving deliberately, because one
+reading makes him her ally and the other makes him her executioner.
+
+---
+
 ## 1. Veldora
 
 The world is old and magical and always has been. Dragons in the high places.
