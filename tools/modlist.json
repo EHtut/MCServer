@@ -221,8 +221,8 @@
       "ars-lumos": "1.3.0",
       "arsdelight": "2.2.2",
       "goety": "3.1.0",
+      "occultism": "1.21.1-neoforge-1.224.2",
       "goety-cataclysm": "1.21.1-1.8.2",
-      "theurgy": "1.21.1-neoforge-1.76.0",
       "relics-mod": "0.10.7.8",
       "artifacts": "13.2.1",
       "enchantment-descriptions": "21.1.10",
@@ -238,8 +238,6 @@
       "legendary-monsters": "1.21.1",
       "bosses-of-mass-destruction-forge": "1.3.3",
       "l_enders-cataclysm": "3.32",
-      "security-craft": "v1.10.2.1",
-      "guard-villagers": "2.4.10",
       "edf-remastered": "5.0.2+mod",
       "better-archeology": "1.21.1-1.3.7",
       "cut-through": "v21.1.0-1.21.1-NeoForge",
@@ -1026,14 +1024,14 @@
           "major"
         ],
         [
+          "occultism",
+          "Summoned spirits bound to jobs - mining, crushing, transport. Minion-based automation, and R7's designed fourth alternative. Wall's anchor alongside Goety: one fights for you, one works for you",
+          "major"
+        ],
+        [
           "goety-cataclysm",
           "Goety and Cataclysm integration",
           "minor"
-        ],
-        [
-          "theurgy",
-          "Classical alchemy - replication and transmutation. The one alchemy system, chosen over Parachymistry and Reactive for depth",
-          "major"
         ],
         [
           "relics-mod",
@@ -1114,16 +1112,6 @@
           "l_enders-cataclysm",
           "Hard dungeons, real bosses, powerful rewards. The combat centrepiece",
           "major"
-        ],
-        [
-          "security-craft",
-          "Cameras, mines, laser grids, keycards - RESTORED under the buried-tech ruling as salvaged security systems from the underground facilities. Also the pack's only real base defence against the horror layer",
-          "major"
-        ],
-        [
-          "guard-villagers",
-          "Hireable village defenders",
-          "minor"
         ],
         [
           "edf-remastered",

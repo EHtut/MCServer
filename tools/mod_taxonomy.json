@@ -1,4 +1,34 @@
 {
+ "wall-minions": [
+  "automaticons",
+  "goety",
+  "goety-cataclysm",
+  "occultism"
+ ],
+ "art-magic": [
+  "ars-creo",
+  "ars-lumos",
+  "ars-nouveau",
+  "arsdelight",
+  "easy-magic",
+  "magic-vibe-decorations"
+ ],
+ "salvage-ranged": [
+  "archers",
+  "archers-expansion",
+  "gunpowder-ore",
+  "ranged-weapon-api",
+  "tacz-1.21.1"
+ ],
+ "blade-melee": [
+  "better-combat",
+  "combat-roll",
+  "cut-through",
+  "epic-knights-shields-armor-and-weapons",
+  "first-person-model",
+  "not-enough-animations",
+  "playeranimator"
+ ],
  "forge-create": [
   "copycats",
   "create",
@@ -28,40 +58,8 @@
   "createbetterfps",
   "numismatics"
  ],
- "art-magic": [
-  "ars-creo",
-  "ars-lumos",
-  "ars-nouveau",
-  "arsdelight",
-  "easy-magic",
-  "magic-vibe-decorations",
-  "runes",
-  "spell-engine",
-  "spell-power"
- ],
- "crown-minions": [
-  "automaticons",
-  "goety",
-  "goety-cataclysm",
-  "guard-villagers"
- ],
- "salvage-guns": [
-  "archers",
-  "archers-expansion",
-  "gunpowder-ore",
-  "ranged-weapon-api",
-  "tacz-1.21.1"
- ],
- "blade-combat": [
-  "better-combat",
-  "combat-roll",
-  "cut-through",
-  "epic-knights-shields-armor-and-weapons",
-  "first-person-model",
-  "not-enough-animations",
-  "playeranimator"
- ],
- "wall-build-resource": [
+ "supplementary": [
+  "artifacts",
   "bellsandwhistles",
   "carry-on",
   "chipped",
@@ -70,12 +68,10 @@
   "interiors",
   "macaws-furniture",
   "macaws-roofs",
-  "medieval-buildings",
-  "oh-the-trees-youll-grow",
-  "security-craft",
+  "relics-mod",
+  "runes",
   "storage-delight",
-  "storagedrawers",
-  "theurgy"
+  "storagedrawers"
  ],
  "worldgen-structures": [
   "ardas-sculks",
@@ -96,10 +92,12 @@
   "improved-pillager-outpost",
   "infernal-expansion-redux",
   "lithostitched",
+  "medieval-buildings",
   "medieval-siege-machines",
   "natures-compass",
   "nether-depths-upgrade",
   "oh-the-biomes-weve-gone",
+  "oh-the-trees-youll-grow",
   "scorchful",
   "seasonhud",
   "serene-seasons",
@@ -190,7 +188,6 @@
  "qol-ui": [
   "accessories",
   "almostunified",
-  "artifacts",
   "better-third-person",
   "betterf3",
   "boat-item-view",
@@ -222,7 +219,6 @@
   "patchouli",
   "polymorph",
   "put-a-plug-in-it-",
-  "relics-mod",
   "searchables",
   "simple-voice-chat",
   "skills",
@@ -300,6 +296,8 @@
   "resourceful-config",
   "resourceful-lib",
   "rhino",
+  "spell-engine",
+  "spell-power",
   "supermartijn642s-config-lib",
   "supermartijn642s-core-lib",
   "yacl",

@@ -4,18 +4,20 @@ MODS = pathlib.Path(r'C:\MCServer\repo\pack\mods')
 names = sorted(p.name[:-8] for p in MODS.glob('*.pw.toml'))
 
 RULES = [
-    ('forge-create', r'^create|^copycats|createaddition|numismatics|^encased|steam'),
-    ('art-magic', r'^ars|arsdelight|irons_spell|irons-spell|spell-engine|spell-power|wizards|elemental-wizards|forcemaster|witcher-rpg|berserker-rpg|runes|easy-magic|magic-vibe'),
-    ('crown-minions', r'^goety|guard-villagers|automaticons'),
-    ('salvage-guns', r'tacz|superb-warfare|point-blank|ranged-weapon|gunpowder-ore|archers'),
-    ('blade-combat', r'epic-knights|better-combat|combat-roll|cut-through|not-enough-anim|playeranim|first-person-model|shield|parry|dodge'),
-    ('wall-build-resource', r'theurgy|chipped|framedblocks|storagedrawers|storage-delight|macaws|handcrafted|medieval-buildings|oh-the-trees|security-craft|carry-on|interiors|bellsandwhistles|copycat|create-deco|decor'),
-    ('worldgen-structures', r'yungs-better|better-archeology|tectonic|biolith|terrablender|biomes|structory|when-dungeons|battle-towers|improved-pillager|formations|hopo-better|medieval-siege|ct-overhaul-village|explorify|structure-pool|lithostitched|galosphere|nether-depths|infernal-expansion|ardas-sculks|deeperdarker|undergarden|abandoned-watchtower|valarian|grim-and-bleak|dungeons|ruined|village|worldgen|natures-compass|explorers-compass|chunky|distanthorizons|serene-seasons|seasonhud|weather-storms|frostiful|scorchful|thermoo|tectonic'),
+    # ---- paths, as ruled by the audit (A1 forge, A2 wall, A3 art all DONE) ----
+    ('wall-minions', r'^goety|^occultism|automaticons'),
+    ('art-magic', r'^ars|arsdelight|easy-magic|magic-vibe'),
+    ('salvage-ranged', r'tacz|superb-warfare|point-blank|ranged-weapon|gunpowder-ore|archers'),
+    ('blade-melee', r'epic-knights|better-combat|combat-roll|cut-through|not-enough-anim|playeranim|first-person-model|shield|parry|dodge'),
+    ('forge-create', r'^create|^copycats|createaddition|numismatics|^encased'),
+    # ---- supplementary: not path-specific, rounds out kits, minimal crafting ----
+    ('supplementary', r'chipped|framedblocks|storagedrawers|storage-delight|macaws|handcrafted|interiors|bellsandwhistles|carry-on|artifacts|relics|^runes|totem'),
+    ('worldgen-structures', r'medieval-buildings|oh-the-trees|let-the-adventure|yungs-better|better-archeology|tectonic|biolith|terrablender|biomes|structory|when-dungeons|battle-towers|improved-pillager|formations|hopo-better|medieval-siege|ct-overhaul-village|explorify|structure-pool|lithostitched|galosphere|nether-depths|infernal-expansion|ardas-sculks|deeperdarker|undergarden|abandoned-watchtower|valarian|grim-and-bleak|dungeons|ruined|village|worldgen|natures-compass|explorers-compass|chunky|distanthorizons|serene-seasons|seasonhud|weather-storms|frostiful|scorchful|thermoo|tectonic'),
     ('mobs-enemies', r'cataclysm|born|mowzies|friends-and-foes|naturalist|iceandfire|jurassic|shineals|prehistoric|legendary-monsters|rottencreatures|mimicked|obsessed|knocker|revervox|bosses-of-mass|in-control|spawn-mod|mutant|guard|critters|cosy-critters|respawning-animals|edf-remastered|deimos|uranus|sable|horror'),
     ('visuals-audio', r'sodium|embeddium|oculus|iris|shader|particle|sound|ambient|dripsounds|subtle-effects|dynamic-lights|3dskinlayers|entity-model|entitytexture|euphoria|fusion|athena|polytone|make_bubbles|moreculling|camerapture|figura|emotecraft|chat-heads|waterframes|watermedia|immersive-paintings|immersive-overlays|darkaroundme|rrls|rsls|item-borders|item-highlighter|advancement-plaques|travelers-titles|rpgtitles|tips|visual|skin|model'),
     ('qol-ui', r'simple-voice-chat|put-a-plug-in-it|jei|emi|patchouli|modonomicon|field-guide|item-descriptions|enchantment-descriptions|justenoughbreeding|inventory-profiles|mouse-tweaks|controlling|searchables|easy-anvils|clumps|trade-cycling|trading-post|appleskin|comforts|carry|zoom|betterf3|better-third-person|boat-item-view|no-chat-reports|polymorph|almostunified|every-compat|lootr|corpse|waystones|camping|farmers-delight|frights-delight|storage-delight|arsdelight|elytra-slot|caelus|curios|accessories|artifacts|relics|skill-tree|skills|toolkit|backpack'),
     ('perf-server', r'lithium|ferrite|modernfix|entityculling|clumps|spark|servercore|saturn|packet-fixer|immediatelyfast|crash-assistant|betterfps|alternate-current|coroutil|chunky|cobweb|data-anchor|prometheus|memory|optim|fps|lmft|smartbrainlib|citadel|puzzles-lib|forgiving-void|no-chat|serverside|velvet|sparkweave|prickle|jupiter|deimos|uranus|sable|glitchcore|shatterbyte|teallib|mru|rpl|platform|prism-lib'),
-    ('library', r'flerovium|libipn|pf-neoforge|lib$|-lib|libs?$|api$|-api|architectury|kotlin|balm|bookshelf|collective|geckolib|azurelib|owo|resourceful|cloth|moonlight|supermartijn|cucumber|placebo|zeta|yacl|fzzy-config|creativecore|dynamic_asset|iceberg|kubejs|rhino|glitchcore|citadel|framework|core$|-core|codec|struct'),
+    ('library', r'flerovium|libipn|pf-neoforge|lib$|-lib|libs?$|api$|-api|architectury|kotlin|balm|bookshelf|collective|geckolib|azurelib|owo|resourceful|cloth|moonlight|supermartijn|cucumber|placebo|zeta|yacl|fzzy-config|creativecore|dynamic_asset|iceberg|kubejs|rhino|glitchcore|citadel|framework|core$|-core|codec|struct|spell-engine|spell-power'),
 ]
 
 buckets = collections.OrderedDict((k, []) for k, _ in RULES)

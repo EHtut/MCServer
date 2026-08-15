@@ -701,11 +701,6 @@ hash = "d42dec80bfb5a534ac0b6971ca80b3310aab9d9a49f6a9f78419ebfddf1b43ab"
 metafile = true
 
 [[files]]
-file = "mods/guard-villagers.pw.toml"
-hash = "3843e6f8c47a3a62759c64a92d33e1527674581f7f7739378b3503ac4864dfc7"
-metafile = true
-
-[[files]]
 file = "mods/gunpowder-ore.pw.toml"
 hash = "52c1fe3a524bdbab51ce4979b44cd5e7892cffe232af262adf45eb7a5fa5a82c"
 metafile = true
@@ -996,6 +991,11 @@ hash = "47aa8ec5f78c4334a6074b3cbb0fead82cfd82294d366c07e1b41933a36f8a39"
 metafile = true
 
 [[files]]
+file = "mods/occultism.pw.toml"
+hash = "bf218bdf040242852b915bb724102350287635e1dcd2c0d08ae8186c8623fdec"
+metafile = true
+
+[[files]]
 file = "mods/oh-the-biomes-weve-gone.pw.toml"
 hash = "fdaa22d49ee4987c2d0c012e24c7b44d50a653519767d18371e8d778c188f184"
 metafile = true
@@ -1171,11 +1171,6 @@ hash = "c7929a9b349aa542cfb3d825ab8229b359ae02633f0f31614983d337ca24b1a4"
 metafile = true
 
 [[files]]
-file = "mods/security-craft.pw.toml"
-hash = "98ac007465eca5728fdcfda196966022ea8ca288e631b631861b5208b9a94562"
-metafile = true
-
-[[files]]
 file = "mods/serene-seasons.pw.toml"
 hash = "73b1e4f6608fcd396acc3e4e7aa753d314c8810ef4caf831ed93d9932d93f896"
 metafile = true
@@ -1323,11 +1318,6 @@ metafile = true
 [[files]]
 file = "mods/thermoo.pw.toml"
 hash = "8c1348b1d5c9bfa48f6a60eb842039d707af76e34c37f6e44ec18aa46cb9c0a2"
-metafile = true
-
-[[files]]
-file = "mods/theurgy.pw.toml"
-hash = "139311865ead8d258c4e9651d315c0dc291dc9a98da9e275bf93f79e47206a55"
 metafile = true
 
 [[files]]
