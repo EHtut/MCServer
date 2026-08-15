@@ -93,21 +93,46 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var today = dayNow(server)
     if (today === null) return null
 
-    var lastDay = getNum(p, K_DAY + patron, -1)
+    // 🚨 persistentData.getInt() RETURNS 0 FOR A MISSING KEY, not a sentinel.
+    // The first version defaulted to -1 and tested `lastDay < 0`, so the "first
+    // sight, anchor rather than judge" branch NEVER RAN: lastDay read 0, and a
+    // brand-new walker measured as 82 days neglected on a day-82 world - straight
+    // past the grace period the guard exists to provide.
+    //
+    // So the day is stored OFFSET BY ONE. 0 now unambiguously means never anchored,
+    // which is the only thing getInt cannot fake.
+    var stored = getNum(p, K_DAY + patron, 0)
     var base = getNum(p, K_BASE + patron, 0)
     var n = getNum(p, K_N + patron, 0)
 
-    // First sight of this walker: anchor rather than judge. Without this the grace
-    // period cannot be measured from anything.
-    if (lastDay < 0) {
+    // First sight of this walker: anchor rather than judge.
+    if (stored === 0) {
       try {
-        p.persistentData.putInt(K_DAY + patron, today)
+        p.persistentData.putInt(K_DAY + patron, today + 1)
         p.persistentData.putInt(K_BASE + patron, counter)
       } catch (e) { }
       return { pressure: 0, delivered: 0, expected: 0, days: 0, n: 0, fresh: true }
     }
+    var lastDay = stored - 1
 
-    var days = Math.max(0, today - lastDay)
+    // ⚠️ THE WORLD CLOCK CAN GO BACKWARDS. Measured 2026-08-15: `time query day`
+    // read 10004 in the morning and 82 in the afternoon, because dayTime is
+    // absolute and /time set rewrites it. Every day-stamp in this design assumes
+    // the number only rises; a stamp from the future makes `days` negative, which
+    // clamps to 0 and silently freezes the ledger forever.
+    //
+    // Re-anchor instead of clamping, and say so once.
+    if (lastDay > today) {
+      console.warn(TAG + 'world clock moved BACKWARDS (stamp ' + lastDay +
+        ' > today ' + today + ') - re-anchoring ' + patron)
+      try {
+        p.persistentData.putInt(K_DAY + patron, today + 1)
+        p.persistentData.putInt(K_BASE + patron, counter)
+      } catch (e) { }
+      return { pressure: 0, delivered: 0, expected: 0, days: 0, n: n, fresh: true }
+    }
+
+    var days = today - lastDay
     var delivered = Math.max(0, counter - base)
     var demand = cfg.demand * (1 + n * ESCALATOR)
     var expected = demand * days
@@ -126,7 +151,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var counter = 0
     try { if (VELDORA.counter) { var c = VELDORA.counter.get(p, patron); if (c !== null) counter = c } } catch (e) { }
     try {
-      if (today !== null) p.persistentData.putInt(K_DAY + patron, today)
+      if (today !== null) p.persistentData.putInt(K_DAY + patron, today + 1)
       p.persistentData.putInt(K_BASE + patron, counter)
       p.persistentData.putInt(K_N + patron, getNum(p, K_N + patron, 0) + 1)
     } catch (e) { console.error(TAG + 'could not settle ' + patron + ' :: ' + e) }
