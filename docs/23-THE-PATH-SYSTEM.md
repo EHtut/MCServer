@@ -475,6 +475,135 @@ typing `/trade_test` to be offered a bargain is.
 prove a thing works without waiting for it — `/trade_test`, `/fall_test`,
 `/whisper_test`, `/ritual test`. The rule is about the *player's* hands.
 
+# PART V.7 — THE INSTRUMENT PANEL: what is trackable, and what can be done
+
+*Compiled 2026-08-15 for E6b and E7, and it turned out to be the substrate for all of
+PART VI. **Read out of the KubeJS jar's constant pool, not guessed** — J6 burned an
+entire probe round because KubeJS resolves event names dynamically, so
+`typeof PlayerEvents.anythingAtAll === 'function'` is `true` for pure nonsense and
+"the event exists" cannot be tested from inside a script.*
+
+---
+
+## 1. WHAT IS TRACKABLE — the complete event surface
+
+Framework members (`common`, `hasResult`, `registryKey`, `supportsTarget`, `server`,
+`client`, `startup`, `modification`) are removed; what remains is every hook a script
+can actually take.
+
+### PlayerEvents
+`advancement` · `chat` · `chestOpened` · `chestClosed` · `cloned` · `decorateChat` ·
+`inventoryChanged` · `inventoryOpened` · `inventoryClosed` · `loggedIn` · `loggedOut` ·
+`respawned` · `stageAdded` · `stageRemoved` · `tick`
+
+### EntityEvents
+`afterHurt` · `beforeHurt` · `checkSpawn` · `death` · `drops` · `spawned`
+
+### BlockEvents
+`placed` · `broken` · `drops` · `leftClicked` · `rightClicked` · `picked` ·
+`blockEntityTick` · `randomTick` · `farmlandTrampled` · `startedFalling` ·
+`stoppedFalling` · `detectorChanged` · `detectorPowered` · `detectorUnpowered`
+
+### ItemEvents
+`crafted` · `smelted` · `pickedUp` · `dropped` · `destroyed` · `foodEaten` ·
+`canPickUp` · `entityInteracted` · `rightClicked` · `firstRightClicked` ·
+`firstLeftClicked` · `dynamicTooltips` · `modifyTooltips`
+
+### LevelEvents
+`beforeExplosion` · `afterExplosion` · `loaded` · `saved` · `unloaded` · `tick`
+
+### Already in use — proven live, not merely listed
+`ServerEvents.loaded` ·`commandRegistry` · `tick` · `EntityEvents.death` ·
+`beforeHurt` · `spawned` · `drops` · `PlayerEvents.loggedIn` · `loggedOut` ·
+`respawned` · `cloned` · `BlockEvents.placed`
+
+---
+
+## 2. 🚨 THREE THINGS THE DESIGN WANTS THAT HAVE NO EVENT
+
+Found by reading PART VI back against the list above. Each needs a **tick sampler**,
+not a hook — and each is cheap, but none is free.
+
+| the design says | the gap |
+|---|---|
+| **Art: *"She wants you to sleep. She wants you to sleep."*** | **There is no sleep event.** Her defining behaviour has no hook. Sample the player's sleeping state on a tick, or detect it via `respawned`/time-skip. |
+| **Art is the explorer; `33` has patrons watching what you DO** | **No movement, distance or biome-entered event.** "Being chosen" needs a position sampler — cheap on a slow tick, but it does not exist. |
+| **Forge pays by what you have BUILT** | `BlockEvents.placed` exists and is already hooked, but nothing accumulates it. **A build counter is a per-patron counter**, which `counters.js` now provides. |
+
+---
+
+## 3. WHAT WE CAN DO — the effect surface
+
+### Proven in this codebase — measured, not assumed
+
+| effect | route | where it is proven |
+|---|---|---|
+| **potion effects** | `potionEffects.add(id, ticks, amp, ambient, particles)` **and** `effect give` | ritual.js, salvage.js |
+| **removing effects** | ⚠️ **`effect clear` ONLY.** `potionEffects.remove()` **DOES NOT EXIST** and threw for nine call sites while logging success | ritual.js |
+| **attributes** | `modifyAttribute(id, key, amount, 'add_value')` — a WRITE OF ZERO is the only removal; `removeModifier` is unusable from Rhino | power.js |
+| **health** | `setHealth`, `heal` | salvage.js, stalker.js |
+| **hunger** | `foodData.foodLevel` read/write | salvage.js (E0 P5) |
+| **experience** | `xpLevel` read/write, `xp set` | salvage.js, fall.js (E0 P6) |
+| **give items** | `p.give(stack)`, `give` command | salvage.js, guidebook.js |
+| **items with data** | `Item.of('id[minecraft:custom_data={…}]', count)` — **second arg is COUNT** | salvage.js |
+| **reading item data** | `stack.get('minecraft:custom_data')`; `stack.nbt` is `undefined` in 1.21 | salvage.js |
+| **spawn a mob** | ⚠️ **`execute at <player> run summon <id> ~dx ~ ~dz`** | the_hunt.js |
+| **aim / disarm a mob** | `setTarget(player)` / `setTarget(null)` | stalker.js, ritual.js |
+| **cancel damage** | `EntityEvents.beforeHurt` → `event.cancel()` | stalker.js |
+| **cancel a spawn** | `EntityEvents.checkSpawn` → cancellable | E0 P9, 828+ observed |
+| **kill an entity** | `kill` command | stalker.js |
+| **clickable chat** | `Text.of(…).clickRunCommand(…)` — ⚠️ `.click(String)` throws a Throwable that escapes a JS catch | ritual.js (E0 P3) |
+| **timers** | `server.scheduleInTicks` | everywhere |
+| **persistent state** | `persistentData` get/put String·Int·Long·Boolean·Compound | everywhere |
+| **the world clock** | `server.overworld().dayTime()` — cumulative, survives restart. **`tickCount` is per-session and silently resets (K9)** | fall.js, counters.js |
+
+### ⚠️ The spawn rule that is easy to get wrong
+
+> **`createEntity().spawn()` BYPASSES `finalizeSpawn`**, which is where Born in Chaos
+> sets its hostility. A stalker spawned that way inherits whatever the default is.
+> **`/summon` is the correct route** and is the one the_hunt.js uses.
+
+Any spawner built for the `spawns` axis or Blade's waves must use `/summon`.
+
+### Available but NOT yet proven here — probe before relying on
+
+Vanilla commands, all reachable through `runCommandSilent`, none exercised yet:
+
+* **`title` / `subtitle` / `actionbar`** — the emphasis ladder (`35` §A).
+  ⚠️ already flagged: *does a title render over blindness?*
+* **`playsound`** — a patron has never made a noise. Probably the single cheapest
+  atmosphere win available.
+* **`particle`** — pointless during blindness, useful otherwise
+* **`weather` / `time set`** — world-scale pressure
+* **`tp`** — displacement as a cost
+* **`bossbar`** — a visible timer for a deadline or a raid. Note `18` recorded that
+  only one of six castings has a native boss bar
+* **`summon tnt` / `LevelEvents.beforeExplosion`** — destructive events, cancellable
+* **`attribute`** command — an alternative to `modifyAttribute` with named modifiers
+* **`damage`** — direct typed damage, 1.21 has it as a real command
+
+---
+
+## 4. WHAT THIS MAKES POSSIBLE — trigger → patron
+
+The point of the inventory: **every patron already has a hook that fits its
+character**, and mostly they are hooks nobody is listening to yet.
+
+| patron | its verb | the hook |
+|---|---|---|
+| **Salvage** — opportunity, *"she profits from your bad night"* | you are in trouble | `EntityEvents.afterHurt` + a health check on `PlayerEvents.tick`; `death`; `foodEaten` for the starving |
+| **Blade** — the test that never ends | you fight | `EntityEvents.death` (already hooked), `afterHurt`, `/summon` for waves |
+| **Forge** — the quota that grows | you produce | `ItemEvents.crafted`, `smelted`, `BlockEvents.placed` — **none of these three is hooked today** |
+| **Wall** — the household | you build and settle | `BlockEvents.placed` (hooked, uncounted), `chestOpened` |
+| **Art** — the nightmare | you sleep, you wander | ⚠️ **no hook exists** — needs a sampler, see §2 |
+
+**E6b's triggers, concretely:** `afterHurt` for mid-combat · a health threshold on
+`tick` for the bad night · `death` for the moment after · `daysSince` on her counter
+for the dry spell. Every one of those is either already hooked or one line.
+
+**E7's raid** needs `/summon` ring-placement, which the_hunt.js already proves, plus
+the counter's `daysSince` — both live.
+
 # PART VI — THE EVENTS
 
 Twelve per path, early/cheap → late/expensive. `[M]` marks a non-obvious hook.
