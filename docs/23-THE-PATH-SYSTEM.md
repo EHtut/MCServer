@@ -607,6 +607,139 @@ it would only resurrect the concept.
 **`puffish_skills` stays** as the per-path tree: the path unlocks its tree, and there
 is no second choice.
 
+# PART V.9 — THE RECKONING ENGINE
+
+*The general form of E7. Designed 2026-08-15, not yet built.*
+
+**One engine, five faces.** The counter is a lifetime tally of your path's verb; the
+engine watches **the rate it moves at**, not the number itself, and fires that
+patron's characteristic collection when you go quiet.
+
+---
+
+## 1. Why the RATE and not the value
+
+The counter is monotonic — a score. `Blade: 340 slain` is legible and feels earned,
+and `/counters` should be a thing a player is glad to look at.
+
+But a score cannot trigger anything, because it only ever goes up. **What a patron
+actually reacts to is whether you are still doing it.**
+
+```
+delivered = counter − counterAtLastReckoning
+expected  = demandRate × daysSince(lastReckoning)
+shortfall = expected − delivered        ← the pressure
+```
+
+**That is Forge's "quota that grows", generalised.** His written mechanic turned out
+to be the engine every patron needed; he is just the one honest enough to call it a
+quota.
+
+## 2. Two modes, and Salvage is the inversion
+
+| mode | pressure from | patrons |
+|---|---|---|
+| **NEGLECT** | the shortfall above — you stopped | Blade · Forge · Wall · Art |
+| **APPETITE** | `delivered` itself — you took too much | **Salvage** |
+
+Salvage is not an exception bolted on; it is the character. *"She profits from your
+bad night."* Every other patron reckons because you went quiet. **She reckons because
+you kept coming back.** One boolean in her row, and the whole difference between
+"serve me" and "need me" is expressed.
+
+## 3. Escalation — the demand grows
+
+`demandRate` is multiplied by a per-reckoning escalator, exactly as notoriety's
+`RATES` grows by `harvestCount`:
+
+> **Forge: *"Compound Interest — every missed quota raises the next by 50%."***
+
+So the general rule is his, too: each reckoning makes the next demand harsher. A
+player who is keeping up never feels it; a player who is drifting feels it compound.
+
+## 4. State
+
+`counters.js` already stores `counter` and its day stamp. The engine adds three:
+
+| key | why |
+|---|---|
+| `lastReckonDay` | the clock the shortfall is measured against |
+| `counterAtLastReckon` | the baseline `delivered` is measured from |
+| `reckonCount` | drives the escalator |
+
+All **world-day** stamped, never `tickCount` (K9).
+
+## 5. The fire step — the only bespoke part
+
+Each patron registers one handler. Everything above is shared.
+
+| patron | reckoning | needs |
+|---|---|---|
+| **Salvage** | **Interest** — her pack collects (`dread_hound_not_despawn`, leader at high debt) | the spawner |
+| **Blade** | the Gauntlet escalating → **"Run."** once, ever | the spawner |
+| **Forge** | **Seizure** — a contraption stops until paid | block/BE interaction |
+| **Wall** | **The Siege** · **The Breach** | the spawner ⚠️ **raids target the CORE, never arbitrary terrain** |
+| **Art** | **"You Did Not Sleep"** — she comes to you | nothing new |
+
+**Four of the five want the spawner**, which confirms it as the next real build.
+
+## 6. The guards — every one of these has already burned this project once
+
+* 🚨 **Zero produces NOTHING.** A player who has never served, and a system that
+  cannot read the counter, must both produce silence — never a default wave. `24`
+  states it for E7; it holds for all five.
+* 🚨 **A grace period.** A walker who took the path an hour ago has a counter of 0
+  and a `daysSince` of 0, which naively reads as maximum neglect. **No reckoning
+  before the first `GRACE_DAYS`.**
+* **One at a time.** Ethan, 2026-08-15. The ritual guard covers overlapping *scenes*;
+  a raid and a seizure are not scenes. The engine holds a single global lock.
+* **Announced.** `23` §2. The counter is visible in `/counters` the whole time, and
+  the reckoning opens with a line before anything spawns.
+* **No clock, no reckoning.** If `dayTime()` is unreadable the shortfall is
+  meaningless — suppress, and say so. Same as E6b.
+* **Never for non-walkers**, and never during another patron's ritual.
+
+## 7. Legibility
+
+`/counters` gains the second half: not just *what you have done* but **what they
+expect**. Something a player can read before it costs them:
+
+```
+salvage   14 trades          she is owed nothing — and interested anyway
+blade    340 slain           expects ~20/day · 3 days quiet · RESTLESS
+forge     88 crafted         expects ~15/day · on pace
+```
+
+**A patron about to reckon should be readable as such.** A raid you saw coming is
+content; the same raid unannounced is a bug report.
+
+## 8. Verification — by measurement, against the live path
+
+* Force a counter and a day stamp to known values, compute the expected shortfall by
+  hand, and confirm the engine agrees **before** wiring any handler.
+* **Confirm zero counter and zero days produce NOTHING**, twice: once for a fresh
+  walker, once with the counter store made deliberately unreadable.
+* Fire one reckoning and confirm the baseline resets so the next shortfall starts
+  from zero rather than immediately re-firing — **the failure mode that would turn a
+  reckoning into a loop.**
+
+## 9. Rollback
+
+One gate per patron plus one global. Gate off and the counters keep counting, which
+means the ledger stays honest even with every reckoning silenced — and that is the
+state to ship in first.
+
+---
+
+## Open
+
+* **Does a reckoning reset the counter, or only the baseline?** Recommend **baseline
+  only** — the tally is a score and should never go down. It also keeps `/counters`
+  meaningful across a whole world.
+* **`demandRate` per patron** — needs play, not argument. Start generous.
+* **Does surviving a reckoning pay it off, or only end it?** Salvage's debt says
+  paid; Blade's test says merely survived, and he sets another.
+
 # PART V.7 — THE INSTRUMENT PANEL
 
 *The build reference for every event in PART VI: what can be **noticed**, what can be
