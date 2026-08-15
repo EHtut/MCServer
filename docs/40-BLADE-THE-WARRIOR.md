@@ -414,7 +414,7 @@ hearts AND hunger** (PART 2.1). He wants the glory of a real fight, not a kill.
 
 These need only the spawner, the voice and the counter — all live.
 
-### 1. THE GAUNTLET — *reckoning* · any tier
+### 1. THE GAUNTLET ✅ **BUILT 2026-08-15** — *reckoning* · any tier
 Escalating waves, narrated between them. **The reward for surviving is that he says
 nothing** — so the last wave is followed by a `high_silence` line, or by literal
 silence at low trust.
@@ -478,7 +478,7 @@ harder.**
 needs a persistent present entity. **Rework it as Harvest-adjacent, or as a brief
 timed presence rather than a permanent one.**
 
-### 11. THE MARK — *demand* · any tier ⭐ his signature
+### 11. THE MARK ✅ **BUILT 2026-08-15** — *demand* · medium+ ⭐ his signature
 Already specified in **PART 4.5**. Name a rival champion of a hostile god, 1–2 days,
 buff on success, **grumbling on failure and no punishment.**
 **Needs:** the deadline on the world clock, a kill-attribution check, and the three
@@ -503,3 +503,53 @@ thing he says before the test begins.**
    there.
 4. **Sharpen** — the first true bargain, and the ritual is live.
 5. Everything else, after the Harvest rework settles what The Watcher becomes.
+
+---
+
+# PART 11 — THE EVENT FRAMEWORK ✅ BUILT 2026-08-15
+
+`godevents.js` is general, like everything else built today. A god registers events;
+the framework owns **the cadence, the one-at-a-time lock, the cooldowns, the
+announcement and the health floor.** It knows nothing about what an event does.
+
+**An event registers:** `id` · `tiers` it may fire at · `hostile` · `cooldown` in
+world days · `weight` · `run(server, player, tier)` returning true if it happened.
+
+### The health floor lives HERE, not in Blade's file
+
+`HEALTH = { blade: { floor: 0.75 } }` — hostile events need **≥75% hearts AND
+hunger**. It sits in the framework because **it is a dial other gods want at the
+other end**: Salvage opens exactly when you are dying. Same setting, opposite value.
+
+⚠️ **Unreadable health is NOT "healthy enough."** A floor that stops guarding when it
+cannot read is not a floor.
+
+### Guards, each a failure this project already had
+
+* **one at a time, globally** — two events on one champion is a bug report
+* **never over a ritual scene**
+* 🚨 **a `run()` returning false does NOT stamp the cooldown.** A failed event must
+  not consume its own slot, or it silently never happens again. The Mark uses this:
+  no rival online is *not* a failure of the event, it is nobody to hate today.
+* **no world clock, no events** — and a stamp from the future is re-anchored, not
+  clamped
+
+### What shipped with it
+
+**THE GAUNTLET** — waves scaled by tier: low 2×3, medium 3×4, **high 5×6 with the
+Fallen Chaos Knight arriving alone as the last wave.** Announced before anything
+spawns. **The reward for surviving is that he says nothing** — except at high trust,
+where he permits himself one oblique line, which is the trust arc paying out.
+
+**THE MARK** — names a rival champion of a hostile god, 2 world days, resolved by
+kill attribution on `EntityEvents.death`. Reward is **Strength + Resistance for 30
+seconds**: maintenance-grade and temporary, because he does not hand out power you
+did not earn. **Expiry costs nothing but a line.**
+
+⚠️ **Only online players are ever marked.** A deadline you cannot act on is a
+punishment rather than a choice.
+
+**`/events`** lists every event and **why each one is or is not eligible** — wrong
+tier, below the floor, or on cooldown. **`/events fire <id>`** forces one, and
+deliberately **still respects the health floor**, because a test that ignores the
+floor tests the wrong thing.
