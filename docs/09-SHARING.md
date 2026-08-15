@@ -7,15 +7,33 @@ machine**. Neither solves the other.
 
 ## 1. The pack — packwiz
 
-Send them this link:
+Send them this link — **this one, and no other:**
 
 ```
-https://raw.githubusercontent.com/EHtut/MCServer/feat/server-buildout/pack/pack.toml
+https://raw.githubusercontent.com/EHtut/MCServer/main/pack/pack.toml
 ```
 
-> Once the pull request is merged, the stable link becomes:
-> `https://raw.githubusercontent.com/EHtut/MCServer/main/pack/pack.toml`
-> Send the merged one if you can — a branch can be deleted, `main` cannot.
+> ### 🚨 The old `feat/server-buildout` link is DEAD. Do not send it.
+>
+> It still resolves, which is what makes it dangerous — it does not error, it
+> quietly installs a different game. Measured 2026-08-15:
+>
+> | | `feat/server-buildout` | `main` |
+> |---|---|---|
+> | mods | **408** | **271** |
+> | behind | **192 commits** | current |
+>
+> Anyone who installed from it has a months-old pack and will be **refused by the
+> server on a mod mismatch** — and the error blames a mod rather than the link, so
+> it reads as a broken mod rather than a stale install.
+>
+> **If a player is having connection trouble, check which link they used first.**
+> The fix is to re-run the installer against the `main` link above; packwiz
+> reconciles to the manifest, removing what was cut as well as adding what is new.
+
+**The link never changes and never needs updating.** It points at the manifest, so
+every push to `main` propagates automatically — players just re-run the installer.
+There is no separate client build to publish and no zip to re-send.
 
 ### Why a link and not a 1.5 GB zip
 
@@ -42,7 +60,19 @@ each player's installer downloads them **from Modrinth directly**. That means:
    ```
 4. Allocate **8 GB** in Edit Instance → Settings → Memory. Not more — Minecraft
    clients gain nothing above it and GC pauses get *longer*.
-5. Launch. It downloads ~380 mods once, then only changed files on later runs.
+5. Launch. It downloads the pack once, then only changed files on later runs.
+
+**Current pack, as of 2026-08-15** (after the eight-stage audit closed):
+
+| | |
+|---|---|
+| mods | **271** — 219 both-sides, 52 client-only |
+| plus | 2 shaderpacks, 3 resourcepacks |
+| download | **1,028 MB** |
+
+*Was 290 mods / ~1,300 MB before the audit. A player who last installed before
+2026-08-15 will have mods that are no longer in the pack — re-running the installer
+removes them, which is exactly why the link is a manifest and not a zip.*
 
 Shader packs are not mods and are not installed by packwiz. See
 `docs/08-CLIENT-PACK.md` — Complementary Unbound is the recommendation, and
