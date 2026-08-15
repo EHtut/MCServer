@@ -74,11 +74,59 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // login recovery, so there is exactly one definition of "released".
   // Safe to call on a player who is not in a ritual - that is the point.
   // ---------------------------------------------------------------------------
+  // 🚨 potionEffects.remove(id) DOES NOT EXIST. Measured live 2026-08-14:
+  //     TypeError: Cannot find function remove in object EntityPotionEffectsJS
+  //
+  // It was the ONLY way this file took effects off, it was wrapped in a silent
+  // catch, and so release() reported "released <player>" while clearing nothing -
+  // for every one of its nine call sites. The panic button logged success and did
+  // nothing. Players escaped a ritual by running /unstuck, which is `kill`.
+  //
+  // Two lessons, and the second is the bigger one:
+  //   1. The whole codebase never once removed an effect, so nothing contradicted
+  //      an invented API. `add` working is not evidence that `remove` exists.
+  //   2. THE THREE RECOVERY LAYERS WERE NEVER INDEPENDENT. The scheduled end,
+  //      loggedOut and the login-flag recovery all funnel through this one
+  //      function. Three layers over a single unproven call is one layer.
+  //
+  // The vanilla command is the proven route - `effect clear` cannot be missing.
+  // Failure is now LOUD: a safety path may not fail quietly.
+  function clearEffects(p) {
+    var name = null, srv = null
+    try { name = String(p.username) } catch (e) { }
+    try { srv = p.server } catch (e) { }
+    if (!srv || !name) {
+      console.error(TAG + '!! CANNOT CLEAR EFFECTS - no server handle or username. ' +
+        'A player may be left blind and rooted.')
+      return false
+    }
+    var failed = 0
+    for (var i = 0; i < EFFECTS.length; i++) {
+      try {
+        // The FIRST clear of the session uses runCommand rather than the silent
+        // form, because runCommand returns the command's FEEDBACK TEXT (E0 P12b)
+        // and runCommandSilent returns undefined for valid and invalid alike (K8).
+        // One line of proof in the log, once, that this actually removes anything -
+        // the previous version's problem was believing itself.
+        if (!PROVEN) {
+          PROVEN = true
+          var fb = srv.runCommand('effect clear ' + name + ' ' + EFFECTS[i][0])
+          console.info(TAG + 'clear proof :: ' + EFFECTS[i][0] + ' -> ' + fb)
+        } else {
+          srv.runCommandSilent('effect clear ' + name + ' ' + EFFECTS[i][0])
+        }
+      } catch (e) {
+        failed++
+        console.error(TAG + '!! effect clear threw for ' + EFFECTS[i][0] + ' :: ' + e)
+      }
+    }
+    return failed === 0
+  }
+  var PROVEN = false
+
   function release(p, why) {
     if (!p) return
-    for (var i = 0; i < EFFECTS.length; i++) {
-      try { p.potionEffects.remove(EFFECTS[i][0]) } catch (e) { }
-    }
+    clearEffects(p)
     try { p.persistentData.putBoolean(FLAG, false) } catch (e) { }
     var k = keyOf(p)
     if (k && STATE[k]) delete STATE[k]
@@ -314,8 +362,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       .then(Commands.literal('clear').executes(function (ctx) {
         var p = ctx.source.player
         if (!p) return 0
+        // Report what actually happened. The old version printed "Released."
+        // unconditionally while clearing nothing, which is how a broken panic
+        // button passed for a working one.
+        var ok = clearEffects(p)
         release(p, 'manual /ritual clear')
-        p.tell(Text.of('§7Released.'))
+        p.tell(Text.of(ok ? '§7Released.'
+          : '§c/ritual clear could not remove your effects. Tell Ethan, then use /unstuck.'))
         return 1
       })))
   })
