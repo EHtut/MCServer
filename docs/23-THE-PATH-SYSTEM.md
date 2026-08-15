@@ -147,6 +147,40 @@ number, so tripling XP would give Blade faster phases *and* more drops *and* mor
 power — strictly the best path. The challenger does not loot; it fights, and
 somebody else arms it. That one coefficient is what makes Blade need Forge.
 
+## 7b. ⭐ ON THE SURFACE, EVERY HOSTILE IS SOMEBODY'S DOING
+
+*Ethan, 2026-08-15: **"i think its fine if there are overworld raids it's kinda
+thematic."*** **Ruled: patron events are NOT confined underground.**
+
+The two-realm thesis is enforced by In Control, measured 2026-08-15:
+
+```json
+{"dimension":"minecraft:overworld","hostile":true,"minheight":40,"result":"deny"}
+{"dimension":"minecraft:overworld","minheight":40,"mod":["born_in_chaos_v1",...],"result":"deny"}
+```
+
+**Every natural hostile above y=40 in the overworld is denied.** `/summon` bypasses
+that, so `spawner.js` reaches the surface — and the consequence is better than the
+rule:
+
+> **Above ground, anything hostile you meet was SENT.** The overworld is quiet by
+> design, so a surface encounter is never weather — it is a patron, and it is
+> personal. The emptiness is what gives the arrival its meaning.
+
+### 🚨 The build consequence: the `spawns` coefficient is a DOWNSTAIRS instrument
+
+The coefficient multiplies **natural** spawns. Above y=40 there are none, so:
+
+| where | Blade's ×4 comes from |
+|---|---|
+| **below y=40 / the Underworld** | the `spawns` **coefficient** — there is natural pressure to multiply |
+| **above y=40** | **only the active spawner.** The coefficient has nothing to act on. |
+
+So the axis and the spawner are **not alternatives** — they are the same intent
+split across two regimes, and a combat path needs both or it is only hunted
+underground. Wire the coefficient for the deep, and let the spawner carry the
+surface.
+
 ## 7a. `spawns` is not a weighting — it is a mechanism, and it now EXISTS
 
 **✅ `spawner.js` BUILT 2026-08-15** — `VELDORA.spawner.wave(player, {ids, count})`.
