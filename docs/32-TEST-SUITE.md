@@ -302,3 +302,109 @@ move proved otherwise** — which is the entire argument for this document.
 
 **Anything that produced no visible effect goes in the notes column as a finding,
 not a blank.**
+
+---
+
+# E6 — SALVAGE'S ECONOMY. Added 2026-08-15, never played.
+
+**Boot-verified only.** 23/23 scripts and five seams published means the code loaded.
+It does not mean a trade charges, that the ammo chambers, or that the debt rises.
+
+## Learn these two first
+
+```
+/ritual clear
+```
+The escape from everything, including **the five-minute blindness** — it passes an
+explicit empty `keep`, so it clears the sight cost too.
+
+```
+/counters
+```
+What each patron says you owe. `salvage 0` before you start.
+
+## Before you begin
+
+* **Eat.** The hunger trade needs 6+ (3 shanks) and refuses below it.
+* **Bank 5+ levels** for the ammo trade.
+* **Have a TaCZ gun.** The ammo trade reads the gun *in your hand* to pick the
+  calibre. Without one the option shows `(hold a gun)` and refuses.
+* ⚠️ **The sight trade blinds you for 5 real minutes** and it is *supposed* to. Do it
+  last, or somewhere safe.
+
+## T20 — the offer opens
+
+```
+/trade_test
+```
+
+- [ ] black screen, four red lines — her opener, then the three offers
+- [ ] **four clickable options**: `My hunger.` `My levels.` `My sight.` `Nothing tonight.`
+- [ ] picking `Nothing tonight.` prints a refusal and releases
+- [ ] `/counters` still shows **nothing** — a refusal must never be billed
+
+## T21 — hunger → life
+
+Take damage first, or the heal has nowhere to go.
+
+- [ ] hunger drops by **3 shanks**
+- [ ] health rises by **3 hearts**
+- [ ] `/counters` shows `salvage 1`
+- [ ] log: `[counter] <you> salvage 0 -> 1 (trade:hunger) day=N`
+
+**If hunger did not move**, the log says `hunger charge did not stick` — the trade
+refuses rather than healing you for free. That is correct behaviour, and a bug
+report.
+
+## T22 — levels → ammo 🔑 the one the probes were for
+
+Hold a gun. Note your level and your ammo count.
+
+- [ ] **5 levels gone**
+- [ ] you receive **30+ rounds matching YOUR gun** (a Glock → `9mm`)
+- [ ] 🚨 **the rounds LOAD INTO THE GUN.** This is the only verdict that counts —
+      a stack that looks right and chambers in nothing is the failure the whole
+      probe existed to prevent
+- [ ] `/counters` → `salvage 2`
+
+**If she says "My supplier let me down"**, `mintAmmo` refused because TaCZ did not
+stamp `max_stack_size` — meaning the calibre was not recognised. Regenerate the map:
+`python tools/gen_gun_ammo.py`.
+
+**Levels are charged only AFTER the ammo exists**, so a mint failure must never cost
+you levels. Check your level did not move in that case.
+
+## T23 — sight → the power to kill ⚠️ 5 REAL MINUTES
+
+- [ ] 🚨 **you are STILL BLIND after the scene closes.** This is the entire trade —
+      every other cost resolves when the ritual ends and this one walks out with you
+- [ ] log: `[ritual] sparing minecraft:blindness on release - caller asked`
+- [ ] `/power` shows your bonuses **doubled** while blind
+- [ ] `/path coefficients` shows the raised `power` number
+- [ ] after ~5 minutes: sight returns, log says `[power] boost expired`, `/power`
+      back to normal
+
+**If the screen clears when the scene ends**, `spec.keep` did not reach
+`clearEffects` — she took your sight and gave you five minutes of nothing.
+
+## T24 — the debt persists
+
+```
+/counters
+```
+Note the number. Restart the server. Log back in.
+
+- [ ] **the number is the same** — it is stored as a world day, never `tickCount`
+- [ ] `(last moved Nd ago)` reads sensibly
+
+## Sweep
+
+```
+grep -aE "\[salvage\]|\[counter\]|\[gunammo\]" C:/MCServer/instance/logs/latest.log
+```
+
+Never acceptable in that output:
+
+```
+grep -aE "did not stick|DID NOT RISE|chamber in nothing|no max_stack_size" C:/MCServer/instance/logs/latest.log
+```

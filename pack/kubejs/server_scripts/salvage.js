@@ -114,7 +114,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var spec = 'tacz:ammo[minecraft:custom_data={AmmoId:"' + ammoId +
       '",AmmoCount:' + rounds + '}]'
     var st = null
-    try { st = Item.of(spec) } catch (e) {
+    // Item.of's SECOND ARGUMENT IS THE COUNT, not NBT (that mistake threw in E0).
+    // Setting the count here rather than via a setCount() call afterwards, because
+    // a setCount that does not exist would sit in a catch and hand out ONE round
+    // while every log line said thirty.
+    try { st = Item.of(spec, rounds) } catch (e) {
       console.error(TAG + 'could not mint ' + spec + ' :: ' + e)
       return null
     }
@@ -127,7 +131,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         'TaCZ does not recognise it. Refusing to hand out rounds that chamber in nothing.')
       return null
     }
-    try { st.setCount(rounds) } catch (e) { }
+    // Assert the count actually took. "I asked for 30" and "there are 30" are
+    // different claims and only the second one is evidence.
+    var got = 0
+    try { got = st.count } catch (e) { }
+    if (got !== rounds) {
+      console.warn(TAG + 'asked for ' + rounds + ' rounds, stack reports ' + got)
+    }
     return st
   }
 
