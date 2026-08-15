@@ -1,7 +1,8 @@
 # The rosters — every mod in the pack, by group
 
-*Regenerated 2026-08-15, after the audit closed. **275 mods.** Source of truth is
-`tools/mod_taxonomy.json`; rulings and reasoning live in `36-THE-MOD-TAXONOMY.md`.*
+*Regenerated 2026-08-15, after the audit closed and the four orphan
+libraries were cut. **271 mods.** Source of truth is `tools/mod_taxonomy.json`;
+rulings and reasoning live in `36-THE-MOD-TAXONOMY.md`.*
 
 | group | mods |
 |---|---|
@@ -18,9 +19,9 @@
 | ENEMIES — hostiles and bosses | 15 |
 | VISUALS and AUDIO | 37 |
 | QUALITY OF LIFE and UI | 39 |
-| PERFORMANCE and SERVER | 32 |
-| LIBRARIES and APIs | 40 |
-| **TOTAL** | **275** |
+| PERFORMANCE and SERVER | 31 |
+| LIBRARIES and APIs | 37 |
+| **TOTAL** | **271** |
 
 ---
 
@@ -292,12 +293,11 @@
 | `trading-post` | 0.1 | both |
 | `waystones` | 1.2 | both |
 
-## PERFORMANCE and SERVER — 32 mods, 20 MB
+## PERFORMANCE and SERVER — 31 mods, 17 MB
 
 | mod | MB | side | dependents |
 |---|---|---|---|
 | `alternate-current` | 0.0 | both | **none** |
-| `citadel--1.21.1-port-` | 2.9 | both | **none** |
 | `cobweb` | 0.4 | both | 2 |
 | `coroutil` | 0.1 | both | 1 |
 | `crash-assistant` | 3.0 | client | **none** |
@@ -329,7 +329,7 @@
 | `teallib` | 0.3 | both | 3 |
 | `velvet-api` | 0.1 | client | 2 |
 
-## LIBRARIES and APIs — 40 mods, 56 MB
+## LIBRARIES and APIs — 37 mods, 55 MB
 
 | mod | MB | side | dependents |
 |---|---|---|---|
@@ -342,7 +342,6 @@
 | `cloth-config` | 1.1 | both | 41 |
 | `creativecore` | 1.2 | both | 1 |
 | `cristel-lib` | 0.6 | both | **none** |
-| `cucumber` | 0.3 | both | **none** |
 | `dragonlib` | 2.0 | both | 1 |
 | `dynamic_asset_generator` | 0.4 | both | 1 |
 | `flerovium` | 0.2 | client | 1 |
@@ -355,11 +354,9 @@
 | `kubejs` | 2.2 | both | 17 |
 | `libipn` | 0.6 | client | 1 |
 | `lionfish-api` | 0.1 | both | 19 |
-| `mmlib` | 0.3 | both | **none** |
 | `monolib` | 0.2 | both | 10 |
 | `moonlight` | 2.0 | both | 9 |
 | `more-rpg-library` | 1.9 | both | 3 |
-| `nexuslib` | 0.1 | both | **none** |
 | `owo-lib` | 1.2 | both | 11 |
 | `pf-neoforge` | 6.8 | client | **none** |
 | `placebo` | 0.3 | both | 4 |
@@ -376,4 +373,9 @@
 
 ---
 
-*Total jar weight on disk: **1018 MB**. Pack download as reported by `gen_pack.py`: **1,031 MB**.*
+*Zero dependents in the two tables above is **not** a defect: standalone
+performance mods act on the game, not on other mods. The four that were
+genuinely orphaned — `citadel`, `cucumber`, `mmlib`, `nexuslib` — were cut
+2026-08-15 and verified by a clean boot.*
+
+*Total jar weight on disk: **1014 MB**. Pack download: **1,028 MB**.*
