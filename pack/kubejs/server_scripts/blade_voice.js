@@ -174,6 +174,26 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "You left the ground. I will remember that longer than you will.",
       "Noted. You had one opponent and chose distance.",
     ],
+    harvest_open: [
+      "It is time. I am sending the best thing I have.",
+      "Everything until now was preparation. This is the test.",
+      "One opponent. Mine. Now we find out.",
+    ],
+    harvest_won: [
+      "It is done. You are ready.",
+      "You beat the best I had. There is nothing left to teach you.",
+      "Stand up. You do not answer to me any more.",
+    ],
+    harvest_offer: [
+      "You could stay. I would not ask twice.",
+      "There is a place here if you want it. Go, if you do not.",
+      "Stay, or go. Either is yours now. That is the whole point.",
+    ],
+    harvest_lost: [
+      "You fell. Get up - the test does not end because you failed it.",
+      "Not yet. Come back to me when you are more than this.",
+      "You lost. Everyone loses this one first.",
+    ],
     // THE MARK. {target} is substituted with the rival champion's name.
     mark_declare: [
       '{target} fights with borrowed strength. Kill them within two days.',

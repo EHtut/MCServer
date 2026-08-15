@@ -232,10 +232,21 @@ twelve, four of the five reckonings, and the chat-only decision.
 ⏳ **No live consumer yet**, by design — it is a primitive like `ritual.js` was before
 I2. `/wave_test <n>` is its harness. **First consumer: E3's `spawns` axis**, then E7.
 
-### 2e. ⭐ RETIRE THE STALKER, KEEP THE HARVEST — ruled 2026-08-15
+### 2e. ⭐ RETIRE THE STALKER, KEEP THE HARVEST ✅ **DONE 2026-08-15**
 
 *Ethan: **"I am thinking we just get rid of the stalker mechanic tbh and just have the
-harvest."*** **`stalker.js` is 1851 lines — the largest file in the build.**
+harvest."***
+
+**Done.** `phase.js` carries the escalation, `harvest.js` carries the collection, and
+`stalker.js` returns at its first line behind `RETIRED = true`.
+
+> **The file is KEPT, not deleted.** Its comments are the record of eight measured
+> findings — the pumpkin's boss bar, the `isMonster()` saga, the `finalizeSpawn`
+> warning, the sticky-edge cap. **Deleting it would delete the reasons.** It returns
+> *before* publishing anything, so it cannot fight `phase.js` over the seam.
+
+**Verified:** 34/34 scripts, `[stalker] RETIRED`, `[phase] escalation LIVE without a
+body`, `[harvest] handlers: blade`. Zero errors.
 
 **The dependency check makes this cheap.** Only two things outside it consume its
 seams, and both are about the Harvest, which survives:

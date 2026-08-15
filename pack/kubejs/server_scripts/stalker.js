@@ -26,6 +26,44 @@
 //  · event.cancel() unwinds by THROWING; inside a try/catch it is swallowed
 //  · attribute ids are minecraft:generic.*
 ;(function () {
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🪦 RETIRED 2026-08-15. Ethan: "I am thinking we just get rid of the stalker
+  // mechanic tbh and just have the harvest."
+  //
+  // The escalation moved to phase.js and the Harvest to harvest.js. What died here
+  // was the LEASH, and only the leash:
+  //
+  //   keepDistance / DIST_NEAR / DIST_FAR · the Helper · owner tagging and the
+  //   bench · the piglin anger rule · the damage veto and its beforeHurt hard
+  //   stops · the detarget sweeps · the recasting migration · C8 stalker-vs-stalker
+  //
+  // Every bug this project produced in the entity half came from that list. The
+  // Helper was culled by its own sweep and had NEVER ONCE HELPED. keepDistance
+  // flung a bench patron a hundred blocks. Minions stayed permanently aggroed. The
+  // hostility veto cancelled damage on every swing because Born in Chaos mobs
+  // cannot be made friendly. None of it was content; all of it was rope.
+  //
+  // And the stalker was the FIRST attempt at "things happen to you". Everything
+  // built 2026-08-15 does it better without a rope: the trades open themselves,
+  // the reckonings collect, the events arrive, the spawner sends waves.
+  //
+  // 🔑 The file is kept rather than deleted because its COMMENTS are the record of
+  // eight separate measured findings - the pumpkin's boss bar, the isMonster()
+  // saga, the finalizeSpawn warning, the sticky-edge cap. Deleting it would delete
+  // the reasons.
+  //
+  // To revive: set RETIRED = false. Expect it to fight phase.js over
+  // VELDORA.stalkerPhase, which is why it returns BEFORE publishing anything.
+  // ═══════════════════════════════════════════════════════════════════════════
+  var RETIRED = true
+  if (RETIRED) {
+    ServerEvents.loaded(function () {
+      console.info('[stalker] RETIRED - escalation is phase.js, the Harvest is ' +
+        'harvest.js. This file publishes nothing and hooks nothing.')
+    })
+    return
+  }
+
   var OWNER = 'veldora_stalker_owner'
   var PATHKEY = 'veldora_stalker_path'
   var BENCH = 'veldora_bench'   // a /patron summon: exempt from distance-keeping

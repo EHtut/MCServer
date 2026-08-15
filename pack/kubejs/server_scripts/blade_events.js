@@ -512,6 +512,93 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return true
   }
 
+
+  // ── THE HARVEST: HIS CHALLENGE ─────────────────────────────────────────────
+  // docs/40 PART 8. Every other god COLLECTS. He GRADUATES you.
+  //
+  // 🔑 It is the only Harvest that can be WON, and that is what separates the god
+  // of war from four gods who feed on you: he wanted a champion, not a meal.
+  //
+  // 🔑 And the offer to stay is the whole character spent at once. He tells you he
+  // does not need you constantly - then at the one moment he could keep you, he
+  // asks.
+  var CHAMPION = 'born_in_chaos_v1:fallen_chaos_knight'
+  var CHAMPION_TAG = 'veldora_harvest_champion'
+  var K_TRIAL = 'veldora_blade_trial'        // uuid of the champion, while it lives
+  var Q = String.fromCharCode(39)            // a single quote that cannot be mangled
+
+  function harvestArrive(server, p) {
+    if (!VELDORA.spawner) return false
+
+    // "Run." - reserved, fires ONCE, and now it is not a threat. It is the last
+    // thing he says before the test begins.
+    if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'harvest_open')
+    try { p.tell(Text.of('§4§lRun.')) } catch (e) { }
+
+    var r = VELDORA.spawner.wave(p, {
+      ids: [CHAMPION], count: 1, minDist: 12, maxDist: 20,
+      // Built with a quote CONSTANT rather than escapes. The NBT wants single
+      // quotes around a JSON text component, and every attempt to escape those
+      // through a tool chain mangled them. A char code cannot be mangled.
+      nbt: '{Tags:["' + CHAMPION_TAG + '"],CustomNameVisible:1b,CustomName:' + Q +
+        '{"text":"The Strongest He Has","color":"dark_red","bold":true}' + Q + '}',
+    })
+    console.info(TAG + 'Harvest champion sent at ' + p.username)
+    return true
+  }
+
+  // Winning is killing it. The tag is how we know which corpse mattered.
+  EntityEvents.death(function (event) {
+    try {
+      var victim = event.entity
+      if (!victim || victim.player) return
+      var tags = null
+      try { tags = victim.tags } catch (x) { return }
+      if (!tags) return
+      var has = false
+      try { has = tags.contains ? tags.contains(CHAMPION_TAG) : (String(tags).indexOf(CHAMPION_TAG) >= 0) } catch (x) { return }
+      if (!has) return
+      var killer = event.source ? event.source.player : null
+      if (!killer) return
+      if (VELDORA.harvest) VELDORA.harvest.resolve(killer.server, killer, true)
+    } catch (e) { console.warn(TAG + 'harvest kill hook threw :: ' + e) }
+  })
+
+  // Losing is dying to it. Dying at all while a Harvest is active counts - he does
+  // not care what technically landed the blow, only that you did not survive it.
+  EntityEvents.death(function (event) {
+    try {
+      var victim = event.entity
+      if (!victim || !victim.player) return
+      if (!VELDORA.harvest || !VELDORA.harvest.active(victim)) return
+      VELDORA.harvest.resolve(victim.server, victim, false)
+    } catch (e) { }
+  })
+
+  function harvestWin(server, p) {
+    // He releases you. The path is set down, and this is the ONE exit that is not
+    // a failure - docs/40 PART 9 leaves the fall and absence as the others.
+    if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'harvest_won')
+    server.scheduleInTicks(60, function () {
+      try { if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'harvest_offer') } catch (e) { }
+    })
+    console.info(TAG + p.username + ' WON the Harvest - released, and offered the stay')
+  }
+
+  function harvestLose(server, p) {
+    // A trust hit, and it is INTENDED. The test is meant to be failed before it is
+    // passed - a setback, never a revocation.
+    if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'harvest_lost')
+    try {
+      if (VELDORA.counter) {
+        var cur = VELDORA.counter.get(p, GOD)
+        if (cur !== null) VELDORA.counter.add(p, GOD, -Math.ceil(cur * 0.25), 'harvest lost')
+      }
+    } catch (e) { console.warn(TAG + 'trust hit failed :: ' + e) }
+    console.info(TAG + p.username + ' lost the Harvest - trust down a quarter, path kept')
+  }
+
+
   ServerEvents.loaded(function (event) {
     if (!VELDORA.events) { console.error(TAG + 'godevents.js missing'); return }
     VELDORA.events.register(GOD, {
@@ -546,6 +633,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       id: 'duel', hostile: true, cooldown: 4, weight: 2,
       tiers: ['high'], run: runDuel,
     })
+    if (VELDORA.harvest) {
+      VELDORA.harvest.register(GOD, {
+        arrive: harvestArrive, onWin: harvestWin, onLose: harvestLose,
+      })
+    } else console.error(TAG + 'harvest.js missing - his Harvest will not arrive')
     markSweep(event.server)
     console.info(TAG + 'The Warrior sends: gauntlet, icarus (above y' + ICARUS_Y +
       '), hollow (drops nothing), broken_rung (on respawn), mark (' + MARK_DAYS +
