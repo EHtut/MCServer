@@ -232,6 +232,39 @@ twelve, four of the five reckonings, and the chat-only decision.
 ⏳ **No live consumer yet**, by design — it is a primitive like `ritual.js` was before
 I2. `/wave_test <n>` is its harness. **First consumer: E3's `spawns` axis**, then E7.
 
+### 3. E7 / THE RECKONING ENGINE ✅ **BUILT 2026-08-15**
+
+`reckoning.js` (the engine) + `counter_hooks.js` (the four missing counters).
+**E7 is not Salvage's raid — it is the general engine, with Interest as its first
+consumer**, exactly as the counter was.
+
+**Pressure is the RATE, not the value:**
+```
+delivered = counter − counterAtLastReckoning
+expected  = demandRate × daysSince
+shortfall = expected − delivered
+```
+**NEGLECT** (blade/forge/wall/art) uses the shortfall; **APPETITE** (salvage) uses
+`delivered` itself, because pleasing her *is* accruing debt. Escalator **+50% per
+reckoning** — Forge's *Compound Interest*, generalised.
+
+**Shipped with only Salvage collecting.** The other four **count but do not
+collect** — the honest first state from `23` PART V.9 §9: the ledger stays truthful
+while the demand rates get real play data. Boot prints
+`collecting: salvage | counting but NOT collecting: blade, forge, wall, art`.
+
+**The counters now all exist** (`counter_hooks.js`): blade `death`+`isMonster()` ·
+forge `crafted`+`smelted` · wall `placed` · art **new biomes, sampled**, each biome
+counting once. Salvage's trades stay in `salvage.js`.
+
+**Guards, each one a failure this project already had:** zero pressure sends nothing ·
+a **2-day grace** so a fresh walker is not reckoned on their first hour · one at a
+time across all patrons · announced · no clock, no reckoning · **a reckoning that
+fails to fire does NOT settle**, so pressure is never forgiven for free.
+
+**`/reckoning`** prints delivered, expected, pressure and how close you are.
+**`/reckon_test`** forces one.
+
 ### 3. E7 — Interest: the first raid
 
 The debt comes due; raid size scales with trades since the last one.
