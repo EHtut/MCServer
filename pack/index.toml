@@ -816,11 +816,6 @@ hash = "1adf24c4207f2e7c99be3b5d4aaef206fbc3725441c14e1f7ea77d2648fc10ee"
 metafile = true
 
 [[files]]
-file = "mods/legendary-monsters.pw.toml"
-hash = "1ee600f7d8adbb9fd09b5d9d651becebfeff534933cb14bc55fae04886cbe4c0"
-metafile = true
-
-[[files]]
 file = "mods/lets-do-camping.pw.toml"
 hash = "cae22ec478fcb3c27c3092cf76508e6d631089301ef606c92850682a889b915f"
 metafile = true
