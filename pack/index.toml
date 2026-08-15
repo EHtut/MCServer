@@ -921,11 +921,6 @@ hash = "96892a94024be0a16de0f65bb3388bd07d19cb43a7179cd5bedcedfe4023d13e"
 metafile = true
 
 [[files]]
-file = "mods/mimicked.pw.toml"
-hash = "6c380063053bdea888a5d00d0fa10a3b08baa5071b462adccd52b5e090093ca3"
-metafile = true
-
-[[files]]
 file = "mods/mmlib.pw.toml"
 hash = "65db1262f3d0823a0795b8b38328c0eceeb4632892f7c168e3c8e6abf4638735"
 metafile = true

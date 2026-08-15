@@ -132,8 +132,15 @@ Patrons pick you by watching what you do. Fixes the flaw that the player typing
 
 * **The emphasis ladder** (`33` §A) — titles for the moment the world changes.
   ⚠️ probe first: does a title render over blindness?
-* **First-join world introduction** (`33` §B) — establish the descent, the watching
-  and the deathlessness once, so no patron has to.
+* ⭐ **THE ARRIVAL** (`37`) — **Ethan has written the scene**, canon. The patrons
+  argue over you on first join while you cannot see. Supersedes the first-join
+  introduction idea in `33` §B and is better than it: you learn the world from how
+  they disagree, not from exposition. The ritual primitive already does the hard
+  part.
+* ⭐ **Ambient patron arguments** (`37` §4) — openers + rebuttals, combinatorial,
+  while you stay pathless. **This is the player-facing surface of "being chosen"** —
+  the arguments are the patrons deciding out loud, so when one arrives you already
+  heard them win.
 * **The six "of Veldora" lines** (`30` §5.1) — one line per patron that could only be
   said here. Cheapest, highest value per word.
 * **Salvage's gun is Vault tech** (`30` §5.2) — one line welds two pillars.

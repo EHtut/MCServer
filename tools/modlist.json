@@ -249,7 +249,6 @@
       "the-knocker": "1.5.2",
       "obsessed": "1.5.1e",
       "server-side-horror": "1.21.1-neoforge-4.2",
-      "mimicked": "2.0.0",
       "frights-delight": "neoforge-1.21.1-1.4.8",
       "rottencreatures": "1.21.1-1.1.2",
       "borninchaos": "1.7.6",
@@ -1184,11 +1183,6 @@
         [
           "server-side-horror",
           "Fully configurable ambient horror, server-side. Pure DM surface: events without client mods",
-          "major"
-        ],
-        [
-          "mimicked",
-          "Voice-mimicking horror atmosphere",
           "major"
         ],
         [
