@@ -83,7 +83,6 @@
   "infernal-expansion-redux",
   "lithostitched",
   "nether-depths-upgrade",
-  "oh-the-biomes-weve-gone",
   "scorchful",
   "serene-seasons",
   "terrablender",
@@ -115,7 +114,6 @@
   "explorers-compass",
   "formations",
   "natures-compass",
-  "oh-the-trees-youll-grow",
   "seasonhud",
   "structure-pool-api",
   "tectonic",
@@ -273,7 +271,6 @@
   "bundle-api",
   "cerbons-api",
   "cloth-config",
-  "corgilib",
   "creativecore",
   "cristel-lib",
   "cucumber",
@@ -308,5 +305,7 @@
   "yungs-api",
   "zeta"
  ],
- "UNCLASSIFIED": []
+ "UNCLASSIFIED": [
+  "regions-unexplored"
+ ]
 }

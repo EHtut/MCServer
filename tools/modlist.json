@@ -132,7 +132,6 @@
       "playeranimator": "2.0.4+1.21.1-forge",
       "smartbrainlib": "1.16.11",
       "creativecore": "2.13.41",
-      "corgilib": "1.21.1-5.0.0.9-NeoForge",
       "glitchcore": "2.1.0.2",
       "athena-ctm": "4.0.6",
       "searchables": "1.0.2",
@@ -173,7 +172,6 @@
       "data-anchor": "2.0.0.14-neoforge",
       "platform": "1.3.3",
       "velvet-api": "0.5.1+NeoForge",
-      "oh-the-trees-youll-grow": "1.21.1-5.3.2-NeoForge",
       "citadel-(1.21.1-port)": "2.7.6",
       "zeta": "1.1-40",
       "libipn": "neoforge-1.21.1-6.6.3",
@@ -221,6 +219,7 @@
       "ars-lumos": "1.3.0",
       "arsdelight": "2.2.2",
       "goety": "3.1.0",
+      "regions-unexplored": "0.6.2-neoforge-21.1",
       "occultism": "1.21.1-neoforge-1.224.2",
       "goety-cataclysm": "1.21.1-1.8.2",
       "relics-mod": "0.10.7.8",
@@ -260,7 +259,6 @@
       "scorchful": "0.15.2+1.21.1-neoforge",
       "corpse": "neoforge-1.21.1-1.1.13",
       "grim-and-bleak": "2.5.2",
-      "oh-the-biomes-weve-gone": "2.6.0-NeoForge",
       "yungs-better-dungeons": "1.21.1-NeoForge-5.1.4",
       "yungs-better-mineshafts": "1.21.1-NeoForge-5.1.1",
       "yungs-better-strongholds": "1.21.1-NeoForge-5.1.3",
@@ -514,11 +512,6 @@
           "core"
         ],
         [
-          "corgilib",
-          "Library for several worldgen and mob mods",
-          "core"
-        ],
-        [
           "glitchcore",
           "TerraBlender-adjacent library",
           "core"
@@ -726,11 +719,6 @@
         [
           "velvet-api",
           "Required by scorchful",
-          "core"
-        ],
-        [
-          "oh-the-trees-youll-grow",
-          "Required by oh-the-biomes-weve-gone",
           "core"
         ],
         [
@@ -1019,6 +1007,11 @@
           "minor"
         ],
         [
+          "regions-unexplored",
+          "The biome layer - 198 biomes, 39 wood sets, one dependency. Replaced Oh The Biomes We've Gone 2026-08-14: lighter (6.1 vs 19.5 MB), more biomes, more woods, and retires three dependencies",
+          "major"
+        ],
+        [
           "goety",
           "Necromancy and dark rituals. Sits exactly on the magic/horror seam",
           "major"
@@ -1238,11 +1231,6 @@
     "world-structures": {
       "desc": "Worldgen and structures, chosen as ONE coherent set: BWG for biomes, the YUNG suite for vanilla structure overhauls, and a small number of dungeon and settlement mods. Deliberately not stacking competing terrain generators.",
       "mods": [
-        [
-          "oh-the-biomes-weve-gone",
-          "The biome layer - 50+ biomes, TerraBlender-based",
-          "major"
-        ],
         [
           "yungs-better-dungeons",
           "Vanilla dungeons made worth entering",
