@@ -194,6 +194,31 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "Not yet. Come back to me when you are more than this.",
       "You lost. Everyone loses this one first.",
     ],
+    tithe: [
+      "Your steel owes me. It will wear twice as fast until it has paid.",
+      "A day of doubled wear. Fight anyway.",
+      "Everything you swing is on loan. I am calling in the interest.",
+    ],
+    tithe_over: [
+      "Your steel is your own again.",
+      "The debt is paid. Look after it better.",
+      "Done. It held, or it did not.",
+    ],
+    understudy: [
+      "I made one of you. Let us see which is better.",
+      "It has your health, your reach, your weapon. Nothing else.",
+      "Fight yourself. Most champions lose.",
+    ],
+    watcher: [
+      "I am going to stand here and watch. Do not mind me.",
+      "I will not lift a hand. Everything else will lift two.",
+      "Consider yourself observed. It will make the rest bolder.",
+    ],
+    watcher_gone: [
+      "Enough. I have seen what I came to see.",
+      "I am done watching.",
+      "That will do. For now.",
+    ],
     // THE MARK. {target} is substituted with the rival champion's name.
     mark_declare: [
       '{target} fights with borrowed strength. Kill them within two days.',

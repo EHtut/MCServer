@@ -556,7 +556,7 @@ floor tests the wrong thing.
 
 ---
 
-# PART 12 — EIGHT OF TWELVE, BUILT 2026-08-15
+# PART 12 — ALL TWELVE, BUILT 2026-08-15
 
 | event | tiers | how it fires |
 |---|---|---|
@@ -628,3 +628,54 @@ ambitious of the twelve.
 
 **The Watcher · Run.** — both need the **Harvest rework** (`34` §2e), because both
 depend on a present body and Blade's Harvest is becoming a challenge (PART 8).
+
+---
+
+# PART 13 — ✅ THE TWELVE ARE COMPLETE
+
+**11 registered events + the Harvest.** `[events] framework LIVE - 11 events`,
+`[blade] 137 fixed + 46 contextual + 616 combinatorial across 45 tags`.
+
+| | event | tiers | shape |
+|---|---|---|---|
+| 1 | Gauntlet | all | reckoning · waves scale by trust |
+| 2 | Icarus | all | reckoning · **guarded on y≥100** |
+| 3 | The Duel | high | reckoning · fleeing earns only a taunt |
+| 4 | First Blood | all | demand · **two-staged, both stages cost** |
+| 5 | Blindfold | — | *folded into the Gauntlet's announce* |
+| 6 | **The Tithe of Steel** | medium+ | reckoning · **sampled, not hooked** |
+| 7 | Hollow Victory | medium+ | reckoning · tagged wave, drops cancelled |
+| 8 | **The Watcher** | medium+ | reckoning · **a bounded presence** |
+| 9 | **Understudy** | high | reckoning · attributes written at summon |
+| 10 | The Broken Rung | all | reckoning · **reactive, on respawn** |
+| 11 | Sharpen | all | ⭐ **bargain, through the ritual** |
+| 12 | **Run.** | — | **the Harvest opener** (PART 8) |
+
+## The three that finished it
+
+**THE TITHE OF STEEL — sampled, because there is no hook.** `ItemEvents` has nothing
+that fires when an item *takes* damage, only when it is destroyed. So it watches the
+held item's damage each second and, when it rises by *d*, adds another *d*.
+
+⚠️ **It never lands the killing blow.** The added damage is capped so the item always
+survives at 1 durability — the player's own next swing breaks it. **Doubling someone's
+wear is the event; reaching into their inventory and destroying an enchanted weapon is
+a bug report wearing an event's name**, and the whole difference is who struck last.
+
+**UNDERSTUDY writes attributes at SUMMON, not after.** A spawned entity is not
+queryable in the tick it is created — the spawner learned that when its own
+measurement read zero with four hounds standing in the ring. Setting them in the NBT
+sidesteps the race. It mirrors health, damage, armour and your held weapon, and
+**deliberately not your enchantments**: an Understudy swinging your own Sharpness V is
+not a mirror, it is a punishment.
+
+**THE WATCHER came back smaller, and that is why it works.** It was the one casualty
+of retiring the stalker. The stalker was a **permanent** presence on a leash, and the
+leash produced every entity bug in the project. This is a **bounded** one — it arrives,
+watches for ninety seconds, and dies.
+
+> **A presence with an end time is not a leash.**
+
+While it watches it clears its own target **every sweep, not once** — `stalker.js`
+proved a single clear is cosmetic, because the AI re-acquires between sweeps and
+swings. And everything else within 32 blocks gets Strength.

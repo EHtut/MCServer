@@ -599,6 +599,237 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
 
+
+  // ── THE TITHE OF STEEL ─────────────────────────────────────────────────────
+  // docs/23 PART VI #6: "double durability loss for a day. Fight with a ruined
+  // blade."
+  //
+  // 🚨 THERE IS NO ITEM-DAMAGE EVENT. Checked against the whole ItemEvents registry
+  // (23 PART V.7): crafted, smelted, pickedUp, dropped, destroyed, foodEaten,
+  // canPickUp, entityInteracted, the clicks, tooltips. Nothing fires when an item
+  // TAKES damage - only when it is finally destroyed.
+  //
+  // So it is SAMPLED, not hooked: watch the held item's damage on a tick, and when
+  // it rises by d, add another d. That is genuinely double loss rather than an
+  // approximation of it.
+  //
+  // ⚠️ IT NEVER LANDS THE KILLING BLOW. Our added damage is capped so the item
+  // always survives with at least 1 durability - the player's own next swing
+  // breaks it. Doubling someone's wear is the event; reaching into their inventory
+  // and destroying an enchanted weapon outright is a bug report wearing an event's
+  // name, and the difference is entirely in who struck last.
+  var TITHE_DAYS = 1
+  var TITHE_TICK = 20                        // 1s - fine enough to catch each swing
+  var K_TITHE = 'veldora_tithe_until'        // world day, offset by one
+  var titheSeen = {}                         // uuid -> {id, dmg}
+
+  function runTithe(server, p, tier) {
+    var today = dayNow(server)
+    if (today === null) return false
+    try { p.persistentData.putInt(K_TITHE, today + TITHE_DAYS + 1) } catch (e) { return false }
+    if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'tithe')
+    console.info(TAG + 'Tithe of Steel on ' + p.username + ' until day ' + (today + TITHE_DAYS))
+    return true
+  }
+
+  function titheActive(p, today) {
+    var v = 0
+    try { v = p.persistentData.getInt(K_TITHE) } catch (e) { return false }
+    if (!v) return false
+    var until = v - 1
+    // A stamp from the future means the clock moved (admins run /time set).
+    if (until - today > TITHE_DAYS) {
+      try { p.persistentData.putInt(K_TITHE, 0) } catch (e) { }
+      return false
+    }
+    if (today > until) {
+      try { p.persistentData.putInt(K_TITHE, 0) } catch (e) { }
+      if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'tithe_over')
+      return false
+    }
+    return true
+  }
+
+  function titheSweep(server) {
+    try {
+      var today = dayNow(server)
+      var players = server.players
+      for (var i = 0; i < players.length; i++) {
+        var p = players[i]
+        var uuid = null
+        try { uuid = String(p.uuid) } catch (e) { continue }
+        if (today === null || !titheActive(p, today)) { delete titheSeen[uuid]; continue }
+
+        var st = null
+        try { st = p.mainHandItem } catch (e) { continue }
+        if (!st) { delete titheSeen[uuid]; continue }
+        var id = '', dmg = null, max = 0
+        try { id = String(st.id) } catch (e) { continue }
+        if (!id || id === 'minecraft:air') { delete titheSeen[uuid]; continue }
+        try { dmg = st.damageValue; max = st.maxDamage } catch (e) { }
+        if (typeof dmg !== 'number' || typeof max !== 'number' || max <= 0) {
+          delete titheSeen[uuid]
+          continue
+        }
+
+        var prev = titheSeen[uuid]
+        // A different item means a different history - never carry a delta across
+        // a swap, or sheathing a pickaxe would "cost" the sword its wear.
+        if (!prev || prev.id !== id) { titheSeen[uuid] = { id: id, dmg: dmg }; continue }
+
+        var d = dmg - prev.dmg
+        if (d > 0) {
+          // Cap so at least 1 durability survives. We double the wear; we do not
+          // land the final blow.
+          var room = (max - 1) - dmg
+          var add = Math.max(0, Math.min(d, room))
+          if (add > 0) {
+            try { st.damageValue = dmg + add } catch (e) { }
+            try { dmg = st.damageValue } catch (e) { }
+          }
+        }
+        titheSeen[uuid] = { id: id, dmg: dmg }
+      }
+    } catch (e) { console.warn(TAG + 'titheSweep threw :: ' + e) }
+    server.scheduleInTicks(TITHE_TICK, function () { titheSweep(server) })
+  }
+
+  // ── UNDERSTUDY ─────────────────────────────────────────────────────────────
+  // docs/23 PART VI #9: "a mob mirrors your own gear and stats." Marked [M] in the
+  // design as the non-obvious one, and it is.
+  //
+  // Attributes are written through the SUMMON NBT rather than modifyAttribute after
+  // the fact, because a spawned entity is not queryable in the tick it is created -
+  // the spawner learned that when its own measurement read zero with four hounds
+  // standing in the ring. Setting them at creation sidesteps the race entirely.
+  //
+  // It mirrors what it can reach honestly: health, damage, armour, and the weapon
+  // in your hand. It does not clone your enchantments - an Understudy that swings
+  // your own Sharpness V is not a mirror, it is a punishment.
+  var UNDERSTUDY_BASE = 'born_in_chaos_v1:fallen_chaos_knight'
+  var UNDERSTUDY_TAG = 'veldora_understudy'
+
+  function attrOf(p, id, dflt) {
+    try {
+      var v = p.getAttribute(id).getValue()
+      return (typeof v === 'number' && isFinite(v)) ? v : dflt
+    } catch (e) { return dflt }
+  }
+
+  function runUnderstudy(server, p, tier) {
+    var hp = attrOf(p, 'minecraft:generic.max_health', 20)
+    var dmg = attrOf(p, 'minecraft:generic.attack_damage', 1)
+    var arm = attrOf(p, 'minecraft:generic.armor', 0)
+
+    var weapon = ''
+    try {
+      var st = p.mainHandItem
+      var wid = st ? String(st.id) : ''
+      if (wid && wid !== 'minecraft:air') weapon = wid
+    } catch (e) { }
+
+    var name = '?'
+    try { name = String(p.username) } catch (e) { return false }
+
+    if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'understudy')
+
+    var nbt = '{Tags:["' + UNDERSTUDY_TAG + '"],CustomNameVisible:1b,' +
+      'CustomName:' + Q + '{"text":"' + name + '","color":"dark_red","bold":true}' + Q + ',' +
+      'Health:' + Math.round(hp) + 'f,' +
+      'Attributes:[' +
+        '{id:"minecraft:generic.max_health",base:' + Math.round(hp) + '},' +
+        '{id:"minecraft:generic.attack_damage",base:' + (Math.round(dmg * 10) / 10) + '},' +
+        '{id:"minecraft:generic.armor",base:' + Math.round(arm) + '}' +
+      ']' +
+      (weapon ? ',HandItems:[{id:"' + weapon + '",count:1},{}]' : '') +
+      '}'
+
+    if (!VELDORA.spawner) return false
+    VELDORA.spawner.wave(p, {
+      ids: [UNDERSTUDY_BASE], count: 1, minDist: 10, maxDist: 16, nbt: nbt,
+    })
+    console.info(TAG + 'Understudy of ' + name + ' - hp ' + Math.round(hp) +
+      ', dmg ' + (Math.round(dmg * 10) / 10) + ', armour ' + Math.round(arm) +
+      (weapon ? ', holding ' + weapon : ', empty-handed'))
+    return true
+  }
+
+
+  // ── THE WATCHER ────────────────────────────────────────────────────────────
+  // docs/23 PART VI #8: "he stands at range and does not attack. While he watches,
+  // everything else hits harder."
+  //
+  // ⭐ THE ONE EVENT THE RETIRED STALKER TOOK WITH IT - and it comes back smaller.
+  // The stalker was a PERMANENT presence on a leash, and the leash is what produced
+  // every entity bug in the project. This is a BOUNDED one: it arrives, it watches
+  // for ninety seconds, and it goes. No keepDistance, no owner tag, no migration.
+  //
+  // A presence with an end time is not a leash. That distinction is the whole
+  // reason this is buildable again.
+  var WATCH_TAG = 'veldora_watcher'
+  var WATCH_SECONDS = 90
+  var WATCH_TICK = 40
+  var WATCH_RADIUS = 32
+
+  function runWatcher(server, p, tier) {
+    if (!VELDORA.spawner) return false
+    if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'watcher')
+
+    VELDORA.spawner.wave(p, {
+      ids: [CHAMPION], count: 1, minDist: 20, maxDist: 28,
+      nbt: '{Tags:["' + WATCH_TAG + '"],CustomNameVisible:1b,Silent:1b,' +
+        'CustomName:' + Q + '{"text":"The Challenger","color":"dark_red","bold":true}' + Q + '}',
+    })
+
+    var ticks = 0
+    function watch() {
+      try {
+        ticks += WATCH_TICK
+        var done = ticks >= WATCH_SECONDS * 20
+        var near = p.level.getEntitiesWithin(p.boundingBox.inflate(WATCH_RADIUS))
+        var watcher = null
+        for (var i = 0; i < near.length; i++) {
+          var e = near[i]
+          if (!e || e.player) continue
+          var tags = null
+          try { tags = e.tags } catch (x) { continue }
+          var isWatcher = false
+          try {
+            isWatcher = tags && (tags.contains ? tags.contains(WATCH_TAG)
+                                               : String(tags).indexOf(WATCH_TAG) >= 0)
+          } catch (x) { }
+          if (isWatcher) {
+            watcher = e
+            // HE DOES NOT ATTACK. Cleared every sweep rather than once, because a
+            // single clear is cosmetic - stalker.js proved that the hard way: its
+            // AI re-acquires between sweeps and swings.
+            try { e.setTarget(null) } catch (x) { }
+            if (done) { try { e.kill() } catch (x) { } }
+            continue
+          }
+          // While he watches, everything else hits harder.
+          if (!done) {
+            try { e.potionEffects.add('minecraft:strength', WATCH_TICK + 20, 0, false, false) } catch (x) { }
+          }
+        }
+        if (done) {
+          if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'watcher_gone')
+          console.info(TAG + 'Watcher left ' + p.username)
+          return
+        }
+        if (!watcher && ticks > 200) {
+          // Killed, or never placed. Either way there is nothing to watch with.
+          console.info(TAG + 'Watcher is gone early for ' + p.username + ' - ending')
+          return
+        }
+        p.server.scheduleInTicks(WATCH_TICK, watch)
+      } catch (e) { console.warn(TAG + 'watcher threw :: ' + e) }
+    }
+    p.server.scheduleInTicks(WATCH_TICK, watch)
+    console.info(TAG + 'Watcher on ' + p.username + ' - ' + WATCH_SECONDS + 's')
+    return true
+  }
+
   ServerEvents.loaded(function (event) {
     if (!VELDORA.events) { console.error(TAG + 'godevents.js missing'); return }
     VELDORA.events.register(GOD, {
@@ -633,12 +864,25 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       id: 'duel', hostile: true, cooldown: 4, weight: 2,
       tiers: ['high'], run: runDuel,
     })
+    VELDORA.events.register(GOD, {
+      id: 'tithe', hostile: true, cooldown: 4, weight: 1,
+      tiers: ['medium', 'high'], run: runTithe,
+    })
+    VELDORA.events.register(GOD, {
+      id: 'understudy', hostile: true, cooldown: 5, weight: 1,
+      tiers: ['high'], run: runUnderstudy,
+    })
+    VELDORA.events.register(GOD, {
+      id: 'watcher', hostile: true, cooldown: 3, weight: 2,
+      tiers: ['medium', 'high'], run: runWatcher,
+    })
     if (VELDORA.harvest) {
       VELDORA.harvest.register(GOD, {
         arrive: harvestArrive, onWin: harvestWin, onLose: harvestLose,
       })
     } else console.error(TAG + 'harvest.js missing - his Harvest will not arrive')
     markSweep(event.server)
+    titheSweep(event.server)
     console.info(TAG + 'The Warrior sends: gauntlet, icarus (above y' + ICARUS_Y +
       '), hollow (drops nothing), broken_rung (on respawn), mark (' + MARK_DAYS +
       'd, no penalty), sharpen (a BARGAIN, via the ritual), first_blood, duel (high only)')
