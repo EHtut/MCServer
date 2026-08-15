@@ -240,7 +240,26 @@
     },
   }
 
+  // ── the test override ──────────────────────────────────────────────────────
+  // Ethan needs to test a path he does not walk - blade is Lehykt's, salvage is
+  // Ben's, and moving a claim would desync the holder (paths.js has no loggedIn
+  // reconciliation, so nothing would ever heal it).
+  //
+  // So testing borrows the ANSWER rather than the claim. Because every subsystem
+  // reads pathOf, overriding it here reaches all of them at once - events, idle,
+  // voice, phase, harvest, coefficients - with one change instead of six.
+  //
+  // IN MEMORY ON PURPOSE. It dies on restart, so it cannot be left on and later
+  // mistaken for real behaviour, which is how a test flag becomes a production bug.
+  // ⚠️ It does NOT touch claims. holderOf and the claim store are untouched, so a
+  // borrowed path can never be accidentally taken from its real walker.
+  var testAs = {}
+
   function pathOf(player) {
+    try {
+      var o = testAs[String(player.uuid)]
+      if (o) return o
+    } catch (e) { }
     try { return player.persistentData.getString(KEY) || '' } catch (e) { return '' }
   }
 
@@ -531,6 +550,28 @@
       if (e.online > 1) p.tell('§8  costs softened for ' + e.online + ' players online')
       return 1
     }))
+
+    root = root.then(Commands.literal('testas').requires(ADMIN)
+      .then(Commands.argument('path', event.arguments.STRING.create(event))
+        .executes(ctx => {
+          const p = ctx.source.player
+          if (!p) return 0
+          var key = ctx.getArgument('path', Java.loadClass('java.lang.String'))
+          var u = String(p.uuid)
+          if (key === 'off' || key === 'none') {
+            delete testAs[u]
+            p.tell('§7No longer borrowing a path. You are yourself again.')
+            return 1
+          }
+          if (!PATHS[key]) {
+            p.tell('§cUnknown path. ' + Object.keys(PATHS).join(', ') + ', or "off"')
+            return 0
+          }
+          testAs[u] = key
+          p.tell('§6Every god now reads you as walking ' + PATHS[key].name + '§6.')
+          p.tell('§8No claim was touched. Clears on restart.')
+          return 1
+        })))
 
     root = root.then(Commands.literal('sample').requires(ADMIN).executes(ctx => {
       const p = ctx.source.player
