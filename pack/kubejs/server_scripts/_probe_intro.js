@@ -237,13 +237,27 @@
     // J6 - is there an XP-change event, or must the refresh poll? Enumerate rather
     // than guess: a wrong event name logs one startup line and then never fires,
     // which is finding C0.1 and cost real time once already.
-    var evNames = ['xpLevelChange', 'xpChange', 'levelUp', 'experienceChange', 'pickupXp']
+    // Round 1 of J6 reported all five names present, INCLUDING ones invented for
+    // the list - so the answer was meaningless. KubeJS resolves event names
+    // dynamically, and `typeof PlayerEvents.anything === 'function'` is true for
+    // nonsense. That is C0.1 again: a wrong event name logs one line and then
+    // never fires. THE CONTROL IS THE MEASUREMENT - two deliberate absurdities
+    // sit in this list, and if they "exist" the whole row is void.
+    var evNames = ['xpLevelChange', 'xpChange', 'levelUp', 'experienceChange', 'pickupXp',
+      'CONTROL_definitelyNotAnEvent', 'CONTROL_zzzNonsense']
     var present = []
     for (var q = 0; q < evNames.length; q++) {
       try { if (typeof PlayerEvents[evNames[q]] === 'function') present.push(evNames[q]) } catch (e) { }
     }
-    say('J6.xpEvents', present.length ? 'FOUND' : 'NONE', present.length ? present.join(',') :
-      'no xp event on PlayerEvents - the refresh must POLL or hook level-up another way')
+    var controlsPassed = 0
+    for (var c = 0; c < present.length; c++) if (present[c].indexOf('CONTROL_') === 0) controlsPassed++
+    if (controlsPassed) {
+      say('J6.xpEvents', 'VOID', 'the controls resolved too (' + controlsPassed + '/2) - ' +
+        'typeof is not evidence here. Presence must be proven by a FIRING event, not a lookup.')
+    } else {
+      say('J6.xpEvents', present.length ? 'FOUND' : 'NONE', present.length ? present.join(',') :
+        'no xp event - the refresh must POLL or hook level-up another way')
+    }
 
     // ------------------------------------------------------------------------
     // J9 / J10 - are Wall's and Crown's couplings reachable at all?

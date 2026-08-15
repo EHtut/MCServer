@@ -142,6 +142,26 @@ I0 is the precedent for why: it reported `J1 FAILED` when the API had worked the
 whole time, purely because the probe judged instead of printing. **These probes
 print.**
 
+### Results so far — measured 2026-08-14 at boot
+
+* **J9 (Wall) — NO SURFACE. J10 (Crown) — NO SURFACE.** Exactly as predicted. Nothing
+  on either item exposes reinforcement strength or soul energy; both are internal to
+  SecurityCraft and Goety. §7 already ruled the consequence, so this changes nothing
+  and decides everything: **both get the KubeJS-side equivalent.** Wall grants scaled
+  absorption while you stand on your own reinforced blocks; Crown scales summon
+  duration or count. Neither silently becomes damage.
+* **J6 — VOID, and the round-1 answer was wrong.** It first reported all five event
+  names present. They were not: **KubeJS resolves event names dynamically, so
+  `typeof PlayerEvents.anything === 'function'` is true for nonsense** — two invented
+  control names resolved 2/2. Building on that would have registered a handler that
+  logs one line at startup and then never fires, which is finding C0.1 exactly.
+  **J6 is unanswered.** Presence has to be proven by a FIRING event with a player
+  gaining a level, or the refresh polls.
+
+**Three probes in this workstream have now needed a control row to be worth
+anything** (I0's J1, J6 here, and J5's held-vs-honoured split). Treat a probe without
+a control as unrun.
+
 ## 7. ✅ Resolved (Ethan, 2026-08-13)
 
 **1. Wall and Crown take CHARACTER SCALING, not plain damage.** So the rule is

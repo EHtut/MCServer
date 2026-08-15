@@ -474,10 +474,33 @@ static initializer. **Not a KubeJS fault** — it happens long before server scr
 load. The same unchanged files booted fine on either side of it. If a restart dies
 this way, just start again. Worth watching if it becomes frequent.
 
-## I1 — the attention ritual (was E4)
+## I1 — the attention ritual ✅ BUILT 2026-08-14 (`ritual.js`)
 
 The primitive, **not an introduction feature**. Three known consumers: this,
 Salvage's trades, Wall's requests.
+
+**Boot-verified:** 17/17 scripts, 0 errors, `VELDORA.ritual published OK`.
+Interactive behaviour is deliberately UNTESTED and belongs to the full suite.
+
+**Seam:** `VELDORA.ritual.begin(player, {lines, options, onChoose, onTimeout, gap})`
+· `.release(player, why)` · `.active(player)`. Published at **script-eval time**,
+not inside `loaded()` — otherwise it would depend on the order of two `loaded()`
+callbacks and a consumer running first would read undefined. Same idiom as
+`notoriety.js`, including the load-bearing trailing semicolon.
+
+🚨 **The hazard it is built around:** effects live in player data and survive both
+logout AND a restart; the in-memory state map does not. So the release cannot depend
+on the state map. **Three independent layers** — the scheduled end, `loggedOut`, and
+a **persistent flag checked on `loggedIn`**. Layer 3 alone is sufficient and is why
+this could ship before J4 is answered: the flag is written to the same player data
+the effects are, so if the effects survived, the flag survived with them.
+
+Also carries `/ritual clear`, the panic button — written *before* the thing that
+could strand someone, not after.
+
+Deliberate additions to the spec: **resistance and weakness**. A player who is blind
+and cannot move must not be able to die to a skeleton while a patron monologues, and
+must not be able to swing their way out of a conversation.
 
 * blind + slow(max) + invisible + **repeated** detarget (E2a's single sweep
   measured 0 releases against 9 hostiles - sweep across the window)
