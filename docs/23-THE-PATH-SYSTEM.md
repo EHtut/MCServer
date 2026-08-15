@@ -620,6 +620,7 @@ designing Art's events.**
 | clickable chat | `Text.of(...).clickRunCommand(...)` | ⚠️ `.click(String)` throws a Throwable that **escapes a JS catch** |
 | timers | `server.scheduleInTicks` | `tickCount` is per-session — never store it |
 | persistent state | `persistentData` String·Int·Long·Boolean·Double·Compound | |
+| **direct damage** | `damage <player> <amount>` | ✅ **PROVEN 2026-08-15** — fires `beforeHurt`, so it stamps combat state as a real hit does. The fastest way to put a player in a trigger band on purpose. |
 
 > ### ⚠️ THE SPAWN RULE
 > **`createEntity().spawn()` BYPASSES `finalizeSpawn`**, which is where Born in Chaos
@@ -637,7 +638,6 @@ designing Art's events.**
 | `weather`, `time set` | world-scale pressure |
 | `tp` | displacement as a cost |
 | `bossbar` | a visible clock for a deadline or raid. Only 1 of 6 castings has a native one |
-| `damage` | direct typed damage — a real command in 1.21 |
 | `summon tnt`, `LevelEvents.beforeExplosion` | destructive events, cancellable |
 | `attribute` command | named modifiers, an alternative to `modifyAttribute` |
 | `difficulty`, `gamerule` | blunt, global — mentioned only to be ruled out |
