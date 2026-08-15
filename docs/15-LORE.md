@@ -21,6 +21,38 @@ punished for trusting it.
 
 ---
 
+## 0. ⭐ THE FIVE GODS AND THEIR CHAMPIONS
+
+*Ethan, 2026-08-15:*
+
+> **This world is a cursed one, ruled over by the five gods. Each player, a champion.
+> There have been many champions, you are not the first and you will never be the
+> last.**
+
+**Five gods, five paths.** The arithmetic works because Crown merged into Wall
+(`35` §6). "Patron" was the role, **god** is the station, **champion** is what a player
+is — and the third clause is the one that does the work: *you are not the first and
+will never be the last* makes every player replaceable to the thing that chose them,
+which is what the Harvest has always meant.
+
+| god | station | path |
+|---|---|---|
+| **The Warrior** | god of war — *the absolute glory of combat* | blade |
+| **The Hound** | the dog — *appetite, the favour that is a debt* | salvage |
+| **The Thief** | the engineer's god — *never satisfied* | forge |
+| **The Mother** | the spider — *closer, and closer* | wall |
+| **The Nightmare** | *"the grand leader of the court"* ⚠️ see `40` §5 | art |
+
+Each god's full project lives in its own doc, **`40-BLADE-THE-WARRIOR.md`** first.
+
+⚠️ **The gods are not a pantheon that agrees.** They hold stances on each other, and
+those stances judge a god's *champions* separately from the god. Blade despises the
+spider but respects the dog's champion; he demands cooperation with the engineer
+because *glory cannot be attained alone.* That disagreement is content — `28` §4's
+ambient arguments were the first sketch of it.
+
+---
+
 ## 1. Veldora
 
 The world is old and magical and always has been. Dragons in the high places.

@@ -332,7 +332,7 @@ before any of them is built.
 
 | patron | why it is ready or not |
 |---|---|
-| **Blade** | most ready — Lehykt walks it, eight of twelve are spawner calls, and the spawner is built |
+| **Blade** | ⭐ **STARTED — `40-BLADE-THE-WARRIOR.md`.** Lehykt walks it, eight of twelve are spawner calls, the spawner is built |
 | **Salvage** | half-done already — the trades ARE four of her twelve, and Interest is live |
 | **Forge** | counter live (`crafted`+`smelted`); needs the container/quota mechanics |
 | **Wall** | needs the Core first — every one of her twelve hangs off it |
