@@ -22,32 +22,29 @@ point of it.**
 
 ### Built and verified live
 
-E0 probes · E1 the iron fix · E2a–E2d, E2f · **I0** probes · **I1** the ritual
-(`ritual.js`) · **I2** the introductions (`introductions.js`)
+E0 probes · E1 the iron fix · E2a–E2f · **I0** probes · **I1** the ritual
+(`ritual.js`) · **I2** the introductions (`introductions.js`) · **E3** the coefficient
+substrate (`coefficients.js`) · **E6** Salvage's economy (`salvage.js`, `counters.js`,
+`gun_ammo.js`)
 
-⚠️ **E2e (entry strips XP) is built but has never actually run** — it was accepted at
-0 levels, so the strip skipped. 30 seconds to close: bank levels, take a path, watch
-the bar.
+✅ **E2e finally ran 2026-08-15** — `E2e Rehykt entered forge - stripped 2 levels`.
+It had never once executed since being built on 2026-08-12.
+
+✅ **The Harvest was reached and fought** for the first time ever, on the same day.
+It had been mathematically unreachable for weeks.
 
 ---
 
 ## THE QUEUE
 
-### 0a. THE STAGED MODPACK AUDIT ⭐ QUEUED — Ethan + me, together
+### 0a. THE STAGED MODPACK AUDIT ✅ **CLOSED 2026-08-15**
 
-Eight sittings, one mod group each, protocol in **`36-THE-MOD-TAXONOMY.md` §8**.
-I bring what each mod actually registers (read out of the jar, not the blurb); he
-judges. Five questions per mod, the sharpest being **progression or filler** — Wall's
-fourteen looked healthy until that one was asked.
+Eight stages, A1–A8. **290 → 271 mods, ~1,300 → 1,028 MB.** Rulings and reasoning in
+`36-THE-MOD-TAXONOMY.md`; the full list is `39-THE-ROSTERS.md`.
 
-**No mod in this pack has ever been asked which path it belongs to.** The 2026-07-31
-theme audit ran against rulings, before paths existed. And the taxonomy in `36` is
-regex — a hypothesis, not a verdict.
-
-Order: **A1** forge/Create (27) · **A2** wall + goety (~18) · **A3** art (14) ·
-**A4** blade + salvage (12, verdict will be GROW) · **A5** worldgen (39) ·
-**A6** mobs (25) · **A7** visuals + QoL (83) · **A8** perf + libraries (72).
-**A1 and A5 will change the pack most.**
+*The one lesson: **the name is not the mod, and the dependency list is not the
+usage.** `spawn-mod` sat in the enemies bucket for eight stages and registers 89
+animals. JEI looked free to cut because nothing declares it — 25 mods use it.*
 
 ### 0b. WALL REFRESH ⭐ — Ethan's call, 2026-08-14
 
@@ -73,18 +70,28 @@ the *deviation*, not half the value (`23` §7b). Costs soften with players onlin
 Boot-verified: 19/19 scripts, seam published, 0 errors.
 **Rollback:** every value to 1.0 restores prior behaviour exactly — no gate, no state.
 
-⚠️ **Two things remain open on it.**
+✅ **MEASURED 2026-08-15**, not merely booted:
 
-1. **The measurement has never run** — boot-verified is not verified. Bank notoriety,
-   take Blade, `/path sample`, confirm the rate moved by ×0.6. **Needs a player.**
-2. **`spawns` is INERT.** `checkSpawn` can only *cancel*, so it cannot produce Blade's
+* **`power` ×0.4 is exact** — base curve 6.0/4.0/2.0/0.2 produced +2.4/+1.6/+0.8/+0.08
+  on Forge, to the decimal.
+* **`drops` ×3 confirmed** — raw 50% at notoriety 100, observed 100%.
+  🚨 **But it SATURATES.** The chance clamps at 1.0, so **Forge pins at 100% from
+  notoriety 33 upward** and Wall from 60 — two thirds of the curve does nothing. Fix
+  is `CHANCE_BASE 0.25 → 0.12`, `CHANCE_PER 0.0025 → 0.0022`. **Ethan's number to
+  move; he raised it from 0.08.**
+* ⏳ **`phase` is still unverified** — Forge is ×1, so there was nothing to observe.
+  Needs someone on **Blade** (×2), or a forced coefficient and a band-transition read.
+
+⚠️ **One thing remains open.**
+
+1. **`spawns` is INERT.** `checkSpawn` can only *cancel*, so it cannot produce Blade's
    ×4 — that needs an **active spawner** (`the_hunt.js`'s ring-placement mechanism),
    which is a build of its own and was deliberately NOT folded into E3. `23` §7a has
    the argument. The value is in the table, served by `VELDORA.coeff`, printed as
    INERT, and announced at boot — because a coefficient nobody reads must never look
    like one that acts.
 
-### 2. E6 — Salvage's economy ✅ **BUILT 2026-08-15, NOT YET MEASURED**
+### 2. E6 — Salvage's economy ✅ **BUILT AND FULLY VERIFIED 2026-08-15**
 
 `salvage.js` + `counters.js` + generated `gun_ammo.js`, plus `spec.keep` in the
 ritual and `VELDORA.powerBoost` in `power.js`. Boot-verified 23/23, seams up.
@@ -93,10 +100,15 @@ ritual and `VELDORA.powerBoost` in `power.js`. Boot-verified 23/23, seams up.
 `VELDORA.counter`'s first consumer, not a Salvage special case, so Forge's quota
 uses the same mechanism. `/counters` prints what each patron says you owe.
 
-⚠️ **Test it:** `/trade_test` — take each of the three, confirm the price is actually
-charged, that the ammo chambers, and that **you stay blind after the scene closes.**
-That last one is the whole sight trade and it only works because a probe caught
-`release()` clearing it.
+✅ **All three trades played and confirmed in the log.** Hunger and levels charged
+correctly, the ammo chambered, the debt climbed 2→3→4, and the sight trade leaves you
+blind after the scene closes — which only works because a probe caught `release()`
+clearing it. Zero forbidden log lines.
+
+**The sight trade pays in Strength II + Speed, not a hidden number.** Ethan, having
+taken it: *"instead of a flat buff we should use strength and speed effects instead so
+the player can see what they traded."* The first build multiplied the invisible E3
+`power` axis — the legibility law failing at the exact moment it matters.
 
 *Original scope, for reference:*
 
@@ -159,11 +171,70 @@ compounding on a miss.
 Built when walked. *Note: `24` said Wall folds into Forge if unwalked — the refresh
 supersedes that.*
 
-### 7. PART VI — THE EVENTS: 72 designed, 0 built
+---
 
-`23` PART VI holds **twelve events per patron, six patrons**. This is the
-"things happen to you" layer in its entirety and **none of it exists.** Probably the
-single largest gap between the design and the build.
+# ⏭️ AFTER THIS: THE EVENTS BECOME THEIR OWN PROJECT
+
+*Ethan, 2026-08-15: **"events will need to be a separate project after this."***
+
+**The line is drawn here.** Everything above finishes the *frame*: the paths, the
+prices, the coefficients, the trades, the counters, the raid. Everything below is
+**content**, and it is a different kind of work — authoring against a finished
+instrument rather than building the instrument.
+
+### What the events project inherits, already built
+
+| | |
+|---|---|
+| **the offer** | ritual + named options + a per-patron counter — proven live by E6 |
+| **the instrument panel** | `23` PART V.7 — every hook, every readable state, every effect, tiered PROVEN vs AVAILABLE |
+| **the sensor** | `telemetry.js` — biome dwell, builds per chunk, depth, kills, deaths, co-location, on a 10s sampler since 2026-08-02 |
+| **the spawner** | ⏳ *not yet* — the one piece the events project genuinely needs and does not have |
+| **the numbers** | E3's coefficients, live and measured |
+
+### The three things to settle BEFORE it starts
+
+1. 🚨 **The spawner.** Eight of Blade's twelve, E7's raid and the `spawns` axis all
+   want it. `/summon` ring-placement is proven in `the_hunt.js`; this is the one real
+   dependency.
+2. **The sleep hook** (`23` PART V.7 §4). Art's defining behaviour — *"She wants you
+   to sleep"* — has **no event in any KubeJS group.** Probe before designing her
+   twelve.
+3. **Chat-only patrons or not** (`11-OPEN-DECISIONS.md`). It changes what an event
+   *is*. Decide with the spawner built, so both options can be felt rather than argued.
+
+### 7. PART VI — the events themselves: 72 designed, 0 built
+
+`23` PART VI holds **twelve events per patron**. Re-scoped by §2c: **most are offers**,
+so the work is largely authoring once the offer primitive is generalised. What stays
+bespoke is the mechanical minority — Blade's waves, *Understudy*, the *Interest* raid,
+Art's pages.
+
+### 7b. ⭐ THE PATRON POLISH PASS — voice and atmosphere
+
+*Ethan, 2026-08-15: **"same with voices after all this we'll do a patron polish pass
+where we make them more atmospheric."*** **Scheduled after the events, not before** —
+polish wants finished material to polish.
+
+**What it covers:**
+
+* **Voice consistency per patron.** Six registers written across many sessions and
+  several docs. The Mother speaks in *we* and *us*; Art repeats herself and *the
+  doubling is the voice, not a typo*; Forge never thanks you. Those rules exist and
+  have never been audited against the shipped lines together.
+* ⭐ **Sound.** `23` PART V.7 §5: **a patron has never made a noise.** `playsound` is
+  available and has never once been run. Almost certainly the cheapest atmosphere win
+  in the whole project.
+* **The emphasis ladder** (`35` §A) — titles for the moment the world changes.
+  ⚠️ probe first: *does a title render over blindness?*
+* **The six "of Veldora" lines** (`30` §5.1) — one line per patron that could only be
+  said here. Highest value per word in the design.
+* **Silence and pacing.** The refusal pool is already twelve universal lines about
+  *your own actions* rather than the patron — that instinct should be checked against
+  every other surface.
+* **The tone ruling stands:** the whispers and taunts are **Ethan's own lines** and
+  his book references, absurdist on purpose — *"more loveable than just outright
+  dangerous."* **Do not rewrite them toward pure horror.**
 
 ### 8. Subclasses — a datapack, not a build
 
