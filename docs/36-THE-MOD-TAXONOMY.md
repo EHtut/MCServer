@@ -1007,10 +1007,28 @@ was visible when they were chosen.
 (0.2 MB riding a **35.3 MB** media backend) · **`jurassic-reborn`** (164 MB, 5,001
 items — the largest mod in the pack).
 
-⭐ **Cutting Jurassic frees JEI.** It was the ONLY mod declaring `jei` as required.
-The manifest records EMI as the chosen viewer with JEI surviving purely as a forced
-dependency, so the two-recipe-viewer R5 breach can be closed at will. **Flagged, not
-taken.**
+~~⭐ Cutting Jurassic frees JEI.~~ **WRONG — corrected 2026-08-15. JEI STAYS.**
+
+It is true that `jurassic-reborn` was the only mod *declaring* `jei` as required. It is
+also irrelevant. Scanning plugin code rather than dependency lists:
+
+> **38 mods ship JEI plugin code. 18 ship EMI plugin code. 25 are JEI-ONLY.**
+
+The JEI-only list includes **`create`** and seven Create addons, **`tacz`**,
+**`goety`**, `l_enders-cataclysm`, `born_in_chaos`, `chipped`, `spawn`, `patchouli`,
+`modonomicon`, `knightlib`, `betterarcheology`, `camping`, `zeta`, `balm`.
+
+**Create's mixing/pressing/crushing/sequenced-assembly categories and TaCZ's
+gun-ammo-attachment recipes are registered through JEI's API only.** Cutting JEI makes
+the two deepest progression systems in the pack undocumented — still craftable, but
+unlookup-able.
+
+So EMI and JEI are not redundant; they cover **different halves of the pack**. The R5
+breach is real and is the correct trade.
+
+⚠️ **This is the `structure_pool_api` mistake again**, and I made it twice in one
+session: *nothing declares JEI as required, but 25 mods quietly use it.* A dependency
+check answers "will it boot", never "is it used".
 
 ## Additions — the overworld half
 
