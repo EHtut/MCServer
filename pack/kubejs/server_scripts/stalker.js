@@ -429,6 +429,23 @@
   // --------------------------------------------------------------- THE GUARD
   EntityEvents.beforeHurt(function (event) {
     var e = event.entity
+
+    // THE PIGLIN RULE, anger half. Struck by your own patron's family? They
+    // answer. Registered BEFORE the isStalker gate, because a spiderling is not
+    // a stalker and hitting a child must wake the mother just as surely as
+    // hitting her would.
+    if (e) {
+      var hitOwner = isStalker(e) ? ownerKeyOf(e) : minionOwnerUuid(e)
+      if (hitOwner) {
+        var hitter = attackerOf(event)
+        var hn = null
+        try { hn = hitter && hitter.username ? String(hitter.username) : null } catch (x) { }
+        if (hn && hn === ownerOf(live[hitOwner])) {
+          anger(hitOwner, e, hn + ' struck ' + (isStalker(e) ? 'their patron' : 'one of its minions'))
+        }
+      }
+    }
+
     if (!isStalker(e)) return
 
     // THE HARVEST is the one time it can die. The thing that was invulnerable for
@@ -1225,6 +1242,67 @@
     return n
   }
 
+  // ---------------------------------------------------------------------------
+  // THE PIGLIN RULE - a stalker's minions are NEUTRAL to its owner until struck.
+  //
+  // Ethan, 2026-08-14, from the /patron bench: "mother spider and the direwolf
+  // need to be redone since they spawn minions and those minions stay agrowed...
+  // is it possible to put their behavior the same way a zombie pigman is? Where
+  // they aren't aggroed unless attacked?"
+  //
+  // Not literally. Vanilla neutrality is the NeutralMob interface compiled into
+  // the entity class - AngerTime, angry_at, remembering who hit it - and KubeJS
+  // exposes neither that nor the goal selectors. But it can be EMULATED exactly,
+  // and both halves are already proven in this file:
+  //   · the hard stop - beforeHurt + cancel(), the same shape as the guard that
+  //                     stops your own stalker hurting you. No window.
+  //   · the behaviour - setTarget(null), so they stop mobbing you instead of
+  //                     swinging harmlessly forever.
+  //
+  // THE GAP IT CLOSES: that existing guard tests isStalker(biter). A spiderling
+  // is not a stalker, so every minion fell straight through it, which is exactly
+  // what Ethan met on the bench. It is a FICTION bug as much as a mechanical one:
+  // Wall never threatens, and a mother whose children maul you unprompted
+  // contradicts the entire character.
+  //
+  // Anger is keyed on the STALKER, not the minion - hit the mother and all her
+  // children answer. That is the point of her.
+  // ---------------------------------------------------------------------------
+  var ANGER_TICKS = 600                 // ~30s, about a piglin's memory
+  var angered = {}                      // stalker uuid -> world tick it calms at
+
+  function nowTick(e) {
+    try { return e.level.time } catch (x) { }
+    return 0
+  }
+
+  // Which live stalker owns this entity as a minion? null if it is nobody's.
+  function minionOwnerUuid(e) {
+    if (!e) return null
+    var keys = Object.keys(minions)
+    for (var i = 0; i < keys.length; i++) {
+      var list = minions[keys[i]]
+      if (!list) continue
+      for (var j = 0; j < list.length; j++) {
+        if (sameEntity(list[j], e)) return keys[i]
+      }
+    }
+    return null
+  }
+
+  function isAngered(stalkerUuid, e) {
+    var until = angered[stalkerUuid]
+    if (!until) return false
+    if (nowTick(e) >= until) { delete angered[stalkerUuid]; return false }
+    return true
+  }
+
+  function anger(stalkerUuid, e, why) {
+    if (!stalkerUuid) return
+    angered[stalkerUuid] = nowTick(e) + ANGER_TICKS
+    console.info('[stalker] angered ' + String(stalkerUuid).substring(0, 8) + ' - ' + why)
+  }
+
   function dismiss(uuid) {
     var e = live[uuid]
     delete live[uuid]
@@ -1452,6 +1530,28 @@
       try { if (cur.target && cur.target.username === player.username) cur.setTarget(null) } catch (y) { }
     }
 
+    // THE PIGLIN RULE, behaviour half. The same reasoning one comment up, applied
+    // to the CHILDREN: a Born in Chaos minion's own AI acquires the nearest
+    // player, which is its patron's own walker. The beforeHurt guard already makes
+    // those swings harmless, but harmless is not the same as calm - being mobbed
+    // by a pack that cannot hurt you still reads as broken. This is what makes
+    // them wander off. Skipped while angered, because a retaliation the player
+    // earned should actually arrive.
+    if (!isAngered(uuid, player)) {
+      var kids = minions[uuid]
+      if (kids) {
+        for (var mi = 0; mi < kids.length; mi++) {
+          var kid = kids[mi]
+          if (!alive(kid)) continue
+          try {
+            var kt = null
+            try { kt = kid.getTarget() } catch (y) { kt = kid.target }
+            if (kt && kt.username === player.username) kid.setTarget(null)
+          } catch (y) { }
+        }
+      }
+    }
+
     keepDistance(player, cur)
   }
 
@@ -1502,6 +1602,20 @@
       try { biter.setTarget(null) } catch (x) { }
       event.cancel()
       return
+    }
+
+    // THE PIGLIN RULE, hard-stop half. A minion of YOUR OWN stalker cannot hurt
+    // you unless you struck first. Same shape as the guard above and for the same
+    // reason: clearing the target on a sweep is cosmetic, because the AI
+    // re-acquires between sweeps and swings. This is event-driven, so there is no
+    // window at all.
+    if (biter) {
+      var mOwner = minionOwnerUuid(biter)
+      if (mOwner && ownerOf(live[mOwner]) === p.username && !isAngered(mOwner, p)) {
+        try { biter.setTarget(null) } catch (x) { }
+        event.cancel()
+        return
+      }
     }
 
     var uuid = String(p.uuid)
