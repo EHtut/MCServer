@@ -119,10 +119,22 @@ the player can see what they traded."* The first build multiplied the invisible 
   what makes that survivable rather than a death sentence
 * debt persists across restart as a **world day**, never `tickCount`
 
-### 2b. E6b — SHE OPENS HERSELF ✅ **BUILT 2026-08-15**
+### 2b. E6b — SHE OPENS HERSELF ✅ **BUILT AND VERIFIED LIVE 2026-08-15**
 
 *Ethan: **"going forwards i want the player to actually use commands as little as
 possible."*** `23` PART V.6. **`/trade_test` was a harness; this is the feature.**
+
+> ✅ **MEASURED LIVE:**
+> `[salvage] she opened on Rehykt - low health mid-combat (debt=9, cooldown was 3300t)`
+>
+> No command typed. He took damage and she arrived. **The first time in this
+> project's history that a patron has asked for something unprompted** — whispers
+> already fired on their own, but this is the first *decision* the game has ever put
+> in front of a player without being asked.
+>
+> Note the cooldown in that line: **3300t against a 6000t base.** Nine trades of debt
+> had already pulled her 2700 ticks closer. The ratchet is not described, it is
+> running.
 
 Built into `salvage.js`. **Four triggers**, all funnelling through one `maybeOpen()`
 so there is exactly one definition of *not right now*:
