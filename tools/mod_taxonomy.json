@@ -83,6 +83,7 @@
   "infernal-expansion-redux",
   "lithostitched",
   "nether-depths-upgrade",
+  "regions-unexplored",
   "scorchful",
   "serene-seasons",
   "terrablender",
@@ -117,28 +118,33 @@
   "tectonic",
   "weather-storms-tornadoes"
  ],
+ "overworld-life": [
+  "aquaculture",
+  "cosy-critters",
+  "critters-and-companions",
+  "fish-of-thieves",
+  "friends-and-foes-forge",
+  "iceandfire-ce",
+  "naturalist",
+  "respawning-animals",
+  "shineals-prehistoric-expansion",
+  "spawn-mod",
+  "untitled-duck-mod"
+ ],
  "mobs-enemies": [
   "born-in-chaos-fc",
   "born-in-configuration",
   "borninchaos",
   "bosses-of-mass-destruction-forge",
-  "cosy-critters",
-  "critters-and-companions",
   "deimos",
   "edf-remastered",
-  "friends-and-foes-forge",
-  "iceandfire-ce",
   "in-control",
   "l_enders-cataclysm",
   "mowzies-mobs",
-  "naturalist",
   "obsessed",
-  "respawning-animals",
   "rottencreatures",
   "sable",
   "server-side-horror",
-  "shineals-prehistoric-expansion",
-  "spawn-mod",
   "the-knocker",
   "uranus"
  ],
@@ -299,10 +305,5 @@
   "yungs-api",
   "zeta"
  ],
- "UNCLASSIFIED": [
-  "aquaculture",
-  "fish-of-thieves",
-  "regions-unexplored",
-  "untitled-duck-mod"
- ]
+ "UNCLASSIFIED": []
 }

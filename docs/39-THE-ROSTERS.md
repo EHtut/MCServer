@@ -1,126 +1,68 @@
-# The rosters — where every audited mod now lives
+# The rosters — every audited group
 
-*Generated from `tools/mod_taxonomy.json` (`tools/classify_mods.py`). **Regenerate
-after any mod change** — these counts are evidence and evidence goes stale.*
+*Generated from `tools/mod_taxonomy.json`. Regenerate after any mod change.*
 
-**281 shipped mods.** Audit state: **A1 forge ✅ · A2 wall ✅ · A3 art ✅**.
-A4–A8 are still regex guesses and are NOT listed here — only audited groups appear.
-
----
-
-## WALL — minions (4) ✅ A2
-
-The path was rebuilt this session. SecurityCraft is gone as its base, MineColonies
-was dropped (Modrinth has only a 1.18.2 Forge build and our toolchain is
-Modrinth-only), and **Occultism** was shipped in its place from cache.
-
-* `automaticons`
-* `goety`
-* `goety-cataclysm`
-* `occultism`
-
-**Goety fights for you, Occultism works for you.** Necromancy thralls versus summoned
-spirits bound to jobs — mining, crushing, transport. Different verbs, no R5 collision.
-Occultism was R7's designed fourth alternative and had been downloaded but never
-shipped.
-
-**Cut:** `theurgy` (never touched), `security-craft` (same), `guard-villagers`
-(redundant).
-
-## ART — magic (6) ✅ A3
-
-* `ars-creo`
-* `ars-lumos`
-* `ars-nouveau`
-* `arsdelight`
-* `easy-magic`
-* `magic-vibe-decorations`
-
-`ars-nouveau` is the anchor. `ars-creo` is the Create bridge, `arsdelight` the
-Farmer's Delight bridge — **integration only**, as ruled. `ars-lumos` is client-side
-emissive textures. `magic-vibe-decorations` is queued for the decor cull.
-
-**Cut:** the four RPG class mods (`berserker`, `elemental-wizards`, `forcemaster`,
-`witcher`) for competing with the path system, plus `wizards` and `skill-tree`.
-
-⚠️ **`spell-engine` and `spell-power` moved to LIBRARY, not cut** — `archers` and
-`archers-expansion` ride on them. Same for `azurelib-armor` and `more-rpg-library`;
-cutting the latter crashed the server via a mixin no dependency list declares.
-
-**Supplementary magic is Iron's Spells, classless.** Not yet shipped.
-
-## FORGE — Create (27) ✅ A1
-
-* `copycats`
-* `create`
-* `create-aeronautics`
-* `create-ars-nouveau`
-* `create-big-cannons`
-* `create-bionics`
-* `create-bits-n-bobs`
-* `create-compatible-storage`
-* `create-connected`
-* `create-deco`
-* `create-design-n-decor`
-* `create-dragons-plus`
-* `create-dreams-and-desires`
-* `create-encased`
-* `create-enchantment-industry`
-* `create-framed`
-* `create-let-the-adventure-begin`
-* `create-misc-and-things`
-* `create-railways-navigator`
-* `create-sound-of-steam`
-* `create-steam-n-rails-1.21.1`
-* `create-storage-neo-forge`
-* `create-stuff-additions`
-* `create_oxidized`
-* `createaddition`
-* `createbetterfps`
-* `numismatics`
-
-**Ruled core:** `create`, `create-aeronautics`, `create-big-cannons`,
-`create-bionics`, `create-ars-nouveau`, `numismatics`.
-
-⏸️ **Pending the world reset:** the decoration cull — `create-design-n-decor`,
-`create-deco`, `create-framed`, `create-bits-n-bobs`. Held because **cutting a block
-mod deletes blocks already placed** (356 MB world, 1,572 region files).
-
-⏸️ **Pending moves:** `createbetterfps` → perf · `create-let-the-adventure-begin` →
-worldgen (it ships 30 structures, so it is a genuine worldgen mod, not a filing slip).
+**276 shipped mods.** Audit **COMPLETE**: A1 forge · A2 wall · A3 art · A4 blade+salvage ·
+A5 biomes/structures/worldgen · A6 mobs · A7 visuals+QoL.
 
 ---
 
-## SUPPLEMENTARY (13) — new bucket, created this session
+## FORGE — automation (27)
 
-> Not path-specific · rounds out kits · **as little crafting as possible** · extra
-> items, weapons and gear.
+`copycats` · `create` · `create-aeronautics` · `create-ars-nouveau` · `create-big-cannons` · `create-bionics` · `create-bits-n-bobs` · `create-compatible-storage` · `create-connected` · `create-deco` · `create-design-n-decor` · `create-dragons-plus` · `create-dreams-and-desires` · `create-encased` · `create-enchantment-industry` · `create-framed` · `create-let-the-adventure-begin` · `create-misc-and-things` · `create-railways-navigator` · `create-sound-of-steam` · `create-steam-n-rails-1.21.1` · `create-storage-neo-forge` · `create-stuff-additions` · `create_oxidized` · `createaddition` · `createbetterfps` · `numismatics`
 
-* `artifacts`
-* `bellsandwhistles`
-* `carry-on`
-* `chipped`
-* `framedblocks`
-* `handcrafted`
-* `interiors`
-* `macaws-furniture`
-* `macaws-roofs`
-* `relics-mod`
-* `runes`
-* `storage-delight`
-* `storagedrawers`
+## WALL — minions (4)
 
-⚠️ This bucket is **provisional** — it was created by moving Wall's decoration out,
-and has not itself been audited. Several entries are pure decoration and may not
-survive the rule that supplementary content should be *found*, not built.
+`automaticons` · `goety` · `goety-cataclysm` · `occultism`
 
----
+## ART — magic (6)
 
-## Not yet audited
+`ars-creo` · `ars-lumos` · `ars-nouveau` · `arsdelight` · `easy-magic` · `magic-vibe-decorations`
 
-`salvage-ranged` (5) · `blade-melee` (7) · `worldgen-structures` (41) ·
-`mobs-enemies` (24) · `visuals-audio` (41) · `qol-ui` (39) · `perf-server` (32) ·
-`library` (42)
+## SALVAGE — ranged (5)
 
-**A4 is blade + salvage**, and both are expected to come back **GROW** — seven
-animation mods and one gun mod are not modpacks.
+`archers` · `archers-expansion` · `gunpowder-ore` · `ranged-weapon-api` · `tacz-1.21.1`
+
+## BLADE — melee (9)
+
+`better-combat` · `combat-roll` · `cut-through` · `epic-knights-shields-armor-and-weapons` · `first-person-model` · `knight-lib` · `medieval-siege-machines` · `not-enough-animations` · `playeranimator`
+
+## SUPPLEMENTARY — cross-path (13)
+
+`artifacts` · `bellsandwhistles` · `carry-on` · `chipped` · `framedblocks` · `handcrafted` · `interiors` · `macaws-furniture` · `macaws-roofs` · `relics-mod` · `runes` · `storage-delight` · `storagedrawers`
+
+## OVERWORLD LIFE — animals (11)
+
+`aquaculture` · `cosy-critters` · `critters-and-companions` · `fish-of-thieves` · `friends-and-foes-forge` · `iceandfire-ce` · `naturalist` · `respawning-animals` · `shineals-prehistoric-expansion` · `spawn-mod` · `untitled-duck-mod`
+
+## UNDERWORLD — enemies (15)
+
+`born-in-chaos-fc` · `born-in-configuration` · `borninchaos` · `bosses-of-mass-destruction-forge` · `deimos` · `edf-remastered` · `in-control` · `l_enders-cataclysm` · `mowzies-mobs` · `obsessed` · `rottencreatures` · `sable` · `server-side-horror` · `the-knocker` · `uranus`
+
+## BIOMES (13)
+
+`biolith` · `formations-nether` · `frostiful` · `galosphere` · `infernal-expansion-redux` · `lithostitched` · `nether-depths-upgrade` · `regions-unexplored` · `scorchful` · `serene-seasons` · `terrablender` · `thermoo` · `yungs-cave-biomes`
+
+## STRUCTURES (15)
+
+`battle-towers` · `better-archeology` · `ct-overhaul-village` · `grim-and-bleak` · `hopo-better-ruined-portals` · `improved-pillager-outpost` · `medieval-buildings` · `structory` · `valarian-conquest` · `when-dungeons-arise` · `when-dungeons-arise-seven-seas` · `yungs-better-dungeons` · `yungs-better-mineshafts` · `yungs-better-nether-fortresses` · `yungs-better-strongholds`
+
+## WORLDGEN / TERRAIN (9)
+
+`chunky` · `distanthorizons` · `explorers-compass` · `formations` · `natures-compass` · `seasonhud` · `structure-pool-api` · `tectonic` · `weather-storms-tornadoes`
+
+## VISUALS / AUDIO (38)
+
+`3dskinlayers` · `advancement-plaques` · `ambientsounds` · `appleskin` · `athena-ctm` · `camerapture` · `chat-heads` · `darkaroundme` · `dripsounds` · `dynamic-lights` · `emotecraft` · `entity-model-features` · `entitytexturefeatures` · `euphoria-patches` · `extreme_sound_muffler` · `figura` · `figura_extrabone` · `figura_extrafight` · `fusion-connected-textures` · `immersive-overlays` · `immersive-paintings` · `iris` · `item-borders` · `item-highlighter` · `make_bubbles_pop` · `moreculling` · `particle-core` · `polytone` · `reeses-sodium-options` · `rrls` · `rsls` · `sodium` · `sodium-extra` · `sound` · `sound-physics-remastered` · `subtle-effects` · `tips` · `travelers-titles`
+
+## QoL / UI (39)
+
+`accessories` · `almostunified` · `better-third-person` · `betterf3` · `boat-item-view` · `caelus` · `clumps` · `comforts` · `controlling` · `corpse` · `curios` · `easy-anvils` · `elytra-slot` · `emi` · `emi-loot` · `emiffect` · `enchantment-descriptions` · `every-compat` · `farmers-delight` · `field-guide` · `frights-delight` · `inventory-profiles-next` · `item-descriptions` · `jei` · `justenoughbreeding` · `lets-do-camping` · `lootr` · `modonomicon` · `mouse-tweaks` · `no-chat-reports` · `patchouli` · `polymorph` · `put-a-plug-in-it-` · `searchables` · `simple-voice-chat` · `skills` · `trade-cycling` · `trading-post` · `waystones`
+
+## PERFORMANCE / SERVER (32)
+
+`alternate-current` · `citadel--1.21.1-port-` · `cobweb` · `coroutil` · `crash-assistant` · `data-anchor` · `dynamic-fps` · `entityculling` · `ferrite-core` · `forgiving-void` · `glitchcore` · `immediatelyfast` · `jupiter` · `lithium` · `lmft` · `modernfix` · `mru` · `packet-fixer` · `platform` · `prickle` · `prism-lib` · `prometheus-api` · `puzzles-lib` · `rpl` · `saturn` · `servercore` · `shatterbyte-lib` · `smartbrainlib` · `spark` · `sparkweave` · `teallib` · `velvet-api`
+
+## LIBRARIES (40)
+
+`architectury-api` · `azurelib-armor` · `balm` · `bookshelf-lib` · `bundle-api` · `cerbons-api` · `cloth-config` · `creativecore` · `cristel-lib` · `cucumber` · `dragonlib` · `dynamic_asset_generator` · `flerovium` · `forgified-fabric-api` · `fzzy-config` · `geckolib` · `iceberg` · `kotlin-for-forge` · `kotlin-lang-forge` · `kubejs` · `libipn` · `lionfish-api` · `mmlib` · `monolib` · `moonlight` · `more-rpg-library` · `nexuslib` · `owo-lib` · `pf-neoforge` · `placebo` · `resourceful-config` · `resourceful-lib` · `rhino` · `spell-engine` · `spell-power` · `supermartijn642s-config-lib` · `supermartijn642s-core-lib` · `yacl` · `yungs-api` · `zeta`

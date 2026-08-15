@@ -962,3 +962,70 @@ call, not a crash.
 | 5 | `aures-farmers-structures` | recommend **SHIP** — 20 structures, 0.5 MB |
 | 6 | `lukis-grand-capitals` | ⚠️ **Ethan's call** — two village styles at once |
 | 7 | **Structurify** | recommend **ADD** — the instrument for all 629 |
+
+---
+
+# A6 + A7 — MOBS, VISUALS, QoL ✅ (done 2026-08-15)
+
+## Ethan's two-realm thesis for mobs
+
+> **OVERWORLD** — flush with animals, scarce of enemies. Bosses earn their keep by
+> being powerful enough to exist up there.
+> **UNDERWORLD** — dangerous, full of hellish abominations and hordes. Enemy mobs
+> flush, bosses loose.
+
+The bucket split into `overworld-life` (11) and `mobs-enemies` (15) to match it.
+
+## 🚨 `legendary-monsters` was the antithesis — cut
+
+37 humanoid hostiles (Knight, Haunted Knight, Beheaded Knight, Resurrected Knight,
+Ambusher, Bomber, Guard, Dune Sentinel), 25 structures, 42.5 MB — and the entity
+census had **seven ambushers live in the world**. Ethan: *"it adds overworld bloat
+that doesn't make sense why its up there and usually ends in a kill loop."*
+
+`valarian-conquest` was suspected first and is the **opposite**: Archer, Armorsmith,
+Barber Surgeon, Builder, Scribe, Citizens, eight kinds of Merchant, carriages, gates.
+A civilisation mod whose "Soldier" is a town guard. **Kept — it is on-thesis.**
+
+## 🚨 `spawn-mod` was never a spawn-control mod
+
+Filed under enemies for the entire audit **on the strength of its slug**. Opened it:
+**89 entities**, and they are wildlife — Angler Fish, Barracuda, Booby, Clam, Coastal
+Crab, **Dodo**, Hamster, Iguana, Octopus, Scallop, **Sea Cow**, Seahorse, Seal, Snail
+— plus **63 biomes and 10 structures**. 70 MB.
+
+It is the **largest animal mod in the pack** now that Jurassic is gone, bigger than
+`naturalist` (50 entities). Moved to `overworld-life`.
+
+⚠️ Consequence: it already ships Angler Fish, Barracuda, Blenny, Bluefish, Herring,
+Pilot Fish and Seahorse, so `fish-of-thieves` and `aquaculture` overlap it more than
+was visible when they were chosen.
+
+## A7 cuts
+
+`rpgtitles` (duplicated `travelers-titles`) · `waterframes` + `watermedia`
+(0.2 MB riding a **35.3 MB** media backend) · **`jurassic-reborn`** (164 MB, 5,001
+items — the largest mod in the pack).
+
+⭐ **Cutting Jurassic frees JEI.** It was the ONLY mod declaring `jei` as required.
+The manifest records EMI as the chosen viewer with JEI surviving purely as a forced
+dependency, so the two-recipe-viewer R5 breach can be closed at will. **Flagged, not
+taken.**
+
+## Additions — the overworld half
+
+Alex's Mobs is the obvious answer (13.4M downloads) and has **no NeoForge 1.21.1
+build**; nor do `alexs-caves`, `domestication-innovation`, `creatures-and-beasts`.
+
+Shipped instead, all sha512-verified: `critters-and-companions` (5.6M downloads,
+already in cache) · `untitled-duck-mod` · `fish-of-thieves` · `aquaculture`.
+
+## Where A7 still has open questions
+
+* **`ambientsounds` is 80.9 MB**, client-side — the largest remaining jar. On-theme
+  for horror, but a big download for ambience.
+* **`waystones` ships with a manifest note saying `CUT 2026-08-03`** — a stale ruling
+  or a silent revert. Unresolved.
+* **`figura_extrafight`** hooks Figura into **EpicFight**, which is not installed.
+  Likely inert.
+* **JEI** — free to cut, see above.
