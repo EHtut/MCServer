@@ -91,3 +91,61 @@ be *named*.
    a citizen going missing, a building she insists you construct.
 4. **Does she gate buildings?** She could *ask* for structures — the shrinking ask,
    made of stone.
+
+
+---
+
+# 6. ⭐ CROWN MERGES INTO WALL
+
+*Ethan, 2026-08-14: **"We merge crown and wall. The idea being the spider mother
+wants you to build a family, a web, like hers. Also missionary is kinda a boring
+patron compared to the others."***
+
+**Six paths become five.**
+
+## Why it works
+
+The colony IS the court IS the family IS the web. Crown commanded servants; Wall
+wants a household. **MineColonies citizens and Goety minions are the same mechanic
+wearing two different emotions**, and only one of those emotions is interesting.
+
+Wall also absorbs the one thing Crown had that she lacked: **a reason for other
+players to need you.** Crown's *"he does not respect your claim but he will use
+you"* becomes *your colony supplies the server* — which is precisely what a
+codependent wants, and gives Wall a social role no other path has.
+
+### 🔑 The synthesis: her household holds the living AND the dead
+
+Goety is necromancy. MineColonies citizens arrived and stayed and cannot leave.
+`15-LORE.md` says the same of you: **you cannot die.** Put those together and Wall's
+web is a settlement of people who cannot leave, tended by a mother who raises the
+ones who stopped moving.
+
+Nothing needs inventing. **Goety becomes the dead half of the household.**
+
+## What is lost, honestly
+
+* **Crown's voice was distinctive** — the straight man, the only patron who accepts a
+  refusal and *respects* it, the flattering demotion. Two writing passes offered him
+  comedy and he refused both.
+* His scene in `28-THE-SCENES.md` is finished and good.
+
+⚠️ **Do not delete Crown's material.** It stays in `27` and `28` marked RETIRED. A
+sixth patron may be wanted later, and the writing is already done.
+
+## The tension to watch
+
+**Wall and Crown want opposite things from the same mechanic.** Crown's servants mean
+nothing to him — *"devotion is for the desperate and the unclaimed."* Wall loves her
+family too much. **Wall's register wins**, because the merge is happening precisely
+because Crown is the weaker character. If a colony line ever sounds imperious, it is
+wrong.
+
+## What it costs to build
+
+* `PATHS` drops to five keys. `crown` leaves `paths.js`, `stalker.js` CAST,
+  `regard.js`, `whispers.js` and `introductions.js` (regenerate the last from `28`).
+* **Do it at the world reset** — a live claim on `crown` would otherwise need
+  migrating.
+* Wall inherits `goety` + `goety-cataclysm`, taking her from 14 decoration-heavy
+  mods to a real roster: **MineColonies + Goety + Theurgy + the building palette.**

@@ -121,3 +121,87 @@ are evidence, and evidence goes stale.** Re-run it after any mod change.
 Judgment calls worth knowing: **`theurgy` is filed under Wall, not Art.** Its eleven
 stages (calcination, distillation, fermentation, reformation…) are a *material*
 processing chain, far closer to Create than to spellcasting.
+
+---
+
+# 6. The wishlist — Ethan's additions, 2026-08-14
+
+> *"lets also add actions and stuff, regions unexplored, atmospheric, tectonic,
+> stratospheric expansion, alhelsia structures, the graveyard, towers of the wild,
+> mariam's soulslike weaponry, dark waters, mutant more, and mutant monsters."*
+
+**Verification status. Nothing is added until each is checked** — this pack has been
+burned once already by a biome mod (F37: four biome ResourceKeys declared into the
+vanilla registry set killed the entire GUI layer, and config could not be shipped to
+fix it).
+
+| mod | status | notes |
+|---|---|---|
+| **Regions Unexplored** | ✅ NeoForge 1.21.1 (v0.5.9 / 0.6-beta3) | 70+ biomes. Directly serves "bigger biomes" |
+| **Mutant Monsters** | ✅ NeoForge 1.21.1, **already in cache** | v21.1.1. Not currently shipped |
+| **Tectonic** | ✅ **already shipped** | the biome-size lever lives here |
+| **Marium's Soulslike Weaponry** | ⚠️ 1.21.1 exists, **Fabric build seen** | needs a NeoForge build confirmed. Also ⚠️ collides with Blade's weapon space |
+| **Mutant More** | ⚠️ unverified | historically Fabric-leaning |
+| **Stratospheric Expansion** | ⚠️ unverified | |
+| **Atmospheric** | ⚠️ unverified | a Forge-era biome mod; check the loader |
+| **Alhelsia Structures** | ⚠️ unverified | name may be off; confirm the exact mod |
+| **The Graveyard** | ⚠️ unverified | |
+| **Towers of the Wild** | ⚠️ unverified | ⚠️ `structory_towers` + `abandoned-watchtowers` + `battle-towers` already ship — check for tower saturation before adding a fourth |
+| **Dark Waters** | ⚠️ unverified | |
+| **Actions and Stuff** | ⚠️ **this is a RESOURCE PACK, not a mod** | it does not ship through packwiz's mod channel; needs the client-pack route |
+
+## 🚨 Two standing cautions before any of these land
+
+1. **Biome mods are the highest-risk category in this pack.** F37 is the precedent
+   and it took down the whole GUI. Add biome mods **one at a time**, boot, and check.
+2. **Config does not ship through packwiz.** Anything solved by config reaches only
+   players who re-import the instance zip.
+
+---
+
+# 7. Bosses — the champions are ABOVE, the hordes are BELOW
+
+> Ethan: *"I want to add more bossfights and bring them into the overworld in such a
+> way that the hordes stay below but above are the real champions."*
+
+## This is already the lore, and it inverts the usual arrangement
+
+Most packs put the bosses at the bottom. Ethan's instinct puts them on the surface,
+and `15-LORE.md` §1 already argues for exactly that:
+
+> *"Veldora is not a ruined world. It is a living one, and it is **loud**, and most of
+> what can kill you here has simply always been able to."*
+
+So the rule writes itself:
+
+> ### ABOVE — Veldora's own great beasts. Singular, named, ancient, and they were always there.
+> ### BELOW — the leak. Numerous, wrong, and increasingly less intact the deeper you go.
+
+The deep is where the **stalkers** are — things that fell and broke. The surface is
+where the world's *own* power lives. A champion on the surface is not a symptom of
+anything; it is simply an old and enormous thing that has never needed a reason.
+
+That also fixes a quiet problem: the depth tiers in `config/incontrol/spawner.json`
+made the deep dangerous and left the surface **safe and boring** once you were geared.
+
+## We are not short of bosses. We are short of PLACEMENT.
+
+Already shipped: `l_enders-cataclysm` (Ignis, Leviathan, Harbinger, Ender Guardian,
+Netherite Monstrosity, Scylla, Maledictus, Ancient Remnant) · `bosses-of-mass-destruction`
+· `mowzies-mobs` · `iceandfire-ce` (dragons) · `legendary-monsters` ·
+`shineals-prehistoric-expansion`. Plus `mutant-monsters` sitting in cache, unshipped.
+
+**Same finding as the structures:** the content exists and is not being *met*. The
+work is placement, rarity and signposting — not shopping.
+
+⚠️ **Cataclysm's bosses are mostly summoned or structure-locked**, which is why
+nobody has met one. Surfacing them means either seeding their structures more
+generously or giving them overworld spawns — a measured change, not a config guess.
+
+## Open
+
+1. Does a surface champion **respect the path system**? A Blade walker meeting a
+   dragon is on-path; a Wall walker meeting one is a mugging.
+2. Are champions **persistent landmarks** (this valley has a thing in it) or roaming?
+   Landmarks are better for a group that does not explore — they become destinations.
+3. Do the patrons **react** to a champion kill? Blade certainly would.
