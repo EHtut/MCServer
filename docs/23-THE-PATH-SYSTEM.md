@@ -78,7 +78,41 @@ Ethan: *"Each fills a role."* Nobody is self-sufficient, nobody is redundant.
 Blade cuts down the horde with a weapon Forge made, inside a pocket Wall holds
 open, using a component Art walked out to find.
 
-## 4. The patrons ARE the stalkers
+## 4. ⭐ SUPERSEDED 2026-08-15 — the gods ACT THROUGH actors
+
+*Ethan: **"the stalkers themselves, the entities are no longer the actual patrons,
+they are instead the actors of them. The Patron's actor is known as 'pantheon' and we
+can change him to born in chaos mob if it looks cooler because they aren't stalkers
+anymore just hunters."***
+
+**A god is never a mob.** What hunts you is its **ACTOR** — a *pantheon* — sent to do
+a thing a voice cannot. The god is the voice; the actor is the body.
+
+Art was already written this way and is the template: *"She works through the shadow
+stalker."* Every god now does.
+
+### What this settles
+
+* 🔑 **The chat-only question is ANSWERED** (`11-OPEN-DECISIONS.md`). It was never
+  *"do patrons have bodies"* — the god has none and the actor is all body. Gods speak;
+  actors arrive. Both, and neither is a compromise.
+* ⭐ **THE CASTING IS NOW FREE.** A mob no longer has to *be* the god, only to serve
+  it, so any Born in Chaos entity can be recast on looks alone. Every recasting
+  argument in `18-THE-STALKERS.md` was solving a constraint that no longer exists.
+* **`stalker.js` becomes an actor system.** Its `CAST` table is a casting call, not an
+  incarnation, and swapping an entry costs nothing but appearance.
+* **The Harvest reads better.** A god does not come for you; **it sends something.**
+  Being collected by a servant is worse than being collected by a god, because it says
+  what you were worth.
+
+⚠️ **Naming to confirm:** *pantheon* is the actor's class. Whether the entity is
+displayed as `Pantheon`, `Pantheon of the Warrior`, or keeps its per-god title
+(`The Challenger`) is unresolved — `stalker.js` sets a custom name today.
+
+*The original argument, kept because the identity it asserts is still true of the
+VOICE, and because it is why the castings were chosen as they were:*
+
+## 4a. The patrons ARE the stalkers
 
 Ethan: *"these patrons btw are the stalkers. same beings im just using different
 terminology for them."*

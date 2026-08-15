@@ -53,7 +53,26 @@ Two further notes for whenever it is taken up:
 
 ---
 
-## OPEN — retire the patrons' physical presence until the Hunt
+## ✅ RESOLVED 2026-08-15 — the gods have no bodies; their ACTORS do
+
+*Ethan: **"the entities are no longer the actual patrons, they are instead the actors
+of them."***
+
+**The question dissolved rather than being answered.** It was framed as *do patrons
+keep their physical presence*, and the answer is that **a god never had one.** What
+walks around is an **actor** — a *pantheon* — sent by a god that is only ever a voice.
+
+So both halves survive and neither is a compromise: **gods speak, actors arrive.**
+The entity bugs that made chat-only attractive (the Helper culled by its own sweep, a
+patron flung 100 blocks, permanently-aggroed minions) are now bugs in a **servant**,
+which is a much smaller thing to get wrong than a god.
+
+`23` §4 carries the full consequence, including that **the casting is now free** —
+a mob only has to serve a god, not be one.
+
+*The original framing, kept for the argument it contains:*
+
+## ~~OPEN~~ — retire the patrons' physical presence until the Hunt
 
 *Ethan, 2026-08-15: **"I was lowkey flirting last night with the idea of removing
 patron presence until the end, everything is delivered over chat until the hunt so

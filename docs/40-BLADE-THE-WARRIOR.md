@@ -27,7 +27,14 @@ player is.
 
 # PART 1 — WHO HE IS
 
-**THE WARRIOR** · god of war · `born_in_chaos_v1:fallen_chaos_knight` · he
+**THE WARRIOR** · god of war · he
+**His actor:** a *pantheon* — cast today as `born_in_chaos_v1:fallen_chaos_knight`,
+**and now recastable on looks alone** (`23` §4).
+
+> ⭐ **He is never that mob.** The god is the voice; the pantheon is what he sends.
+> Every argument in `18-THE-STALKERS.md` about which entity he "is" was solving a
+> constraint that no longer exists — the only question left is which hunter looks
+> most like something the god of war would send.
 
 > **He seeks and will always demand the absolute glory of combat.**
 
@@ -151,6 +158,36 @@ never lands on a Forge observation. Tag by subject, join within subject.
 
 ---
 
+# PART 4.5 — THE MARK  ⭐ his signature event
+
+*Ethan, 2026-08-15: **"he'll randomly go 'Fuck that guy' and then tell you to kill
+them within 1-2 days. If you do you get a buff. If not, nothing he just grumbles."***
+
+**Yes, it is PvP — and the design is in the consequences.**
+
+| | |
+|---|---|
+| **trigger** | random, and only against a champion of a god he is **HOSTILE** to — Wall today |
+| **window** | 1–2 in-game days, on the world clock like every other deadline |
+| **succeed** | a buff |
+| **fail** | ⭐ **nothing. He grumbles.** |
+
+🔑 **The refusal costing nothing is the whole mechanic.** A god who *punishes* you for
+not killing a friend forces the fight and poisons the server; a god who merely
+*grumbles* leaves it a genuine choice, and choosing not to becomes a thing you did
+rather than a thing you avoided. It also fits his character exactly — **he is
+disappointed in you constantly and it never costs him anything.**
+
+It is also the only place the relationship table becomes mechanical: **his contempt
+for the spider is why the mark exists**, and Wall's champion is the only legal target
+while she is the only hostile.
+
+⚠️ **Consent and scale.** Four players, one of whom may be marked repeatedly. Before
+this ships: does the target know they are marked? Can a player opt out? Does the buff
+reward the kill or merely the attempt? **Design questions, not build questions.**
+
+---
+
 # PART 5 — ANSWERED, 2026-08-15
 
 ## 5.1 ✅ Art leads the pantheon
@@ -258,3 +295,29 @@ Everything here is built and live unless marked.
 | **reckoning** | configured, **not collecting** — demand 25/day, trigger 50 |
 | **events** | 12 designed, **0 built** |
 | **his mods** | Better Combat · Combat Roll · Cut Through · Epic Knights · Medieval Siege Machines · Not Enough Animations |
+
+---
+
+# PART 7 — WHAT A RELIC IS
+
+*Ethan: **"Food, Weapons, materials... but it should be maintenance materials. The
+blade will never give you an overpowered weapon or something you did not earn."***
+
+**MAINTENANCE, never advancement.** The distinction is the character:
+
+| he gives | he never gives |
+|---|---|
+| food · repair materials · ammunition · common weapons that **replace** what broke | anything that makes you stronger than your own fighting made you |
+
+> **He keeps you fighting. He does not make you better at it.**
+
+That is why the tiers read as they do: at LOW trust he gives *most*, because a
+champion too poor to fight is no use to him — and at HIGH trust he gives almost
+nothing, because by then you are the weapon.
+
+⚠️ **The Dark Warblade is the exception that proves it**, and it is not a
+contradiction: it is a weapon *you are not strong enough for*. He hands you the proof
+of your own insufficiency and says nothing about it. **A gift that is a judgement.**
+
+**An audit can pick the actual items** — or Ethan digs, since he is in the server.
+Either way the rule is: nothing from a tier the champion has not already reached.
