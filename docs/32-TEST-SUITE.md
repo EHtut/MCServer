@@ -249,7 +249,43 @@ grep -aE "HALF-REVOKE|did not stick|NO COOLDOWN|clickRunCommand failed|MISSING|r
 
 ---
 
-## Record results here
+## ✅ RESULTS — run 2026-08-14, Rehykt
+
+| # | test | result | notes |
+|---|---|---|---|
+| T0 | boot seams | ✅ | 18/18, 0 errors, all three seams |
+| T1 | `/ritual test` | ✅ | staggered, rooted, clickable |
+| T2 | `/ritual clear` | ❌→✅ | **FAILED FIRST RUN** — `potionEffects.remove()` does not exist and the silent catch hid it. Fixed (953f5a6), re-run passed |
+| T3 | logout mid-scene (J4) | ❌→✅ | could not reconnect on the first attempt; no exception logged anywhere. Passed after restart. **Cause never identified — see below** |
+| T4 | double-click guard | ✅ | |
+| T5 | refuse + P1 check | ✅ | no path written, crown stayed open |
+| T6 | the silence | ✅ | fired 5×, lines varied |
+| T7 | accept | ✅ | scene + grant + books |
+| T7b | **E2e XP strip** | ⚠️ **NOT EXERCISED** | accepted with 0 levels, so the strip correctly skipped and logged nothing. Zero `E2e` lines. **Still unverified** |
+| T8 | `/whisper_test` (E2f) | ✅ | |
+| T9 | `/fall_test` (E2d) | ✅ | `revoked=true`, cooldown day 82, no `HALF-REVOKE` |
+
+**Never-appear sweep: all zero.** `HALF-REVOKE` · `did not stick` · `NO COOLDOWN` ·
+`clickRunCommand failed` · `MISSING`.
+
+### Two open items from this run
+
+1. ⚠️ **E2e is still untested.** Bank levels first, then take a path, and confirm the
+   bar actually zeroes — not just that the message printed.
+2. ⚠️ **T3s first-attempt failure was never explained.** Login authenticated, then
+   `handleDisconnection() called twice` and a timeout, with **no exception in the log**
+   — not the signature of a script throw. It passed after a restart. If it recurs,
+   it is real; treat this as an unresolved intermittent, not a fixed bug.
+
+### What the suite caught that boot-verification could not
+
+`/ritual clear` logged `released <player>` for nine call sites while removing
+nothing. Every log line said the safety mechanism worked. **Only a human trying to
+move proved otherwise** — which is the entire argument for this document.
+
+---
+
+## Record results here (blank template)
 
 | # | test | pass? | notes |
 |---|---|---|---|
