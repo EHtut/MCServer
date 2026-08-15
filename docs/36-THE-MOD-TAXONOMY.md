@@ -535,3 +535,183 @@ change no blocks.
   `create-dragons-plus`?** Rubric question 4, and only Ethan can answer it.
 * **`create-compatible-storage`** — a 0.1 MB shim; what does it bridge, and is that
   thing still in the pack?
+
+---
+
+# A3 — THE ART / MAGIC AUDIT
+
+*14 mods by the taxonomy — **9 in truth**, once the two libraries the regex hid are
+counted. Nothing cut here; verdicts collect.*
+
+## The census
+
+| slug | MB | items | blocks | recipes | lang |
+|---|---|---|---|---|---|
+| `ars-nouveau` | 19.2 | **447** | 200 | 709 | 2369 |
+| `magic-vibe-decorations` | 1.8 | 203 | 188 | 130 | 203 |
+| `witcher-rpg-class` | 1.5 | 198 | 13 | 288 | 454 |
+| `arsdelight` | 1.2 | 97 | 26 | 139 | 186 |
+| `elemental-wizards-rpg` | 1.3 | 74 | 0 | 152 | 193 |
+| `wizards` | 4.3 | 56 | 0 | 125 | 164 |
+| `forcemaster-rpg-class` | 0.6 | 51 | 0 | 63 | 67 |
+| `berserker-rpg-class` | 0.5 | 35 | 0 | 73 | 142 |
+| `runes` | 0.3 | 13 | 1 | 20 | 13 |
+| `spell-engine` | 4.3 | 4 | 1 | 1 | 216 |
+| `ars-creo` | 0.1 | 1 | 1 | 1 | 18 |
+| `ars-lumos` | 0.2 | 0 | 0 | 0 | 3 |
+| `easy-magic` | 0.1 | 0 | 0 | 0 | 9 |
+| `spell-power` | 0.2 | 0 | 0 | 0 | 147 |
+
+## 🚨 Finding 1 — Art is carrying TWO complete magic systems
+
+**Ars Nouveau** — 447 items, 200 blocks, 709 recipes, 2,369 lang keys. Glyphs,
+rituals, source, an apparatus. A genuine progression tree and unambiguously the anchor.
+
+**And an entirely separate Spell Engine ecosystem**, which the dependency graph shows
+is one cluster, not six independent mods:
+
+```
+spell-engine  ←  spell-power, wizards
+              ←  berserker-rpg-class, elemental-wizards-rpg,
+                 forcemaster-rpg-class, witcher-rpg-class
+                 (three also need more_rpg_classes)
+```
+
+**That is nine mods** — the seven above plus `more-rpg-library` and `azurelib-armor`,
+which my regex filed as *libraries* and so hid from the count. Art's real footprint is
+16, and **more than half of it is a second magic system.**
+
+This is the most flagrant R5 breach in the pack — *one system per verb*, and casting
+has two.
+
+⚠️ **Note the new principle does NOT excuse this.** *Every path does every verb in its
+own idiom* gives each path **one** casting idiom. It does not give Art two.
+
+## 🚨 Finding 2 — four of them collide with the PATH SYSTEM ITSELF
+
+`berserker-rpg-class` · `elemental-wizards-rpg` · `forcemaster-rpg-class` ·
+`witcher-rpg-class`.
+
+These are not spell mods. **They are class systems** — pick a class, gain abilities,
+level it. And **the paths ARE the class system.**
+
+> The pack ships four competing answers to *"what am I?"* while we build a fifth and
+> call it canon.
+
+This is a bigger problem than R5, because it is not about mod count — it is **R8**.
+A Witcher class is from another world, wearing another world's name, offering the
+player an identity Veldora did not give them. The whole point of the introductions is
+that a patron decides what you are. A menu that lets you pick *Berserker* instead
+undercuts every scene in `28`.
+
+**Recommend CUT, all four**, on thesis grounds rather than performance ones. They are
+~360 items and four ways to be someone the world never offered.
+
+## Finding 3 — the fork worth actually thinking about
+
+With the class mods gone, `spell-engine` + `spell-power` + `wizards` remain, and
+there are two honest readings:
+
+* **CUT** — redundant. Ars Nouveau is the deeper system by an order of magnitude and
+  Art only needs one.
+* **REPURPOSE** — ⭐ Spell Engine is *light* where Ars is deep. The verb matrix has a
+  hole: **Blade, Salvage and Wall have no casting at all.** Spell Engine could be the
+  universal thin casting layer every path gets a little of, leaving Ars Nouveau as
+  Art's alone. That turns an R5 violation into the mechanism that satisfies *every
+  path does every verb.*
+
+**This is Ethan's call and it is a genuine fork**, not a tidy-up.
+
+## Finding 4 — the small stuff
+
+* `magic-vibe-decorations` — 203 items / 188 blocks of decoration. Same question as
+  Create's seven, same answer, same timing hazard.
+* `ars-lumos` (light), `easy-magic` (enchanting QoL), `spell-power` (attributes) —
+  register nothing. Support, not substance. Fine if their parent stays.
+* `ars-creo` — a one-item Create↔Ars bridge. **Keep**: it is exactly the
+  cross-path plumbing the verb matrix wants.
+* `arsdelight`, `runes` — small, on-theme, harmless.
+
+## A3 verdicts — for Ethan
+
+| # | mod(s) | proposed |
+|---|---|---|
+| 1 | the four **RPG class mods** | **CUT** — they compete with the path system |
+| 2 | `spell-engine` + `spell-power` + `wizards` | **FORK** — cut as redundant, or repurpose as the universal light-casting layer |
+| 3 | `magic-vibe-decorations` | decoration cull, timed with the reset |
+| 4 | `ars-nouveau` + `arsdelight` + `ars-creo` + `ars-lumos` + `runes` + `easy-magic` | **KEEP** — the anchor and its support |
+
+⚠️ Cutting the class cluster also frees `more-rpg-library` and `azurelib-armor` **if
+nothing else needs them** — check before removing, this is exactly the orphaned-library
+case A8 exists for.
+
+
+---
+
+# 9. The creation-tool list — filtered, 2026-08-14
+
+> Ethan pasted 19 links from a modpack-creation video: *"We already have alot of
+> these but im lazy and just copy and pasted."*
+
+**Only `kubejs` and `jei` are actually installed.** Four of the rest solve problems
+this audit hit tonight, and one of them changes how the decoration cut should work.
+
+## ⭐ TIER 1 — these solve problems we already have
+
+### `Item Obliterator` — **it removes the decoration-cut hazard**
+
+Hides/removes items from JEI, recipes and the world **without removing the mod.**
+
+That matters enormously: cutting a block mod **deletes blocks that are already
+placed** (356 MB of world, 1,572 region files). Obliterating instead means the mod
+stays loaded, **every block anyone has already built with survives**, and nobody can
+obtain any more.
+
+> **This turns the decoration cull from a reset-timed destructive operation into
+> something we can do tonight.** It is the single most useful mod on the list.
+
+### `Structurify` — **it fixes worldgen without cutting anything**
+
+Per-structure spacing, separation and toggles at runtime.
+
+The worldgen census found **629 structures across 51 mods**, with the problem being
+that the generic ones are dense enough to be what you actually meet — Explorify at
+`frequency 0.8, spacing 48`. Structurify makes that a **dial instead of a cut**: keep
+Explorify's 23 structures and make them rare, and let the 106-structure village
+overhaul and the gothic ruins surface instead.
+
+**Rarity was the diagnosis. This is the instrument.**
+
+### `Biome Replacer` — the BWG question without a world rebuild
+
+Maps biome → biome at generation. Directly relevant to *"replace oh the biomes with
+regions unexplored?"* — it can do a swap without a full worldgen overhaul, though
+existing chunks still keep what they were built with.
+
+### `Attribute Setter` — datapack-driven attributes
+
+Sets entity/item attributes from JSON. Relevant to **E3, the coefficient substrate**,
+and to per-path mob scaling, without another KubeJS hook.
+
+## TIER 2 — real, but taste
+
+* **`Jade`** — the what-am-I-looking-at overlay. Nothing equivalent ships. Genuinely
+  useful on a 289-mod pack where half the blocks are unfamiliar.
+* **`WorldEdit`** — admin/building. Worth it for the world reset alone.
+* **`Command Aliases`** — could shorten the Veldora command surface.
+
+## TIER 3 — skip, we already have the verb
+
+| mod | why not |
+|---|---|
+| **CraftTweaker** | recipe scripting — **we have KubeJS.** R5, one system per verb |
+| **Bad Mobs** | spawn denial — **we have In Control**, already tuned by depth |
+| **You Shall Not Spawn** | same as above |
+| **WITS**, **Suggestion Tweaker**, **Configurable**, **Persistent Creative Inventory**, **Change Items Durability**, **BlockSwap** | dev conveniences. Low value for four players; several are client-side authoring aids |
+
+## The standing caution still applies
+
+Everything here is a **tool**, not content, so none of it touches R1 or R8 — but
+`Structurify` and `Biome Replacer` both alter worldgen, and **config does not ship
+through packwiz** (F37). Whatever they are set to reaches only players who re-import
+the instance zip. Plan delivery before tuning.
