@@ -1,20 +1,20 @@
 {
  "category": "mcserver:paths",
  "name": "The Wall",
- "description": "Defence",
- "icon": "securitycraft:reinforced_stone",
+ "description": "The household",
+ "icon": "goety:blackstone_soul_brazier",
  "x": 5,
  "y": 1,
  "pages": [
   {
    "type": "modonomicon:text",
    "title": "What It Gives",
-   "text": "Permanence. The only path that answers whether this will still be here tomorrow.\n\nIt wins nothing. It refuses to lose."
+   "text": "Permanence, and hands that are not yours.\n\nThe only path that answers whether this will still be here tomorrow - and the only one that does not answer alone. It wins nothing. It refuses to lose."
   },
   {
    "type": "modonomicon:text",
    "title": "Your First Hour",
-   "text": "1. A keypad and a reinforced door on the one room that matters.\n2. Cameras where you cannot see.\n3. KEYCARDS come off the dead when you walk this path. Keep them - they open more than doors.\n4. Reinforced blocks resist blast. That is the whole point, and they are not found above."
+   "text": "1. A book of binding, and a circle to bind in. The first thing you call up is the one that carries for you.\n2. A brazier where the house will be. Souls keep the hearth.\n3. The dead do not leave. Neither do the bound. That is the point of a household.\n4. Build the room that matters before you build the wall around it."
   }
  ],
  "parents": [

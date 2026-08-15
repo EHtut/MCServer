@@ -363,6 +363,40 @@ Three properties worth preserving:
 
 Every trade still raises the **debt counter**, and the debt is what calls the raid.
 
+## ⭐ The debt generalises: ONE COUNTER PER PATRON
+
+*Ethan, 2026-08-15: **"it'd probably work better if we gave a new counter for all of
+these patrons."*** **Adopted — build E6's debt as the first instance of this, not as
+a Salvage special case.**
+
+Today everything keys off **notoriety**, one number shared by all six patrons, and
+that has a specific consequence the design already noticed: *"trading levels away is
+the only thing a player can choose to do to slow their march"* — because levels are
+the only input to notoriety a player controls. **That is a symptom of one shared
+counter, not a feature.**
+
+A per-patron counter fixes several things at once:
+
+| | shared notoriety (today) | per-patron counter |
+|---|---|---|
+| what it measures | how fat you are, globally | **what you owe THIS patron** |
+| Salvage's debt | a bolt-on second number | just this patron's counter |
+| Forge's quota | another bolt-on | the same counter, named differently |
+| a subclass | muddies one number | its own counter at half weight |
+| tuning | one curve for six characters | each patron escalates on its own terms |
+
+**It also makes the E3 coefficients honest.** `phase` currently scales a *shared*
+number, so Blade's ×2 accelerates a counter that Forge is also feeding. With one
+counter each, `phase` scales the thing that patron actually owns.
+
+**Notoriety does not die** — it stays the global "how ripe are you" that drives the
+Harvest and the power curve. The per-patron counter is what each character *wants*
+from you, which is exactly how the twelve events per patron are already written.
+
+⚠️ **The counter must persist as a WORLD DAY, never `tickCount`** — the rule E2d and
+E6 already carry. And "could not read the counter" must never return 0; that is the
+`dropChanceFor` lesson, and a debt that silently reads zero cancels every raid.
+
 ---
 
 # PART VI — THE EVENTS

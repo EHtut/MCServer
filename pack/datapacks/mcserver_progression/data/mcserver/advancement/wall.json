@@ -1,7 +1,7 @@
 {
  "display": {
   "icon": {
-   "id": "securitycraft:reinforced_stone"
+   "id": "goety:blackstone_soul_brazier"
   },
   "title": "The Wall",
   "description": "It wins nothing. It only refuses to lose.",
@@ -16,7 +16,7 @@
    "conditions": {
     "items": [
      {
-      "items": "securitycraft:reinforced_stone"
+      "items": "goety:blackstone_soul_brazier"
      }
     ]
    }

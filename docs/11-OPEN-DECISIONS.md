@@ -53,6 +53,38 @@ Two further notes for whenever it is taken up:
 
 ---
 
+## OPEN — retire the patrons' physical presence until the Hunt
+
+*Ethan, 2026-08-15: **"I was lowkey flirting last night with the idea of removing
+patron presence until the end, everything is delivered over chat until the hunt so
+we don't need to mess with the behavior of the mobs anymore but that's for later."***
+
+**Captured, explicitly NOT scheduled.** Do not shape work around it.
+
+The patron would exist only as **voice** — whispers, events, trades, all chat —
+until the Harvest, at which point the creature actually arrives. No stalker entity
+following you for the whole game.
+
+**What is attractive about it:** nearly every bug this project has produced lives in
+the *entity* half, not the voice half. The Helper culled by its own sweep, the
+`keepDistance` teleport that flung the bench patron 100 blocks, minions permanently
+aggroed, the casting migration problem, PvP stalker-vs-stalker never once tested.
+The voice half has been reliable throughout. This would delete a whole class of bug
+and make the Harvest an *arrival* rather than an escalation of something already
+standing next to you.
+
+**What it costs:** the patron stops being a presence you live alongside, which was
+the original pitch — *"things happen to you"*. The Hunt's dread depends partly on
+having watched the thing get closer. And `stalker.js` is the single largest system
+in the build; retiring its live half is not a small edit.
+
+⚠️ **Decide BEFORE E8 (Blade's waves)**, not after — Blade's twelve events assume a
+creature that is present. **`spawns` is entangled with this too:** it is currently
+INERT and needs an active spawner, and if patrons become chat-only, that spawner is
+the *only* thing that would ever put a patron-flavoured mob near a player.
+
+---
+
 ## NOTHING ELSE OPEN
 
 Every decision from the 2026-07-31/08-01 audit and design sessions is answered.

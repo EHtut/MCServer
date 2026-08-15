@@ -33,9 +33,18 @@ import zipfile
 PACK_NAME = "mcserver_buried_tech"
 
 # Mods whose output must be FOUND, not made.
+#
+# ⚠️ securitycraft was REMOVED here 2026-08-15. It was cut from the pack in the A2
+# Wall audit, and its leftovers in OUR OWN datapacks kicked Ethan at login the next
+# time he joined: Modonomicon syncs guidebooks on connect, the Wall entry used
+# securitycraft:reinforced_stone as its icon, an unresolvable item encodes as an
+# empty ItemStack, and "Empty ItemStack not allowed" comes back to the player as a
+# netty EncoderException naming neither the mod nor the book.
+#
+# Anything added here must be REMOVED here when the mod is cut. Run
+# tools/check_datapack_refs.py after any cut - it catches exactly this.
 BURIED = {
     "tacz": "tacz-neoforge-*.jar",
-    "securitycraft": "*SecurityCraft*.jar",
     "diligentstalker": "diligentstalker*.jar",
 }
 
@@ -62,13 +71,7 @@ KEEP_EXACT = {
 
 KEEP_PREFIX = (
     "tacz:ammo_mod_",          # FMJ / HE / HP / incendiary / slug rounds
-    # SecurityCraft's REINFORCED blocks stay craftable. Gating all 839 of its
-    # recipes does not make the mod "salvaged tech", it deletes the mod - you
-    # would find a camera and have nothing to mount it on. Reinforced stone is a
-    # stronger wall, which a medieval fortress may plausibly have; it is the
-    # cameras, keypads, mines and laser grids that are the anachronism, and those
-    # are still gated.
-    "securitycraft:reinforced_",
+    # (the securitycraft:reinforced_ carve-out lived here and went with the mod)
 )
 
 
