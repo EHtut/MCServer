@@ -111,6 +111,49 @@ also crowding out the structure mods that ARE lore-accurate.
 **The pack is not short of good structures. It is short of rarity** — the generic
 ones are dense enough to be what you actually meet.
 
+### 🚨 THE WORLDGEN CENSUS — measured 2026-08-14 (`tools/worldgen_census.py`)
+
+Ethan asked whether three mods queued for cutting generate structures. **They do not
+— zero structures, zero features, zero biomes between them.** But asking the question
+produced the number that matters:
+
+> ## 51 shipped mods add worldgen.
+> ## 629 structures · 868 biomes · 6,361 building pieces.
+
+**This pack is not short of worldgen. It is drowning in it.** The problem was never
+supply — it is that the generic content is dense enough to be what you actually meet,
+so 629 structures reduce in practice to the handful placed most often.
+
+| mod | structures | biomes | nbt pieces |
+|---|---|---|---|
+| `ct-overhaul-village` | **106** | 0 | **2,118** |
+| `when-dungeons-arise` | 53 | 52 | 877 |
+| `goety` | 44 | 84 | 251 |
+| `borninchaos` | 31 | 1 | 27 |
+| `l_enders-cataclysm` | 30 | 12 | 188 |
+| **`create-let-the-adventure-begin`** | **30** | 4 | **440** |
+| `better-archeology` | 27 | 31 | 52 |
+| `legendary-monsters` | 25 | 13 | 71 |
+| **`oh-the-biomes-weve-gone`** | 23 | **153** | 576 |
+| `explorify` | 23 | 23 | 330 |
+
+**Three findings that change earlier decisions:**
+
+1. ⚠️ **`create-let-the-adventure-begin` is a MAJOR structure mod** — 30 structures
+   and 440 pieces, more than Cataclysm. A1 called it "misfiled, move to worldgen" as
+   though it were minor bookkeeping. It is not: it is one of the ten largest worldgen
+   contributors in the pack, hiding in the Create bucket. **Keep and reclassify.**
+2. 🚨 **`oh-the-biomes-weve-gone` already ships 153 biomes**, and the pack總 total is
+   **868**. Adding **Regions Unexplored** (70+ more) on top would be the opposite of
+   the fix — *"bigger biomes"* is a **size** problem, not a **variety** problem, and
+   more variety makes biomes smaller. **Re-examine the wishlist entry before adding.**
+3. `explorify` contributes 23 structures and 330 pieces, so cutting it subtracts real
+   volume — but they are the generic ones, which is exactly the point. The census
+   makes the trade explicit rather than hidden.
+
+**Goety carries 44 structures and 84 biomes**, so the Crown→Wall merge hands Wall a
+substantial worldgen inheritance she was never credited with.
+
 ### Bigger biomes
 
 `tectonic`, `biolith` and `terrablender` are all installed. Biome *size* is a config
