@@ -323,11 +323,250 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     })
   }
 
-  VELDORA.salvage = { open: open, heldGun: heldGun, mintAmmo: mintAmmo }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // E6b — SHE OPENS HERSELF.  docs/23 PART V.6, docs/34 §2b
+  //
+  // Ethan, 2026-08-15: "going forwards i want the player to actually use commands
+  // as little as possible."
+  //
+  // /trade_test is a HARNESS, not the feature. `23` PART V has always said she
+  // opens AT THE WORST TIMES - mid-combat, low health, just after a death - and
+  // until now that half did not exist, which made E6 a mechanism rather than
+  // something that happens to you. That was the founding complaint of the whole
+  // project: "we need things to happen to us."
+  //
+  // ── BUILT ON PROVEN HOOKS ONLY ─────────────────────────────────────────────
+  // beforeHurt, respawned and scheduleInTicks are all exercised elsewhere in this
+  // codebase. EntityEvents.afterHurt IS in the KubeJS registry (23 PART V.7) but
+  // has never fired here, and J6's lesson is that an unfired hook cannot be
+  // distinguished from a nonexistent one from inside a script. So combat is
+  // detected on beforeHurt and JUDGED on a slow sampler, where the health value
+  // is read directly rather than inferred from an event field we have not proven.
+  //
+  // ── THE INVARIANT ──────────────────────────────────────────────────────────
+  // She is an opportunist, not a vending machine. Every path below funnels through
+  // maybeOpen(), which is the single place that decides whether she is allowed to
+  // speak - so there is exactly one definition of "not right now".
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  var AUTO = true                  // rollback: false, and only /trade_test remains
+
+  var LAST_OFFER = 'veldora_salvage_last_offer'   // world ticks, cumulative
+  var COOLDOWN_BASE = 6000         // ~5 real minutes at 20t/s
+  var COOLDOWN_FLOOR = 2400        // ~2 minutes - she can never be faster than this
+  var COOLDOWN_PER_DEBT = 300      // she gets pushier the more you owe
+
+  var LOW_HEALTH = 0.35            // "a bad night" - fraction of max
+  var COMBAT_WINDOW = 200          // ticks since last damage that still counts as mid-fight
+  var DRY_SPELL_DAYS = 2           // days since her counter moved
+
+  var CHANCE_TROUBLE = 0.40        // rolled when you are hurt and low
+  var CHANCE_AFTER_DEATH = 0.30
+  var CHANCE_DRY = 0.15            // the unprompted approach, deliberately rare
+
+  var SAMPLE_TICKS = 40            // 2s. Cheap: only online salvage walkers.
+
+  var lastHurt = {}                // uuid -> world ticks, in memory by design
+
+  function worldTicks(server) {
+    try {
+      var d = server.overworld().dayTime()
+      if (typeof d === 'number' && isFinite(d)) return d
+    } catch (e) { }
+    return null
+  }
+
+  function walksSalvage(p) {
+    try {
+      if (VELDORA.paths && typeof VELDORA.paths.pathOf === 'function') {
+        return VELDORA.paths.pathOf(p) === PATRON
+      }
+    } catch (e) { }
+    return false
+  }
+
+  function healthFrac(p) {
+    try {
+      var max = p.getAttribute('minecraft:generic.max_health').getValue()
+      if (!max || !isFinite(max) || max <= 0) return null
+      return p.health / max
+    } catch (e) { return null }
+  }
+
+  // The ONE place that decides whether she may speak. Every trigger calls this.
+  // Returns true only if she actually opened.
+  function maybeOpen(p, server, why, chance) {
+    if (!AUTO) return false
+    if (!walksSalvage(p)) return false
+
+    // Never talk over another patron. The ritual is single-occupancy and I2's
+    // introductions use it too - two scenes at once would fight over the release.
+    try { if (VELDORA.ritual && VELDORA.ritual.active(p)) return false } catch (e) { }
+
+    var now = worldTicks(server)
+    if (now === null) {
+      // No clock means no cooldown, and no cooldown means she could open every
+      // sample. Refuse rather than spam - K9's lesson wearing a different hat.
+      console.warn(TAG + 'no world clock - AUTO-OPEN SUPPRESSED (cannot rate-limit)')
+      return false
+    }
+
+    var last = 0
+    try { last = p.persistentData.getDouble(LAST_OFFER) } catch (e) { }
+    if (!last || !isFinite(last) || last > now) last = 0   // clock moved backwards
+
+    // She gets pushier as the debt grows. That IS the ratchet: the more you owe,
+    // the more often she is standing there offering you a way to owe more.
+    var debt = 0
+    try {
+      if (VELDORA.counter) {
+        var d = VELDORA.counter.get(p, PATRON)
+        if (d !== null) debt = d
+      }
+    } catch (e) { }
+    var cd = Math.max(COOLDOWN_FLOOR, COOLDOWN_BASE - debt * COOLDOWN_PER_DEBT)
+    if (last && (now - last) < cd) return false
+
+    if (Math.random() > chance) return false
+
+    if (!open(p, why)) return false
+
+    try { p.persistentData.putDouble(LAST_OFFER, now) } catch (e) { }
+    console.info(TAG + 'she opened on ' + p.username + ' - ' + why +
+      ' (debt=' + debt + ', cooldown was ' + cd + 't)')
+    return true
+  }
+
+  // ── trigger 1 + 2: the bad night, and mid-combat ──────────────────────────
+  // Recorded on beforeHurt, judged on the sampler. Reading health inside the
+  // damage event would read it BEFORE the hit lands, which is the wrong number
+  // for "are you nearly dead".
+  EntityEvents.beforeHurt(function (event) {
+    try {
+      var e = event.entity
+      if (!e || !e.player) return
+      lastHurt[String(e.uuid)] = -1        // stamped properly by the sampler
+    } catch (x) { }
+  })
+
+  // ── trigger 3: just after a death ─────────────────────────────────────────
+  // She profits from your bad night, and there is no worse night than that one.
+  // Delayed so it lands after the respawn settles rather than over the top of it.
+  PlayerEvents.respawned(function (event) {
+    if (!AUTO) return
+    var p = event.player
+    if (!p) return
+    var server = null
+    try { server = p.server } catch (e) { }
+    if (!server) return
+    server.scheduleInTicks(100, function () {
+      try {
+        if (!p.isAlive()) return
+        maybeOpen(p, server, 'after a death', CHANCE_AFTER_DEATH)
+      } catch (e) { console.warn(TAG + 'post-death open threw :: ' + e) }
+    })
+  })
+
+  // ── the sampler: judges 1, 2 and 4 ────────────────────────────────────────
+  function sample(server) {
+    try {
+      var now = worldTicks(server)
+      var players = server.players
+      for (var i = 0; i < players.length; i++) {
+        var p = players[i]
+        if (!walksSalvage(p)) continue
+        var uuid = String(p.uuid)
+
+        // stamp the hurt time here, where we have the clock
+        if (lastHurt[uuid] === -1 && now !== null) lastHurt[uuid] = now
+
+        var hf = healthFrac(p)
+        var hurtAgo = (now !== null && lastHurt[uuid] > 0) ? (now - lastHurt[uuid]) : null
+        var inCombat = hurtAgo !== null && hurtAgo >= 0 && hurtAgo < COMBAT_WINDOW
+
+        // 1+2. Hurt, and low. The detarget inside the ritual is what makes an
+        // offer mid-fight survivable rather than a death sentence - that was
+        // designed in from the start (23 PART IV).
+        if (hf !== null && hf <= LOW_HEALTH && inCombat) {
+          if (maybeOpen(p, server, 'low health mid-combat', CHANCE_TROUBLE)) continue
+        }
+
+        // 4. The dry spell. She has not had anything from you in days.
+        var since = null
+        try { if (VELDORA.counter) since = VELDORA.counter.daysSince(p, PATRON) } catch (e) { }
+        if (since !== null && since >= DRY_SPELL_DAYS) {
+          maybeOpen(p, server, 'dry spell (' + since + 'd)', CHANCE_DRY)
+        }
+      }
+    } catch (e) { console.warn(TAG + 'sampler threw :: ' + e) }
+    server.scheduleInTicks(SAMPLE_TICKS, function () { sample(server) })
+  }
+
+  VELDORA.salvage = { open: open, heldGun: heldGun, mintAmmo: mintAmmo, maybeOpen: maybeOpen }
 
   ServerEvents.commandRegistry(function (event) {
     var Commands = event.commands
     function ADMIN(s) { try { return s.hasPermission(2) } catch (e) { return false } }
+
+    // E6b's diagnostic. She opens on her own, which means when she does NOT open
+    // there is nothing to see - the single hardest kind of behaviour to test. This
+    // prints every gate in maybeOpen() and which one is holding, so "she is quiet"
+    // and "she is broken" can be told apart. It is a READ, never a bypass.
+    event.register(Commands.literal('trade_why').requires(ADMIN).executes(function (ctx) {
+      var p = ctx.source.player
+      if (!p) return 0
+      var srv = ctx.source.server
+      function row(ok, label, detail) {
+        p.tell(Text.of((ok ? '§a  PASS  ' : '§c  HOLD  ') + '§f' + label +
+          (detail ? ' §8' + detail : '')))
+      }
+      p.tell(Text.of('§8§m                                        '))
+      p.tell(Text.of('§6Why she is or is not about to open'))
+
+      row(AUTO, 'AUTO enabled', AUTO ? '' : '(rollback flag is off)')
+
+      var path = '?'
+      try { if (VELDORA.paths) path = VELDORA.paths.pathOf(p) || 'none' } catch (e) { }
+      row(path === PATRON, 'you walk salvage', '(you walk ' + path + ')')
+
+      var busy = false
+      try { busy = !!(VELDORA.ritual && VELDORA.ritual.active(p)) } catch (e) { }
+      row(!busy, 'no other scene running', busy ? '(a ritual is active)' : '')
+
+      var now = worldTicks(srv)
+      row(now !== null, 'world clock readable', now === null ? '(NO CLOCK - suppressed)' : '')
+
+      var debt = 0
+      try { if (VELDORA.counter) { var d = VELDORA.counter.get(p, PATRON); if (d !== null) debt = d } } catch (e) { }
+      var cd = Math.max(COOLDOWN_FLOOR, COOLDOWN_BASE - debt * COOLDOWN_PER_DEBT)
+      var last = 0
+      try { last = p.persistentData.getDouble(LAST_OFFER) } catch (e) { }
+      var waited = (now !== null && last) ? (now - last) : null
+      row(waited === null || waited >= cd, 'cooldown elapsed',
+        '(debt ' + debt + ' -> ' + cd + 't; waited ' +
+        (waited === null ? 'never offered' : Math.round(waited) + 't') + ')')
+
+      var hf = healthFrac(p)
+      row(hf !== null && hf <= LOW_HEALTH, 'health is low',
+        '(' + (hf === null ? '?' : Math.round(hf * 100) + '%') + ', needs <=' +
+        Math.round(LOW_HEALTH * 100) + '%)')
+
+      var uuid = String(p.uuid)
+      var ago = (now !== null && lastHurt[uuid] > 0) ? Math.round(now - lastHurt[uuid]) : null
+      row(ago !== null && ago < COMBAT_WINDOW, 'recently hurt',
+        '(' + (ago === null ? 'not since restart' : ago + 't ago') + ', window ' + COMBAT_WINDOW + 't)')
+
+      var since = null
+      try { if (VELDORA.counter) since = VELDORA.counter.daysSince(p, PATRON) } catch (e) { }
+      row(since !== null && since >= DRY_SPELL_DAYS, 'dry spell',
+        '(' + (since === null ? 'counter never moved' : since + 'd') + ', needs >=' + DRY_SPELL_DAYS + 'd)')
+
+      p.tell(Text.of('§8Even with every gate passed she rolls ' +
+        Math.round(CHANCE_TROUBLE * 100) + '% / ' + Math.round(CHANCE_AFTER_DEATH * 100) +
+        '% / ' + Math.round(CHANCE_DRY * 100) + '% - she chooses, you do not.'))
+      return 1
+    }))
 
     event.register(Commands.literal('trade_test').requires(ADMIN).executes(function (ctx) {
       var p = ctx.source.player
@@ -337,8 +576,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     }))
   })
 
-  ServerEvents.loaded(function () {
+  ServerEvents.loaded(function (event) {
     if (!GATE) { console.info(TAG + 'E6 GATED OFF'); return }
+    if (AUTO) {
+      event.server.scheduleInTicks(SAMPLE_TICKS, function () { sample(event.server) })
+      console.info(TAG + 'E6b AUTO-OPEN active - triggers: low health mid-combat, ' +
+        'after a death, dry spell >=' + DRY_SPELL_DAYS + 'd. Cooldown ' +
+        COOLDOWN_BASE + 't shrinking ' + COOLDOWN_PER_DEBT + 't per debt, floor ' +
+        COOLDOWN_FLOOR + 't.')
+    } else {
+      console.info(TAG + 'E6b AUTO-OPEN is OFF - /trade_test only')
+    }
     var missing = []
     if (!VELDORA.ritual) missing.push('ritual')
     if (!VELDORA.counter) missing.push('counter')

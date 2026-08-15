@@ -119,24 +119,41 @@ the player can see what they traded."* The first build multiplied the invisible 
   what makes that survivable rather than a death sentence
 * debt persists across restart as a **world day**, never `tickCount`
 
-### 2b. ⭐ E6b — SHE OPENS HERSELF 🚨 the half that makes E6 a feature
+### 2b. E6b — SHE OPENS HERSELF ✅ **BUILT 2026-08-15**
 
-*Ethan, 2026-08-15: **"going forwards i want the player to actually use commands as
-little as possible."*** `23` PART V.6.
+*Ethan: **"going forwards i want the player to actually use commands as little as
+possible."*** `23` PART V.6. **`/trade_test` was a harness; this is the feature.**
 
-**E6's trades work and were tested clean. `/trade_test` is a harness, not the
-feature.** `23` PART V has always said she opens **at the worst times** — mid-combat,
-low health, just after a death — and that half does not exist.
+Built into `salvage.js`. **Four triggers**, all funnelling through one `maybeOpen()`
+so there is exactly one definition of *not right now*:
 
-* triggers: low health · mid-combat · just after a death · a long dry spell
-* **rate-limited by her counter**, so she does not become a vending machine
-* the ritual's detarget is what makes a mid-combat offer survivable rather than a
-  death sentence — that was designed in from the start
-* ⚠️ **must not fire during another patron's scene.** `VELDORA.ritual.active(p)`
-  already guards it; test it with two patrons wanting you at once.
+| trigger | condition | chance |
+|---|---|---|
+| **low health mid-combat** | ≤35% health **and** hurt within 200t | 40% |
+| **after a death** | 5s after respawn | 30% |
+| **the dry spell** | her counter has not moved in ≥2 days | 15% |
 
-**This is cheap** — the trades, the counter and the ritual all exist. It is a trigger
-and a rate limit.
+* ⭐ **She gets pushier as the debt grows** — cooldown starts at 6000t and shrinks
+  300t per point of debt, floored at 2400t. **That is the ratchet**: the more you owe,
+  the more often she is standing there offering you a way to owe more.
+* **Built on PROVEN hooks only.** `beforeHurt` (`afterHurt` is in the registry but has
+  never fired here, and J6's lesson is that an unfired hook cannot be told from a
+  nonexistent one) · `respawned` · `scheduleInTicks`. Combat is *recorded* on
+  `beforeHurt` and *judged* on a 2s sampler, because reading health inside the damage
+  event reads it **before the hit lands** — the wrong number for "are you nearly dead".
+* **No clock, no offer.** If `dayTime()` is unreadable the rate limit cannot work, so
+  she is suppressed rather than allowed to fire every sample. K9's lesson in a hat.
+* **Never talks over another patron** — `ritual.active(p)` guard.
+* **Rollback:** `AUTO = false`, and only `/trade_test` remains.
+
+🔍 **`/trade_why`** (admin) prints **every gate and which one is holding.** Auto-open
+is the hardest kind of behaviour to test — when it does not fire there is nothing to
+see — so "she is quiet" and "she is broken" must be distinguishable. It is a read,
+never a bypass.
+
+⚠️ **Testing note:** the sampler only runs for the **salvage walker**, and salvage is
+claimed by `j0nesyboi223`. Rehykt walks forge, so `/trade_why` will correctly HOLD on
+*you walk salvage*. Test either as the salvage walker or by moving the claim.
 
 ### 2c. ⭐ THE TRADE IS THE UNIVERSAL INTERFACE — re-scopes PART VI
 
