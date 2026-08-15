@@ -22,7 +22,14 @@
 // because a coefficient of 1.0 is arithmetically invisible. That is the whole
 // reason the substrate multiplies instead of branching.
 //
-// ── ⚠️ THE SPAWNS AXIS IS NOT HERE, AND THAT IS DELIBERATE ───────────────────
+// ── THE SPAWNS AXIS ✅ WIRED 2026-08-15 (spawn_pressure.js) ──────────────────
+// It was INERT from this file's creation until then, for the reason below. It is
+// now live in TWO regimes: below 1 suppresses natural spawns through checkSpawn,
+// above 1 sends waves through spawner.js. See 23 §7b - a multiplier applied to
+// zero is zero, and In Control denies natural hostiles above y=40, so the
+// coefficient carries the deep and the spawner carries the surface.
+//
+// ── the original argument, kept because it is why it waited ─────────────────
 // docs/23 §7 lists four axes. Three are weightings on numbers that already exist.
 // The fourth, `spawns`, is NOT a weighting - it is a mechanism that does not exist:
 //
@@ -72,7 +79,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   // Which axes have a live consumer TODAY. Used by the boot report and by
   // /path coefficients, so a number nobody reads is never presented as if it acts.
-  var CONSUMED = { drops: true, power: true, phase: true, spawns: false }
+  var CONSUMED = { drops: true, power: true, phase: true, spawns: true }
 
   // ⚠️ SUBCLASSES ARE CUT (Ethan, 2026-08-15). This used to stack half of a
   // subclass's DEVIATION from neutral on top of the primary's. The mechanism was
@@ -192,8 +199,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     for (var k in TABLE) if (TABLE.hasOwnProperty(k)) paths.push(k)
     console.info(TAG + 'VELDORA.coeff published OK - ' + paths.length +
       ' path keys (crown aliases wall), ' + AXES.length + ' axes')
-    console.info(TAG + 'LIVE axes: drops, power, phase. ' +
-      'INERT axis: spawns - no consumer exists yet (needs an active spawner, ' +
-      'not checkSpawn; cancelling cannot produce a coefficient above 1).')
+    console.info(TAG + 'LIVE axes: drops, power, phase, spawns. ' +
+      'spawns is TWO regimes (23 §7b): below 1 suppresses natural spawns via ' +
+      'checkSpawn, above 1 sends waves via spawner.js - because a multiplier on ' +
+      'zero is zero, and In Control denies naturals above y=40.')
   })
 })();

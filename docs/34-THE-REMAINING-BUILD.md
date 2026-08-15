@@ -82,9 +82,20 @@ Boot-verified: 19/19 scripts, seam published, 0 errors.
 * ⏳ **`phase` is still unverified** — Forge is ×1, so there was nothing to observe.
   Needs someone on **Blade** (×2), or a forced coefficient and a band-transition read.
 
-⚠️ **One thing remains open.**
+✅ **THE SPAWNS AXIS IS WIRED 2026-08-15** — `spawn_pressure.js`. **E3 is complete;
+all four axes are live.** Two regimes (`23` §7b): below 1 suppresses natural spawns
+through `checkSpawn`, above 1 sends waves through `spawner.js`. Modular per Ethan —
+per-path rosters and `VELDORA.pressure.send()` for Blade's twelve to call with their
+own. `/pressure` prints which regime you are in.
 
-1. **`spawns` is INERT.** `checkSpawn` can only *cancel*, so it cannot produce Blade's
+⚠️ **`checkSpawn`'s event shape has never been used here** — E0 P9 only proved it fires
+and can be cancelled. The handler reads the position defensively and **logs the shape
+once**; watch for `[pressure] checkSpawn shape:` on the first natural spawn near a
+walker. If it says `UNREADABLE`, the suppression half is inert and says so.
+
+*The original argument, kept because it is why the axis waited:*
+
+1. **`spawns` was INERT.** `checkSpawn` can only *cancel*, so it cannot produce Blade's
    ×4 — that needs an **active spawner** (`the_hunt.js`'s ring-placement mechanism),
    which is a build of its own and was deliberately NOT folded into E3. `23` §7a has
    the argument. The value is in the table, served by `VELDORA.coeff`, printed as

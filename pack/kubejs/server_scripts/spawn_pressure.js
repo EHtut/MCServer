@@ -1,0 +1,229 @@
+// spawn_pressure.js - E3's `spawns` axis, wired at last.  docs/23 §7a, §7b
+//
+// THE LAST UNWIRED COEFFICIENT. Blade's headline number is ×4 and until now it did
+// nothing at all.
+//
+// ── TWO REGIMES, BECAUSE A COEFFICIENT MULTIPLIES NATURAL SPAWNS ─────────────
+// In Control denies every natural hostile above y=40 in the overworld (the
+// two-realm thesis, measured 2026-08-15). A multiplier applied to zero is zero, so
+// the axis alone would leave a combat path hunted only underground - the opposite
+// of a path whose events include Icarus, the one that punishes going UP.
+//
+//   coefficient < 1   SUPPRESSION   cancel a share of natural spawns (checkSpawn)
+//   coefficient > 1   PRESSURE      actively send waves (spawner.js)
+//
+// They are not alternatives. They are the same intent split across two regimes:
+// the coefficient carries the deep, the spawner carries the surface. `23` §7b.
+//
+// ── MODULAR ON PURPOSE ───────────────────────────────────────────────────────
+// Ethan, 2026-08-15: "keep it modular because blade will make the most use of it."
+// So the roster is a per-path table, the cadence is a per-path number, and both are
+// exposed on VELDORA.pressure for Blade's twelve events to read, extend or ignore.
+// Nothing here assumes it is the only caller.
+//
+// ── COST ─────────────────────────────────────────────────────────────────────
+// checkSpawn fires CONSTANTLY - 828+ observed in E0 P9 over a short sample. So it
+// must be cheap: the handler reads a cache refreshed on a slow tick and takes a
+// squared-distance comparison, and it early-outs entirely when nobody online has a
+// coefficient that differs from 1.
+//
+;
+var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
+
+;(function () {
+  var TAG = '[pressure] '
+  var GATE = true
+
+  var CACHE_TICKS = 40            // refresh player coefficients every 2s
+  var PRESSURE_TICKS = 600        // consider sending a wave every 30s
+  var NEAR = 64                   // a spawn this close to a walker is "theirs"
+  var NEAR_SQ = NEAR * NEAR
+
+  // Per-path ambient rosters. Blade's events may use these or supply their own.
+  // Every id is boot-validated by spawner.js before anything is sent.
+  var ROSTER = {
+    blade: ['born_in_chaos_v1:decaying_zombie', 'born_in_chaos_v1:decrepit_skeleton'],
+    salvage: ['born_in_chaos_v1:dread_hound'],
+    forge: [],
+    wall: [],
+    art: [],
+    crown: [],
+  }
+
+  // How much of (coeff - 1) turns into an ambient wave, per PRESSURE_TICKS.
+  // Blade at ×4 -> 3.0 excess -> a wave of ~3 every 30s while it is above ground.
+  var WAVE_PER_EXCESS = 1.0
+  var WAVE_CAP = 6                // ambient never becomes a raid; raids are events
+
+  var cache = {}                  // uuid -> {x,y,z,coeff,path}
+  var anyNonNeutral = false       // the fast path: nobody on a path, do nothing
+
+  function refresh(server) {
+    var next = {}
+    var any = false
+    try {
+      var players = server.players
+      for (var i = 0; i < players.length; i++) {
+        var p = players[i]
+        var c = 1.0
+        try {
+          if (VELDORA.coeff && typeof VELDORA.coeff.of === 'function') {
+            var v = VELDORA.coeff.of(server, p, 'spawns')
+            if (typeof v === 'number' && isFinite(v)) c = v
+          }
+        } catch (e) { }
+        var path = ''
+        try { if (VELDORA.paths) path = VELDORA.paths.pathOf(p) || '' } catch (e) { }
+        var uuid = null
+        try { uuid = String(p.uuid) } catch (e) { continue }
+        next[uuid] = { x: p.x, y: p.y, z: p.z, coeff: c, path: path, player: p }
+        if (c !== 1.0) any = true
+      }
+    } catch (e) { console.warn(TAG + 'refresh threw :: ' + e) }
+    cache = next
+    anyNonNeutral = any
+  }
+
+  // Nearest cached walker to a point, or null.
+  function nearestWalker(x, y, z) {
+    var best = null, bestSq = NEAR_SQ
+    for (var k in cache) {
+      if (!cache.hasOwnProperty(k)) continue
+      var c = cache[k]
+      if (c.coeff === 1.0) continue
+      var dx = c.x - x, dy = c.y - y, dz = c.z - z
+      var sq = dx * dx + dy * dy + dz * dz
+      if (sq <= bestSq) { bestSq = sq; best = c }
+    }
+    return best
+  }
+
+  // ── SUPPRESSION: the below-1 half ─────────────────────────────────────────
+  //
+  // ⚠️ checkSpawn's event shape has NEVER been used in this codebase - E0 P9 only
+  // proved it fires and can be cancelled. So the position is read defensively and
+  // the shape is LOGGED ONCE, because J6's lesson is that an unverified accessor
+  // silently returning undefined is indistinguishable from a quiet subsystem.
+  var SHAPE_LOGGED = false
+  function posOfSpawn(event) {
+    var x = null, y = null, z = null
+    try { if (typeof event.x === 'number') { x = event.x; y = event.y; z = event.z } } catch (e) { }
+    if (x === null) {
+      try {
+        var e2 = event.entity
+        if (e2) { x = e2.x; y = e2.y; z = e2.z }
+      } catch (e) { }
+    }
+    if (!SHAPE_LOGGED) {
+      SHAPE_LOGGED = true
+      var have = []
+      try { if (typeof event.x === 'number') have.push('event.x') } catch (e) { }
+      try { if (event.entity) have.push('event.entity') } catch (e) { }
+      try { if (event.level) have.push('event.level') } catch (e) { }
+      console.info(TAG + 'checkSpawn shape: ' + (have.join(', ') || 'NOTHING READABLE') +
+        ' -> position ' + (x === null ? 'UNREADABLE - suppression is INERT' : 'ok'))
+    }
+    return (x === null || typeof x !== 'number') ? null : { x: x, y: y, z: z }
+  }
+
+  if (GATE) {
+    EntityEvents.checkSpawn(function (event) {
+      if (!anyNonNeutral) return              // the common case, costs nothing
+      var pos = posOfSpawn(event)
+      if (!pos) return
+      var w = nearestWalker(pos.x, pos.y, pos.z)
+      if (!w || w.coeff >= 1.0) return        // >1 is handled by the spawner, not here
+
+      // coeff 0.5 cancels half. A floor keeps a path from emptying the world
+      // entirely - "quieter" is a coefficient, "sterile" is a bug report.
+      if (Math.random() < (1.0 - w.coeff)) {
+        try { event.cancel() } catch (e) { }
+      }
+    })
+  }
+
+  // ── PRESSURE: the above-1 half ────────────────────────────────────────────
+  function pressureTick(server) {
+    try {
+      if (!GATE || !anyNonNeutral) { schedule(server); return }
+      for (var k in cache) {
+        if (!cache.hasOwnProperty(k)) continue
+        var c = cache[k]
+        if (c.coeff <= 1.0) continue
+        var roster = ROSTER[c.path]
+        if (!roster || !roster.length) continue
+
+        // Never during a scene - being ambushed mid-ritual is not the design.
+        try { if (VELDORA.ritual && VELDORA.ritual.active(c.player)) continue } catch (e) { }
+
+        var excess = c.coeff - 1.0
+        var n = Math.min(WAVE_CAP, Math.round(excess * WAVE_PER_EXCESS))
+        if (n <= 0) continue
+
+        if (!VELDORA.spawner) {
+          console.warn(TAG + 'spawner missing - the above-1 half of the axis is INERT')
+          break
+        }
+        var r = VELDORA.spawner.wave(c.player, { ids: roster, count: n })
+        if (r && r.placed === 0 && r.asked > 0) {
+          console.warn(TAG + 'ambient wave for ' + c.path + ' placed nothing')
+        }
+      }
+    } catch (e) { console.warn(TAG + 'pressureTick threw :: ' + e) }
+    schedule(server)
+  }
+
+  function schedule(server) {
+    server.scheduleInTicks(PRESSURE_TICKS, function () { pressureTick(server) })
+  }
+
+  // ── the seam, for Blade and anything else ─────────────────────────────────
+  VELDORA.pressure = {
+    roster: ROSTER,                              // mutable on purpose
+    coeffOf: function (uuid) { return cache[uuid] ? cache[uuid].coeff : 1.0 },
+    // Blade's events call this with their OWN roster and count; it is a thin,
+    // honest pass-through to the spawner rather than a second mechanism.
+    send: function (player, ids, count) {
+      if (!VELDORA.spawner) return { asked: 0, placed: null, valid: [] }
+      return VELDORA.spawner.wave(player, { ids: ids, count: count })
+    },
+  }
+
+  ServerEvents.loaded(function (event) {
+    if (!GATE) { console.info(TAG + 'spawns axis GATED OFF'); return }
+    refresh(event.server)
+    event.server.scheduleInTicks(CACHE_TICKS, function tick() {
+      refresh(event.server)
+      event.server.scheduleInTicks(CACHE_TICKS, tick)
+    })
+    schedule(event.server)
+    console.info(TAG + 'spawns axis LIVE - suppression via checkSpawn (<1), ' +
+      'pressure via spawner (>1), cadence ' + PRESSURE_TICKS + 't, cap ' + WAVE_CAP)
+    console.info(TAG + 'rosters: ' + Object.keys(ROSTER).filter(function (k) {
+      return ROSTER[k].length
+    }).join(', ') + ' - the rest are empty and send nothing')
+  })
+
+  ServerEvents.commandRegistry(function (event) {
+    var Commands = event.commands
+    function ADMIN(s) { try { return s.hasPermission(2) } catch (e) { return false } }
+    event.register(Commands.literal('pressure').requires(ADMIN).executes(function (ctx) {
+      var p = ctx.source.player
+      if (!p) return 0
+      var uuid = String(p.uuid)
+      var c = cache[uuid]
+      p.tell(Text.of('§8§m                                        '))
+      if (!c) { p.tell(Text.of('§cnot in the cache yet - wait 2s')); return 1 }
+      p.tell(Text.of('§6spawns ×' + (Math.round(c.coeff * 100) / 100) +
+        ' §8(path ' + (c.path || 'none') + ')'))
+      if (c.coeff < 1) p.tell(Text.of('§7SUPPRESSING §8' +
+        Math.round((1 - c.coeff) * 100) + '% of natural spawns within ' + NEAR + ' blocks'))
+      else if (c.coeff > 1) {
+        var roster = ROSTER[c.path] || []
+        p.tell(Text.of('§7PRESSURE §8' + Math.min(WAVE_CAP, Math.round((c.coeff - 1) * WAVE_PER_EXCESS)) +
+          ' every ' + PRESSURE_TICKS + 't §8roster: ' + (roster.length ? roster.join(', ') : '§cEMPTY - sends nothing')))
+      } else p.tell(Text.of('§7neutral - the axis does nothing for you'))
+      return 1
+    }))
+  })
+})();
