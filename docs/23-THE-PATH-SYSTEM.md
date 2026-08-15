@@ -563,6 +563,54 @@ sample, which is far cheaper than detecting that they did.
 *Rejected: Ars mana. Mana is Art's **mod**; the Nightmare is Art's **patron**. Every
 other counter would be a play-stat and hers would be a mod-usage stat.*
 
+## 3b. ⭐ THE 2×2 — what the counter actually selects
+
+*Ethan, 2026-08-15: **"the counter system and xp system scale differently. XP scales
+to the hunt + your stats and drops. Counter is the patron's appeasement and determines
+2 x2 things. Good and bad events plus they choose vs you choose."***
+
+**Adopted, and it is the piece that was missing.** The engine knew *when* to fire and
+had nothing principled to say about *what*.
+
+Two axes — **valence** (is this good for you) and **agency** (who decides):
+
+| | **you choose** | **they choose** |
+|---|---|---|
+| **good** | **A BARGAIN** — a real upside, and a price named up front<br>*Salvage's trades · Blade's Sharpen · Art's Map* | **A GIFT** — they simply give<br>*Art's Dreaming · Wall's Reinforcement · Forge's The Gift That Isn't* |
+| **bad** | **A DEMAND** — comply or refuse, and both cost<br>*Forge's Quota · Wall's Closer · Crown's Errand* | **A RECKONING** — it happens to you<br>*Interest · Seizure · The Siege · Run.* |
+
+**Every one of the 72 written events lands in one of those four.** That is the whole
+taxonomy, and it means PART VI is four mechanisms with content hung off them rather
+than seventy-two builds.
+
+### Agency falls away at the extremes
+
+The counter selects the quadrant, and it does so on one curve:
+
+* **middling appeasement → YOU choose.** Bargains and demands. The relationship is
+  ordinary, so you are negotiated with.
+* **high appeasement → THEY choose, and it is good.** You have pleased them enough
+  that they stop asking and simply give. *"Wake holding something you did not have."*
+* **deep neglect → THEY choose, and it is bad.** The reckoning.
+
+> **A patron takes the wheel when the relationship becomes intense in either
+> direction.** Being negotiated with is the ordinary state; being *given to* and being
+> *collected from* are both what happens when you stop being ordinary to them.
+
+That reading is what makes Art's generosity as unsettling as Wall's siege, at no extra
+mechanical cost — which is exactly the trick `regard.js` already pulls with its six
+readings of one number.
+
+### The two systems do not overlap
+
+| | scales | drives |
+|---|---|---|
+| **XP / notoriety** | with levels and days | the Hunt, your stats, your drops — **the E3 axes** |
+| **counter** | with your path's verb | **which events you get** — this table |
+
+Clean division: notoriety decides **how dangerous the world is to you**, the counter
+decides **how your patron treats you.** Neither reads the other.
+
 ## 4. What a reckoning is
 
 **Shared machinery, four steps:** raise → threshold → fire → settle.
@@ -733,9 +781,9 @@ state to ship in first.
 
 ## Open
 
-* **Does a reckoning reset the counter, or only the baseline?** Recommend **baseline
-  only** — the tally is a score and should never go down. It also keeps `/counters`
-  meaningful across a whole world.
+* ✅ **RULED (Ethan, 2026-08-15): baseline only.** The tally is a score and never goes
+  down, which keeps `/counters` meaningful across a whole world. **Surviving a
+  reckoning resets the baseline** — that is what ends it.
 * **`demandRate` per patron** — needs play, not argument. Start generous.
 * **Does surviving a reckoning pay it off, or only end it?** Salvage's debt says
   paid; Blade's test says merely survived, and he sets another.
