@@ -581,7 +581,7 @@ the point of it.**
 * **I4 the reset** — shrunk to `/path forcereset`; a world wipe does its job free.
 * **Being chosen** (`33`) — new, and it changes how E5 is entered.
 * **First-join world introduction** — flagged, not scheduled.
-* **The emphasis ladder** (titles) — `33` §A.
+* **The emphasis ladder** (titles) — `35` §A.
 
 ### Blocking questions — refreshed
 
@@ -590,7 +590,7 @@ the point of it.**
   revisions are welcome, not a prerequisite.
 * **Do subclass spawn costs stack at 50%?** still open — E3 decides it.
 * **The deliberate-death exploit** — floor it, or leave it as a desperate strategy?
-  Sharper now that Art is designed to notice repeated dying (`33` §3).
+  Sharper now that Art is designed to notice repeated dying (`35` §3).
 
 ### Carried over, still unverified from 2026-08-11
 

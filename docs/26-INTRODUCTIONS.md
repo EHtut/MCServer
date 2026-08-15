@@ -557,7 +557,7 @@ Path selection opens the ritual instead of granting instantly.
 
 ## I3 — the flagship system ⏸️ HELD 2026-08-14
 
-Ethan no longer likes the idea; held, not cut. Spec kept in `31-I3-THE-FLAGSHIPS.md`.
+Ethan no longer likes the idea; held, not cut. Spec kept in `34`.
 **The scenes are unaffected** — the gift beat was never generated into the running
 code, so acceptance ends on the patron's closing lines and promises no object.
 

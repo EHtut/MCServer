@@ -206,7 +206,7 @@ skill system and delivers none of it.
 
 Nothing is thrown away. The thesis is a lens, not a rewrite.
 
-1. **I3 flagships** — unchanged in scope, but see `31`: the flagship returning after
+1. **I3 flagships** — unchanged in scope, but see `34`: the flagship returning after
    a day stops being a convenience and becomes the thesis in miniature.
 2. **One line per patron** (§5.1) — a `28` revision, cheap, highest value per word.
 3. **Salvage's gun is Vault tech** (§5.2) — one line, welds two pillars.
