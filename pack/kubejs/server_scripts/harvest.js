@@ -29,10 +29,41 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   var HANDLERS = {}                         // god -> {arrive, onWin, onLose}
 
+  // A handler may declare `tag` - the entity tag its Harvest spawns under. resolve()
+  // removes anything carrying it, WIN OR LOSE.
+  //
+  // 🚨 Measured 2026-08-15: without this the champion kept killing Ethan after the
+  // Harvest had already resolved and said its closing line. Losing is meant to be a
+  // setback, not a lockout, and a defeated champion that stays and keeps hitting you
+  // turns a graduation into a death loop. The god made its point; the actor leaves.
   function register(god, h) {
     if (!god || !h || typeof h.arrive !== 'function') return false
     HANDLERS[god] = h
     return true
+  }
+
+  // Remove whatever the Harvest sent. Radius is generous because a champion chases,
+  // and a mob left alive 60 blocks away is still the same bug.
+  function clearActors(p, tag) {
+    if (!tag) return 0
+    var n = 0
+    try {
+      var near = p.level.getEntitiesWithin(p.boundingBox.inflate(96))
+      for (var i = 0; i < near.length; i++) {
+        var e = near[i]
+        if (!e || e.player) continue
+        var tags = null
+        try { tags = e.tags } catch (x) { continue }
+        if (!tags) continue
+        var has = false
+        try {
+          has = tags.contains ? tags.contains(tag) : (String(tags).indexOf(tag) >= 0)
+        } catch (x) { continue }
+        if (!has) continue
+        try { e.kill(); n++ } catch (x) { }
+      }
+    } catch (e) { console.warn(TAG + 'clearActors threw :: ' + e) }
+    return n
   }
 
   function active(p) {
@@ -74,6 +105,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     try { p.persistentData.putString(K_ACTIVE, '') } catch (e) { }
     var h = HANDLERS[god]
     if (!h) return false
+
+    // The actor leaves, win or lose, BEFORE the closing line - so the last thing
+    // that happens is him speaking, not it swinging.
+    var cleared = clearActors(p, h.tag)
+    if (cleared) console.info(TAG + 'removed ' + cleared + ' ' + god + ' actor(s)')
+
     try {
       if (won) {
         try { p.persistentData.putInt(K_WON, (p.persistentData.getInt(K_WON) || 0) + 1) } catch (e) { }

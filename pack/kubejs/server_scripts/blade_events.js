@@ -879,6 +879,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (VELDORA.harvest) {
       VELDORA.harvest.register(GOD, {
         arrive: harvestArrive, onWin: harvestWin, onLose: harvestLose,
+        tag: CHAMPION_TAG,      // resolve() removes it, win or lose
       })
     } else console.error(TAG + 'harvest.js missing - his Harvest will not arrive')
     markSweep(event.server)

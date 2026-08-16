@@ -679,3 +679,47 @@ watches for ninety seconds, and dies.
 While it watches it clears its own target **every sweep, not once** — `stalker.js`
 proved a single clear is cosmetic, because the AI re-acquires between sweeps and
 swings. And everything else within 32 blocks gets Strength.
+
+---
+
+# PART 14 — THE POLISH PASS, from live testing 2026-08-15
+
+## 🚨 Fixed during the test
+
+**The Harvest champion did not leave when the Harvest resolved.** Ethan lost, the
+closing line played — and it kept killing him. `resolve()` now removes whatever the
+Harvest sent, **win or lose, before the closing line**, so the last thing that happens
+is the god speaking rather than the actor swinging. **Losing is a setback, not a
+lockout**, and a defeated champion that stays turns a graduation into a death loop.
+
+*Generalised, not special-cased: a handler declares its `tag` and `harvest.js` clears
+it — every god's Harvest will send something and every one will need this.*
+
+## Queued for the pass
+
+### ⭐ A better introduction
+*Ethan: **"we probably need to add to the polish pass a better intro."*** The
+introduction is the oldest writing in the project — it predates the five gods, the
+champions, the actor reframe and the trust arc. **It is the first thing a player ever
+reads and it no longer knows what the world is.**
+
+### The whispers still describe a stalker that no longer exists
+`whispers.js` says *"The helm turns toward you. It does not turn away"* — **and
+nothing is turning any more.** Fired live during the Harvest test. They escalate off
+`regard`, so they work; they are simply describing a body that was retired. **Rewrite
+against a god who is only ever a voice.**
+
+### `high_silence` is too thin
+Eight lines and three repeats inside eight rolls. It is the pool a champion earns and
+should feel rarest — **it needs the most lines, not the fewest.** Same likely true of
+`mark_success` (six).
+
+### `push` and `lore` were never rewritten
+They are first-brief lines, written when the character was contemptuous rather than
+invested. **Check them against the drill-sergeant register.**
+
+### ✅ What already reads right
+`/events` — tier, health floor, and a per-event reason for every hold, including
+*"its own condition is not met"* for Icarus. `/idle_test` — contexts and weights, and
+the spider line landed. **The Harvest's shape worked**: the announcement, `Run.`,
+the arrival, the loss line, and the trust hit.
