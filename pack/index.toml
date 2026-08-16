@@ -951,11 +951,6 @@ hash = "f0a5a2604c8d733222a25e9c19dcf443d853864ed76a388b26982be97fdea71f"
 metafile = true
 
 [[files]]
-file = "mods/obsessed.pw.toml"
-hash = "47aa8ec5f78c4334a6074b3cbb0fead82cfd82294d366c07e1b41933a36f8a39"
-metafile = true
-
-[[files]]
 file = "mods/occultism.pw.toml"
 hash = "bf218bdf040242852b915bb724102350287635e1dcd2c0d08ae8186c8623fdec"
 metafile = true
