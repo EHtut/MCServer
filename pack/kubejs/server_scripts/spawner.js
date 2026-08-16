@@ -41,8 +41,35 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 ;(function () {
   var TAG = '[spawner] '
 
-  var MIN_DIST = 24               // the_hunt's proven ring
-  var MAX_DIST = 40
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ THE RING.  Ethan, 2026-08-16: "enemy spawnings are not as clean as they
+  // should be. if anything they spawn too far."
+  //
+  // He is right, and the file said so itself without anyone noticing: the default
+  // was 24-40, inherited from the_hunt, and EVERY event whose author stopped to
+  // think about it overrode it downward -
+  //
+  //     icarus 12-24 · broken_rung 14-26 · duel 10-16 · understudy 10-16
+  //     harvest 12-20 · wall's spiders 10-18 · her brood 3-6
+  //
+  // Eight overrides, all closer, none further. The default was the outlier, and the
+  // two events that never overrode it - gauntlet and hollow, his MAIN waves - were
+  // the ones landing outside aggro range. Most hostiles notice a player at ~16
+  // blocks, so a mob placed at 40 simply stands there.
+  //
+  // 🚨 AND I MADE IT WORSE THE SAME DAY. Gating his hordes to underground (2026-08-16)
+  // means 24-40 blocks is now usually measured THROUGH SOLID ROCK, into unlit caves
+  // on the far side of walls. The gate is right; this default made it useless.
+  var MIN_DIST = 12
+  var MAX_DIST = 22
+
+  // ⚠️ Underground the ring tightens again. It is not about difficulty - it is that
+  // 22 blocks of stone is a different distance from 22 blocks of field, and a wave
+  // that spawns inside a wall never arrives. Uses godevents' shared reader so
+  // "underground" has ONE definition in this codebase.
+  var DEEP_MIN = 8
+  var DEEP_MAX = 16
+
   var MAX_PER_WAVE = 12           // TPS guard. Four players on one box.
   var SCAN_PAD = 16               // count radius = MAX_DIST + this
   var MEASURE_DELAY = 10          // ticks - a summon is not queryable same-tick
@@ -145,8 +172,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       return { asked: 0, placed: 0, valid: ids }
     }
 
-    var lo = opts.minDist || MIN_DIST
-    var hi = opts.maxDist || MAX_DIST
+    // An explicit ring from the caller always wins. Otherwise the default, tightened
+    // underground - see the constants. A god that wants a wave at the horizon still
+    // asks for one; nothing here takes that away.
+    var lo = opts.minDist, hi = opts.maxDist
+    if (!lo || !hi) {
+      var deep = false
+      try {
+        if (VELDORA.events && typeof VELDORA.events.isUnderground === 'function') {
+          deep = VELDORA.events.isUnderground(server, player) === true
+        }
+      } catch (e) { }
+      lo = lo || (deep ? DEEP_MIN : MIN_DIST)
+      hi = hi || (deep ? DEEP_MAX : MAX_DIST)
+    }
     var before = countNear(player, ids, hi + SCAN_PAD)
 
     for (var k = 0; k < count; k++) {
@@ -255,6 +294,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (validate(event.server, KNOWN[i])) ok.push(KNOWN[i]); else bad.push(KNOWN[i])
     }
     checked = true
+    say('VELDORA.spawner ring is ' + MIN_DIST + '-' + MAX_DIST + ' on the surface, ' +
+      DEEP_MIN + '-' + DEEP_MAX + ' underground (was a flat 24-40, which put ' +
+      'gauntlet and hollow outside aggro range)')
     say('VELDORA.spawner published OK - ring ' + MIN_DIST + '-' + MAX_DIST +
       ', cap ' + MAX_PER_WAVE + '/wave')
     say('roster validated: ' + ok.length + ' live, ' + bad.length + ' dead')
