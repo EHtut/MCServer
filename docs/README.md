@@ -86,7 +86,8 @@ Cross-references were repointed automatically. Git history holds the originals.
 
 **The path system** — `23-THE-PATH-SYSTEM` (master) · `24-PATH-SYSTEM-BUILD` (the
 original chunk plan; **the live state lives in 34**) · `34-THE-REMAINING-BUILD` ·
-`35-WALL-REFRESH`
+`35-WALL-REFRESH` · **`47-THE-RELEASE-SYSTEM`** (how each god puts you down —
+never / 4 buff-deaths / 3 refusals)
 
 **The patrons** — `22-THE-PATRONS` · `25-PATRON-DIALOGUE` (death ladder) ·
 `26-INTRODUCTIONS` (mechanic + the I-chunk records) · `27-THE-SIX-VOICES` (the tweak

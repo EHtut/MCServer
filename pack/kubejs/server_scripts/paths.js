@@ -191,7 +191,13 @@
       drops: [
         ['minecraft:gunpowder', 'minecraft:iron_ingot', 'minecraft:copper_ingot'],
         ['minecraft:gunpowder', 'gunpowderore:gun_powder_ore', 'minecraft:iron_ingot'],
-        ['gunpowderore:gun_powder_ore', 'gunpowderore:gun_powder_ore', 'minecraft:netherite_scrap'],
+        // ⚠️ `gun_powder_ore` used to sit here TWICE, so two thirds of her sealed
+        // floor paid the same thing her middle tier already pays - her deepest tier
+        // was her flattest. Diamond is not a generic prize here: it is consumed by
+        // 23 TACZ recipes (the good guns, every scope), so it still reads as
+        // feeding the gun. Measured 2026-08-16: TACZ's real tax is iron 150 / gold
+        // 58 / redstone 38 / lapis 33, and diamond 23 at the top.
+        ['gunpowderore:gun_powder_ore', 'minecraft:diamond', 'minecraft:netherite_scrap'],
       ],
     },
     blade: {
@@ -202,7 +208,12 @@
         // fighter needs iron most and Blade's drop coefficient goes DOWN later.
         ['minecraft:iron_ingot', 'minecraft:leather', 'minecraft:iron_ingot'],
         ['minecraft:iron_ingot', 'magistuarmory:bronze_ingot', 'minecraft:gold_ingot'],
-        ['minecraft:diamond', 'magistuarmory:bronze_ingot', 'minecraft:netherite_scrap'],
+        // ⚠️ bronze was in tiers 1 AND 2, which made a third of every sealed-floor
+        // kill pay the SAME ingot as the tier above it - a dud pull next to diamond
+        // and netherite scrap. Steel is magistuarmory's high metal (every steel
+        // weapon, shield and mail comes off it), so the ladder is now bronze deep,
+        // steel deeper, which is his idiom rather than a generic upgrade.
+        ['minecraft:diamond', 'magistuarmory:steel_ingot', 'minecraft:netherite_scrap'],
       ],
     },
     crown: {

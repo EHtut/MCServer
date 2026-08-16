@@ -172,6 +172,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         var srv = killer.server
         srv.runCommandSilent('effect give ' + killer.username + ' minecraft:strength 600 0 false')
         srv.runCommandSilent('effect give ' + killer.username + ' minecraft:resistance 600 0 false')
+        // ⭐ HE ARMED YOU. release.js counts the gifts you waste - die with this on
+        // and it is a strike, four in a row and he is done (Ethan, 2026-08-16).
+        // 600 SECONDS above, so 12000 TICKS here. Getting that conversion wrong is
+        // the difference between a 10-minute window and a 30-second one.
+        try {
+          if (VELDORA.release) VELDORA.release.armed(srv, killer, GOD, 600 * 20)
+          else console.warn(TAG + 'release.js missing - the mark reward arms NOTHING')
+        } catch (e2) { console.warn(TAG + 'arm threw :: ' + e2) }
       } catch (e) { console.warn(TAG + 'mark reward failed :: ' + e) }
       console.info(TAG + 'Mark resolved - ' + killer.username + ' killed ' + vname)
     } catch (e) { console.warn(TAG + 'mark death hook threw :: ' + e) }
@@ -398,6 +406,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           if (VELDORA.voice) VELDORA.voice.say(player, GOD, 'medium_gift')
           return
         }
+
+        // ⭐ HE ARMED YOU. Only on the branch where the buff ACTUALLY LANDED - a
+        // sharpen that failed to apply must not arm a window, or the player takes a
+        // strike for dying with a gift they never received.
+        try {
+          if (VELDORA.release) VELDORA.release.armed(server, player, GOD, SHARP_SECONDS * 20)
+          else console.warn(TAG + 'release.js missing - sharpen arms NOTHING')
+        } catch (e2) { console.warn(TAG + 'arm threw :: ' + e2) }
 
         // The price, and it starts immediately. Stated up front, so this is the
         // bargain being honoured rather than a trap being sprung.

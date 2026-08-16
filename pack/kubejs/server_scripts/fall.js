@@ -181,10 +181,39 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ⚠️ THAT MAKES HER HARVEST THE ONLY EXIT SHE HAS, which is why paths.release()
   // had to become real first. Do not add her to this list without checking that her
   // Harvest still works - it is the only door.
+  //
+  // ⚠️ THIS MAP IS NOW A SAFETY NET, NOT THE DECLARATION. release.js's RULES
+  // registry is where a god's release condition lives as of 2026-08-16, and
+  // `mode: 'never'` there means the same thing as a row here. Both are checked:
+  // the registry is the truth, this is what holds if release.js failed to load.
+  // Deleting this would make her loseable the one time that file breaks.
   var NEVER_LETS_GO = { wall: true }
 
+  function refuses(key) {
+    if (NEVER_LETS_GO[key]) return true
+    try {
+      if (VELDORA.release && VELDORA.release.rules) {
+        var r = VELDORA.release.rules[key]
+        if (r && r.mode === 'never') return true
+      }
+    } catch (e) { }
+    return false
+  }
+
   VELDORA.theFall = function (server, player, key) {
-    if (NEVER_LETS_GO[key]) {
+    // 🚨 RE-ENTRANCY. Two different systems can reach this door in a single death
+    // - regard maxing and a release streak completing - and running it twice would
+    // record TWO lost harvests, which permanently raises the rate of the next one.
+    // A player who no longer holds this path cannot lose it again.
+    var holds = null
+    try { holds = player.persistentData.getString('veldora_path') } catch (e) { }
+    if (holds !== null && holds !== undefined && holds !== key) {
+      console.info('[fall] theFall(' + key + ') ignored for ' + player.username +
+        ' - they hold "' + holds + '" now. Already fallen, or never held it.')
+      return false
+    }
+
+    if (refuses(key)) {
       // Not silent - an admin reading the log must be able to tell "she refused" from
       // "the fall is broken".
       console.info('[fall] ' + player.username + ' MAXED regard on ' + key +

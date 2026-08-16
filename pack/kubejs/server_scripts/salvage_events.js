@@ -94,6 +94,35 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     catch (e) { console.warn(TAG + 'effect ' + id + ' threw :: ' + e); return false }
   }
 
+  // ── the release streak ────────────────────────────────────────────────────
+  // ⭐ THREE REFUSALS IN A ROW AND SHE IS DONE (Ethan, 2026-08-16). Every one of
+  // her offers routes through these two, so there is one place to be wrong instead
+  // of three, and adding a fourth offer is one line rather than a decision.
+  //
+  // ⚠️ They return FALSY on purpose. Each call site uses `return deny(...)` inside
+  // an onChoose whose return value is discarded - so this stays a one-liner without
+  // changing what any of them return to the ritual.
+  function deny(p, what) {
+    try {
+      var srv = null
+      try { srv = p.server } catch (e) { }
+      if (VELDORA.release) VELDORA.release.denied(srv, p, GOD, what)
+      else console.warn(TAG + 'release.js missing - refusing ' + what + ' counts for NOTHING')
+    } catch (e) { console.warn(TAG + 'deny threw :: ' + e) }
+    return false
+  }
+
+  // Forgiveness lands on the CHOICE, not the outcome - a player who said yes and
+  // was too poor to pay did not refuse her.
+  function accept(p, what) {
+    try {
+      var srv = null
+      try { srv = p.server } catch (e) { }
+      if (VELDORA.release) VELDORA.release.accepted(srv, p, GOD, what)
+    } catch (e) { console.warn(TAG + 'accept threw :: ' + e) }
+    return false
+  }
+
   // ═══════════════════════════════════════════════════════════════════════════
   // THE TRADES
   // ═══════════════════════════════════════════════════════════════════════════
@@ -135,7 +164,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       ],
       holdAfterChoice: 60,
       onChoose: function (pl, id) {
-        if (id !== 'yes') { say(pl, 'deal_refused'); return }
+        if (id !== 'yes') { say(pl, 'deal_refused'); return deny(pl, 'credit') }
+        accept(pl, 'credit')
         // The goods first, then the ledger. Never the reverse.
         var got = eff(pl, 'minecraft:strength', 240, 0)
         eff(pl, 'minecraft:regeneration', 20, 1)
@@ -147,7 +177,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         say(pl, 'deal_done')
         console.info(TAG + pl.username + ' took CREDIT - debt written')
       },
-      onTimeout: function () { },
+      // A timeout is NOT a refusal - see salvage.js's counter for the argument.
+      // Logged so the rate is visible, never counted toward the release streak.
+      onTimeout: function (pl) {
+        try {
+          var srv = null
+          try { srv = pl.server } catch (e) { }
+          if (VELDORA.release) VELDORA.release.ignored(srv, pl, GOD, 'offer')
+        } catch (e) { }
+      },
     })
   }
 
@@ -197,7 +235,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       ],
       holdAfterChoice: 60,
       onChoose: function (pl, id) {
-        if (id !== 'yes') { say(pl, 'deal_refused'); return }
+        if (id !== 'yes') { say(pl, 'deal_refused'); return deny(pl, 'markup') }
+        accept(pl, 'markup')
         var x = null
         try { x = pl.xpLevel } catch (e) { }
         if (x === null || x < 3) { say(pl, 'deal_poor'); return }
@@ -208,7 +247,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         say(pl, 'deal_done')
         console.info(TAG + pl.username + ' took the markup - 3 levels')
       },
-      onTimeout: function () { },
+      // A timeout is NOT a refusal - see salvage.js's counter for the argument.
+      // Logged so the rate is visible, never counted toward the release streak.
+      onTimeout: function (pl) {
+        try {
+          var srv = null
+          try { srv = pl.server } catch (e) { }
+          if (VELDORA.release) VELDORA.release.ignored(srv, pl, GOD, 'offer')
+        } catch (e) { }
+      },
     })
   }
 
@@ -247,7 +294,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       ],
       holdAfterChoice: 60,
       onChoose: function (pl, id) {
-        if (id !== 'yes') { say(pl, 'deal_refused'); return }
+        if (id !== 'yes') { say(pl, 'deal_refused'); return deny(pl, 'insurance') }
+        accept(pl, 'insurance')
         var h = null
         try { h = pl.foodData.foodLevel } catch (e) { }
         if (h === null || h < 6) { say(pl, 'deal_poor'); return }
@@ -257,7 +305,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         say(pl, 'deal_done')
         console.info(TAG + pl.username + ' bought insurance')
       },
-      onTimeout: function () { },
+      // A timeout is NOT a refusal - see salvage.js's counter for the argument.
+      // Logged so the rate is visible, never counted toward the release streak.
+      onTimeout: function (pl) {
+        try {
+          var srv = null
+          try { srv = pl.server } catch (e) { }
+          if (VELDORA.release) VELDORA.release.ignored(srv, pl, GOD, 'offer')
+        } catch (e) { }
+      },
     })
   }
 

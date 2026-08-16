@@ -369,7 +369,22 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // kept by the choice that actually charged it, so tradeSight sets it itself
       // via VELDORA.ritual.keepOnRelease, and only on success.
       onChoose: function (player, id) {
-        if (id === 'no') { speak(player, pick(REFUSED)); return }
+        // ⭐ THREE REFUSALS IN A ROW AND SHE IS DONE (Ethan, 2026-08-16). Her
+        // counter is the main one, so this is the site that matters most.
+        var srv = null
+        try { srv = player.server } catch (e) { }
+        if (id === 'no') {
+          speak(player, pick(REFUSED))
+          try {
+            if (VELDORA.release) VELDORA.release.denied(srv, player, PATRON, 'counter')
+            else console.warn(TAG + 'release.js missing - refusals count for NOTHING')
+          } catch (e) { }
+          return
+        }
+        // Forgiveness lands on the CHOICE, not on the outcome. A player who picked
+        // a trade and turned out to be too poor for it did not refuse her.
+        try { if (VELDORA.release) VELDORA.release.accepted(srv, player, PATRON, id) } catch (e) { }
+
         var ok = false
         if (id === 'hunger') ok = tradeHunger(player)
         else if (id === 'levels') ok = tradeLevels(player)
@@ -383,7 +398,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         try { if (VELDORA.counter) d = VELDORA.counter.add(player, PATRON, DEBT_PER_TRADE, 'trade:' + id) } catch (e) { }
         if (d === null) console.error(TAG + '!! trade ' + id + ' completed but the DEBT DID NOT RISE')
       },
-      onTimeout: function (player) { speak(player, pick(REFUSED)) },
+      // 🚨 A TIMEOUT IS NOT A REFUSAL. She says the refusal line either way - that
+      // is her character - but it does NOT advance the streak, because walking away
+      // from the counter is AFK as often as it is "no" and this code cannot tell
+      // them apart. Logged so the rate is visible; never counted.
+      onTimeout: function (player) {
+        speak(player, pick(REFUSED))
+        try {
+          var srv = null
+          try { srv = player.server } catch (e) { }
+          if (VELDORA.release) VELDORA.release.ignored(srv, player, PATRON, 'counter')
+        } catch (e) { }
+      },
     })
   }
 

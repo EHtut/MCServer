@@ -22,6 +22,9 @@ python tools/serverctl.py restart
 | **Wall route 2** | 7 pathless days **+ killed by another god's champion** |
 | **cutscene budget** | scene events now cost 4 world days, quiet events still 1 |
 | **Wall's loot table** | rebuilt to her own guidance ladder — 3 Occultism + 3 Goety per tier, 6 per tier. Sealed floor now pays `raw_iesnium` / `dark_ingot` / `afrit_essence` / `soul_emerald` |
+| **🆕 the release system** | `release.js` — each god releases you for its OWN reason. Wall never · Blade 4 buff-deaths in a row · Salvage 3 refusals in a row. Regard stops being the door for all three |
+| **Blade tier 2** | bronze → `magistuarmory:steel_ingot` (bronze was in tiers 1 *and* 2) |
+| **Salvage tier 2** | one duplicate `gun_powder_ore` → `minecraft:diamond` (2/3 of her sealed floor was one item) |
 | **`/help` pathless hints** | 4 of 7 lines were stale ("Six paths", "/path fixes that", the books, the stalker) |
 | **the 60s Arrival** | already loaded ✅ |
 | **pathless ambience** | already loaded ✅ |

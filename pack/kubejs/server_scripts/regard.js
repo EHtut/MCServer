@@ -221,16 +221,51 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     console.info('[regard] ' + p.username + ' ' + key + ' ' + READING[key] + ' ' +
       before.value + ' -> ' + after + ' (beat ' + beatBefore + ' -> ' + beatAfter + ')')
 
+    // ═══════════════════════════════════════════════════════════════════════
+    // ⭐ REGARD IS NO LONGER THE DOOR FOR EVERY GOD.  Ethan, 2026-08-16 - each
+    // built patron got its own release condition, and release.js owns the
+    // registry. This file keeps doing what it is genuinely good at (the rising
+    // voice) and stops being the one-size-fits-all executioner.
+    //
+    // ⚠️ FAIL TOWARD THE OLD BEHAVIOUR. If release.js did not load, `falls` stays
+    // true and this works exactly as it did yesterday. A missing registry must
+    // never silently make a path unloseable.
+    // ═══════════════════════════════════════════════════════════════════════
+    var falls = true, mayShout = true
+    try {
+      if (VELDORA.release && typeof VELDORA.release.fallsOnRegard === 'function') {
+        falls = !!VELDORA.release.fallsOnRegard(key)
+        mayShout = !!VELDORA.release.speaksAtMax(key)
+      }
+    } catch (e) {
+      console.warn('[regard] release registry threw, falling back to the legacy ' +
+        'fall for ' + key + ' :: ' + e)
+    }
+
     // The patron speaks only when the BEAT changes, not on every death. A voice
     // that comments on everything stops being a presence and becomes a log.
-    if (beatAfter > beatBefore && beatAfter >= 1) {
-      speak(p, key, LINES[key][Math.min(beatAfter, LINES[key].length) - 1])
+    //
+    // 🚨 BEAT 5 IS SUPPRESSED FOR ANYONE WHO NO LONGER FALLS HERE, unless the
+    // registry says otherwise. Four of the five beat-5 lines are collection
+    // threats ("As Phaethon fell, so do you.", "Enough. I am taking what I am
+    // owed.") and a threat that cannot happen is a lie the game tells about its
+    // own rules. Wall is the deliberate exception - hers is a PROMISE, and nothing
+    // happening IS the promise being kept.
+    var spoken = beatAfter
+    if (!falls && !mayShout && spoken >= BEATS.length) spoken = BEATS.length - 1
+    if (beatAfter > beatBefore && spoken >= 1 && spoken > beatBefore) {
+      speak(p, key, LINES[key][Math.min(spoken, LINES[key].length) - 1])
     }
 
     if (after >= MAX) {
-      // E2d owns what happens next. Called rather than inlined so the fall has one
-      // implementation and one place to be wrong.
-      if (typeof VELDORA.theFall === 'function') {
+      if (!falls) {
+        // Not silent - an admin reading the log must be able to tell "this god has
+        // its own condition" from "the fall is broken".
+        console.info('[regard] ' + p.username + ' MAXED regard on ' + key +
+          ' - and ' + key + ' does not release on regard. See /release.')
+      } else if (typeof VELDORA.theFall === 'function') {
+        // E2d owns what happens next. Called rather than inlined so the fall has one
+        // implementation and one place to be wrong.
         VELDORA.theFall(server, p, key)
       } else {
         // A gate ships with a live consumer or not at all. If fall.js is missing,

@@ -188,7 +188,8 @@
       c('/path', 'the roster and who holds what')
       c('/phase', 'helper / companion / absence / harvest')
       c('/notoriety', 'the number that drives phase')
-      c('/regard', 'how close you are to the fall')
+      c('/regard', 'what your patron thinks of you dying')
+      c('/release', 'what would actually make them put you down')
       c('/speaker', 'depth vs cutoff, and confession progress')
 
       h('WHEN IT GOES WRONG')
