@@ -237,6 +237,25 @@
     },
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔴 UNBUILT PATHS ARE CLOSED.  Ethan, 2026-08-15: "Disable art and forge."
+  // ═══════════════════════════════════════════════════════════════════════════
+  // They were claimable and they would have given a player NOTHING - no voice, no
+  // events, no Harvest, and Art's /help still taught a mod that is not installed.
+  // A silent god is the exact failure this project has spent the day designing
+  // against, and two of them were sitting live in the roster the whole time.
+  //
+  // ⚠️ NOT DELETED. The key stays in PATHS so drops, coefficients, regard rows and
+  // anyone's existing claim keep resolving - closing a path and removing one are
+  // different operations, and removing one strands whoever walks it.
+  //
+  // TO OPEN: delete the key from CLOSED. Do it when the god has a written voice and
+  // registered events, not before - `[voice] N god(s)` at boot is the check.
+  var CLOSED = {
+    art: 'The Dreamwalker is not listening yet.',
+    forge: 'The Goat does not answer.',
+  }
+
   // ── the test override ──────────────────────────────────────────────────────
   // Ethan needs to test a path he does not walk - blade is Lehykt's, salvage is
   // Ben's, and moving a claim would desync the holder (paths.js has no loggedIn
@@ -458,7 +477,11 @@
         var tag = esc
           ? (esc === p.username ? '§e(held for you)' : '§e(held - ' + esc + ' is choosing)')
           : (!h ? '§a(open)' : (h === p.username ? '§6(yours)' : '§c(' + h + ')'))
-        p.tell('  §e' + k + ' §8- §7' + PATHS[k].name + ' ' + tag)
+        if (CLOSED[k]) {
+          p.tell('  §8' + k + ' - ' + PATHS[k].name + ' §8(silent)')
+        } else {
+          p.tell('  §e' + k + ' §8- §7' + PATHS[k].name + ' ' + tag)
+        }
       })
       // Do NOT advertise /path release any more - it is admin-only, and a listed
       // command that refuses you reads as a bug rather than a rule.
@@ -633,6 +656,15 @@
         const p = ctx.source.player
         if (!p) return 0
         var srv = ctx.source.server
+
+        // In their own voice, not as an error. "This path is disabled" is a
+        // developer sentence; a god who will not answer is a world sentence.
+        if (CLOSED[key]) {
+          p.tell(Text.of('§8' + CLOSED[key]))
+          p.tell(Text.of('§7Choose another, or wait.'))
+          console.info('[paths] ' + p.username + ' reached for CLOSED path ' + key)
+          return 0
+        }
 
         // E2d: a patron that gave up on you locks you out of EVERY path, not only
         // the one you lost - otherwise the punishment is a two-second detour into
@@ -975,5 +1007,8 @@
     event.server.scheduleInTicks(6000, function () { report(event.server) })
   })
 
-  console.info('[paths] active - ' + Object.keys(PATHS).length + ' paths, depth-tiered payouts')
+  var closedList = []
+  for (var ck in CLOSED) if (CLOSED.hasOwnProperty(ck)) closedList.push(ck)
+  console.info('[paths] active - ' + Object.keys(PATHS).length + ' paths, depth-tiered ' +
+    'payouts. CLOSED (unbuilt, cannot be claimed): ' + (closedList.join(', ') || 'none'))
 })()

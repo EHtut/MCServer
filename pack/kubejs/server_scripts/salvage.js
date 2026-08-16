@@ -48,7 +48,44 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ── the prices ─────────────────────────────────────────────────────────────
   // Deliberately small. She is the cheapest patron to say yes to once, and the
   // ratchet is that you say yes often - not that any single trade hurts.
-  var HUNGER_COST = 6          // 3 shanks
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ HARNESS - the counter, and what it BUYS you.  Ethan, 2026-08-15:
+  //   "Counter will be called Harness. Low harness = bad deals, high harness =
+  //    good deals."
+  //
+  // The counter already existed and already rose on every trade; what it did NOT do
+  // was change the terms. So dealing with her was flat - the hundredth deal was
+  // priced like the first, which is the one thing a loan shark would never do.
+  //
+  // Now the numbers below are BASE rates and harness moves them:
+  //
+  //     harness 0    you pay 1.5x and receive 1.0x   she is testing you
+  //     harness 1    you pay 1.0x and receive 2.0x   you are worth keeping
+  //
+  // ⭐ THE POINT: her hold on you is not a threat, it is a DISCOUNT. Leaving costs
+  // you the rate you spent all game earning. That is a better trap than anything
+  // she could threaten, and it is the only one in the pantheon built out of
+  // arithmetic instead of dialogue.
+  var HARNESS_CALM = 0         // deals struck: worst terms
+  var HARNESS_FULL = 25        // deals struck: best terms
+
+  // 0..1, or null if her counter cannot be read. NULL IS NOT ZERO - an unreadable
+  // counter must not silently hand a loyal customer the worst rate in the game.
+  function harness(p) {
+    var n = null
+    try { if (VELDORA.counter) n = VELDORA.counter.get(p, PATRON) } catch (e) { }
+    if (n === null) return null
+    if (n <= HARNESS_CALM) return 0
+    if (n >= HARNESS_FULL) return 1
+    return (n - HARNESS_CALM) / (HARNESS_FULL - HARNESS_CALM)
+  }
+
+  // The terms. h===null falls back to the middle rather than the worst - a storage
+  // failure should not look like distrust.
+  function priceMul(p) { var h = harness(p); if (h === null) h = 0.5; return 1.5 - (0.5 * h) }
+  function payMul(p)   { var h = harness(p); if (h === null) h = 0.5; return 1 + h }
+
+  var HUNGER_COST = 6          // 3 shanks (BASE - scaled by priceMul)
   var HEALTH_GAIN = 6          // 3 hearts
   var LEVEL_COST = 5
   var AMMO_ROUNDS = 30
@@ -173,10 +210,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var h = null
     try { h = p.foodData.foodLevel } catch (e) { }
     if (h === null) { speak(p, 'Something is wrong with you. Come back later.'); return false }
-    if (h < HUNGER_COST) { speak(p, 'You have nothing left to give me. Eat something.'); return false }
+    var hungerCost = Math.max(1, Math.round(HUNGER_COST * priceMul(p)))
+    if (h < hungerCost) { speak(p, 'You have nothing left to give me. Eat something.'); return false }
 
     var before = h
-    try { p.foodData.foodLevel = h - HUNGER_COST } catch (e) { }
+    try { p.foodData.foodLevel = h - hungerCost } catch (e) { }
     var after = null
     try { after = p.foodData.foodLevel } catch (e) { }
     if (after === null || after >= before) {
@@ -198,16 +236,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var x = null
     try { x = p.xpLevel } catch (e) { }
     if (x === null) { speak(p, 'Something is wrong with you. Come back later.'); return false }
-    if (x < LEVEL_COST) { speak(p, 'You are too poor even for me.'); return false }
+    var levelCost = Math.max(1, Math.round(LEVEL_COST * priceMul(p)))
+    if (x < levelCost) { speak(p, 'You are too poor even for me.'); return false }
 
-    var rounds = gun.mag ? Math.max(AMMO_ROUNDS, gun.mag) : AMMO_ROUNDS
+    var baseRounds = gun.mag ? Math.max(AMMO_ROUNDS, gun.mag) : AMMO_ROUNDS
+    var rounds = Math.max(1, Math.round(baseRounds * payMul(p)))
     var st = mintAmmo(gun.ammoId, rounds)
     if (!st) { speak(p, 'My supplier let me down. Nothing for you tonight.'); return false }
 
     // Charge only AFTER the goods exist. The reverse order is how a player pays
     // for nothing when a mint fails.
     var before = x
-    try { p.xpLevel = x - LEVEL_COST } catch (e) { }
+    try { p.xpLevel = x - levelCost } catch (e) { }
     var after = null
     try { after = p.xpLevel } catch (e) { }
     if (after === null || after >= before) {
@@ -217,7 +257,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     }
     try { p.give(st) } catch (e) { console.error(TAG + 'could not give ammo: ' + e) }
     speak(p, TOOK.levels)
-    note(p, rounds + ' x ' + gun.ammoId.replace('tacz:', '') + ' for ' + LEVEL_COST + ' levels.')
+    note(p, rounds + ' x ' + gun.ammoId.replace('tacz:', '') + ' for ' + levelCost + ' levels.')
     return true
   }
 
@@ -517,7 +557,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     server.scheduleInTicks(SAMPLE_TICKS, function () { sample(server) })
   }
 
-  VELDORA.salvage = { open: open, heldGun: heldGun, mintAmmo: mintAmmo, maybeOpen: maybeOpen }
+  VELDORA.salvage = { open: open, heldGun: heldGun, mintAmmo: mintAmmo,
+    maybeOpen: maybeOpen, harness: harness, priceMul: priceMul, payMul: payMul }
 
   ServerEvents.commandRegistry(function (event) {
     var Commands = event.commands
