@@ -6,6 +6,31 @@ rot."*** He was right — ten new documents were created in a single session.
 
 ---
 
+## 🚫 THE ROSTER — read this before writing for a patron
+
+> ### There are **FIVE** paths: **Blade · Salvage · Forge · Wall · Art**
+>
+> **CROWN IS RETIRED.** Merged into Wall, 2026-08-14 (`35-WALL-REFRESH.md` §6).
+> Ethan: *"We merge crown and wall. The idea being the spider mother wants you to
+> build a family, a web, like hers. Also missionary is kinda a boring patron compared
+> to the others."*
+>
+> Wall's household holds the **living** (MineColonies citizens) and the **dead**
+> (Goety minions) — the colony IS the court IS the family IS the web.
+>
+> **Crown's writing is kept on purpose**, marked RETIRED in `27` and `28`, in case a
+> sixth patron is ever wanted. **Nothing is built from it and nothing new is written
+> for it.** His key stays claimable in `paths.js` — and his scene keeps generating —
+> only until the world reset.
+>
+> 🚨 *This section exists because the mistake was already made.* On 2026-08-15 Crown
+> was scaffolded, deployed and given a full content worksheet, because `22` and `27`
+> still read as live and the merge was recorded only in §6 of a doc about Wall.
+> **`tools/new_god.py` now refuses the key outright** — a doc can be misread, the
+> guard cannot.
+
+---
+
 ## 🚨 THE ROUTING RULE — read before writing anything
 
 > ### There are SIX living documents. New work goes INTO one of them.

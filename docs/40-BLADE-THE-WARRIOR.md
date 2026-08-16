@@ -1,8 +1,12 @@
 # BLADE — The Warrior *(as built)*
 
 > ✅ **COMPLETE 2026-08-15.** The first god finished end to end, and therefore **the
-> reference implementation.** Crown, Wall, Forge, Salvage and Art are built against
-> this shape — see **`docs/41-BUILDING-A-GOD.md`** for the procedure.
+> reference implementation.** **Wall, Forge, Salvage and Art** are built against this
+> shape — see **`docs/41-BUILDING-A-GOD.md`** for the procedure.
+>
+> 🚫 **The roster is FIVE.** Crown was merged into Wall on 2026-08-14 (`docs/35` §6)
+> and is not built. Blade's `HOSTILE_TO` still lists `crown` only because the key
+> stays claimable in `paths.js` until the world reset.
 >
 > | | |
 > |---|---|

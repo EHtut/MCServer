@@ -1,5 +1,26 @@
 # The Patrons — voices and events
 
+> # 🚫 THE ROSTER IS FIVE, NOT SIX — CROWN IS RETIRED
+>
+> **Ethan, 2026-08-14** (`35-WALL-REFRESH.md` §6): *"We merge crown and wall. The idea
+> being the spider mother wants you to build a family, a web, like hers. Also
+> missionary is kinda a boring patron compared to the others."*
+>
+> **WALL absorbs him.** Her household holds the living (MineColonies citizens) and the
+> dead (Goety minions) — the colony IS the court IS the family IS the web.
+>
+> ### Live paths: **Blade · Salvage · Forge · Wall · Art**
+>
+> Crown's writing below is **kept deliberately**, marked RETIRED, in case a sixth
+> patron is ever wanted — his voice was good and his scene is finished.
+> **Do not build from it. Do not write new material for it.**
+>
+> 🚨 *This banner exists because the mistake was already made.* On 2026-08-15 Crown was
+> scaffolded, deployed and given a full content worksheet, because these character docs
+> described him as a live peer and the merge was recorded only in §6 of a doc about
+> Wall. Reading the character docs was enough to get it wrong. `tools/new_god.py` now
+> refuses the key outright.
+
 > ⚠️ **FOLDED INTO `23-THE-PATH-SYSTEM.md` (2026-08-11).** That is the master
 > document now. This file is kept for the reasoning and the conversation trail;
 > read 23 for the current design.
@@ -146,7 +167,9 @@ register:
 > *"You built a door. Was it for me?"* · *"Take out one wall. Just one."* ·
 > *"There. Nothing between us."*
 
-### Crown — The False King · `missioner` · **he**
+### 🚫 RETIRED — Crown — The False King · `missioner` · **he**
+
+> **Merged into WALL, 2026-08-14** (`35` §6). Kept for reference only; nothing below is being built. See the banner at the top of this file.
 > *"Arrogant but cooperative. He doesn't respect your claim but he will use you."*
 
 Imperious, transactional, occasionally complimentary in a way that lands as an
@@ -328,7 +351,9 @@ debt level**, so she only dares once you are already deep with her.
 12. **Nothing Between Us** — the endgame. She asks you to break the core
     yourself. Doing it begins the Harvest.
 
-### CROWN — used, but paid
+### 🚫 RETIRED — CROWN — used, but paid
+
+> **Merged into WALL, 2026-08-14** (`35` §6). Kept for reference only; nothing below is being built. See the banner at the top of this file.
 
 1. **The Errand** — *find 5 diamonds before day X.* Ethan's own example, and the
    right shape: the goal is **down**, not **out**.

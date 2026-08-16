@@ -43,6 +43,31 @@ import sys
 REPO = pathlib.Path(__file__).resolve().parent.parent
 SS = REPO / "pack" / "kubejs" / "server_scripts"
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# 🚫 THE LIVE ROSTER IS FIVE, NOT SIX.
+#
+# Ethan, 2026-08-14 (docs/35 §6): "We merge crown and wall. The idea being the
+# spider mother wants you to build a family, a web, like hers. Also missionary is
+# kinda a boring patron compared to the others."
+#
+# Crown is RETIRED. He leaves paths.js at the world reset. His writing is kept in
+# docs/27 and docs/28 marked RETIRED because a sixth patron may be wanted later -
+# but he is not built, and nothing new is written for him.
+#
+# 🚨 THIS GUARD EXISTS BECAUSE THE MISTAKE WAS ALREADY MADE. On 2026-08-15 Crown
+# was scaffolded, deployed and given a whole content worksheet, because docs/22 and
+# docs/27 still describe him as a live peer and the merge was recorded only in §6
+# of a doc about Wall. Reading the character docs was enough to get it wrong.
+#
+# A doc can be misread. This cannot.
+RETIRED = {
+    "crown": "merged into WALL 2026-08-14 (docs/35 §6) - the spider mother's "
+             "household holds the living AND the dead. Build `wall` instead.",
+}
+
+# The five that exist. `salvage` is the Hound, `wall` is the Mother/Spider.
+LIVE_PATHS = ["blade", "salvage", "forge", "wall", "art"]
+
 # The tag families Blade proved out. A new god starts with these and adds its own.
 POOLS = [
     ("low_gift", "handing you something, at low trust"),
@@ -427,6 +452,17 @@ def main() -> int:
     if not re.fullmatch(r"[a-z][a-z_]{1,15}", god):
         print(f"  bad god key {god!r} - lowercase letters and underscores only")
         return 1
+
+    if god in RETIRED:
+        print(f"  🚫 REFUSING - {god} is RETIRED.")
+        print(f"     {RETIRED[god]}")
+        print(f"     Live paths: {', '.join(LIVE_PATHS)}")
+        return 1
+
+    if god not in LIVE_PATHS:
+        print(f"  ⚠️  {god!r} is not one of the five live paths:")
+        print(f"     {', '.join(LIVE_PATHS)}")
+        print("     Scaffolding it anyway - but if you meant one of the above, stop now.")
     name = a.name or god.capitalize()
 
     files = {

@@ -1,5 +1,26 @@
 # The six introductions — final text
 
+> # 🚫 THE ROSTER IS FIVE, NOT SIX — CROWN IS RETIRED
+>
+> **Ethan, 2026-08-14** (`35-WALL-REFRESH.md` §6): *"We merge crown and wall. The idea
+> being the spider mother wants you to build a family, a web, like hers. Also
+> missionary is kinda a boring patron compared to the others."*
+>
+> **WALL absorbs him.** Her household holds the living (MineColonies citizens) and the
+> dead (Goety minions) — the colony IS the court IS the family IS the web.
+>
+> ### Live paths: **Blade · Salvage · Forge · Wall · Art**
+>
+> Crown's writing below is **kept deliberately**, marked RETIRED, in case a sixth
+> patron is ever wanted — his voice was good and his scene is finished.
+> **Do not build from it. Do not write new material for it.**
+>
+> 🚨 *This banner exists because the mistake was already made.* On 2026-08-15 Crown was
+> scaffolded, deployed and given a full content worksheet, because these character docs
+> described him as a live peer and the merge was recorded only in §6 of a doc about
+> Wall. Reading the character docs was enough to get it wrong. `tools/new_god.py` now
+> refuses the key outright.
+
 *Pass 2, 2026-08-12, Sonnet, one agent per patron, briefed from
 `27-THE-SIX-VOICES.md`. **This supersedes the scenes in `26`**, which are kept
 there as the first draft. Mechanic and build plan stay in `26`.*
@@ -238,6 +259,13 @@ Build us something worth keeping, and it will never leave you either. Not truly.
 > her entire character, so the move belongs to her more than to the other two.
 
 ## CROWN — The False King
+
+> 🚫 **RETIRED — merged into WALL, 2026-08-14** (`35` §6). Kept for reference only;
+> nothing here is being built and nothing new should be written for him.
+>
+> ⚠️ **This scene still generates on purpose.** `crown` remains a claimable key in
+> `paths.js` until the world reset, and a live walker with no introduction would be a
+> worse bug than the retirement being untidy. Do not delete it; the world reset does.
 *false history: **you were recommended to me** · technique: **the flattering demotion***
 
 **ARRIVAL**

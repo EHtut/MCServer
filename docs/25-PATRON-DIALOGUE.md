@@ -1,5 +1,26 @@
 # Patron dialogue — the death ladder
 
+> # 🚫 THE ROSTER IS FIVE, NOT SIX — CROWN IS RETIRED
+>
+> **Ethan, 2026-08-14** (`35-WALL-REFRESH.md` §6): *"We merge crown and wall. The idea
+> being the spider mother wants you to build a family, a web, like hers. Also
+> missionary is kinda a boring patron compared to the others."*
+>
+> **WALL absorbs him.** Her household holds the living (MineColonies citizens) and the
+> dead (Goety minions) — the colony IS the court IS the family IS the web.
+>
+> ### Live paths: **Blade · Salvage · Forge · Wall · Art**
+>
+> Crown's writing below is **kept deliberately**, marked RETIRED, in case a sixth
+> patron is ever wanted — his voice was good and his scene is finished.
+> **Do not build from it. Do not write new material for it.**
+>
+> 🚨 *This banner exists because the mistake was already made.* On 2026-08-15 Crown was
+> scaffolded, deployed and given a full content worksheet, because these character docs
+> described him as a live peer and the merge was recorded only in §6 of a doc about
+> Wall. Reading the character docs was enough to get it wrong. `tools/new_god.py` now
+> refuses the key outright.
+
 *Generated 2026-08-12 by six per-patron writing agents, then curated. Mechanic is
 `23-THE-PATH-SYSTEM.md` §9.1b.*
 
@@ -95,7 +116,9 @@ Wall player builds*, which is her whole character in one sentence.
 **OPEN:** she uses **"love"** and **"darling"**. No other patron uses pet names.
 That is a real register choice and it is Ethan's to make.
 
-## CROWN — The False King
+## 🚫 RETIRED — CROWN — The False King
+
+> **Merged into WALL, 2026-08-14** (`35` §6). Kept for reference only; nothing below is being built. See the banner at the top of this file.
 **Solid.** The angle landed — his contempt is about *station*, not weakness, and
 a death is embarrassing to **him**.
 
@@ -282,7 +305,9 @@ to Ethan's own tea-party line. Running gag or too on-the-nose — his call.
 CUT: "A web forms overnight. No spider visible." (generic) · "settles
 infinitesimally closer" (writerly in an otherwise plain set).
 
-## CROWN — procession, protocol, a ledger
+## 🚫 RETIRED — CROWN — procession, protocol, a ledger
+
+> **Merged into WALL, 2026-08-14** (`35` §6). Kept for reference only; nothing below is being built. See the banner at the top of this file.
 
 ⚠️ **Crown refused the comedy brief in BOTH passes.** Five patrons take to the
 absurdist register happily; he will not, twice, under two different briefs.

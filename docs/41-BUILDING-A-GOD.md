@@ -8,7 +8,14 @@
 > Reference implementation: **`docs/40-BLADE-THE-WARRIOR.md`**.
 > Every argument behind it: `docs/audit/Blade-BuildHistory-2026-08-15.md`.
 >
-> Order: Blade ✅ → **Crown** → **Wall** → Forge → Salvage → Art.
+> ### 🚫 THE ROSTER IS FIVE: **Blade · Salvage · Forge · Wall · Art**
+> **Crown is RETIRED** — merged into Wall 2026-08-14 (`docs/35` §6). Ethan: *"the
+> spider mother wants you to build a family, a web, like hers."* Wall's household
+> holds the living (MineColonies) and the dead (Goety). His writing is kept in `27`
+> and `28` marked RETIRED; **nothing is built from it.** `tools/new_god.py` refuses
+> the key.
+>
+> Order: Blade ✅ → **Wall** → Forge → Salvage → Art.
 
 ---
 
@@ -17,8 +24,8 @@
 **A god is a voice, a number, a list of events, one collection, and one exit.**
 
 Nothing else about a god is code. The entities are *actors* it sends — it never has a
-body. The mechanisms are shared. What makes Crown different from Blade is **what it
-says, what it counts, and what it sends** — and all three are data.
+body. The mechanisms are shared. What makes Wall different from Blade is **what she
+says, what she counts, and what she sends** — and all three are data.
 
 ```
         ┌──────────────── SHARED, ALREADY BUILT ────────────────┐
@@ -101,10 +108,10 @@ low / medium / high trust**. Without this the tags are guesses.
 
 ### ② Pick the counter metric
 One number that means *appeasement*, distinct from XP/notoriety. Blade counts **enemies
-slain**. Crown should count something about **station and holdings**, Wall something
-about **what is built and held**.
+slain**. Wall should count something about **what is built, held and fed** — her
+household is the fantasy, so the number should grow when the household does.
 
-Add the key to `counters.js` `PATRONS` (already done for all six).
+Add the key to `counters.js` `PATRONS` (already present for every key).
 
 ### ③ Pick the trust thresholds
 Two integers. **They are a first guess and they are meant to be** — replace them with a
@@ -151,7 +158,7 @@ differ.
 
 ### ⑨ Fill the shared rows
 `fall.js` · `regard.js` · `help.js` · `paths.js` · `coefficients.js` · `spawn_pressure.js`
-— most already have a Crown/Wall row from earlier work. **Check, do not assume.**
+— most already have a row for every key from earlier work. **Check, do not assume.**
 
 ### ⑩ Deploy, restart, READ THE BOOT LOG
 
@@ -245,6 +252,6 @@ reports how many are still unfilled, so an unwritten god is loud rather than sil
 | gap | why it matters now |
 |---|---|
 | ⚠️ **Absence** — the third exit | Release went **admin-only** 2026-08-15 (Ethan's ruling). The exits are now the fall, Blade's challenge, and an admin. **Absence is the only clean way out and it does not exist.** |
-| The other five Harvests | `harvest.js` reports `handlers: blade` and nothing else. Every other god's Harvest currently does nothing. |
-| The other five voices | `voice.js` reports `2 god(s)` — Blade and the Speaker. |
+| The other four Harvests | `harvest.js` reports `handlers: blade` and nothing else. Wall, Forge, Salvage and Art have no Harvest. |
+| The other four voices | `voice.js` reports `2 god(s)` — Blade and the Speaker. |
 | `EntityEvents.death` NPE | 49 hits, last 08-12, invisible for three days until `logq` was repaired. |
