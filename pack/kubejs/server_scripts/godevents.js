@@ -376,8 +376,70 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       challenge: 4, duel: 3, buff: 4, boon: 4, invade: 2,
       attack: 1, aid: 1, support: 1, assassination: 2, contract: 3,
     },
-    // wall: TODO(ethan) - ten weights
-    // salvage: TODO(ethan) - ten weights
+    // ═══════════════════════════════════════════════════════════════════════
+    // ⭐ WALL'S COLUMN IS A FUNCTION, AND IT HAD TO BE.
+    //
+    // Ethan confirmed the read: gifts heavy, hurting other players heavy,
+    // challenges none. But writing that as static numbers would have destroyed her
+    // best mechanic. Her whole design is a SLIDER - boons at calm, attacks at fury,
+    // and she only ASKS in the middle - so a fixed vector would have had her
+    // sending attacks at rage 0 and gifts at rage 100. The chart would have
+    // overwritten the thing it was supposed to describe.
+    //
+    // So a band may be a NUMBER or a FUNCTION of (server, player). Hers reads her
+    // own rage, which means the taxonomy now describes her instead of replacing
+    // her - and any future god can be dynamic without another mechanism.
+    //
+    // ⚠️ The mood factor does NOT get applied twice. Her per-event weights are
+    // wAttack(3)/wAttack(4)/wAttack(2) etc, all sharing the same mood multiplier -
+    // so inside a category it CANCELS and only the 3:4:2 shape survives, which is
+    // exactly what within-category weights are for. mood appears once, at the
+    // category roll, where it belongs.
+    //
+    // 🚫 Zero is a REAL answer here, not a gap. Ethan: "they do not need to have
+    // events for everything." An explicit 0 means she will never do that thing; a
+    // MISSING key means nobody has decided yet, and the boot log tells them apart.
+    // ═══════════════════════════════════════════════════════════════════════
+    wall: {
+      challenge: 0,        // she sends nothing AT her champion. Ever.
+      duel: 0,
+      buff: function (server, p) {                 // her gifts, and they are forced
+        var m = wallMood(p)
+        return m === null ? 0 : 1 + (1 - m) * 3    // 4 at calm -> 1 at fury
+      },
+      boon: 0,             // ⭐ she never ASKS before giving. That is the character.
+      invade: function (server, p) {               // forced harm to another player
+        var m = wallMood(p)
+        return m === null ? 0 : m * 3              // 0 at calm -> 3 at fury
+      },
+      attack: function (server, p) {               // the ASK - peaks in the middle
+        var m = wallMood(p)
+        return m === null ? 0 : 4 * m * (1 - m) * 2
+      },
+      aid: 0, support: 0,  // she helps nobody but her own
+      assassination: 0, contract: 0,   // she does not order kills. She does them.
+    },
+
+    // salvage: NOT FILLED IN. She keeps the legacy single-stage roll until Ethan
+    // rules on her column - see the note in the boot log.
+  }
+
+  function wallMood(p) {
+    try {
+      if (VELDORA.wall && typeof VELDORA.wall.mood === 'function') return VELDORA.wall.mood(p)
+    } catch (e) { }
+    return null
+  }
+
+  // A band may be a number or a function of (server, player). A throwing band scores
+  // 0 - the same rule weightOf() uses, and for the same reason: a broken curve must
+  // mute one category, never crash the roll.
+  function bandOf(chart, kind, server, p) {
+    var b = chart[kind]
+    if (typeof b === 'function') {
+      try { b = b(server, p) } catch (e) { return 0 }
+    }
+    return (typeof b === 'number' && isFinite(b) && b > 0) ? b : 0
   }
 
   function chartPick(list, server, p, tier, god) {
@@ -401,7 +463,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (!buckets.hasOwnProperty(k2)) continue
       // An unclassified event still gets to happen - at the lowest band - rather
       // than vanishing because somebody forgot a `kind:`. report() names them.
-      var band = (k2 === 'misc') ? 1 : (chart[k2] || 0)
+      var band = (k2 === 'misc') ? 1 : bandOf(chart, k2, server, p)
       if (band <= 0) continue
       keys.push(k2); cw.push(band); ctot += band
     }
@@ -615,17 +677,36 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         if (!kk) { untagged.push(evs[ci].id); kk = 'misc' }
         byKind[kk] = (byKind[kk] || 0) + 1
       }
-      var tot = 0, parts = []
+      // ⚠️ A DYNAMIC band cannot be printed as a percentage - it depends on the
+      // player. Saying "20%" for a curve would be a confident lie in the log, which
+      // is the class of bug this project keeps paying for.
+      var tot = 0, parts = [], dyn = [], zero = [], undecided = []
       for (var kx in byKind) {
-        if (byKind.hasOwnProperty(kx)) tot += (kx === 'misc' ? 1 : (CHART[cg][kx] || 0))
+        if (!byKind.hasOwnProperty(kx)) continue
+        var raw = (kx === 'misc') ? 1 : CHART[cg][kx]
+        if (typeof raw === 'function') { dyn.push(kx + ' (' + byKind[kx] + ' ev)'); continue }
+        tot += (raw || 0)
       }
       for (var ky in byKind) {
         if (!byKind.hasOwnProperty(ky)) continue
-        var bd = (ky === 'misc' ? 1 : (CHART[cg][ky] || 0))
-        if (!bd) continue
+        var bd = (ky === 'misc') ? 1 : CHART[cg][ky]
+        if (typeof bd === 'function') continue
+        if (bd === 0) { zero.push(ky); continue }
+        if (bd === undefined) { undecided.push(ky); continue }
         parts.push(ky + ' ' + Math.round(100 * bd / tot) + '% (' + byKind[ky] + ' ev)')
       }
-      console.info(TAG + cg + ' rolls BY KIND: ' + parts.join(' · '))
+      if (parts.length) console.info(TAG + cg + ' rolls BY KIND: ' + parts.join(' · '))
+      if (dyn.length) {
+        console.info(TAG + cg + ' has DYNAMIC bands (they move with her own counter, ' +
+          'so no fixed share can be printed): ' + dyn.join(' · '))
+      }
+      // 🔑 "deliberately none" and "nobody has decided" must never look the same.
+      if (zero.length) console.info(TAG + cg + ' will NEVER do: ' + zero.join(', ') + ' (set to 0 on purpose)')
+      if (undecided.length) {
+        console.warn(TAG + '!! ' + cg + ' has events in UNDECIDED kinds: ' +
+          undecided.join(', ') + ' - absent from the chart is not the same as 0. ' +
+          'They cannot roll until a band is set. docs/23 §VI.0.')
+      }
       if (untagged.length) {
         console.warn(TAG + '!! ' + cg + ' has UNTAGGED events: ' + untagged.join(', ') +
           ' - they fall into `misc` at the lowest band. Add a `kind:`.')

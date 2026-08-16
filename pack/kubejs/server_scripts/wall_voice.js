@@ -450,7 +450,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (CONTEXT[_c].length) WRITTEN++
   }
 
-  VELDORA.wall = {
+  // ⚠️ MERGE, DO NOT CLOBBER. This file sorts AFTER wall_events.js, so a plain
+  // `VELDORA.wall = {...}` silently wipes anything that file published - which is
+  // exactly what happened to `mood` on the first attempt at her dynamic chart. Same
+  // idempotent-merge pattern the VELDORA namespace itself uses, and for the same
+  // reason: relying on file NAMES for load order breaks months later during a rename.
+  VELDORA.wall = VELDORA.wall || {}
+  var _wallPub = {
     tier: tierOf,
     colour: COLOUR,
     written: WRITTEN,
@@ -463,6 +469,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (!VELDORA.voice) return false
       return VELDORA.voice.say(player, GOD, t + '_' + kind)
     },
+  }
+  for (var _wk in _wallPub) {
+    if (_wallPub.hasOwnProperty(_wk)) VELDORA.wall[_wk] = _wallPub[_wk]
   }
 
   ServerEvents.commandRegistry(function (event) {

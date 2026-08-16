@@ -448,6 +448,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var RAGE_CALM = 10        // at or below: pure boons, she is only ever kind
   var RAGE_FURY = 90        // at or above: pure attacks, she has stopped asking
 
+  // ⭐ PUBLISHED so godevents can build her chart out of it (docs/23 §VI.0).
+  // ⚠️ Merged, never assigned - wall_voice.js also writes VELDORA.wall and sorts
+  // after this file. It merges too, now; both halves are defensive on purpose.
+  // null propagates: an unreadable counter must NOT read as calm.
+  VELDORA.wall = VELDORA.wall || {}
+
   function mood(p) {
     var n = null
     try { if (VELDORA.counter) n = VELDORA.counter.get(p, GOD) } catch (e) { }
@@ -459,6 +465,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (n >= RAGE_FURY) return 1
     return (n - RAGE_CALM) / (RAGE_FURY - RAGE_CALM)
   }
+  VELDORA.wall.mood = mood
 
   // The three curves. Each returns a weight for godevents' weighted pick.
   function wBoon(base) {
@@ -901,20 +908,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var ALL = ['low', 'medium', 'high']
 
     VELDORA.events.register(GOD, {
-      id: 'boon', run: evBoon, hostile: false, cooldown: 1, weight: wBoon(4), tiers: ALL,
+      id: 'boon', kind: 'buff', run: evBoon, hostile: false, cooldown: 1, weight: wBoon(4), tiers: ALL,
       does: 'BOON - regeneration + absorption on her own champion. Weight falls as ' +
         'rage rises',
     })
     VELDORA.events.register(GOD, {
-      id: 'feast', run: evFeast, hostile: false, cooldown: 1, weight: wBoon(3), tiers: ALL,
+      id: 'feast', kind: 'buff', run: evFeast, hostile: false, cooldown: 1, weight: wBoon(3), tiers: ALL,
       does: 'BOON - saturation + regeneration. She feeds you before anything else',
     })
     VELDORA.events.register(GOD, {
-      id: 'carry', run: evCarry, hostile: false, cooldown: 2, weight: wBoon(3), tiers: ALL,
+      id: 'carry', kind: 'buff', run: evCarry, hostile: false, cooldown: 2, weight: wBoon(3), tiers: ALL,
       does: 'BOON - speed, jump and slow-fall for 90s. The web carries you',
     })
     VELDORA.events.register(GOD, {
-      id: 'brood', run: evBrood, hostile: false, cooldown: 3, weight: wBoon(2), tiers: ALL,
+      id: 'brood', kind: 'buff', run: evBrood, hostile: false, cooldown: 3, weight: wBoon(2), tiers: ALL,
       does: 'BOON - gives you 2 goety spider servants. NOTE: they count as raised ' +
         'minions, so this gift RAISES her rage and slides her toward attacking',
     })
@@ -949,29 +956,29 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var andNight = function (fn) { return VELDORA.events.allOf(fn, atNight) }
 
     VELDORA.events.register(GOD, {
-      id: 'offer', scene: true, run: evOffer, hostile: false, cooldown: 2, weight: wAsk(5), tiers: ALL,
+      id: 'offer', kind: 'attack', scene: true, run: evOffer, hostile: false, cooldown: 2, weight: wAsk(5), tiers: ALL,
       guard: atNight,
       does: 'THE ASK - permission to attack another player, via the ritual. Refusable. ' +
         'Weight PEAKS in the middle of the rage range and vanishes at both ends',
     })
 
     VELDORA.events.register(GOD, {
-      id: 'snare', run: evSnare, hostile: false, cooldown: 1, weight: wAttack(3), tiers: ALL,
+      id: 'snare', kind: 'invade', run: evSnare, hostile: false, cooldown: 1, weight: wAttack(3), tiers: ALL,
       guard: atNight,
       does: 'ATTACK - slowness II + weakness on another player for 12s. NIGHT ONLY',
     })
     VELDORA.events.register(GOD, {
-      id: 'dark', run: evDark, hostile: false, cooldown: 2, weight: wAttack(3), tiers: ALL,
+      id: 'dark', kind: 'invade', run: evDark, hostile: false, cooldown: 2, weight: wAttack(3), tiers: ALL,
       guard: atNight,
       does: 'ATTACK - blindness on another player for 8s. NIGHT ONLY',
     })
     VELDORA.events.register(GOD, {
-      id: 'web', run: evWeb, hostile: false, cooldown: 2, weight: wAttack(4), tiers: ALL,
+      id: 'web', kind: 'invade', run: evWeb, hostile: false, cooldown: 2, weight: wAttack(4), tiers: ALL,
       guard: atNight,
       does: 'ATTACK - 5 buffed spiders at another player, no choice. NIGHT ONLY',
     })
     VELDORA.events.register(GOD, {
-      id: 'swarm', run: evSwarm, hostile: false, cooldown: 4, weight: wAttack(2), tiers: ALL,
+      id: 'swarm', kind: 'invade', run: evSwarm, hostile: false, cooldown: 4, weight: wAttack(2), tiers: ALL,
       // Only at the far end. A 9-spider wave should be the thing that happens when
       // she has stopped being a person about it.
       //

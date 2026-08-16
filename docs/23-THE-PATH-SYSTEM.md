@@ -1320,16 +1320,54 @@ rather than needing to be written.
 
 | kind | blade | wall | salvage | forge | art |
 |---|:--:|:--:|:--:|:--:|:--:|
-| **Challenges** *(wave / forced)* | **++++** | | | | |
-| **Duels** *(wave / choice)* | **+++** | | | | |
-| **Buffs** *(status / forced)* | **++++** | | | | |
-| **Boons** *(status / choice)* | **++++** | | | | |
-| **Invade** *(hurt others / forced)* | **++** | | | | |
-| **Attacks** *(hurt others / choice)* | **+** | | | | |
-| **Aids** *(help others / forced)* | **+** | | | | |
-| **Support** *(help others / choice)* | **+** | | | | |
-| **Assassinations** *(kill order / forced)* | **++** | | | | |
-| **Contracts** *(kill order / choice)* | **+++** | | | | |
+| **Challenges** *(wave / forced)* | **++++** | **0** | | | |
+| **Duels** *(wave / choice)* | **+++** | **0** | | | |
+| **Buffs** *(status / forced)* | **++++** | **📉 4→1** | | | |
+| **Boons** *(status / choice)* | **++++** | **0** | | | |
+| **Invade** *(hurt others / forced)* | **++** | **📈 0→3** | | | |
+| **Attacks** *(hurt others / choice)* | **+** | **⛰️ peaks mid** | | | |
+| **Aids** *(help others / forced)* | **+** | **0** | | | |
+| **Support** *(help others / choice)* | **+** | **0** | | | |
+| **Assassinations** *(kill order / forced)* | **++** | **0** | | | |
+| **Contracts** *(kill order / choice)* | **+++** | **0** | | | |
+
+### 🚫 Zero is an answer. Absent is not.
+
+> Ethan, 2026-08-16: *"they do not need to have events for everything."*
+
+An explicit **0** means *this god will never do that* — a ruling. A **missing** key
+means nobody has decided yet. They must never look the same, so the boot log prints
+them differently: `will NEVER do: …` for zeros, and a **warning** for any god carrying
+events in an undecided kind, because those cannot roll at all until a band is set.
+
+### ⭐ WALL'S COLUMN IS A FUNCTION, and it had to be
+
+Her read was confirmed — gifts heavy, harm to others heavy, challenges none — but
+writing that as **static numbers would have destroyed her best mechanic.** Her whole
+design is a *slider*: boons at calm, attacks at fury, and she only **asks** in the
+middle. A fixed vector would have sent attacks at rage 0 and gifts at rage 100. **The
+chart would have overwritten the thing it was meant to describe.**
+
+So a band may be a **number or a function of (server, player)**. Hers reads her own
+rage:
+
+```
+buff    1 + (1-mood)×3     4 at calm  ->  1 at fury
+invade  mood × 3           0 at calm  ->  3 at fury
+attack  4·mood·(1-mood)×2  0 at both ends, peaks in the middle   <- the ASK
+```
+
+⚠️ **The mood factor is not applied twice.** Her per-event weights all share the same
+multiplier, so *inside* a category it cancels and only the relative shape survives —
+which is what within-category weights are for. `mood` appears once, at the category
+roll, where it belongs.
+
+⭐ And note what fell out: **her `boon` band is 0.** Every gift she has is *forced* —
+she does not ask before giving. That is not a gap, it is the character, and the
+taxonomy made it visible.
+
+**Salvage has no column yet** and keeps the legacy single-stage roll until she gets
+one. Her seven events are deliberately untagged.
 
 > **Blade's shape, in one sentence:** *"The Warrior focuses on you and really only
 > tests you. Most of his actions are forced, with little choice, as he seeks to test
