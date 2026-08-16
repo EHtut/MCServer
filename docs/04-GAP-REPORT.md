@@ -7,9 +7,9 @@
 
 ## Summary
 
-- **413 / 450** mod slots used
-- **382** stable releases, **31** beta/alpha
-- **6** entries carry a known hazard (see below)
+- **276 / 450** mod slots used
+- **248** stable releases, **28** beta/alpha
+- **3** entries carry a known hazard (see below)
 
 ---
 
@@ -67,11 +67,8 @@ worth knowing before it bites.
 
 | Mod | Version | Hazard |
 |---|---|---|
-| [Alex's Mobs (Unofficial Port)](https://modrinth.com/mod/alexs-mobs(1.21.1)) | `1.22.17` | Community port of Alex's Mobs - the biggest creature roster in modded Minecraft |
-| [Arthropod Phobia Expansions + Horror Bosses / Arachnophobia](https://modrinth.com/mod/arphex) | `5.0.2` | Phobia-grade arthropod horror and supernatural bosses |
-| [Create Aeronautics](https://modrinth.com/mod/create-aeronautics) | `1.3.0+mc1.21.1` | Buildable airships. Explicitly requested; the single most on-period Create addon there is |
+| [Create Aeronautics](https://modrinth.com/mod/create-aeronautics) | `1.3.0+mc1.21.1` | Buildable airships and planes - spectacular, still alpha |
 | [Steam 'n' Rails Neoforge](https://modrinth.com/mod/create-steam-n-rails-1.21.1) | `0.2.1+neoforge-mc1.21.1` | Community 1.21.1 port of Steam 'n' Rails - trains, couplers, signals |
-| [Dynamic Trees](https://modrinth.com/mod/dynamictrees) | `1.7.2` | Growing, spreading trees - beautiful, but touches worldgen everywhere |
 | [[UNOFFICIAL] TaCZ 1.21.1 NeoForge Port](https://modrinth.com/mod/tacz-1.21.1) | `1.1.8-hotfix-r6` | Community NeoForge port of Timeless and Classics Zero. The single sanctioned anachronism; the official build never left 1.20.1 Forge |
 
 ### Non-release builds
@@ -85,22 +82,19 @@ They are the first place to look when something breaks.
 | `scorchful` | `0.15.2+1.21.1-neoforge` | alpha |
 | `thermoo` | `4.8.1-neoforge` | alpha |
 | `accessories` | `1.1.0-beta.53+1.21.1` | beta |
-| `accessories-compat-layer` | `0.1.12` | beta |
-| `ars-structurize` | `1.1.3` | beta |
+| `archers-expansion` | `1.5.1+1.21.1-neoforge` | beta |
 | `corpse` | `neoforge-1.21.1-1.1.13` | beta |
 | `create-railways-navigator` | `1.21.1-beta-0.9.1-C6` | beta |
 | `create-sound-of-steam` | `0.8.2-1.21.1` | beta |
-| `crimson_curse` | `1.4.3.1+mod` | beta |
 | `distanthorizons` | `3.2.0-b-1.21.1` | beta |
 | `dragonlib` | `1.21.1-beta-3.0.28` | beta |
-| `elysium-api` | `1.21.1-2.0.0-BETA.6` | beta |
-| `geore` | `6.2.3` | beta |
+| `fresh-animations` | `1.10.4` | beta |
 | `glitchcore` | `2.1.0.2` | beta |
 | `in-control` | `1.21-10.2.6` | beta |
-| `jadens-nether-expansion` | `2.4.0-BETA.7` | beta |
-| `l2library` | `3.0.8` | beta |
-| `lets-do-vinery` | `1.5.3` | beta |
+| `iris` | `1.8.14-beta.1+1.21.1-neoforge` | beta |
+| `jei` | `19.43.0.393` | beta |
 | `make_bubbles_pop` | `0.4.0-beta.1-neoforge` | beta |
+| `moreculling` | `1.0.8` | beta |
 | `owo-lib` | `0.12.15.5-beta.1+1.21` | beta |
 | `pf-neoforge` | `1.21.1-1.12.0-beta.1` | beta |
 | `playeranimator` | `2.0.4+1.21.1-forge` | beta |
@@ -110,8 +104,8 @@ They are the first place to look when something breaks.
 | `sound-physics-remastered` | `neoforge-1.21.1-1.4.10` | beta |
 | `sparkweave` | `0.510.0+NeoForge` | beta |
 | `terrablender` | `4.1.0.8` | beta |
-| `the-undergarden` | `0.9.6` | beta |
 | `trade-cycling` | `neoforge-1.21.1-1.0.18` | beta |
+| `tras-fresh-player` | `3.1` | beta |
 
 ---
 

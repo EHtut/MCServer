@@ -752,3 +752,130 @@ invested. **Check them against the drill-sergeant register.**
 *"its own condition is not met"* for Icarus. `/idle_test` — contexts and weights, and
 the spider line landed. **The Harvest's shape worked**: the announcement, `Run.`,
 the arrival, the loss line, and the trust hit.
+
+---
+
+# PART 15 — ✅ THE POLISH PASS IS BUILT *(2026-08-15, Ethan's own writing)*
+
+Every item queued in PART 14 is closed, and Ethan wrote the content himself. What
+follows is what shipped and — more usefully — **the three things this pass taught
+that will apply to the other four gods.**
+
+## ⭐ THE SPEAKER FOR THE GODDESS OF DEATH — `deep_speaker.js`
+
+> Ethan: *"the gods cannot see you when you descend after a certain level. Instead
+> dialogue is replaced by the goddess of death's speaker."*
+> *"She is the speaker for the goddess of death. She watches endlessly these fel
+> corridors. It is she whom which the horrors of this land are born."*
+
+**This is the best mechanic in the project and it is worth saying why.** Every other
+system in the pack makes the world *louder* as it gets more dangerous — more spawns,
+more events, more voice. This one makes **your god go silent.**
+
+Below `CUTOFF_Y = -40` the patron cannot reach you. The voice that has spent the whole
+game arming you, testing you and grudgingly approving of you is simply **gone**, and
+something else is talking. It costs nothing to build and it changes what descending
+*means*: you are not going somewhere dangerous, you are going somewhere **out of
+earshot**.
+
+It also hands the strata a moral gradient the depth loop never had. She tells you your
+own god was once a servant of hers — and the deeper you go, the less able he is to
+answer that.
+
+| | |
+|---|---|
+| colour | grey `§7` — **she is not a god and must not look like one** |
+| register | whole sentences, patient, asks nothing. The gods speak in fragments and demands |
+| lines | 14 across `intro` / `common` / `abandoned` |
+| introduction | fires **exactly once**, via `K_MET`. The first thing she says is never a random line |
+| `abandoned` | she notices what his silence means before you do — *"Call for him if you like. I will wait."* |
+
+`idle.js` defers to her and **returns silence if she has nothing**, rather than letting
+him talk through her. The cutoff is a hard wall, not a preference.
+
+**For the other four gods this is free.** She is registered per-god-agnostic; any
+patron's idle speech defers below the cutoff without knowing why.
+
+## THE HARVEST IS A CUTSCENE, NOT A CHAT POOL
+
+His seven opening lines run through **the ritual** — blind, rooted, staggered — because
+they are the only time in the game he talks about himself, and a player has to be held
+still to read them. He had a champion once; the man is gone; his end was merciful; he
+does not explain further.
+
+> ⚠️ **TIMED OFF `ritual.js`'s OWN CONSTANTS**, not off a number that looked right.
+> A no-options scene releases at exactly `LEAD 20 + (n × GAP 50) + TAIL 40`. The heavy
+> silence lands **40t before release** (inside the dark, where it belongs) and *"Face
+> him and win."* **40t after it**. Hard-coding `420` would have put Ethan's marked beat
+> *after* the world came back, which is the one thing it must not do.
+
+## ⭐ NARRATION IS NOW A LINE TYPE
+
+Ethan's new introduction needed something the scene system did not have. **A line
+beginning with `*` is narration** — grey italic — and everything else is the god
+speaking, bold red. His own convention, taken from the way he wrote *"\*You feel a
+heavy silence"* in the Harvest.
+
+**Why it matters more than a colour change:** every other line in this project is a
+*voice*, and a voice cannot say *"You are afraid"* without telling the player how to
+feel. Narration can, because it is not coming from anyone. It is also the only way the
+crimson-eyed figure can be **seen** — the gods have been voice-only since the actor
+reframe, and this is the single exception the scene system gets. He is visible for
+exactly one line, then he speaks, then he is a voice again for the rest of the game.
+
+✅ **It also fixed a lie in the old scene.** *"Everything you carried in — hand it
+over"* described an inventory strip **that has never existed**. The toll is XP levels,
+and `paths.js` already reports it. The new closing claims nothing the code does not do.
+
+## THE LINES
+
+| pool | was | now |
+|---|---|---|
+| `high_silence` | 8 | **16** — the pool a champion *earns* should feel the rarest |
+| `mark_success` | 6 | **9** |
+| `push` + `lore` | separate | **merged** into `loc_above` / `loc_below` (Ethan: *"for the sake of avoiding dialogue bloat"*) |
+| `rare_loc_above` | — | **6, rolled at 15%** |
+| `whispers.js` | live | **RETIRED** behind a flag — it described a body that no longer exists |
+
+⭐ **The rare pool is where he is a person.** He had a name once. He is a prisoner here
+too. He feels attachment to the spider he claims to despise. He barely remembers the
+sun. **None of it should ever be common enough to become wallpaper** — that is the
+entire argument for the rarity roll, and it is the pattern the other four gods should
+copy.
+
+Harvest closings are **delayed 20t** so they land after *"was slain by…"* rather than
+above it. Ethan caught this live: *"the loss line lands BEFORE the death message."*
+
+## 🚨 TWO HAZARDS CLOSED IN THE SAME PASS
+
+**`gen_scenes.py` consumed its own splice marker.** A second run refused with
+*"already generated?"*, so the doc quietly stopped being the source of truth — **which
+is how Blade's scene drifted in the first place.** It now splices between two markers
+that survive, and it is narration-aware. `docs/28` is authoritative again.
+
+**The deferred-arrival lock.** `harvestArrive` now returns `true` *before* the champion
+spawns, so `harvest.js` has already stamped the Harvest as begun. If placement then
+fails, the player is locked in a Harvest with nothing to fight — exactly the state
+`harvest.js` refuses to create synchronously. The deferred spawn checks `placed === 0`
+and **releases the lock so the phase sweep retries.** A Harvest that did not arrive did
+not happen.
+
+## Live at 18:47
+
+```
+[voice]   VELDORA.voice published OK - 2 god(s), 44 tag(s), 810 possible lines
+[blade]   148 fixed + 32 contextual + 616 combinatorial, across 41 tags
+[speaker] the Speaker waits below y-40 - 14 lines, grey
+[intro]   VELDORA.intro published OK - 6 scenes, 12 silence lines
+[whispers] RETIRED - idle.js speaks for the gods now.
+0 real error(s)
+```
+
+## What is still open
+
+- **PART 9** — retiring the release mechanic. Untouched; still Ethan's call.
+- **The drop-curve saturation retune** — his number, not chosen yet.
+- **The absence route** — the third exit alongside the fall and the release.
+- **The other four gods.** Blade is the template now: a voice, an actor it sends, a
+  contextual idle pool with a rare sibling, and a cutscene for the one moment that
+  earns one.
