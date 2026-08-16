@@ -470,7 +470,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       '],Health:40f}'
   }
 
-  function sendSpiders(server, me) {
+  function sendSpiders(server, me, tag) {
     var target = pickTarget(server, me)
     if (!target) {
       console.info(TAG + 'no valid target for ' + me.username + ' - nobody else ' +
@@ -502,10 +502,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       return false
     }
 
-    // ⭐ SHE SPEAKS TO THE TARGET, not to her champion. That is what high_hostile is
-    // for - she is explaining herself to the person she is killing, which is worse
-    // than threatening them.
-    if (VELDORA.voice) VELDORA.voice.say(target, GOD, 'high_hostile')
+    // ⭐ SHE SPEAKS TO THE TARGET, not to her champion - she explains herself to the
+    // person she is killing, which is worse than threatening them.
+    //
+    // One pool PER ATTACK since 2026-08-16. `high_hostile` was a single voice for
+    // blindness, slowness, five spiders and nine - four mechanically distinct things
+    // that were audibly identical, in her most distinctive content in the game.
+    if (VELDORA.voice) VELDORA.voice.say(target, GOD, tag || 'web_hit')
     console.info(TAG + '!! ' + me.username + ' -> ' + count +
       (buffed ? ' BUFFED' : '') + ' spiders sent at ' + target.username +
       ' (grudge ' + (GRUDGE[target.username] || 0) + ')')
@@ -730,7 +733,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (!target) return false
     if (!eff(target, 'minecraft:slowness', 12, 2)) return false
     eff(target, 'minecraft:weakness', 12, 0)
-    if (VELDORA.voice) VELDORA.voice.say(target, GOD, 'high_hostile')
+    if (VELDORA.voice) VELDORA.voice.say(target, GOD, 'snare_hit')
     console.info(TAG + '!! ' + me.username + ' -> snared ' + target.username)
     return true
   }
@@ -739,7 +742,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var target = pickTarget(server, me)
     if (!target) return false
     if (!eff(target, 'minecraft:blindness', 8, 0)) return false
-    if (VELDORA.voice) VELDORA.voice.say(target, GOD, 'high_hostile')
+    if (VELDORA.voice) VELDORA.voice.say(target, GOD, 'dark_hit')
     console.info(TAG + '!! ' + me.username + ' -> blinded ' + target.username)
     return true
   }
@@ -765,7 +768,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         ' was REFUSED by the spawner - not stamping')
       return false
     }
-    if (VELDORA.voice) VELDORA.voice.say(target, GOD, 'high_hostile')
+    if (VELDORA.voice) VELDORA.voice.say(target, GOD, 'swarm_hit')
     return true
   }
 

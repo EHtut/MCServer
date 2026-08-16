@@ -91,6 +91,66 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "I am not angry. I am not. I am not.",
       "You do not have to watch. Just do not stop me.",
     ],
+    // ═══════════════════════════════════════════════════════════════════════
+    // ⭐ ONE VOICE PER ATTACK.  Ethan, 2026-08-16 - he asked for the split and
+    // authorised these lines, the loop being: he plays, and anything that does not
+    // fit comes back as "here's a better line". Every line here is a FIRST DRAFT
+    // awaiting that.
+    //
+    // Until now snare, dark, web and swarm ALL said `high_hostile`. Blindness,
+    // slowness, five spiders and nine spiders are mechanically distinct and were
+    // audibly identical - and it is her most distinctive content in the game.
+    //
+    // 🔑 EVERY LINE BELOW IS SAID TO THE VICTIM, not to her champion. She explains
+    // herself to the person she is killing, which is worse than threatening them.
+    //
+    // Her rules, applied: never `gone`, `lost` or `dead` · endearments and never a
+    // name, because the gods do not see you for you (Ethan, 2026-08-16) · fast, with
+    // run-ons and sentences that change direction halfway · never cruel, and that is
+    // the horror.
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // SNARE - slowness II + weakness, 12s. She is not hurting them, she is HOLDING
+    // them, and holding is the whole of her.
+    snare_hit: [
+      "Stay. Just for a moment, stay.",
+      "There. Now you are easier to hold.",
+      "I am not hurting you. I am holding you. There is a difference and you will feel it.",
+      "Slower. Slower. That is better, that is - there.",
+      "You were going somewhere. You are not, now.",
+      "It does not hurt, love. It only stops.",
+    ],
+
+    // DARK - blindness, 8s. She takes the seeing, not the life.
+    dark_hit: [
+      "Do not look. It is easier if you do not look.",
+      "There. Now you cannot see how many of us there are.",
+      "I am still here. I am always still here.",
+      "Close them. It is the same either way.",
+      "You do not need those for this part.",
+      "Shh. It is dark for me too, most of the time.",
+    ],
+
+    // WEB - five spiders, no choice. Her children, and she introduces them.
+    web_hit: [
+      "They have been waiting to meet you.",
+      "Do not hurt them. They are only doing what I asked.",
+      "Five. That is not many. I could have asked for more.",
+      "They are mine and they are gentle and they are coming.",
+      "You will not be alone. I would not do that to anyone.",
+      "Be kind to them. They are very young.",
+    ],
+
+    // SWARM - nine, at the far end of the slider. She counts. She always counts.
+    swarm_hit: [
+      "All of them. I am sorry, I am - all of them.",
+      "I asked nicely. I did ask.",
+      "There are nine. I counted. I always count.",
+      "Do not fight it. It takes longer that way and I do not want it to take longer.",
+      "This is the last time we do this. I keep saying that.",
+      "I would rather you sat down.",
+    ],
+
     high_hostile: [
       "You will never be a part of us.",
       "You. Die.",
