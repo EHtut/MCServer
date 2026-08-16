@@ -313,6 +313,26 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return true
   }
 
+  // Two different lines from her own pool, so the ask is never word-for-word the
+  // same twice. Falls back only if the pool is unreadable - and says so.
+  function offerLines(p) {
+    var out = []
+    try {
+      if (VELDORA.voice && typeof VELDORA.voice.line === 'function') {
+        for (var i = 0; i < 4 && out.length < 2; i++) {
+          var s = VELDORA.voice.line(GOD, 'medium_hostile', p)
+          if (s && out.indexOf(s) < 0) out.push(s)
+        }
+      }
+    } catch (e) { }
+    if (!out.length) {
+      console.warn(TAG + 'medium_hostile pool is empty or unreadable - the offer ' +
+        'is falling back to a stub line. That is a content bug, not a scene bug.')
+      out = ['They dare.']
+    }
+    return out
+  }
+
   // ⭐ THE OFFER - the middle of the slider, and the best thing she does. She asks.
   // You may still say no, and saying no costs you nothing except her.
   function evOffer(server, p, tier) {
@@ -322,10 +342,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
     return VELDORA.ritual.begin(p, {
       colour: '§5§l',
-      lines: [
-        'They dare.',
-        'I can reach them. I only need you to not stop me.',
-      ],
+      // 🚨 DRAWN FROM HER medium_hostile POOL, not typed in here. I originally
+      // hardcoded two lines into this event while Ethan's own -
+      // "They dare. They Dare." / "We need to hurt them. They need to be hurt.
+      // Please." - sat in a pool with ZERO consumers. A dead dialogue pool is the
+      // same defect as a gate with no live consumer, and it is harder to notice
+      // because the scene still reads fine.
+      lines: offerLines(p),
       options: [
         { label: 'Do it.', id: 'yes' },
         { label: 'Leave them.', id: 'no' },
@@ -436,6 +459,61 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (path !== GOD) return
       VELDORA.harvest.resolve(v.server, v, false)
     } catch (e) { }
+  })
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ABSENCE - her single best register, and it had no consumer either
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Ethan wrote "You are back! / I missed you. / The realm barely changed in your
+  // absence, as did I." into a `returned` pool that nothing ever asked for.
+  //
+  // A codependent who does not notice you were gone is not a codependent. Login is
+  // the honest moment for it: it is when the player is looking, and it is the only
+  // moment the game can tell how long they were away.
+  //
+  // ⚠️ day+1 STORAGE. getInt() returns 0 for a missing key, so a first-ever login
+  // would otherwise read as "away since the beginning of the world".
+  var K_SEEN = 'veldora_wall_seen'
+  var AWAY_DAYS = 2                          // world days before she says anything
+
+  PlayerEvents.loggedIn(function (event) {
+    if (!GATE) return
+    try {
+      var p = event.player
+      if (!p) return
+      var path = ''
+      try { if (VELDORA.paths) path = VELDORA.paths.pathOf(p) || '' } catch (e) { return }
+      if (path !== GOD) return
+
+      var server = null
+      try { server = p.server } catch (e) { return }
+      var now = null
+      try {
+        var d = server.overworld().dayTime()
+        if (typeof d === 'number' && isFinite(d)) now = Math.floor(d / 24000)
+      } catch (e) { }
+      if (now === null) return
+
+      var stored = 0
+      try { stored = p.persistentData.getInt(K_SEEN) } catch (e) { }
+      try { p.persistentData.putInt(K_SEEN, now + 1) } catch (e) { }
+      if (!stored) return                     // never seen before: she says nothing yet
+
+      var last = stored - 1
+      // A stamp from the future means an admin moved the clock. Re-stamp rather
+      // than treating it as ten thousand days of neglect.
+      if (last > now) return
+      if ((now - last) < AWAY_DAYS) return
+
+      // A beat after login, so it does not land under the join spam.
+      server.scheduleInTicks(60, function () {
+        try {
+          if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'returned')
+          console.info(TAG + p.username + ' came back after ' + (now - last) +
+            ' day(s) - she noticed')
+        } catch (e) { }
+      })
+    } catch (err) { console.warn(TAG + 'absence hook threw :: ' + err) }
   })
 
   ServerEvents.commandRegistry(function (event) {
