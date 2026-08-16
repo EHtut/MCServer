@@ -417,6 +417,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   ServerEvents.loaded(function (event) {
     if (!GATE) { console.info(TAG + 'GATED OFF'); return }
     if (!VELDORA.events) { console.error(TAG + 'godevents.js missing'); return }
+
+    // 🚨 NO VOICE, NO EVENTS. Her pools are empty until Ethan writes them, and an
+    // event that fires with nothing to say is worse than one that never fires.
+    // Reads the count published at script-eval time, never the voice registry -
+    // that fills in a `loaded` handler which runs AFTER this one.
+    var written = 0
+    try { if (VELDORA.salvage_voice) written = VELDORA.salvage_voice.written || 0 } catch (e) { }
+    try { if (!written && VELDORA[GOD]) written = VELDORA[GOD].written || 0 } catch (e) { }
+    if (!written) {
+      console.warn(TAG + 'HELD - The Hound has no written lines yet. Her trades in ' +
+        'salvage.js still work (they carry their own text); her EVENTS do not ' +
+        'register. Fill the pools in salvage_voice.js and restart.')
+      return
+    }
+
     var ALL = ['low', 'medium', 'high']
 
     VELDORA.events.register(GOD, {
