@@ -102,34 +102,57 @@
 
 ### 🚨 What this brief COLLIDES with. None of it is small.
 
-**1. Her whole thesis has no mechanic.** *"Retrieval… the only patron who does not send
-you down to fight"* — and she currently has **nine events, four of which send spiders at
-other players, and none of which involve fetching anything.** The taxonomy in `docs/23`
-§VI.0 has no row for *go there and bring something back*, and the no-taking-items ruling
-does not cover it, because retrieval is the opposite. **This is the biggest open
-question in her design.**
+**1. ⏸️ Her thesis has no mechanic — DEFERRED.** *"Retrieval… the only patron who does
+not send you down to fight"* — and she has nine events, four of which send spiders at
+other players, and **none of which fetch anything.** Ethan, 2026-08-16: *"she wants to
+go into the depths to learn the truth. To be honest with all the lore and the patrons
+we still are honestly missing a **why**. but its a sandbox game so it isn't the biggest
+priority."*
+> 🔑 **Her why, recorded:** *she goes down to learn the truth.* And the larger admission
+> is worth keeping visible — **the world does not yet have a reason a champion descends
+> at all**, beyond loot and a Harvest. `docs/15` §0b's moral gradient (*the deeper you
+> go, the worse your patron looks*) is the closest thing to one. Not scheduled.
 
-**2. `Assassinations ++` contradicts a voice rule.** An Assassination is a kill order
-*with no choice* — and her rule is **"She never gives orders. She asks."** `Contracts
-+++` outranking it is the right shape, but the `++` needs a ruling: either she breaks
-her own rule once desperate (that is stage three, and defensible), or the row is `0`.
+**2. ✅ RULED — `Assassinations → 0`, everything moves to Contracts.** *"switch to
+contracts… every battle is a choice she offers to help the player grow stronger."* She
+never gives orders, so a no-choice kill order cannot exist for her. Same event, framed
+as her helping you grow rather than as her wanting somebody dead — **which is a
+completely different god.**
+> ⭐ And the same ruling closed `Boons` to **0**: *"she will never ask the player if
+> they want a buff."* Every gift she has is **forced**. Her asking lives entirely in
+> `attack` and `contract` — **she asks permission to hurt somebody, never permission to
+> help you.** That is the sharpest line in her whole design.
 
-**3. Gregor.** §1 below says her father was **Gregor**, *"a once-great warrior of the
-church"* and **Blade's dead champion.** The GM note says **the Warrior is her father.**
-Those cannot both be true unless Gregor *is* Blade — which also resolves `docs/40`'s
-*"Daughter of Arkh"* into **his own daughter**, and makes the Speaker's apology at the
-bottom of the world an apology to himself. Extraordinary if intended, a contradiction
-if not. **One ruling settles it.**
+**3. ✅ RULED — the docs were wrong, and so was I.** *"Gregor is the Blade. The Daughter
+of Arkh is Alice. Mera just has the last name arkhdottir."*
+* **Gregor IS the Warrior** — not his champion, *him*.
+* **The Daughter of Arkh is ALICE**, not Mera. The surname is a red herring.
+* So **the Warrior went into the golden city for Alice**, and Alice is now in the dark
+  telling his daughter's champion to stop reaching. *(Full note in `docs/40` §0.)*
+* ⚠️ **This breaks one piece of built content:** `deep_speaker.js` has the Speaker
+  apologising to **Gregor** at the bottom of the world. If Gregor is Blade, that
+  confession is aimed at a god who is still standing, and **needs re-pointing.**
 
-**4. Alice is half-built already.** Her deep speaker is **the Doctor** — and Alice is
-*a doctor with her face*. `deep_speaker.js` already runs her below y −64. Whether the
-Doctor simply *becomes* Alice or they are two voices decides whether that file is a
-rename or a rewrite. *(Blade has the same open question with Caebrim.)*
+**4. ✅ RULED — Alice is the Doctor, and the name is never spoken.** *"we never use
+names. only titles. **The names only come at the god's weakest.**"* So `deep_speaker.js`
+is a **rewrite, not a rename** — she stays *the Doctor* in every line, and *Alice* is
+the word that only appears when the Spider breaks. **A name is now the most expensive
+word in the game.**
 
-**5. The arc inverts and the code does not know it.** *She starts warm and closes her
-hand.* Her tiers are `MEDIUM_AT 10` / `HIGH_AT 50` on **rage**, so the registers already
-move the right way — but the `low`/`medium`/`high` naming now reads backwards: her
-**low** tier is her most generous and her **high** is her worst.
+**5. ✅ RULED — and it renames the counter's meaning.** *"Rage is kinda an interesting
+counter because it is like **focus**. Low rage focused on player, high rage focused on
+others."*
+> 🔑 **Rage is not anger — it is attention.** A high number never means she is angry
+> *at you*; it means none of her is pointed at you any more. That is why every band in
+> her chart is a curve, and it is a better name for the mechanic than "rage" is:
+>
+> ```
+> rage 0     all of her is on her champion   -> buffs
+> rage MAX   none of it is                   -> invade
+> ```
+>
+> Her tier *names* still read backwards (`low` is her most generous register, `high`
+> her worst), which is now a documentation problem rather than a design one.
 
 ---
 

@@ -53,8 +53,29 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // This project shipped that bug twice (the_hunt, nemesis_tally) and both times it
   // failed SILENTLY, because "could not read" and "not a minion" shared a value.
   // isMinion() returns null for unreadable and false for no. They are different.
-  var MINION_MARKS = ['_servant', '_familiar']
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔒 GOETY ONLY.  Ethan, 2026-08-16: "we will only use goety for minions to make
+  // it simple."
+  //
+  // The suffix scan matched 101 entities across THREE mods - goety 70,
+  // goety_cataclysm 15, occultism 16 - and that breadth was the problem, not a
+  // feature: an Occultism familiar is a permanent utility pet, not a member of her
+  // household, and crediting one made her rage jump for a thing the player uses to
+  // move items around. Now the NAMESPACE is checked first and the suffix second.
+  //
+  // ⚠️ `goety_cataclysm` is EXCLUDED too. It is a separate compat mod and "goety"
+  // has to mean one thing; the check is an exact namespace match, not a prefix, or
+  // `goety_cataclysm:` would slip through on a `startsWith`.
+  var MINION_NS = 'goety'
+  var MINION_MARKS = ['_servant']
   var NOT_YOURS = ['wild', 'unbound']
+
+  // `String(entity.type)` is a description key, not a bare id - so the namespace
+  // shows up as `entity.goety.foo` or `goety:foo` depending on the build. Both
+  // forms are checked, and NEITHER matching means not-goety rather than unreadable.
+  function isGoety(id) {
+    return id.indexOf(MINION_NS + ':') >= 0 || id.indexOf('.' + MINION_NS + '.') >= 0
+  }
 
   function idOf(e) {
     var s = null
@@ -66,6 +87,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   function isMinion(e) {
     var id = idOf(e)
     if (id === null) return null                  // unreadable is NOT "no"
+    if (!isGoety(id)) return false                // 🔒 goety, and only goety
     for (var i = 0; i < NOT_YOURS.length; i++) if (id.indexOf(NOT_YOURS[i]) >= 0) return false
     for (var j = 0; j < MINION_MARKS.length; j++) if (id.indexOf(MINION_MARKS[j]) >= 0) return true
     return false

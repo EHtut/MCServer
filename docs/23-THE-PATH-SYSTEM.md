@@ -1323,12 +1323,12 @@ rather than needing to be written.
 | **Challenges** *(wave / forced)* | **++++** | **0** | | | |
 | **Duels** *(wave / choice)* | **+++** | **0** | | | |
 | **Buffs** *(status / forced)* | **++++** | **++++** 📉 | | | |
-| **Boons** *(status / choice)* | **++++** | **++++** 📉 | | | |
+| **Boons** *(status / choice)* | **++++** | **0** 🔒 | | | |
 | **Invade** *(hurt others / forced)* | **++** | **++++** 📈 | | | |
 | **Attacks** *(hurt others / choice)* | **+** | **++** ⛰️ | | | |
 | **Aids** *(help others / forced)* | **+** | **0** | | | |
 | **Support** *(help others / choice)* | **+** | **0** | | | |
-| **Assassinations** *(kill order / forced)* | **++** | **++** 📈 | | | |
+| **Assassinations** *(kill order / forced)* | **++** | **0** 🔒 | | | |
 | **Contracts** *(kill order / choice)* | **+++** | **+++** 📈 | | | |
 
 📉 fades as rage climbs · 📈 grows with it · ⛰️ peaks in the middle

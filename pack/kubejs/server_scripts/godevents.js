@@ -411,11 +411,22 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     //   assassination  I derived 0. He says ++.
     //   contract       I derived 0. He says +++.  She DOES send you to kill.
     //
-    // ⚠️ HIS BANDS ARE STATIC AND HER MECHANIC IS A SLIDER, so the bands here are
-    // his ratios with her rage curve applied - NOT numbers I invented. At any rage
-    // the shape below is his chart; what rage changes is how much of the "kind to
-    // you" half survives against the "cruel to them" half. Flatten these to plain
-    // numbers and she stops sliding, which is the one thing she must never do.
+    // ⭐ RAGE IS NOT ANGER, IT IS FOCUS.  Ethan, 2026-08-16: "Rage is kinda an
+    // interesting counter because it is like focus. Low rage focused on player, high
+    // rage focused on others."
+    //
+    // That single sentence is why every curve below has the shape it has, and it is
+    // worth stating because "rage" invites the wrong instinct - that a high number
+    // should mean she is angry AT YOU. It never does. It means her attention has
+    // moved off you and onto everyone else:
+    //
+    //     rage 0    all of her is pointed at her champion   -> buffs
+    //     rage MAX  none of her is                          -> invade
+    //
+    // ⚠️ His bands are static and her mechanic is that slider, so the bands here are
+    // HIS ratios with her focus curve applied - not numbers I invented. Flatten them
+    // to plain integers and she stops sliding, which is the one thing she must never
+    // do.
     wall: {
       challenge: 0,        // blank on his chart. She sends nothing AT her champion.
       duel: 0,             // blank.
@@ -424,12 +435,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         var m = wallMood(p)
         return m === null ? 0 : 4 * (1 - 0.6 * m)          // 4.0 calm -> 1.6 fury
       },
-      // ++++ — the gifts she ASKS about. Same band as forced, and it fades the same
-      // way: her brief's arc is that she stops noticing she is asking.
-      boon: function (server, p) {
-        var m = wallMood(p)
-        return m === null ? 0 : 4 * (1 - 0.7 * m)          // 4.0 calm -> 1.2 fury
-      },
+      // 🔒 0 — Ethan, 2026-08-16: "she will never ask the player if they want a
+      // buff." Every gift she has is FORCED, and that is the character: she does not
+      // check. Her asking lives entirely in `attack` and `contract`, which are about
+      // other people - she asks permission to hurt somebody, never permission to
+      // help you.
+      boon: 0,
       // ++++ — forced harm to another player, and the one that GROWS
       invade: function (server, p) {
         var m = wallMood(p)
@@ -442,12 +453,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         return m === null ? 0 : 2 * (4 * m * (1 - m))      // 0 -> 2.0 -> 0
       },
       aid: 0, support: 0,  // blank on his chart. She helps nobody but her own.
-      // ++ / +++ — she DOES give kill orders, and the asked form outweighs the
-      // commanded one, which is her whole grammar.
-      assassination: function (server, p) {
-        var m = wallMood(p)
-        return m === null ? 0 : 2 * m                      // only once she is angry
-      },
+      // 🔒 0 — Ethan: "switch to contracts." An Assassination is a kill order with
+      // NO choice, and her rule is that she never gives orders. Every kill she wants
+      // is asked for, so the whole row moves into `contract` below.
+      assassination: 0,
+      // +++ — and it carries what the Assassination row gave up. Framed as her
+      // helping you grow rather than as her wanting somebody dead, which is the
+      // same event and a completely different god.
       contract: function (server, p) {
         var m = wallMood(p)
         return m === null ? 0 : 3 * (0.4 + 0.6 * m)        // 1.2 calm -> 3.0 fury

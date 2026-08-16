@@ -117,28 +117,50 @@ never chosen with three named stages in mind.
 a stronger idea. **Decide whether she replaces the Speaker or stands beside her** before
 either gets written.
 
-### ⭐ THE CONNECTION THIS BRIEF MAKES — confirm it is intended
+### 🔴 THE RULING — Ethan, 2026-08-16. **I had this wrong.**
 
-**The Daughter of Arkh is almost certainly Wall.**
+> *"The docs are wrong. **Gregor is the Blade. The Daughter of Arkh is Alice.** Mera
+> just has the last name arkhdottir (there's too much to explain why)."*
+
+I proposed that the Daughter of Arkh was Wall, on the strength of *Arkh·dottir*. **It
+is not.** The surname is a red herring — there is a reason and it is not being spent
+here. The corrected facts, which are now canon:
 
 | | |
 |---|---|
-| Blade entered the golden city to bring out | **the Daughter of Arkh** |
-| Wall was, in life | **Mera Arkhdottir** — *Arkh's daughter* (`docs/43`) |
-| Wall in life | *"could wield the **golden light** of the god of sun"* |
-| Wall's father | **Gregor**, *"a once-great warrior of the church"* |
-| Gregor is also | **Blade's dead champion.** The Speaker apologises to him at the bottom of the world |
-| Blade, `rare_loc_above` (Ethan, 2026-08-16) | *"The Spider… **Why can I hear her name?**"* |
+| **Gregor IS the Warrior.** | Not his champion — *him*. The man who became the god. |
+| **The Daughter of Arkh is ALICE** | the doctor in the dustlands, `docs/43` §0 |
+| **Mera is his daughter** | and `Arkhdottir` is just her name |
+| **Neither of them knows** | GM note, `docs/43` §0 |
 
-His champion Gregor died. Gregor's daughter Mera was in the golden city. **He went in
-for her and did not hold.** She became the thing he now despises — and he can hear her
-name and cannot place it.
+So the shape is better than the one I guessed. **He went into the golden city for
+Alice** — and Alice is now in the dark, on the other side of the war, as the voice
+that tells his daughter's champion to stop reaching. *"Strength is the only apology I
+have left"* is an apology owed to a woman three hundred blocks down, and to a daughter
+who does not know he is her father.
 
-That is a complete tragedy, and **it is already 90% written across three documents that
-never reference each other.**
+His line — *"The Spider… **Why can I hear her name?**"* — is him half-recognising his
+own child.
 
-⚠️ One wrinkle to settle: `docs/43` calls Mera *daughter of Gregor*, while *Arkhdottir*
-reads as *daughter of Arkh*. Either Gregor Arkh is one man, or Arkh is the house.
+> ⚠️ **What this leaves open.** `docs/43` §1 calls Gregor *"a once-great warrior of the
+> church, lost too soon"* and **Blade's dead champion**, and `deep_speaker.js` has the
+> Speaker apologising to Gregor at the bottom of the world. If Gregor *is* Blade, he
+> cannot be his own dead champion, and the Speaker is apologising to a god who is still
+> standing. **That confession needs re-pointing** — it is the one piece of built
+> content the ruling breaks.
+
+### 🔑 NAMES ARE NEVER SPOKEN — Ethan, 2026-08-16
+
+> *"we never use names. only titles. **The names only come at the god's weakest.**"*
+
+**The Warrior. The Spider. The Doctor. The Matriarch.** Never Gregor, Mera, Alice — not
+in any pool, not in any scene — until the moment a god breaks. That makes a name the
+single most expensive word in the game, and it means:
+
+* every existing line that names somebody is either a **stage-three reveal** or a bug;
+* **Blade's *"Why can I hear her name?"* is exactly right** — he cannot say it, which
+  is the point;
+* Caebrim and Alice are **titles-in-waiting** in the deep speaker, not labels to print.
 
 ---
 
