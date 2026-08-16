@@ -60,12 +60,27 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // give it faster phases AND more drops AND more power - strictly the best path.
   // The challenger fights; somebody else arms it. This one coefficient is what
   // makes Blade need Forge.
+  // ⚠️ SPAWNS WAS RESCALED 2026-08-16 when the axis became a DENSITY MULTIPLIER
+  // rather than a roster trickle. The old numbers were written for "how many extra
+  // mobs to inject" and read as nonsense under the new meaning: 4.0 means a 300%
+  // chance to duplicate, which clamps to "always", which is not a difficulty knob,
+  // it is a siege.
+  //
+  // Now the number IS the world's own spawn rate around that walker:
+  //     0.7  the world is 30% quieter
+  //     1.0  untouched
+  //     1.6  60% of eligible monster spawns come twice
+  //
+  // ⭐ AND MERCANTILE PATHS GO BELOW 1, which is what finally makes the suppression
+  // half live - it has existed and worked since it was written, and nothing ever
+  // asked it for anything because no path was under 1.0. A quieter world around the
+  // Spider and the Goat is a real, felt path difference that costs zero extra mobs.
   var TABLE = {
-    blade:   { role: 'combat',     spawns: 4.0, power: 3.0, drops: 0.6, phase: 2.0 },
-    salvage: { role: 'combat',     spawns: 4.0, power: 2.5, drops: 0.8, phase: 1.5 },
-    forge:   { role: 'mercantile', spawns: 1.0, power: 0.4, drops: 3.0, phase: 1.0 },
-    wall:    { role: 'mercantile', spawns: 1.5, power: 0.6, drops: 2.5, phase: 1.0 },
-    art:     { role: 'explorer',   spawns: 1.5, power: 1.2, drops: 1.0, phase: 1.0 },
+    blade:   { role: 'combat',     spawns: 1.6, power: 3.0, drops: 0.6, phase: 2.0 },
+    salvage: { role: 'combat',     spawns: 1.4, power: 2.5, drops: 0.8, phase: 1.5 },
+    forge:   { role: 'mercantile', spawns: 0.6, power: 0.4, drops: 3.0, phase: 1.0 },
+    wall:    { role: 'mercantile', spawns: 0.7, power: 0.6, drops: 2.5, phase: 1.0 },
+    art:     { role: 'explorer',   spawns: 1.0, power: 1.2, drops: 1.0, phase: 1.0 },
   }
 
   // Crown is retirement-bound (docs/35 §6) but is STILL a claimable key in paths.js
@@ -98,7 +113,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // mercantile path a coefficient below 1 and the suppression half starts working
   // immediately, with no trickle and no noise. A quieter world around Wall or Forge
   // is a path difference you can feel without a single extra mob spawning.
-  var CONSUMED = { drops: true, power: true, phase: true, spawns: false }
+  // spawns is LIVE again as of 2026-08-16: checkSpawn now handles BOTH regimes
+  // (cancel below 1, duplicate above 1) and the table finally has paths on both
+  // sides of neutral.
+  var CONSUMED = { drops: true, power: true, phase: true, spawns: true }
 
   // ⚠️ SUBCLASSES ARE CUT (Ethan, 2026-08-15). This used to stack half of a
   // subclass's DEVIATION from neutral on top of the primary's. The mechanism was

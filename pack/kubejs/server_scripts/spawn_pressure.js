@@ -41,6 +41,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   // Per-path ambient rosters. Blade's events may use these or supply their own.
   // Every id is boot-validated by spawner.js before anything is sent.
+  // ⚠️ ONLY THE RETIRED `AMBIENT` TRICKLE READS THIS. Density needs no roster - it
+  // duplicates whatever the world chose - so these lists are kept solely so that
+  // flipping AMBIENT back on still works. wall/forge/art being empty was the reason
+  // the above-1 half did nothing for three of five paths, and density removes that
+  // failure mode rather than asking anyone to fill them in.
   var ROSTER = {
     blade: ['born_in_chaos_v1:decaying_zombie', 'born_in_chaos_v1:decrepit_skeleton'],
     salvage: ['born_in_chaos_v1:dread_hound'],
@@ -62,6 +67,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // VELDORA.pressure.send() remain, and EVENTS call them - which is the whole point
   // of having built it modular. Set AMBIENT true to restore the trickle.
   var AMBIENT = false
+
+  // ⭐ DENSITY is the replacement for AMBIENT, and it is ON. AMBIENT was a trickle
+  // from a fixed roster ("noise"); DENSITY multiplies what the world was already
+  // going to spawn. They are different mechanisms and only this one is live.
+  var DENSITY = true
   var WAVE_PER_EXCESS = 1.0
   var WAVE_CAP = 6
 
@@ -136,21 +146,130 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return (x === null || typeof x !== 'number') ? null : { x: x, y: y, z: z }
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ ONE HOOK, BOTH DIRECTIONS - Ethan, 2026-08-16:
+  //     "Mob spawns should be just general spawn rate increasers no?"
+  //
+  // Yes, and it is a better design than the one it replaces. The old above-1 half
+  // injected a TRICKLE FROM A FIXED ROSTER - two named zombies every thirty
+  // seconds - which he had already seen in play and called "noise". It is noise for
+  // a structural reason: a fixed roster ignores where you are standing, so the same
+  // two mobs arrive in a birch forest and at y-110, and nothing about them says
+  // anything about the place.
+  //
+  // A DENSITY MULTIPLIER has none of that problem. `checkSpawn` fires when the world
+  // has ALREADY decided to spawn something appropriate to this biome, this light
+  // level and this depth. So:
+  //
+  //     coeff < 1    cancel a share of what the world was going to do
+  //     coeff > 1    DUPLICATE a share of what the world was going to do
+  //
+  // Same hook, same event, symmetrical. Nothing is ever injected - the world is
+  // simply denser or thinner around a walker, and what arrives is always whatever
+  // belonged there anyway. That reads as "this place is worse" rather than "two
+  // zombies appeared", and it deletes the per-path ROSTER problem entirely: wall,
+  // forge and art had empty lists and therefore no above-1 behaviour at all.
+  //
+  // 🚨 MONSTERS ONLY. checkSpawn fires for cows and bats too, and doubling the
+  // passive population is not a difficulty setting, it is a farm.
+  //
+  // ⚠️ Duplicating is a WRITE inside a spawn event, so it is rate-limited hard
+  // (DUP_COOLDOWN) and capped per player. An unbounded multiplier on an event that
+  // fired 828+ times in one short sample is a server-killer, not a mechanic.
+  var DUP_COOLDOWN = 40                     // ticks between duplicates, per player
+  var lastDup = {}                          // uuid -> world ticks
+
+  function isMonster(event) {
+    // Two readers, because neither has been proven on this event shape and a wrong
+    // answer here doubles the wrong things. Unreadable = NOT a monster = do nothing.
+    try {
+      var e = event.entity
+      if (!e) return false
+      var id = null
+      try { id = String(e.type).toLowerCase() } catch (x) { }
+      if (!id) { try { id = String(e.getType()).toLowerCase() } catch (x) { } }
+      if (!id) return false
+      // A hostile check by capability is more honest than a name list.
+      try { if (typeof e.monster === 'boolean') return e.monster } catch (x) { }
+      // Fall back to the ids this pack actually spawns as threats.
+      var marks = ['zombie', 'skeleton', 'spider', 'creeper', 'enderman', 'witch',
+        'drowned', 'husk', 'stray', 'phantom', 'slime', 'hound', 'chaos', 'ghoul',
+        'wraith', 'knight', 'nightmare', 'stalker', 'pumpkin', 'bonescaller']
+      for (var i = 0; i < marks.length; i++) if (id.indexOf(marks[i]) >= 0) return true
+      return false
+    } catch (e2) { return false }
+  }
+
   if (GATE) {
     EntityEvents.checkSpawn(function (event) {
       if (!anyNonNeutral) return              // the common case, costs nothing
       var pos = posOfSpawn(event)
       if (!pos) return
       var w = nearestWalker(pos.x, pos.y, pos.z)
-      if (!w || w.coeff >= 1.0) return        // >1 is handled by the spawner, not here
+      if (!w) return
 
+      // ── below 1: SUPPRESSION ────────────────────────────────────────────
       // coeff 0.5 cancels half. A floor keeps a path from emptying the world
       // entirely - "quieter" is a coefficient, "sterile" is a bug report.
-      if (Math.random() < (1.0 - w.coeff)) {
-        try { event.cancel() } catch (e) { }
+      if (w.coeff < 1.0) {
+        if (Math.random() < (1.0 - w.coeff)) {
+          try { event.cancel() } catch (e) { }
+        }
+        return
       }
+
+      // ── above 1: DENSITY ────────────────────────────────────────────────
+      if (w.coeff <= 1.0 || !DENSITY) return
+      if (Math.random() >= (w.coeff - 1.0)) return
+      if (!isMonster(event)) return
+
+      var p = w.player
+      var uuid = null
+      try { uuid = String(p.uuid) } catch (e) { return }
+      var server = null
+      try { server = p.server } catch (e) { return }
+      if (!server) return
+
+      var now = null
+      try { now = server.overworld().dayTime() } catch (e) { }
+      if (now === null) return
+      if (lastDup[uuid] && (now - lastDup[uuid]) < DUP_COOLDOWN &&
+          (now - lastDup[uuid]) >= 0) return
+      lastDup[uuid] = now
+
+      // Never during a scene - being ambushed mid-ritual is not the design.
+      try { if (VELDORA.ritual && VELDORA.ritual.active(p)) return } catch (e) { }
+
+      var id = null
+      try { id = String(event.entity.type) } catch (e) { return }
+      if (!id || id.indexOf(':') < 0) {
+        // String(entity.type) is NOT the bare id - it is an EntityType whose
+        // toString is a description key. This project has shipped that bug twice.
+        // If it does not look like an id, do nothing and say so once.
+        if (!DUP_SHAPE_LOGGED) {
+          DUP_SHAPE_LOGGED = true
+          console.warn(TAG + 'density: entity id unreadable ("' + id +
+            '") - the above-1 half is INERT until this is fixed')
+        }
+        return
+      }
+
+      // /summon, never createEntity().spawn() - the latter skips finalizeSpawn,
+      // which is where Born in Chaos sets hostility.
+      var dim = 'minecraft:overworld'
+      try { dim = String(p.level.dimension) } catch (e) { }
+      if (dim.indexOf(':') < 0) dim = 'minecraft:overworld'
+      try {
+        server.runCommandSilent('execute in ' + dim + ' run summon ' + id + ' ' +
+          (Math.round(pos.x * 100) / 100) + ' ' + (Math.round(pos.y * 100) / 100) +
+          ' ' + (Math.round(pos.z * 100) / 100))
+        dupCount++
+      } catch (e) { }
     })
   }
+
+  var DUP_SHAPE_LOGGED = false
+  var dupCount = 0
 
   // ── PRESSURE: the above-1 half ────────────────────────────────────────────
   function pressureTick(server) {
@@ -210,6 +329,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     console.info(TAG + 'spawns axis LIVE - suppression via checkSpawn (<1) is ON. ' +
       'Ambient pressure (>1) is OFF by design: waves are EVENT-driven now, through ' +
       'VELDORA.pressure.send(). Set AMBIENT=true to restore the trickle.')
+    console.info(TAG + 'DENSITY ' + (DENSITY ? 'ON' : 'off') + ' - checkSpawn ' +
+      'multiplies what the world already chose: below 1 cancels a share, above 1 ' +
+      'duplicates a share. Monsters only, ' + DUP_COOLDOWN + 't between duplicates.')
     console.info(TAG + 'rosters: ' + Object.keys(ROSTER).filter(function (k) {
       return ROSTER[k].length
     }).join(', ') + ' - the rest are empty and send nothing')
