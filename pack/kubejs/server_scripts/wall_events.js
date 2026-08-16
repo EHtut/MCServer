@@ -170,6 +170,99 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   })
 
   // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ RAGE ALSO ANSWERS TO DEATH AND TO TIME
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Ethan, 2026-08-15: "Rage should slowly decrease over days that you do not die,
+  // rage itself increasing with death."
+  //
+  // That turns the counter from a tally into a MOOD. Minions raised and slain are
+  // the slow half; YOUR death is the loud half. Every input is the same feeling
+  // measured differently - something of hers was taken:
+  //
+  //     +1   a minion raised          the family grows
+  //     -1   a minion slain           something of hers is killed
+  //   +DEATH you died                 the worst thing that can happen to her
+  //   -DECAY a whole day, nobody died  nothing was lost. She settles.
+  //
+  // ⭐ THE SHAPE OF IT: she is calm when you are safe and dangerous when you are
+  // not, and the danger points at everyone except you. A player who dies repeatedly
+  // does not get punished - the SERVER does. That is the most coherent thing about
+  // her, and it came out of Ethan's two sentences rather than out of a design.
+  var RAGE_ON_DEATH = 8         // ~10% of the way to fury per death
+  var RAGE_DECAY_DAY = 2        // so four quiet days undo one death
+  var K_CALM_DAY = 'veldora_wall_calmday'   // last world day decay was applied, +1
+
+  function worldDay(server) {
+    try {
+      var d = server.overworld().dayTime()
+      if (typeof d === 'number' && isFinite(d)) return Math.floor(d / 24000)
+    } catch (e) { }
+    return null
+  }
+
+  // Her champion died. This is the loudest input she has.
+  EntityEvents.death(function (event) {
+    if (!GATE) return
+    try {
+      var p = event.entity
+      if (!p || !p.player) return
+      var path = ''
+      try { if (VELDORA.paths) path = VELDORA.paths.pathOf(p) || '' } catch (e) { return }
+      if (path !== GOD) return
+
+      if (VELDORA.counter) VELDORA.counter.add(p, GOD, RAGE_ON_DEATH, 'champion died')
+      // Reset the calm clock: today is emphatically not a quiet day.
+      var server = null
+      try { server = p.server } catch (e) { }
+      var d = server ? worldDay(server) : null
+      if (d !== null) { try { p.persistentData.putInt(K_CALM_DAY, d + 1) } catch (e) { } }
+      console.info(TAG + p.username + ' died - rage +' + RAGE_ON_DEATH)
+    } catch (err) { console.warn(TAG + 'death->rage hook threw :: ' + err) }
+  })
+
+  // ⚠️ DECAY IS APPLIED PER WHOLE DAY ELAPSED, not per tick, and the day is STORED
+  // AS day+1 because getInt() returns 0 for a missing key - a first-ever check would
+  // otherwise read as "the beginning of the world" and calm her all the way down in
+  // one sweep. A stamp from the future (an admin ran /time set) re-stamps instead.
+  var CALM_SWEEP = 1200                       // 60s; the day check does the real work
+
+  function calmSweep(server) {
+    try {
+      var today = worldDay(server)
+      if (today === null) { server.scheduleInTicks(CALM_SWEEP, function () { calmSweep(server) }); return }
+      var ps = server.players
+      for (var i = 0; i < ps.length; i++) {
+        var p = ps[i]
+        var path = ''
+        try { if (VELDORA.paths) path = VELDORA.paths.pathOf(p) || '' } catch (e) { continue }
+        if (path !== GOD) continue
+
+        var stored = 0
+        try { stored = p.persistentData.getInt(K_CALM_DAY) } catch (e) { continue }
+        if (!stored) {                         // first time we have looked at them
+          try { p.persistentData.putInt(K_CALM_DAY, today + 1) } catch (e) { }
+          continue
+        }
+        var last = stored - 1
+        if (last >= today) continue            // same day, or the clock moved back
+        if (last > today) { try { p.persistentData.putInt(K_CALM_DAY, today + 1) } catch (e) { } continue }
+
+        var days = today - last
+        var cur = null
+        try { if (VELDORA.counter) cur = VELDORA.counter.get(p, GOD) } catch (e) { }
+        try { p.persistentData.putInt(K_CALM_DAY, today + 1) } catch (e) { }
+        if (cur === null || cur <= 0) continue
+
+        var drop = Math.min(cur, days * RAGE_DECAY_DAY)
+        if (drop <= 0) continue
+        if (VELDORA.counter) VELDORA.counter.add(p, GOD, -drop, 'quiet days')
+        console.info(TAG + p.username + ' had ' + days + ' quiet day(s) - rage -' + drop)
+      }
+    } catch (e) { console.warn(TAG + 'calm sweep threw :: ' + e) }
+    server.scheduleInTicks(CALM_SWEEP, function () { calmSweep(server) })
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
   // WHO SHE POINTS AT
   // ═══════════════════════════════════════════════════════════════════════════
   // Ethan: "the player who's either nearby or killed the champion the most."
@@ -587,10 +680,30 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   // Delayed, so she speaks AFTER the world has said what happened.
+  // ⭐ THE ONLY DOOR SHE HAS.
+  // Ethan: "the wall doesn't ever drop or release you. the only way to be released
+  // is from winning the harvest." fall.js will not let her go, /path release is
+  // admin-only, and absence does not exist - so if this does not fire, a Spider
+  // champion is bound forever. It is the single most load-bearing call in her file.
+  //
+  // Her closing lines are Ethan's and they are already a release: "I guess this is
+  // the end. I didn't want it to end like this. I had no choice. Not really. You are
+  // ready." The release lands after them.
   function harvestWin(server, p) {
     server.scheduleInTicks(20, function () {
       try { if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'harvest_won') } catch (e) { }
     })
+    server.scheduleInTicks(160, function () {
+      try {
+        if (VELDORA.paths && typeof VELDORA.paths.release === 'function') {
+          VELDORA.paths.release(server, p)
+        } else {
+          console.error(TAG + '!! cannot release ' + p.username + ' - ' +
+            'VELDORA.paths.release is missing. She has NO other exit; they are stuck.')
+        }
+      } catch (e) { console.error(TAG + 'release threw :: ' + e) }
+    })
+    console.info(TAG + p.username + ' WON her Harvest - releasing in 160t (her ONLY exit)')
   }
   function harvestLose(server, p) {
     server.scheduleInTicks(20, function () {
@@ -772,6 +885,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       })
     } else console.error(TAG + 'harvest.js missing - her Harvest will not arrive')
 
+    calmSweep(event.server)
+    console.info(TAG + 'rage: +1 raised, -1 slain, +' + RAGE_ON_DEATH + ' on YOUR ' +
+      'death, -' + RAGE_DECAY_DAY + ' per quiet day. She never lets go - winning ' +
+      'her Harvest is the only exit.')
     console.info(TAG + 'The Spider - 9 events on a SLIDING SCALE against rage. ' +
       'Boons at ' + RAGE_CALM + ' and below, attacks at ' + RAGE_FURY + ' and above, ' +
       'and she only ASKS in between. Rage = +1 per minion raised, -1 per slain. ' +

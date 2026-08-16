@@ -675,7 +675,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     server.scheduleInTicks(80, function () {
       try { if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'harvest_offer') } catch (e) { }
     })
-    console.info(TAG + p.username + ' WON the Harvest - released, and offered the stay')
+    // 🚨 THIS LINE USED TO BE A LIE. It logged "released" while nothing released
+    // anything - the path stayed claimed and the player stayed his. Winning is the
+    // one honest exit in his design and it did not work.
+    //
+    // The release lands AFTER both closing lines, so he finishes speaking before the
+    // world tells everyone. He offers the stay; taking it is re-claiming the path.
+    server.scheduleInTicks(140, function () {
+      try {
+        if (VELDORA.paths && typeof VELDORA.paths.release === 'function') {
+          VELDORA.paths.release(server, p)
+        } else {
+          console.error(TAG + '!! cannot release ' + p.username +
+            ' - VELDORA.paths.release is missing. They WON and are still bound.')
+        }
+      } catch (e) { console.error(TAG + 'release threw :: ' + e) }
+    })
+    console.info(TAG + p.username + ' WON the Harvest - releasing in 140t, and offered the stay')
   }
 
   function harvestLose(server, p) {

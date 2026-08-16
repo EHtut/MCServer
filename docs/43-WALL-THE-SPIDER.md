@@ -65,8 +65,9 @@ closest to my kind. I cannot help but feel attachment."*
 |---|---|---|---|
 | `GOD` | `wall` | both | the path key |
 | colour | **`§5§l`** dark purple | `wall_voice.js` | every line she speaks, anywhere |
-| `MEDIUM_AT` / `HIGH_AT` | **10** / **40** rage | `wall_voice.js` | tier thresholds |
-| counter metric | **rage** — +1 minion raised, −1 minion slain | `wall_events.js` | |
+| `MEDIUM_AT` / `HIGH_AT` | **10** / **50** rage | `wall_voice.js` | voice tiers, aligned to the slider midpoint |
+| counter metric | **rage** | `wall_events.js` | +1 raised · −1 slain · **+8 your death** · **−2 per quiet day** |
+| `RAGE_CALM` / `RAGE_FURY` | **10** / **90** | `wall_events.js` | pure boons ↔ pure attacks |
 | `CREDIT_RANGE` | **16** | `wall_events.js` | how near a summon must be to credit you |
 | `TARGET_FLOOR` | **0.6** | `wall_events.js` | ⭐ health floor on *the victim* |
 | `AWAY_DAYS` | **2** world days | `wall_events.js` | before she notices you were gone |
@@ -88,47 +89,91 @@ closest to my kind. I cannot help but feel attachment."*
 
 ---
 
-## 3. ⭐ Rage is one slider, not two systems
+## 3. ⭐ Rage is one slider, and it answers to death
 
-Ethan: *"rage for the wall is something directed as less boons for you, more attacks on
-other players."*
+`mood(p)` is **0 at rage <= 10** and **1 at rage >= 90**, linear between. Every event's
+weight is a curve over it — `godevents.js` accepts a weight *function* for exactly this.
 
-It does not switch modes at a threshold. It **slides**.
+| rage | mood | boon | ask | attack | |
+|---|---|---|---|---|---|
+| 10 | 0.00 | **100%** | 0% | 0% | only boons |
+| 30 | 0.25 | 59% | 25% | 16% | |
+| 50 | 0.50 | 38% | 31% | 31% | she asks most here |
+| 70 | 0.75 | 19% | 24% | 57% | |
+| 90 | 1.00 | 0% | 0% | **100%** | only attacks |
 
-```
- 0 ................... rage ................... MAX
- [ boons to you ]                        [ spiders at them ]
-              [ she asks first ]
-```
+⭐ **The ask peaks in the middle and vanishes at both ends** (`4m(1-m)`). At low rage she
+has no reason to ask; at high rage she no longer waits for an answer. The band where you
+get a say is the band where she is still conflicted, **and it closes on its own.**
 
-| event | tier | weight | what it does |
-|---|---|---|---|
-| `boon` | all | 4 | regeneration + absorption on **her own champion** |
-| `offer` | **medium only** | 3 | **asks permission** via the ritual. Refusable |
-| `web` | **high only** | 3 | spiders at another player. **No choice** |
+### What moves the number
 
-⭐ **The tiers ARE the mechanism.** `offer` exists only at medium, so the band where she
-asks your permission opens as rage rises and closes again when it gets high. That is
-Ethan's *"you slowly lose the ability to choose to take the boon"* — and she stops
-asking not because she is angry with you, but because she has stopped believing you
-will say no.
+| | |
+|---|---|
+| **+1** | a minion raised — the family grows |
+| **-1** | a minion slain — something of hers is killed |
+| **+8** | **you died** — the worst thing that can happen to her |
+| **-2/day** | a whole day and nobody died. She settles |
 
-> 🚨 **SHE IS THE FIRST GOD WHO POINTS AT SOMEBODY ELSE.** Every other patron's events
-> happen *to* their champion. Blade's champion is being **tested**; hers is being
-> **protected**. You are not the target of your own god — you are the reason other
-> people are.
+Four quiet days undo one death. Every input is the same feeling measured differently:
+*something of hers was taken.*
 
-> ⚠️ **HER HEALTH FLOOR IS ON THE TARGET, NOT ON HER CHAMPION.** `godevents`' floor
-> guards the player an event fires *for*, and hers lands on someone else — so that
-> floor was guarding the wrong person entirely. Five buffed spiders on someone at two
-> hearts is not an event, it is an execution. Under 60% health, or mid-scene, and she
-> skips them.
+⭐ **She is calm when you are safe and dangerous when you are not — and the danger points
+at everyone except you.** A player who dies repeatedly is not punished; the *server* is.
 
-**Who she points at** — a grudge first, proximity second: whoever has killed the most
-of her actors, else the nearest. Both are Ethan's: *"the player who's either nearby or
-killed the champion the most."*
+### The nine
+
+| event | curve | what |
+|---|---|---|
+| `boon` | boon x4 | regeneration + absorption |
+| `feast` | boon x3 | saturation + regeneration. She feeds you first |
+| `carry` | boon x3 | speed, jump, slow-fall. The web moves you |
+| `brood` | boon x2 | **two goety spider servants** |
+| `offer` | **ask x5** | permission to attack, via the ritual. Refusable |
+| `snare` | attack x3 | slowness II + weakness on another player |
+| `dark` | attack x3 | blindness on another player |
+| `web` | attack x4 | buffed spiders, **3 at calm to 6 at fury** |
+| `swarm` | attack x2 | **nine** buffed spiders. Guarded to mood >= 0.7 |
+
+> ⭐ **A loop nobody designed.** `goety:spider_servant` is a player-owned summon, so
+> `brood` trips her own minion hook and **raises her rage**. *She cannot give you family
+> without becoming more dangerous to everyone else.*
+
+> ⚠️ **Her health floor is on the TARGET.** `godevents`' floor guards the player an event
+> fires *for*, and hers lands on someone else. Under 60% health, or mid-scene, she skips
+> them.
+
+> ⚠️ **Unreadable is not calm.** `mood()` returns `null` on an unreadable counter and every
+> weight scores 0, so she says nothing at all. Returning 0 would make a storage failure
+> look like serenity and hand out boons forever.
 
 ---
+
+## 3b. 🚨 She never lets go
+
+Ethan, 2026-08-15: *"the wall doesn't ever drop or release you. the only way to be
+released is from winning the harvest."*
+
+**Her own writing already said so, and the code contradicted it.** The last rung of her
+grief ladder is *"This is mercy, darling. This is me keeping my promise. I will not lose
+you again"* — and that line **fired the fall.** She promised not to lose you and let you
+go in the same breath.
+
+`fall.js` carries `NEVER_LETS_GO = { wall: true }`. Her regard maxes, she says it, and
+nothing happens. You are still hers. The refusal is logged, so *"she refused"* and *"the
+fall is broken"* stay distinguishable.
+
+> 🚨 **THAT MAKES HER HARVEST THE ONLY DOOR.** `/path release` is admin-only, the fall
+> refuses her, and absence does not exist. If `harvestWin` fails to release, a Spider
+> champion is bound forever.
+>
+> ✅ **Which exposed that release was never real for anyone.** Blade's `harvestWin` had
+> been logging *"released, and offered the stay"* since it was written **while releasing
+> nothing** — `releasePath` was private to `paths.js` and only the (now admin-only)
+> `/path release` command could reach it. The log was describing an intention.
+>
+> `VELDORA.paths.release()` is published now. Blade calls it 140t after his closing
+> lines, the Spider 160t after hers, and both log loudly if it is ever missing.
 
 ## 4. The counter — what counts as a minion
 
@@ -208,7 +253,7 @@ time."* That line was written to be a herald. It is one.
 
 | item | status |
 |---|---|
-| **Her event list** | 3 vs Blade's 11. She gives, asks and attacks, with nothing between. Blade's twelve came from Ethan listing them; hers should too |
+| ~~Her event list~~ | ✅ **9 events on the slider** (2026-08-15) |
 | **PvP untested** | `offer` and `web` both need a second player, and `web` needs high rage. Never run live |
 | Buffed-spider stats, target floor | tuning — one number each once they have been seen to land |
 | **Absence** — the third exit | shared, still missing, now load-bearing |

@@ -163,7 +163,35 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ---------------------------------------------------------------------------
   // THE FALL ITSELF. Called by regard.js when the counter maxes.
   // ---------------------------------------------------------------------------
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🚨 SOME GODS DO NOT LET GO.  Ethan, 2026-08-15:
+  //   "im considering that the wall doesn't ever drop or release you. the only way
+  //    to be released is from winning the harvest"
+  //
+  // Her own writing already said so and the code contradicted it. The last rung of
+  // her grief ladder is:
+  //
+  //     "This is mercy, darling. This is me keeping my promise.
+  //      I will not lose you again."
+  //
+  // ...and that line FIRED THE FALL. She promised not to lose you and then let you
+  // go in the same breath. Now the promise holds: her regard maxes out, she says it,
+  // and nothing happens. You are still hers.
+  //
+  // ⚠️ THAT MAKES HER HARVEST THE ONLY EXIT SHE HAS, which is why paths.release()
+  // had to become real first. Do not add her to this list without checking that her
+  // Harvest still works - it is the only door.
+  var NEVER_LETS_GO = { wall: true }
+
   VELDORA.theFall = function (server, player, key) {
+    if (NEVER_LETS_GO[key]) {
+      // Not silent - an admin reading the log must be able to tell "she refused" from
+      // "the fall is broken".
+      console.info('[fall] ' + player.username + ' MAXED regard on ' + key +
+        ' - and ' + key + ' does not let go. No fall. Winning the Harvest is the ' +
+        'only way out.')
+      return false
+    }
     var day = dayNow(server)
     console.warn('[fall] ================ THE FALL: ' + player.username +
       ' loses ' + key + ' ================')

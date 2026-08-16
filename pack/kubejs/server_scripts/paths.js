@@ -382,6 +382,27 @@
       escrowFor: escrowFor,
       escrowHolder: escrowHolder,
       nameOf: function (key) { return (PATHS[key] && PATHS[key].name) || key },
+
+      // ⭐ THE RELEASE, PUBLISHED. It existed as a private function that only the
+      // (now admin-only) /path release command could reach - so blade_events'
+      // harvestWin logged "released, and offered the stay" while releasing nothing
+      // at all. The log was describing an intention.
+      //
+      // Winning a Harvest is the one exit that is not a failure, and for the Spider
+      // it is the ONLY exit. It needs to be a real call.
+      release: function (server, player) {
+        var gone = releasePath(server, player)
+        if (gone) {
+          console.info('[paths] ' + player.username + ' RELEASED from ' + gone)
+          try {
+            player.tell(Text.of('§8§m                                        '))
+            player.tell(Text.of('§7You walk no path. It is open to the others.'))
+          } catch (e) { }
+          try { server.tell('§8' + player.username + ' has been released from ' +
+            ((PATHS[gone] && PATHS[gone].name) || gone) + '.') } catch (e) { }
+        }
+        return gone
+      },
     }
   } else {
     console.error('[paths] VELDORA namespace missing - C7 escrow will NOT work')
