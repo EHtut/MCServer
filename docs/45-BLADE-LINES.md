@@ -8,12 +8,11 @@ Generated from the source 2026-08-16, so this IS what is in the game right now.
 **317 lines across 42 pools.**
 
 > ### His thesis, so you can write against it
-> **Borrowed strength is not strength.** It is the axis he judges everyone on —
-> you, the Spider, and the Spider's champion. His gifts are a scaffold he expects
-> you to throw away, and his highest praise is that you no longer need him to
-> speak. *"Carry your power where it cannot be raided."*
+WARRIOR — "Strength is the only apology I have left."
+He was the general and he survived. Every soft thing he ever did got someone killed, so he drills you toward unbreakable, because he broke. His lie: that he's hard. He isn't — he's a kind man performing the discipline he thinks would have saved his home. Sentences: imperative, clipped, no subordinate clauses. Again. Get up. Again. As he warms they get longer and start ending in questions, which is the tell. He never says "I'm sorry"; he says "you're not ready," and means the same thing.
 
 > 🔴 marks something I think fights that thesis. ⭐ marks something that nails it.
+
 
 ---
 
@@ -26,12 +25,13 @@ Generated from the source 2026-08-16, so this IS what is in the game right now.
 1. Learn one weapon until it is boring. Then learn what it does that the others cannot.
 2. Every weapon swings its own way. A man who carries five has mastered none.
 3. You can roll out of a blow. Learn where that is bound before you need it.
-4. The blade I gave you is too heavy for you. That is not a flaw, it is an instruction.
-5. Strength is not a thing you are. It is a thing you drink. Find it.
+4. The blade I gave you is too heavy for you. That is not a flaw, it is an instruction. (Cut - this doens't make sense anymore)
+5. Strength is not a thing you are. It is a thing you drink. Find it. (What?)
 6. Nothing above the treeline will ever be worth killing. Go down.
-7. Deeper corpses pay better. That is the only economy I respect.
+7. Deeper corpses pay better. Descemd, Champion.
 8. Armour is borrowed. A weapon in your hand is not. Carry your power where it cannot be raided.
-9. Two hands on it. Even that will not be enough yet.
+9. Two hands on it. Even that will not be enough yet. (My brother finds this line very funny)
+10. Do not let short sightedness blind you. Master every blade.
 ```
 
 ### `low_push` — 10 lines
@@ -41,7 +41,7 @@ Generated from the source 2026-08-16, so this IS what is in the game right now.
 1. Move. The fight won't come to you.
 2. Enough standing. Fight.
 3. Find something and kill it.
-4. Draw your blade. Now.
+4. You are wasting time, Champion.
 5. There's no strength in waiting. Go.
 6. Something out there needs killing. Find it.
 7. You don't grow standing still. Move.
@@ -62,7 +62,7 @@ Generated from the source 2026-08-16, so this IS what is in the game right now.
 4. I can feel your trepidation. Descend, champion.
 5. The Goat god and their champion are your path to sustenance. Lean on your allies.
 6. Be wary of the Wolf's deals, for one day she may offer you one. Deny her.
-7. The Dreamwalker has led the Court for centuries. Do not mistake authority for power.
+7. The Matriarch has led the Court for centuries. Do not mistake authority for power.
 8. The spider. I despise that damnable god. She is but a step away from the evil we fight against.
 ```
 
@@ -89,6 +89,9 @@ Generated from the source 2026-08-16, so this IS what is in the game right now.
 4. I am a prisoner here, like you. Know that we fight for the same cause.
 5. The Spider and her consort... they are the closest to my kind. I cannot help but feel attachment.
 6. What does the sun feel like on your skin? I barely remember.
+7. The Spider... Why can I hear her name?
+8. The goat, he has caused thousands of atrocities and yet he was deemed worthy of ascension.
+9. The Matriarch once led my kind. Once. Be wary of her champion.
 ```
 
 # 2. TRUST REGISTERS — how he changes as you rise
@@ -170,7 +173,7 @@ Generated from the source 2026-08-16, so this IS what is in the game right now.
 
 ```
 1. Noted.
-2. That's... not nothing.
+2. That's not nothing.
 3. Few make it this far.
 4. I've stopped worrying about you.
 5. You didn't need me for that one.

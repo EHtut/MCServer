@@ -17,7 +17,132 @@
 
 ---
 
-## 1. Who he is
+## 0. ⭐ THE CHARACTER BRIEF — Ethan, 2026-08-16. **This supersedes §1.**
+
+> ### The world, in brief
+> The **Goddess of Death** opened a portal into the realm of the gods, and the world
+> broke worse than it already was. **The angels came through.** She was driven
+> underground with her falsehoods, and in the tearing, **five undead exploded into
+> godhood.** The Warrior is one of them. **The Matriarch** leads the five in an endless
+> war on the Goddess below, and sends champions down into the depths to fight it. Most
+> do not come back. The player is one of the champions.
+>
+> ### Who he was
+> **Grand general of the Church.** He survived the final siege of the **golden city** —
+> went in to bring out **the Daughter of Arkh**, and swore over the ruin that he would
+> protect his home. Thousands took heart from what he did there; the story travelled
+> further than he did.
+>
+> When the Goddess shattered the world, every undead alive broke with it. So did he.
+> **He didn't ascend so much as get pushed**, while the old gods were torn apart around
+> him.
+>
+> ### 🔑 THESIS
+> **"Strength is the only apology I have left."**
+>
+> He was the one who was supposed to hold, and he didn't, and the only restitution he
+> can imagine is making the next one unbreakable.
+>
+> ### What he wants from the player
+> **To survive without him.** He drills you past exhaustion because the last people who
+> relied on him died doing it. He is not testing loyalty and does not want devotion — he
+> wants you competent enough that his failure cannot repeat through you.
+>
+> ### 🚨 THE LIE
+> **That he's hard. He isn't.** He is a fundamentally kind man performing the discipline
+> he believes would have saved his city, and he cannot sustain it — which is why he
+> softens. **The softening is not character growth. It is the performance failing.**
+>
+> ### The arc — three stages
+> 1. **Cruel.** Orders only. No reasons, no questions answered. Refuses to discuss
+>    himself. Treats the player as materiel.
+> 2. **Cracking.** Begins explaining *why* a thing is done that way — which means giving
+>    a memory to attach it to. Lore leaks sideways, always as instruction, never as
+>    confession.
+> 3. **Open.** Talks about the siege. Talks about what he did and didn't do. Tells you to
+>    rest. **Starts asking questions instead of giving orders.**
+>
+> ### Voice rules
+> * Imperative mood, **no subordinate clauses**, in stage one. *Stand. Again. Drop it faster.*
+> * **Sentence length is the tell.** Short = closed. Long = trusting. **Questions = fully open.**
+> * He never says sorry. He says **"you're not ready,"** which means the same thing and
+>   costs him nothing.
+> * ⭐ **He does not use the player's name until stage three.** Before that: *soldier,
+>   recruit, you, Champion*. The first use of the real name should land like a hand on the
+>   shoulder — **once, quietly, in the middle of something else.**
+> * He never boasts and never references his own legend. If a player brings it up he
+>   changes the subject or contradicts it.
+> * He talks about **the dead in specifics** — names, ranks, small habits — and about
+>   **himself in generalities.**
+>
+> ### Sample lines
+> **One** — *"Stand."* · *"Again."* · *"You held that one too long. Drop it faster."* ·
+> *"I don't need you brave. Brave is cheap and it doesn't carry."*
+> **Two** — *"Grip it lower. — The man who taught me that died on a stair. He was right
+> about the grip."* · *"The walls were forty feet thick. I remember thinking that meant
+> something."*
+> **Three** — *"You can stop now."* · *"Sit down. I'll talk, if you want it."* · *"I was
+> the general, and I lived. Work out what that means and you'll know everything about me."*
+>
+> ### In the depths: **CAEBRIM**
+> **She raised him. She called him *my boy*.** Her counter-thesis is the exact inverse:
+>
+> > **You were never supposed to be strong. You were supposed to come home.**
+>
+> She speaks to the player **about** him rather than to them — correcting him, gently,
+> from below. Every lesson he gives has her voice on the other side of it saying he never
+> needed to learn it. **She is not hostile. That is what makes her hard to listen to.**
+>
+> > *"He is telling you to get up. He never got to lie down."*
+
+### 🚨 What this brief BREAKS, and it is not small
+
+**1. It inverts his existing high tier.** *"Short = closed, long = trusting, questions =
+fully open"* makes stage three **talkative**. But `high_silence` — his largest pool, 16
+lines, and the best-written thing in the file — is *"Noted."* / *"Hm."* / *"Good."*
+Those are **stage-ONE lengths.** As built, a player who has earned his trust gets a
+**colder** register than one who has not. The lines are not wasted; they are
+**mislabelled**, and belong at low/medium.
+
+**2. `harvest_offer` is already stage three, and always was.** *"You could stay. I would
+not ask twice."* is the only place he currently talks like a man instead of a drill. It
+is the model for the whole tier.
+
+**3. The counter is `enemies slain`** — kill count now has to carry a *relationship*
+arc. It just about works, since competence is what makes him relax, but 50/200 were
+never chosen with three named stages in mind.
+
+**4. Caebrim vs the Speaker.** `deep_speaker.js` already gives Blade a deep voice —
+*the Speaker*, grey, confessing about **Gregor**. Caebrim is a different character with
+a stronger idea. **Decide whether she replaces the Speaker or stands beside her** before
+either gets written.
+
+### ⭐ THE CONNECTION THIS BRIEF MAKES — confirm it is intended
+
+**The Daughter of Arkh is almost certainly Wall.**
+
+| | |
+|---|---|
+| Blade entered the golden city to bring out | **the Daughter of Arkh** |
+| Wall was, in life | **Mera Arkhdottir** — *Arkh's daughter* (`docs/43`) |
+| Wall in life | *"could wield the **golden light** of the god of sun"* |
+| Wall's father | **Gregor**, *"a once-great warrior of the church"* |
+| Gregor is also | **Blade's dead champion.** The Speaker apologises to him at the bottom of the world |
+| Blade, `rare_loc_above` (Ethan, 2026-08-16) | *"The Spider… **Why can I hear her name?**"* |
+
+His champion Gregor died. Gregor's daughter Mera was in the golden city. **He went in
+for her and did not hold.** She became the thing he now despises — and he can hear her
+name and cannot place it.
+
+That is a complete tragedy, and **it is already 90% written across three documents that
+never reference each other.**
+
+⚠️ One wrinkle to settle: `docs/43` calls Mera *daughter of Gregor*, while *Arkhdottir*
+reads as *daughter of Arkh*. Either Gregor Arkh is one man, or Arkh is the house.
+
+---
+
+## 1. Who he is *(⚠️ SUPERSEDED by §0 — kept for the reasoning, not the ruling)*
 
 The god of war. Also the Warrior, the Savior, the Golden God — **but not to you.** To
 you he is a patron who has already told you your ceiling and offered to raise it
