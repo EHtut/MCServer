@@ -206,6 +206,69 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   })
 
   // ═══════════════════════════════════════════════════════════════════════════
+  // SALVAGE'S — THE KEEPER.  Yellow.  He knew her before she was a god.
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Ethan's writing, 2026-08-15.
+  //
+  // ⭐ THE ONLY SPEAKER WHO IS NOT TALKING ABOUT YOU. The Speaker apologises to
+  // Blade; the Doctor explains herself to the Spider's champion. He is grieving
+  // somebody, and you happen to be standing there wearing her mark.
+  //
+  // He is gentle, apologetic, and out of his depth - "watch your step, there's a
+  // few cliff edges" is the only line in the game where a voice from the dark is
+  // WORRIED FOR YOU. He mistakes you for her for a second and then says "Shame."
+  //
+  // 🚨 HE NAMED HER. That is the confession, and it lands harder than either of the
+  // others because it is not a crime - it is a man who did his job well and lost
+  // her anyway. "She didn't have one before me, and it was my job." Then: "she left
+  // to find a new life away from us" - and Ethan's hidden lore says what happened
+  // next. The fracture split her mind in two and the court forced her ascension.
+  // He does not know that. He thinks she simply left.
+  register('salvage', {
+    id: 'death_keeper',
+    name: 'the Keeper',
+    colour: '§e',                        // yellow
+    lines: {
+      intro: [
+        "You aren't supposed to be down here. It's dangerous.",
+        "Oh... you're a champion of the wolf.",
+        "I thought you were... you looked a lot like her for a second.",
+        "Shame.",
+        "Well... welcome to hell, I guess.",
+      ],
+      common: [
+        "The undead down here are a bit more broken than their predecessors.",
+        "Watch your step, there's a few cliff edges.",
+        "According to my master, her undead were broken by the ritual. I do my best to make them feel welcome, however.",
+        "From my books, the wolf is someone to not be trusted, yet you took her hand.",
+      ],
+      abandoned: [
+        "A bit too low, aren't you?",
+        "Getting closer. Your wolf can't hear you any more.",
+        "There are things down here that even scare me.",
+      ],
+    },
+    confession: [
+      [
+        'I did my best.',
+        'That wolf, before she ascended... I was her keeper.',
+        'Well, a keeper of all our people. But her? I knew her name.',
+      ],
+      [
+        "I was the one who named her.",
+        "She didn't have one before me, and it was my job.",
+        "But then she left. She left to find a new life away from us.",
+      ],
+      [
+        "And that was ok, because it was her choice.",
+        "I just wish I could've done more.",
+        '',
+        "Maybe I'm just weak. I've known that for a long time.",
+      ],
+    ],
+  })
+
+  // ═══════════════════════════════════════════════════════════════════════════
 
   function speakerFor(p) {
     try {
