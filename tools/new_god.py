@@ -345,8 +345,36 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {{}};
     }} catch (e) {{ }}
   }})
 
+  // 🚨 AN UNWRITTEN GOD MUST BE INERT, NOT MERELY LOUD.
+  //
+  // The scaffold goes LIVE the instant it deploys - `[events] framework LIVE - 14
+  // events across 2 gods` - and a walker on this path would then start drawing
+  // placeholder events that spawn an actor and say NOTHING, because the voice pools
+  // are still empty. That is worse than an unbuilt god: it is a built one that
+  // appears broken.
+  //
+  // So registration is gated on the voice actually having lines. Write the pools in
+  // <god>_voice.js and this wires itself up on the next restart, with no flag to
+  // remember to flip - docs/41 §3, and the standing rule that a gate ships with a
+  // live consumer or not at all.
+  function voiceIsWritten() {{
+    try {{
+      var g = VELDORA.voice && VELDORA.voice.pools ? VELDORA.voice.pools[GOD] : null
+      if (!g) return false
+      for (var k in g) if (g.hasOwnProperty(k)) return true
+    }} catch (e) {{ }}
+    return false
+  }}
+
   ServerEvents.loaded(function (event) {{
     if (!VELDORA.events) {{ console.error(TAG + 'godevents.js missing'); return }}
+
+    if (!voiceIsWritten()) {{
+      console.warn(TAG + 'HELD - {name} has no written lines yet, so nothing is ' +
+        'registered. A walker on this path would have drawn silent placeholder ' +
+        'events. Fill the pools in {god}_voice.js and restart; this arms itself.')
+      return
+    }}
 
     VELDORA.events.register(GOD, {{ id: 'example', run: evExample, hostile: true }})
     VELDORA.events.register(GOD, {{ id: 'quiet', run: evQuiet, hostile: false, cooldown: 1 }})
@@ -361,8 +389,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {{}};
       }})
     }} else console.error(TAG + 'harvest.js missing - this god\\'s Harvest will not arrive')
 
-    console.info(TAG + '{name} sends: example, quiet, guarded (SKELETON - ' +
-      'see docs/41 §2 ⑦). Actor: ' + ACTOR)
+    console.info(TAG + '{name} sends: example, quiet, guarded - SKELETON, ' +
+      'see docs/41 section 2 step 7. Actor: ' + ACTOR)
   }})
 }})();
 """

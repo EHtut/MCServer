@@ -394,6 +394,20 @@ def cmd_events(etype: str | None, player: str | None) -> int:
 
 
 def main() -> int:
+    # 🚨 THE OUTPUT SIDE HAD THE SAME FAULT AS THE INPUT SIDE.
+    #
+    # read_text() already uses errors="replace" because the log contains binary
+    # bytes — but PRINTING a matched line still went through Windows' cp1252 stdout
+    # and raised UnicodeEncodeError on the first non-latin-1 character. A script
+    # that logs "⑦" killed `logq grep` outright.
+    #
+    # This tool exists so a search cannot silently fail. A search that LOUDLY fails
+    # on the content it was asked to find is the same bug wearing a traceback.
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("command", choices=["boot", "errors", "grep", "deaths", "ingest", "events"])
