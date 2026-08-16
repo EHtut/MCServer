@@ -263,11 +263,22 @@ ok('burden does NOT arm (it is a handicap, not a gift)',
 const sal = src('salvage.js'), salE = src('salvage_events.js')
 ok('salvage.js counter denies', count(sal, 'VELDORA.release.denied('), 1)
 ok('salvage.js counter accepts', count(sal, 'VELDORA.release.accepted('), 1)
-ok('salvage_events routes its 3 offers through deny()', count(salE, 'return deny(pl,'), 3)
-ok('salvage_events routes its 3 offers through accept()', count(salE, 'accept(pl,'), 3)
-// 4 sites: her counter in salvage.js, plus credit / markup / insurance.
-ok('all 4 offer timeouts are logged, never counted',
-  count(sal, 'VELDORA.release.ignored(') + count(salE, 'VELDORA.release.ignored('), 4)
+// ⚠️ INVARIANTS, NOT MAGIC NUMBERS. These asserted literal counts of 3 and 4, and
+// broke the moment she gained four new offers (docs/23 §VI.0) - failing correctly but
+// for the wrong reason, exactly like the blade streak assertion before it. What
+// actually matters is that EVERY yes/no she raises is wired to both halves of the
+// release streak, whatever the count is on any given day.
+const yesOpts = count(salE, "id: 'yes'")
+ok('every offer in salvage_events has a refusal path', count(salE, 'deny(pl,'), yesOpts)
+ok('...and an acceptance path', count(salE, 'accept(pl,'), yesOpts)
+ok('refusals and acceptances are balanced',
+  count(salE, 'deny(pl,') === count(salE, 'accept(pl,'), true)
+ok('she raises more than one offer (the scan is not vacuous)', yesOpts > 1, true)
+// Timeouts are logged and never counted - one per ritual that can time out, across
+// both her files.
+ok('every offer timeout is logged, never counted',
+  count(sal, 'VELDORA.release.ignored(') + count(salE, 'VELDORA.release.ignored(') >= yesOpts,
+  true)
 
 // Twice: the `typeof` guard and the call. Both matter - the guard is what makes a
 // missing release.js fall back to the legacy door instead of throwing.

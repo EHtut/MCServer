@@ -580,20 +580,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // codebase gets bitten by, so this is flagged rather than hidden: when a THIRD god
   // wants one, extract it - do not write it a third time.
   // ═══════════════════════════════════════════════════════════════════════════
-  var C_TARGET = 'veldora_wall_ctarget'
-  var C_DUE = 'veldora_wall_cdue'          // world day, offset by one
-  var CONTRACT_DAYS = 3                    // gentler than his 2. She is patient.
+  // ⭐ MIGRATED to killorder.js, 2026-08-16. She kept her own target/deadline/sweep
+  // for exactly one day; Salvage became the third god to want the same thing, so the
+  // storage moved to one shared file and she kept only what is HERS - the ask, and
+  // what settling it means. See killorder.js for why Blade did not move.
+  var CONTRACT_DAYS = 3                    // gentler than Blade's 2. She is patient.
 
   function evContract(server, me) {
     if (!HOSTILE_TO_PLAYERS) return false
-    try { if (me.persistentData.getString(C_TARGET) || '') return false } catch (e) { }
+    if (!VELDORA.killorder) { console.error(TAG + 'killorder.js missing'); return false }
+    if (VELDORA.killorder.held(me, GOD)) return false
     if (!VELDORA.ritual || typeof VELDORA.ritual.begin !== 'function') return false
     try { if (VELDORA.ritual.active(me)) return false } catch (e) { return false }
 
     var target = pickTarget(server, me)
     if (!target) return false
-    var today = dayNow(server)
-    if (today === null) return false
     var tname = '?'
     try { tname = String(target.username) } catch (e) { return false }
 
@@ -611,73 +612,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       holdAfterChoice: 60,
       onChoose: function (pl, id) {
         if (id !== 'yes') return
-        try {
-          pl.persistentData.putString(C_TARGET, tname)
-          pl.persistentData.putInt(C_DUE, today + CONTRACT_DAYS + 1)
-        } catch (e) { return }
-        console.info(TAG + pl.username + ' accepted a contract on ' + tname +
-          ', due day ' + (today + CONTRACT_DAYS))
+        VELDORA.killorder.open(pl.server, pl, GOD, tname)
       },
       onTimeout: function () { },
     })
-  }
-
-  // Resolution. Her reward is RAGE DOWN, not an item - she is calmer once the thing
-  // between you is removed, which is the whole fiction of the event and costs no loot.
-  EntityEvents.death(function (event) {
-    if (!GATE) return
-    try {
-      var victim = event.entity
-      if (!victim || !victim.player) return
-      var killer = event.source ? event.source.player : null
-      if (!killer) return
-      var want = ''
-      try { want = killer.persistentData.getString(C_TARGET) || '' } catch (e) { return }
-      if (!want) return
-      var vname = ''
-      try { vname = String(victim.username) } catch (e) { return }
-      if (vname !== want) return
-      try {
-        killer.persistentData.putString(C_TARGET, '')
-        killer.persistentData.putInt(C_DUE, 0)
-      } catch (e) { }
-      if (VELDORA.counter) VELDORA.counter.add(killer, GOD, -4, 'contract settled')
-      if (VELDORA.voice) VELDORA.voice.say(killer, GOD, 'contract_done')
-      console.info(TAG + killer.username + ' settled her contract on ' + vname + ' (rage -4)')
-    } catch (e) { console.warn(TAG + 'contract death hook threw :: ' + e) }
-  })
-
-  function contractSweep(server) {
-    try {
-      var today = dayNow(server)
-      if (today === null) { server.scheduleInTicks(1200, function () { contractSweep(server) }); return }
-      var ps = server.players
-      for (var i = 0; i < ps.length; i++) {
-        var p = ps[i]
-        var want = ''
-        try { want = p.persistentData.getString(C_TARGET) || '' } catch (e) { continue }
-        if (!want) continue
-        var due = 0
-        try { due = p.persistentData.getInt(C_DUE) } catch (e) { continue }
-        if (!due) continue
-        // ⚠️ A stamp from the future means the world clock moved - re-anchor rather
-        // than leaving a contract that can never lapse. Finding K9, again.
-        if ((due - 1) - today > CONTRACT_DAYS) {
-          try { p.persistentData.putInt(C_DUE, today + CONTRACT_DAYS + 1) } catch (e) { }
-          continue
-        }
-        if (today < (due - 1)) continue
-        try {
-          p.persistentData.putString(C_TARGET, '')
-          p.persistentData.putInt(C_DUE, 0)
-        } catch (e) { }
-        // 🚫 NO PENALTY. She does not punish a refusal - she absorbs it, which is
-        // worse. docs/43: "she never turns cruel. She just never stops."
-        if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'contract_lapsed')
-        console.info(TAG + p.username + ' let her contract lapse - no penalty')
-      }
-    } catch (e) { console.warn(TAG + 'contractSweep threw :: ' + e) }
-    server.scheduleInTicks(1200, function () { contractSweep(server) })
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1264,8 +1202,24 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         'absorbs a refusal, which is worse',
     })
 
+    // Her half of the shared kill order: what settling it MEANS. Her reward is rage
+    // DOWN, not loot - she is calmer once the thing between you is removed - and a
+    // lapse costs nothing at all, because she absorbs a refusal rather than punishing
+    // it, which is worse. "She never turns cruel. She just never stops."
+    if (VELDORA.killorder) {
+      VELDORA.killorder.register(GOD, {
+        days: CONTRACT_DAYS,
+        onSettle: function (p) {
+          if (VELDORA.counter) VELDORA.counter.add(p, GOD, -4, 'contract settled')
+          if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'contract_done')
+        },
+        onLapse: function (p) {
+          if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'contract_lapsed')
+        },
+      })
+    } else console.error(TAG + 'killorder.js missing - her contract cannot resolve')
+
     calmSweep(event.server)
-    contractSweep(event.server)
     quietSweep(event.server)
     console.info(TAG + 'rage: +1 raised, -1 slain, +' + RAGE_ON_DEATH + ' on YOUR ' +
       'death, -' + RAGE_DECAY_DAY + ' per quiet day. She never lets go - winning ' +

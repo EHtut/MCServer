@@ -59,6 +59,77 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // line - and they were the nine Ethan could not edit without opening a script.
     // Empty here means the old literal is still used, so nothing breaks while he
     // writes. TODO(ethan).
+    // ═══════════════════════════════════════════════════════════════════════
+    // ⭐ THE FOUR ROWS HER CHART RATED AND SHE HAD NOTHING IN (docs/23 §VI.0).
+    // Drafts, 2026-08-16 - Ethan authorised these, the loop being: he plays, and
+    // anything that does not fit comes back as "here's a better line".
+    //
+    // Her rules, applied: SHORT · contractions · trade vocabulary (cost, worth,
+    // margin, bad buy) · ⭐ NEVER MORE THAN THREE SENTENCES, she is the one god who
+    // stops talking · jokes are deflection · never the words chosen, destiny or fate
+    // except to take the piss out of them.
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // DUELS - a job, never a test. She has a buyer; that is the only reason.
+    bounty_offer: [
+      "Got a buyer for something with a pulse. You interested, or are we just talking?",
+      "There's work. The kind with teeth. It pays and I'm not pretending otherwise.",
+      "One job, one thing to kill. I'd tell you if it was a bad buy.",
+      "You look like you need the money. I'd like to be wrong about that.",
+      "This one's been sitting a while. Nobody's taken it. Draw your own conclusions.",
+    ],
+    bounty_paid: [
+      "Clean. There's your cut.",
+      "Paid. That's what paid looks like, in case anyone's told you different.",
+      "Told you it was worth it. I don't say that often.",
+      "Good. Go spend it on something stupid.",
+    ],
+
+    // ATTACKS - she'll make somebody's evening worse. Costs you, not them.
+    sabotage_offer: [
+      "I can make their next hour miserable. Costs you a meal. Your call.",
+      "Want them slowed down? It's cheap and it's petty and I'm not judging.",
+      "Say the word and they'll be walking like it's uphill. You'll feel it in your gut.",
+      "Not permanent, not lethal, not free. Three things worth knowing up front.",
+    ],
+
+    // SUPPORT - the only event in the game that helps somebody else. Still priced.
+    favour_offer: [
+      "They're in a bad way. I can patch them up. Comes out of your pocket.",
+      "You want to help them? Fine. It's your levels, not theirs.",
+      "I'll do it. I'm not made of it, but I'll do it.",
+      "Cheaper than a funeral. That's not a joke, that's the arithmetic.",
+    ],
+    favour_done: [
+      "Done. Don't make a thing of it.",
+      "They'll live. You paid for that. Remember it when they forget.",
+      "Worst margin I've taken all week. Tell nobody.",
+    ],
+    // ⭐ What the OTHER player hears. She tells them somebody paid, not who.
+    favour_told: [
+      "Someone covered that for you. Ask them who - they'll be unbearable about it.",
+      "You're welcome. Not from me. I only handled it.",
+      "That was bought and paid for. Not by you.",
+    ],
+
+    // CONTRACTS - a commission. {target} is substituted.
+    commission_offer: [
+      "There's paper out on {target}. I'm not telling you to take it.",
+      "{target}. Three days, standard terms. Want the number or not?",
+      "Someone wants {target} off the board. It's a job. It shouldn't be personal.",
+      "I'd take it, if I were still the sort who did. That's not advice.",
+    ],
+    commission_paid: [
+      "Settled. Your rate just got better, for what that's worth.",
+      "Paid, and the books are clean. I like clean books.",
+      "That's the last of it. You did the thing, I paid the thing.",
+    ],
+    commission_lapsed: [
+      "Expired. Happens. I'll not hold it against you.",
+      "You let it run out. Honestly? Probably the right call.",
+      "Gone cold. Don't apologise, I hate that.",
+    ],
+
     need_gun: [],       // you asked for ammo with nothing in your hand
     unreadable: [],     // she cannot read your hunger/levels. Something is wrong with you
     no_stock: [],       // the ammo mint failed. Her supplier let her down

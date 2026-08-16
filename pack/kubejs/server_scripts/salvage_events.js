@@ -149,6 +149,188 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ═══════════════════════════════════════════════════════════════════════════
 
   // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ HER FOUR RATED-BUT-EMPTY ROWS.  docs/23 §VI.0, built 2026-08-16.
+  //
+  //     Duels     ++    `bounty`     a fight she OFFERS, and pays for
+  //     Attacks   +++   `sabotage`   she makes somebody else's evening worse
+  //     Support   +     `favour`     ⭐ she HELPS another player, at YOUR cost
+  //     Contracts +++   `commission` a kill order, on the shared killorder.js
+  //
+  // Every one is a ritual with a yes and a no, because her whole column is the
+  // choice half of the taxonomy - "She will never do anything without the player's
+  // permission." There is no forced branch anywhere in this block, by construction.
+  //
+  // 🚨 PRICES ARE LIVE RESOURCES - hunger, levels, sight. NEVER inventory. That is
+  // PART V's rule and Ethan's "we don't take items from players, that is how you
+  // cause them to quit". And the price is charged AFTER the goods exist, every time,
+  // because the reverse order is how a player pays for nothing.
+  //
+  // ⚠️ Labels are decisions, never prices. "Go on then." and never "Pay 4 levels."
+  // She does not volunteer the total and she never technically lies.
+  //
+  // Lines ship written (Ethan authorised drafts 2026-08-16, loop: he plays, anything
+  // that does not fit comes back as "here's a better line"). Voice rules applied:
+  // SHORT, contractions, trade vocabulary, three sentences maximum, jokes as
+  // deflection, and never the words chosen / destiny / fate.
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  function offer(p, tag, yesLabel, noLabel, onYes) {
+    var l = line(p, tag)
+    if (!l) { console.info(TAG + tag + ' HELD - no lines yet'); return false }
+    if (!VELDORA.ritual || typeof VELDORA.ritual.begin !== 'function') return false
+    try { if (VELDORA.ritual.active(p)) return false } catch (e) { return false }
+    return VELDORA.ritual.begin(p, {
+      colour: '§6§l',
+      lines: [l],
+      options: [{ id: 'yes', label: yesLabel }, { id: 'no', label: noLabel }],
+      holdAfterChoice: 60,
+      onChoose: function (pl, id) {
+        if (id !== 'yes') { say(pl, 'deal_refused'); return deny(pl, tag) }
+        accept(pl, tag)
+        try { onYes(pl) } catch (e) { console.warn(TAG + tag + ' onYes threw :: ' + e) }
+      },
+      onTimeout: function (pl) {
+        try {
+          var srv = null
+          try { srv = pl.server } catch (e) { }
+          if (VELDORA.release) VELDORA.release.ignored(srv, pl, GOD, tag)
+        } catch (e) { }
+      },
+    })
+  }
+
+  // ── DUELS (++) — a fight she offers, and pays for ─────────────────────────
+  // She does not test you. She has a buyer. That is the only reason she would ever
+  // point you at something, and it is why this is a job rather than a trial.
+  var BOUNTY_ACTOR = 'born_in_chaos_v1:fallen_chaos_knight'
+  var BOUNTY_TAG = 'veldora_salvage_bounty'
+
+  function evBounty(server, p) {
+    if (!VELDORA.spawner) return false
+    return offer(p, 'bounty_offer', 'Where.', 'Not today.', function (pl) {
+      var r = VELDORA.spawner.wave(pl, {
+        ids: [BOUNTY_ACTOR], count: 1, minDist: 10, maxDist: 18,
+        nbt: '{Tags:["' + BOUNTY_TAG + '"],CustomNameVisible:1b,CustomName:' + Q +
+          '{"text":"The Job","color":"gold","bold":true}' + Q + '}',
+      })
+      if (!VELDORA.spawner.issued(r)) {
+        console.warn(TAG + 'bounty REFUSED by the spawner for ' + pl.username)
+        return
+      }
+      try { pl.persistentData.putInt('veldora_salvage_bounty_open', 1) } catch (e) { }
+      console.info(TAG + pl.username + ' took the bounty')
+    })
+  }
+
+  // Paid on the kill. A choice always pays - and hers pays in the only currency she
+  // has that is not an item: levels back, more than the fight cost you.
+  EntityEvents.death(function (event) {
+    try {
+      var e = event.entity
+      if (!e || e.player) return
+      var tags = null
+      try { tags = e.tags } catch (x) { return }
+      var has = false
+      try { has = tags && (tags.contains ? tags.contains(BOUNTY_TAG) : (String(tags).indexOf(BOUNTY_TAG) >= 0)) } catch (x) { return }
+      if (!has) return
+      var killer = event.source ? event.source.player : null
+      if (!killer) return
+      var open = 0
+      try { open = killer.persistentData.getInt('veldora_salvage_bounty_open') || 0 } catch (x) { }
+      if (!open) return
+      try { killer.persistentData.putInt('veldora_salvage_bounty_open', 0) } catch (x) { }
+      try { killer.xpLevel = (killer.xpLevel || 0) + 5 } catch (x) { }
+      if (VELDORA.counter) VELDORA.counter.add(killer, GOD, 1, 'bounty')
+      say(killer, 'bounty_paid')
+      console.info(TAG + killer.username + ' collected the bounty - 5 levels')
+    } catch (err) { console.warn(TAG + 'bounty hook threw :: ' + err) }
+  })
+
+  // ── ATTACKS (+++) — she makes somebody else's evening worse, for a price ──
+  function evSabotage(server, p) {
+    var target = nearestOther(server, p)
+    if (!target) return false
+    return offer(p, 'sabotage_offer', 'Do it.', 'Leave them.', function (pl) {
+      var h = null
+      try { h = pl.foodData.foodLevel } catch (e) { }
+      if (h === null || h < 4) { say(pl, 'deal_poor'); return }
+      // Goods first, then the price. Always this order.
+      eff(target, 'minecraft:slowness', 15, 1)
+      eff(target, 'minecraft:mining_fatigue', 30, 1)
+      try { pl.foodData.foodLevel = h - 4 } catch (e) { }
+      if (VELDORA.counter) VELDORA.counter.add(pl, GOD, 1, 'sabotage')
+      say(pl, 'deal_done')
+      console.info(TAG + pl.username + ' paid 4 hunger to slow ' + target.username)
+    })
+  }
+
+  // ── SUPPORT (+) — ⭐ the first time any god has HELPED another player ──────
+  // No other patron has a single event that benefits somebody who is not their own
+  // champion. Hers costs YOU and helps THEM, which is the whole of her: she wants
+  // people to survive, and she will still charge for it.
+  function evFavour(server, p) {
+    var target = nearestOther(server, p)
+    if (!target) return false
+    return offer(p, 'favour_offer', 'Yeah, go on.', 'Their problem.', function (pl) {
+      var x = null
+      try { x = pl.xpLevel } catch (e) { }
+      if (x === null || x < 3) { say(pl, 'deal_poor'); return }
+      eff(target, 'minecraft:regeneration', 20, 1)
+      eff(target, 'minecraft:absorption', 120, 1)
+      try { pl.xpLevel = x - 3 } catch (e) { }
+      if (VELDORA.counter) VELDORA.counter.add(pl, GOD, 1, 'favour')
+      say(pl, 'favour_done')
+      try { if (VELDORA.voice) VELDORA.voice.say(target, GOD, 'favour_told') } catch (e) { }
+      console.info(TAG + pl.username + ' paid 3 levels to heal ' + target.username)
+    })
+  }
+
+  // ── CONTRACTS (+++) — on the shared killorder.js ──────────────────────────
+  function evCommission(server, p) {
+    if (!VELDORA.killorder) { console.error(TAG + 'killorder.js missing'); return false }
+    if (VELDORA.killorder.held(p, GOD)) return false
+    var target = nearestOther(server, p)
+    if (!target) return false
+    var tname = '?'
+    try { tname = String(target.username) } catch (e) { return false }
+    var l = line(p, 'commission_offer')
+    if (!l) { console.info(TAG + 'commission HELD - no lines yet'); return false }
+    if (!VELDORA.ritual || typeof VELDORA.ritual.begin !== 'function') return false
+    try { if (VELDORA.ritual.active(p)) return false } catch (e) { return false }
+
+    return VELDORA.ritual.begin(p, {
+      colour: '§6§l',
+      lines: [l.split('{target}').join(tname)],
+      options: [{ id: 'yes', label: 'What\'s it pay.' }, { id: 'no', label: 'Pass.' }],
+      holdAfterChoice: 60,
+      onChoose: function (pl, id) {
+        if (id !== 'yes') { say(pl, 'deal_refused'); return deny(pl, 'commission') }
+        accept(pl, 'commission')
+        VELDORA.killorder.open(pl.server, pl, GOD, tname)
+      },
+      onTimeout: function () { },
+    })
+  }
+
+  // Any player who is not you. ⚠️ PROXIMITY, per Ethan's ruling 2026-08-16 - not
+  // inter-god stance. She does not care whose champion they are; they are simply
+  // the person standing there.
+  function nearestOther(server, me) {
+    var best = null, bestD = 64 * 64
+    try {
+      var ps = server.players
+      for (var i = 0; i < ps.length; i++) {
+        var p = ps[i]
+        try { if (String(p.uuid) === String(me.uuid)) continue } catch (e) { continue }
+        var dx = p.x - me.x, dy = p.y - me.y, dz = p.z - me.z
+        var d2 = dx * dx + dy * dy + dz * dz
+        if (d2 <= bestD) { bestD = d2; best = p }
+      }
+    } catch (e) { }
+    return best
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
   // THE TRADES
   // ═══════════════════════════════════════════════════════════════════════════
 
@@ -556,6 +738,48 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       does: 'TRADE - 6 hunger now, and your NEXT death pays out resistance III + ' +
         'regeneration. She always keeps her word',
     })
+
+    // ── the four rows her chart rated and she had nothing in ────────────────
+    VELDORA.events.register(GOD, {
+      id: 'bounty', kind: 'duel', scene: true, run: evBounty,
+      hostile: true, cooldown: 3, weight: wAlways(2), tiers: ALL,
+      does: 'DUEL (choice) - she OFFERS one strong opponent because she has a buyer. ' +
+        'Kill it and she pays 5 levels. A job, never a test',
+    })
+    VELDORA.events.register(GOD, {
+      id: 'sabotage', kind: 'attack', scene: true, run: evSabotage,
+      hostile: false, cooldown: 3, weight: wRich(3), tiers: ALL,
+      does: 'ATTACK (choice) - slowness + mining fatigue on the nearest other player, ' +
+        'and it costs YOU 4 hunger. She will not do it unasked',
+    })
+    VELDORA.events.register(GOD, {
+      id: 'favour', kind: 'support', scene: true, run: evFavour,
+      hostile: false, cooldown: 4, weight: wAlways(1), tiers: ALL,
+      does: '⭐ SUPPORT (choice) - regeneration + absorption on ANOTHER player, paid ' +
+        'for with 3 of YOUR levels. The only event in the game that helps somebody ' +
+        'who is not the caster',
+    })
+    VELDORA.events.register(GOD, {
+      id: 'commission', kind: 'contract', scene: true, run: evCommission,
+      hostile: false, cooldown: 5, weight: wRich(3), tiers: ALL,
+      does: 'CONTRACT (choice) - a kill order on the nearest other player, held by ' +
+        'the shared killorder.js. Settling it pays levels and raises harness',
+    })
+
+    // Her half of the shared kill order. She settles in her own currency: levels
+    // back, and a better rate forever after - which is the only reward she has that
+    // is not an item.
+    if (VELDORA.killorder) {
+      VELDORA.killorder.register(GOD, {
+        days: 3,
+        onSettle: function (p) {
+          try { p.xpLevel = (p.xpLevel || 0) + 8 } catch (e) { }
+          if (VELDORA.counter) VELDORA.counter.add(p, GOD, 2, 'commission settled')
+          say(p, 'commission_paid')
+        },
+        onLapse: function (p) { say(p, 'commission_lapsed') },
+      })
+    } else console.error(TAG + 'killorder.js missing - her commission cannot resolve')
 
     if (VELDORA.harvest) {
       VELDORA.harvest.register(GOD, {
