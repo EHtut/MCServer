@@ -831,6 +831,12 @@ the "harder task, larger increase" end of the rule.
 Compounding suits a *dealer* — the more you owe her the faster it runs away — but it
 makes the first trades feel worthless and needs a floor to leave zero at all.
 
+> ### ✅ DECIDED 2026-08-16 — **% of current, compounding.**
+> `n = max(n + 1, round(n × 1.15))`. The `+1` floor is **load-bearing, not
+> defensive**: without it `0 × 1.15 = 0` and her counter can never leave zero, so the
+> mechanic would be dead for every new player and look exactly like a broken hook.
+> Fitting for her — the more you have dealt with her, the faster the debt runs away.
+
 ### 6.5 Decay — and the part that changes what a threshold MEANS
 
 **Today only Wall decays**, and only because `wall_events.js` runs its own sweep.
@@ -839,21 +845,34 @@ nothing else. Blade, Salvage, Forge and Art are pure lifetime totals that can on
 up.
 
 Proposed: a **shared, lazy, percentage decay** in `counters.js`, paid down on read
-exactly as `regard.js` already does it — no tick loop, no sweep.
+exactly as `regard.js` already does it — no tick loop, no sweep. Percentage rather
+than flat because it self-scales across five gods whose numbers live on different
+ranges.
 
-```
-−8% of current per quiet world day, floor 0
-```
+> ### 🚨 A WORLD DAY IS TWENTY REAL MINUTES. Check this before picking any rate.
+> Every "per day" number in this project is a **world** day, and the instinct when
+> reading `−8%/day` is to picture a calendar. It is 20 minutes.
+>
+> | rate | per real hour (3 world days) | half-life, if you stop entirely |
+> |---|---|---|
+> | −8%/world day | −22% | **≈ 2.8 real hours** |
+> | **−5%/world day** | −14% | **≈ 4.5 real hours** |
+> | −2%/world day | −6% | ≈ 11 real hours |
+>
+> At −8% a player who takes a day off comes back to a counter of **essentially
+> zero** (0.92⁷² ≈ 0.003). That is not "work to keep it up", it is a wipe.
+>
+> ⭐ **The rescue is already in Wall's implementation and it is the right model:**
+> her decay only applies on a **QUIET** world day — one where the counter never
+> moved. An active player never decays at all; only absence costs you. Adopt those
+> semantics for every god, and the rate can stay meaningful without punishing play.
 
-Percentage rather than flat, because it **self-scales** and produces an equilibrium:
+**Proposed: −5% per QUIET world day, floor 0.** Do your verb even once in a world day
+and you lose nothing that day.
 
-```
-the counter settles where   daily earn  =  0.08 × counter
-```
-
-**That equilibrium IS "the player needs to work to keep it up."** At 200 you shed 16 a
-day, so holding 200 costs ~8 kills a day. Stop doing your verb and you slide back
-smoothly, with no cliff.
+**That is what "the player needs to work to keep it up" means mechanically** — not a
+constant drain, a neglect penalty. Stop doing your verb and you slide back smoothly,
+with no cliff and no wipe.
 
 > ### 🚨 THE CONSEQUENCE — DECIDE IT, DO NOT DISCOVER IT
 > Decay turns a counter from a **lifetime total** into a **sustained rate**, and every
@@ -871,13 +890,37 @@ smoothly, with no cliff.
 > time, **high tier quietly becomes unreachable and every god's best content goes
 > dark** — the `docs/20` failure, exactly.
 
+### ✅ DECIDED 2026-08-16 — re-derive them in the same change
+
+A threshold must keep meaning **a level of commitment**, so it is stated as one:
+*"how many quiet world days of neglect does it survive?"*
+
+With **−5% per quiet world day** and the §6.2 steps, and reading a tier as *what a
+player who plays their verb regularly settles at*:
+
+| patron | step | medium | high | high = |
+|---|---|---|---|---|
+| **Blade** | +2 / kill | **60** *(was 50)* | **250** *(was 200)* | ~125 kills of standing credit |
+| **Salvage** | ×1.15, floor +1 | **6** *(was 5)* | **25** *(was 20)* | ~14 trades, compounding |
+| **Forge** | +1 / 5 blocks | **60** | **250** | ~1,250 blocks |
+| **Art** | +1 / 15 pickups | **60** | **250** | ~3,750 pickups |
+| **Wall** | *rage — unchanged* | 10 | 50 | not a commitment scale |
+
+⚠️ **These are first guesses and must be labelled as such** (`docs/41` §6 ②: *"two
+trust thresholds, a first guess, flagged as such"*). The 8 kills/hour sample behind
+them is one 30-minute window of a player who was mostly building. **One combat
+session re-derives the lot**, and until then `high` is an estimate wearing a number.
+
 ### 6.6 Open
 
-1. **Salvage's percentage** — of the scale, or of the current value? (6.4)
-2. **Re-derive every threshold** alongside decay, or ship decay against the existing
-   ones and measure for a session first?
+1. ~~Salvage's percentage~~ — ✅ **% of current, compounding** (6.4)
+2. ~~Re-derive the thresholds~~ — ✅ **yes, in the same change** (above)
 3. Wall's mood/tier collision (6.3) — leave it, or split into two numbers?
 4. Forge and Art are **CLOSED**, so their rows are design-only until built.
+5. **Sequencing** — this is a five-god change against a shared store, and the current
+   restart queue already holds four unverified changes. Shipping both together means
+   a regression cannot be attributed to either. **Recommend: restart on the queue as
+   it stands, verify, then build this as its own batch.**
 
 # PART V.9 — THE RECKONING ENGINE
 
