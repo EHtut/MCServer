@@ -170,6 +170,49 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       return 1
     })
 
+    // ⭐ THE COMMAND TESTING ACTUALLY NEEDS. `clear` could zero a counter and the
+    // readout could show it, but there was no way to PUT a counter somewhere - so
+    // seeing a god's medium or high register meant grinding to the threshold. Blade
+    // needs 50 kills for medium and 200 for high; the Spider needs 10 and 40 raised
+    // minions. That is not a test, it is an afternoon.
+    //
+    // Goes through setTo() rather than writing the key directly, so the day stamp,
+    // the clamp and the audit line all still happen. A test fixture that bypasses
+    // the real write path tests the fixture.
+    root = root.then(Commands.literal('set').requires(ADMIN)
+      .then(Commands.argument('patron', event.arguments.STRING.create(event))
+        .then(Commands.argument('n', event.arguments.INTEGER.create(event))
+          .executes(function (ctx) {
+            var p = ctx.source.player
+            if (!p) { ctx.source.sendSystemMessage(Text.of('[counters] run this as a player')); return 0 }
+            var patron = ctx.getArgument('patron', Java.loadClass('java.lang.String'))
+            var n = ctx.getArgument('n', Java.loadClass('java.lang.Integer'))
+            var known = false
+            for (var i = 0; i < PATRONS.length; i++) if (PATRONS[i] === patron) known = true
+            if (!known) {
+              p.tell(Text.of('§cunknown patron. §7' + PATRONS.join(', ')))
+              return 0
+            }
+            var was = get(p, patron)
+            var now = setTo(p, patron, n)
+            if (now === null) {
+              // "could not read" and "set to zero" must not look the same.
+              p.tell(Text.of('§ccould not set ' + patron + ' - the counter is unreadable. See the log.'))
+              return 0
+            }
+            p.tell(Text.of('§7' + patron + ' §8' + (was === null ? '?' : was) +
+              ' §7-> §f' + now))
+            var tierNote = ''
+            try {
+              if (patron === 'blade' && VELDORA.blade) tierNote = VELDORA.blade.tier(p)
+              if (patron === 'wall' && VELDORA.wall) tierNote = VELDORA.wall.tier(p)
+            } catch (e) { }
+            if (tierNote) p.tell(Text.of('§8tier is now §f' + tierNote))
+            console.info('[counters] ' + p.username + ' SET ' + patron + ' to ' + now +
+              ' (admin)')
+            return 1
+          }))))
+
     root = root.then(Commands.literal('clear').requires(ADMIN).executes(function (ctx) {
       var p = ctx.source.player
       if (!p) return 0

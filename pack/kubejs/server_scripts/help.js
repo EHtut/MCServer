@@ -123,8 +123,63 @@
   ServerEvents.commandRegistry(function (event) {
     var Commands = event.commands
 
+    function ADMIN(s) { try { return s.hasPermission(2) } catch (e) { return false } }
+
+    // ⭐ /veldora admin - THE INDEX.
+    //
+    // There are ~40 admin and test commands spread across 25 script files, and the
+    // only way to find one was to grep the source. Ethan, mid-test: "but i need
+    // commands." A tool nobody can find is the same as a tool that does not exist.
+    //
+    // Grouped by what you are actually trying to do, because "list every command"
+    // is what the tab-completer already does badly.
+    function adminShow(ctx) {
+      var p = ctx.source.player
+      if (!p) return 0
+      function h(s) { p.tell(Text.of('§6§l' + s)) }
+      function c(cmd, what) { p.tell(Text.of('§f' + cmd + ' §8- §7' + what)) }
+      p.tell(Text.of('§8§m                                                  '))
+      p.tell(Text.of('§c§lVELDORA ADMIN'))
+
+      h('JUMP A GOD TO A TIER  (this is the one you want)')
+      c('/counters set <patron> <n>', 'blade medium 50 high 200 - wall medium 10 high 40')
+      c('/counters', 'what every patron says you owe')
+      c('/counters clear', 'zero them all')
+
+      h('MAKE SOMETHING HAPPEN NOW')
+      c('/events', 'the roster, your tier, and WHY each one is holding')
+      c('/events fire <id>', 'fire one, ignoring cooldown and roll')
+      c('/harvest begin | win | lose', 'the collection, forced')
+      c('/speaker confess', 'the next confession cutscene, at any depth')
+      c('/idle_test', 'which contexts apply, and force a line')
+
+      h('HEAR ANY LINE')
+      c('/voice <god> <tag>', 'speak any pool. Bad tag lists every registered one')
+      c('/blade  /wall', 'that patron: counter and tier')
+      c('/rage', 'the Spider: rage, target, grudge, pvp state')
+
+      h('WHERE AM I IN THE ARC')
+      c('/path', 'the roster and who holds what')
+      c('/phase', 'helper / companion / absence / harvest')
+      c('/notoriety', 'the number that drives phase')
+      c('/regard', 'how close you are to the fall')
+      c('/speaker', 'depth vs cutoff, and confession progress')
+
+      h('WHEN IT GOES WRONG')
+      c('/unstuck', 'release a player stuck blind or rooted in a scene')
+      c('/ritual clear', 'force-end a scene')
+      c('/speaker reset', 'make the deep voices forget you')
+      c('/path forcerelease <path>', 'free a path whose holder is gone')
+
+      p.tell(Text.of('§8§m                                                  '))
+      p.tell(Text.of('§8player-facing help: §f/veldora'))
+      return 1
+    }
+
     event.register(Commands.literal('help_veldora').executes(function (ctx) { return show(ctx) }))
-    event.register(Commands.literal('veldora').executes(function (ctx) { return show(ctx) }))
+    event.register(Commands.literal('veldora')
+      .then(Commands.literal('admin').requires(ADMIN).executes(function (ctx) { return adminShow(ctx) }))
+      .executes(function (ctx) { return show(ctx) }))
 
     function show(ctx) {
       var p = ctx.source.player
