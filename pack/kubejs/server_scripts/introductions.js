@@ -51,33 +51,33 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // THE SCENES - generated from docs/28-THE-SCENES.md, do not hand-edit
   // ---------------------------------------------------------------------------
   var SCENES = {
+    /*__SCENES_BEGIN__*/
     blade: {
       arrival: [
-        "You already reached for it.",
-        "I felt the reach before you understood you had made it.",
-        "Stand still. You have already begun to disappoint me.",
-        "Phaethon reached for the sun's chariot too. They still find pieces of him in the river.",
-        "Hundreds have stood where you stand now. I remember none of their names.",
-        "I have knelt before nothing since the day I rose from it.",
+        "I have seen your fight.",
+        "You are strong. Not strong enough to be a champion — but strong enough to rise.",
+        "I go by many names. The Warrior. The Savior. The Golden God.",
+        "For you, I am none of those. I am your patron.",
       ],
       demand: [
-        "I do not want your devotion. I want to see if you are worth the trouble of watching.",
-        "Everything you carry, you carry because I allow it.",
-        "Choose. I am already losing interest.",
+        "I shall lead you to greatness.",
+        "All you need to do is reach out.",
       ],
       options: [
-        "Close your hand.",
-        "Pull it back.",
+        "Reach out.",
+        "Pull back.",
       ],
       accept: [
-        "Good.",
-        "Everything you carried in — hand it over. It was borrowed, not earned.",
-        "There. Lighter. You will not miss what was never truly yours.",
+        "*A hand closes around yours. The grip is tight, almost painful.",
+        "*You are pulled forward hard enough to stumble.",
+        "*You look up. A figure stands over you in shadow, and its eyes are a piercing crimson.",
+        "*You are afraid.",
+        "Let's begin.",
       ],
       refuse: [
-        "Of course.",
-        "Better men than you have refused me. I have forgotten every one.",
-        "Go.",
+        "*A chill goes down your spine.",
+        "Perhaps it is for the best.",
+        "You would only get yourself killed.",
       ],
     },
     salvage: {
@@ -225,6 +225,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         "She'll be here. Same dark, same her, every night.",
       ],
     },
+    /*__SCENES_END__*/
   }
 
   // ---------------------------------------------------------------------------
@@ -306,6 +307,22 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ---------------------------------------------------------------------------
   // open() - the seam paths.js calls instead of granting.
   //
+  // ⭐ NARRATION vs SPEECH. A line beginning with `*` describes the player's body
+  // or the room; everything else is the god talking. Ethan's own convention - he
+  // wrote "*You feel a heavy silence" in the Harvest cutscene and then wrote a whole
+  // acceptance branch in it.
+  //
+  // It matters more than a colour change. Every other line in this project is a
+  // voice, and a voice cannot say "you are afraid" without telling the player how to
+  // feel. Narration can, because it is not coming from anyone. It is also the only
+  // way the crimson-eyed figure can be SEEN for one line - the gods are voice-only
+  // since the actor reframe, and this is the single exception the scene system gets.
+  var NARRATE = '§7§o'
+  function dress(text) {
+    if (text && text.charAt(0) === '*') return NARRATE + text.substring(1)
+    return RED + text
+  }
+
   // Returns true if it took responsibility for the request (scene opened, or the
   // patron was not there). Returns false ONLY if it cannot run at all, so the
   // caller can fall back to the old immediate grant rather than leaving a player
@@ -331,8 +348,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
     var lines = []
     var i
-    for (i = 0; i < scene.arrival.length; i++) lines.push(RED + scene.arrival[i])
-    for (i = 0; i < scene.demand.length; i++) lines.push(RED + scene.demand[i])
+    for (i = 0; i < scene.arrival.length; i++) lines.push(dress(scene.arrival[i]))
+    for (i = 0; i < scene.demand.length; i++) lines.push(dress(scene.demand[i]))
 
     var closing = Math.max(scene.accept.length, scene.refuse.length)
     var hold = (closing * CLOSE_GAP) + 30
@@ -349,8 +366,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         var say = (id === 'accept') ? scene.accept : scene.refuse
         for (var n = 0; n < say.length; n++) {
           (function (idx, text) {
-            try { srv.scheduleInTicks(idx * CLOSE_GAP, function () { tell(pl, RED + text) }) }
-            catch (e) { tell(pl, RED + text) }
+            try { srv.scheduleInTicks(idx * CLOSE_GAP, function () { tell(pl, dress(text)) }) }
+            catch (e) { tell(pl, dress(text)) }
           })(n, say[n])
         }
         if (id === 'accept') {

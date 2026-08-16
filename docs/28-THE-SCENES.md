@@ -33,32 +33,51 @@ it and need no change.
 ---
 
 ## BLADE — The Challenger
-*false history: **you already reached for it** · technique: **contempt as bait***
+*rewritten by Ethan 2026-08-15 · offer, not bait · technique: **you are not enough yet***
+
+> ⭐ **THE OLD SCENE WAS WRITTEN FOR A CHARACTER WHO NO LONGER EXISTS.** It opened on
+> a false premise (*"you already reached for it"*) and worked by contempt — which is
+> exactly the register Ethan cut when he said *"he's condescending and he puts you
+> down."* The god who came out of that rewrite is a hard leader who wants you to
+> thrive, so his introduction is now a genuine OFFER, and the pressure comes from
+> his honesty about your ceiling rather than from a trick.
+>
+> ✅ It also fixes a **lie in the old text**: *"Everything you carried in — hand it
+> over"* described an inventory strip that has never existed. The toll is XP levels,
+> and `paths.js` already reports it (`It took everything you had. (N levels)`). The
+> new closing claims nothing the code does not do.
 
 **ARRIVAL**
-1. You already reached for it.
-2. I felt the reach before you understood you had made it.
-3. Stand still. You have already begun to disappoint me.
-4. Phaethon reached for the sun's chariot too. They still find pieces of him in the river.
-5. Hundreds have stood where you stand now. I remember none of their names.
-6. I have knelt before nothing since the day I rose from it.
+1. I have seen your fight.
+2. You are strong. Not strong enough to be a champion — but strong enough to rise.
+3. I go by many names. The Warrior. The Savior. The Golden God.
+4. For you, I am none of those. I am your patron.
 
 **DEMAND**
-1. I do not want your devotion. I want to see if you are worth the trouble of watching.
-2. Everything you carry, you carry because I allow it.
-3. Choose. I am already losing interest.
+1. I shall lead you to greatness.
+2. All you need to do is reach out.
 
-**OPTIONS** — `Close your hand.` / `Pull it back.`
+**OPTIONS** — `Reach out.` / `Pull back.`
 
 **ON ACCEPTANCE**
-1. Good.
-2. Everything you carried in — hand it over. It was borrowed, not earned.
-3. There. Lighter. You will not miss what was never truly yours.
+1. *A hand closes around yours. The grip is tight, almost painful.
+2. *You are pulled forward hard enough to stumble.
+3. *You look up. A figure stands over you in shadow, and its eyes are a piercing crimson.
+4. *You are afraid.
+5. Let's begin.
 
 **ON REFUSAL**
-1. Of course.
-2. Better men than you have refused me. I have forgotten every one.
-3. Go.
+1. *A chill goes down your spine.
+2. Perhaps it is for the best.
+3. You would only get yourself killed.
+
+> ⭐ **A LEADING `*` IS NARRATION, NOT SPEECH.** Ethan's own convention, taken from
+> the way he wrote *"*You feel a heavy silence"* in the Harvest cutscene. Narration
+> renders grey and italic; the god stays bold red. It is the first time the scene
+> system can describe a body instead of quoting a voice, and it is what lets the
+> crimson-eyed figure land — you SEE him for one line, then he speaks, then he is a
+> voice again for the rest of the game.
+
 
 **THE GIFT** *(Dark Warblade — two-handed, dark metal, deliberately too heavy)*
 1. Take it. Two hands. Even that will not be enough.

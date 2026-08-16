@@ -7,13 +7,21 @@ KEY = {'BLADE': 'blade', 'SALVAGE': 'salvage', 'FORGE': 'forge',
 
 
 def clean(s):
+    # ⭐ A LEADING ASTERISK IS NARRATION, not markdown emphasis, and must survive the
+    # strip below - introductions.js reads it to choose grey-italic over the god's
+    # red. Ethan's own convention, from "*You feel a heavy silence" in the Harvest.
+    s = s.strip()
+    narrate = s.startswith('*') and not s.startswith('**')
     s = re.sub(r'\*\*(.*?)\*\*', r'\1', s)
     s = re.sub(r'\*(.*?)\*', r'\1', s)
     s = re.sub(r'~~.*?~~', '', s)
     s = re.sub(r'\u2702\ufe0f.*?\)', '', s)
     for ch in ('\u2702\ufe0f', '\u2b50', '\u2192', '`'):
         s = s.replace(ch, '')
-    return re.sub(r'\s+', ' ', s).strip()
+    s = re.sub(r'\s+', ' ', s).strip()
+    if narrate and not s.startswith('*'):
+        s = '*' + s
+    return s
 
 
 scenes = {}
@@ -52,15 +60,30 @@ block = '\n'.join(lines_out)
 
 target = REPO / 'pack' / 'kubejs' / 'server_scripts' / 'introductions.js'
 src = target.read_text(encoding='utf-8')
-MARK = '    /*__SCENES__*/'
-if MARK not in src:
-    raise SystemExit('marker not found - already generated?')
-target.write_text(src.replace(MARK, block), encoding='utf-8')
+# 🚨 RE-RUNNABLE. The original consumed its own marker, so a second run died with
+# "already generated?" and the doc quietly stopped being the source of truth - which
+# is how Blade's scene drifted. Now it splices between two markers that survive, so
+# the doc can be edited and regenerated forever.
+BEG, END = '    /*__SCENES_BEGIN__*/', '    /*__SCENES_END__*/'
+NL = '\n'
+if BEG in src and END in src:
+    head, rest = src.split(BEG, 1)
+    _, tail = rest.split(END, 1)
+    src = head + BEG + NL + block + NL + END + tail
+elif '    /*__SCENES__*/' in src:
+    src = src.replace('    /*__SCENES__*/', BEG + NL + block + NL + END)
+else:
+    raise SystemExit('no splice markers in introductions.js')
+target.write_text(src, encoding='utf-8')
 
 total = sum(len(v) for s in scenes.values() for v in s.values())
 print('spliced %d patrons, %d lines' % (len(order), total))
 print('  blade refuse ends :', scenes['blade']['refuse'][-1])
 print('  salvage demand[2] :', scenes['salvage']['demand'][2])
 print('  crown options     :', scenes['crown']['options'])
-bad = [l for s in scenes.values() for v in s.values() for l in v if re.search(r'[*_~`\[\]]', l)]
+# A leading `*` is the narration marker and is expected; anything else is a leak.
+bad = [l for s in scenes.values() for v in s.values() for l in v
+       if re.search(r'[_~`\[\]]', l) or re.search(r'(?<!^)\*', l)]
+narr = [l for s in scenes.values() for v in s.values() for l in v if l.startswith('*')]
+print('  narration lines   :', len(narr))
 print('  residual markdown :', bad or 'none')

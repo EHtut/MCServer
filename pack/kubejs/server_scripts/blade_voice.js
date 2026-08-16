@@ -125,6 +125,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "Keep that up and I'll run out of things to teach you.",
       "I don't say this often.",
       "You're becoming a problem for your enemies.",
+      "I have seen worse stand where you are standing.",
+      "That was competent. I will not say it twice.",
+      "You are no longer the weakest thing I am watching.",
+      "Hm.",
+      "I would have done it differently. It worked anyway.",
+      "There are fewer things above you than there were.",
+      "You have stopped needing me to say anything.",
+      "Good.",
     ],
     // Event announcements. 23 §2: every event announces itself, and the cost is
     // named before it is paid.
@@ -180,9 +188,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "One opponent. Mine. Now we find out.",
     ],
     harvest_won: [
-      "It is done. You are ready.",
-      "You beat the best I had. There is nothing left to teach you.",
-      "Stand up. You do not answer to me any more.",
+      "Predictable.",
+      "I always knew I made the right choice.",
+      "The goddess of death awaits below.",
+      "Find her. End her.",
     ],
     harvest_offer: [
       "You could stay. I would not ask twice.",
@@ -190,9 +199,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "Stay, or go. Either is yours now. That is the whole point.",
     ],
     harvest_lost: [
-      "You fell. Get up - the test does not end because you failed it.",
-      "Not yet. Come back to me when you are more than this.",
-      "You lost. Everyone loses this one first.",
+      "Predictable.",
+      "You are not yet ready.",
     ],
     tithe: [
       "Your steel owes me. It will wear twice as fast until it has paid.",
@@ -231,12 +239,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       'Kill {target}. Do it before I forget I asked.',
     ],
     mark_success: [
-      'Dead. As it should be.',
+      "Dead. As it should be.",
       "Good. One less parasite wearing someone else's strength.",
-      'You did what was needed. Nothing more needs saying.',
-      'It is done. I expected nothing less.',
+      "You did what was needed. Nothing more needs saying.",
+      "It is done. I expected nothing less.",
       "The spider's champion falls. Unremarkable, as intended.",
-      'Good.',
+      "Good.",
+      "That is one fewer borrowed sword in this world.",
+      "Clean. I have no notes.",
+      "She will feel that. Let her.",
     ],
     // ⭐ He does NOT punish a refusal. He grumbles. That is the whole mechanic:
     // a god who punishes you for sparing a friend forces the fight and poisons a
@@ -444,52 +455,30 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // arrival lines already had, where he is mythic when speaking of the world and
   // clipped when speaking to you.
   var CONTEXT = {
-      "hold_weapon": [
-          "The blade should be held like an extension of you.",
-          "This is a tool. Every weapon is a tool.",
-          "Technique over power.",
-          "That edge is only as good as the arm behind it.",
-          "Hold it properly. It knows when you do not.",
-          "A weapon you have not bled with is decoration."
-      ],
-      "hold_food": [
-          "Fuel yourself. Battle awaits.",
-          "Prioritise your macros.",
-          "Feast, for you need the strength.",
-          "Must you spend all your days consuming? You are growing fat.",
-          "Eat. Then move.",
-          "That is fuel, not a reward."
-      ],
-      "hold_item": [
-          "Idle hands.",
-          "That will not defend you.",
-          "You carry everything except a reason to use it.",
-          "Put that down and pick up something with an edge."
-      ],
-      "hold_none": [
-          "Idle hands.",
-          "If you wanted to do nothing, you should have invoked the spider instead of me.",
-          "Empty hands. Empty day.",
-          "You stand in a cursed world holding nothing at all."
-      ],
       "loc_above": [
-          "I can feel the horde beneath. The trapped souls awaiting death.",
-          "You are my instrument of mercy.",
-          "The surface is quiet. That is not the same as safe.",
-          "Everything worth killing is below you."
+          "The goddess below rules the underworld unchecked.",
+          "You are growing. Good.",
+          "I am not disappointed in your growth. There is still room to grow.",
+          "I can feel your trepidation. Descend, champion.",
+          "The Goat god and their champion are your path to sustenance. Lean on your allies.",
+          "Be wary of the Wolf's deals, for one day she may offer you one. Deny her.",
+          "The Dreamwalker has led the Court for centuries. Do not mistake authority for power.",
+          "The spider. I despise that damnable god. She is but a step away from the evil we fight against."
       ],
       "loc_below": [
-          "The realms of death. Delve deeper, for we must slay the enemies of that fel goddess.",
-          "Trust not the silence. Things lurk down here.",
-          "Down here the world stops pretending.",
-          "Deeper. The dead do not climb to meet you."
+          "The minions of death swarm.",
+          "Be on your guard. You will be tested.",
+          "I want this clean. No mistakes. No retreat.",
+          "Grow, champion. Hone your blade against those who threaten our lands above.",
+          "She was banished down here for a reason, the goddess of death. We will remind her why."
       ],
-      "combat": [
-          "Cut. Them. Down.",
-          "Show them the only mercy they deserve. Death.",
-          "Finish it.",
-          "Do not think. Strike.",
-          "This is what you are for."
+      "rare_loc_above": [
+          "This land is an old one. A nameless one.",
+          "You have no memories of arrival. That is all right. Instead, focus on your blade.",
+          "I had a name in life once. That was centuries ago.",
+          "I am a prisoner here, like you. Know that we fight for the same cause.",
+          "The Spider and her consort... they are the closest to my kind. I cannot help but feel attachment.",
+          "What does the sun feel like on your skin? I barely remember."
       ],
       "near_salvage": [
           "The emissary of the wolf. Do not trust them.",

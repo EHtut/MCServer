@@ -36,6 +36,28 @@
 var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
 ;(function () {
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🪦 RETIRED 2026-08-15. Ethan: "Whispers can be scrapped for idle dialogue."
+  //
+  // They described a body that no longer exists. "The helm turns toward you. It
+  // does not turn away" fired during the Harvest test, and nothing is turning any
+  // more - the stalker retired the same afternoon. They were written for a creature
+  // that follows you; idle.js speaks for a god that watches you.
+  //
+  // Kept rather than deleted: the four-line escalation-by-regard shape is a good
+  // idea that the contextual system does not yet cover, and the lines themselves
+  // are the only surviving writing for four gods who have no other voice yet.
+  //
+  // To revive: RETIRED = false.
+  // ═══════════════════════════════════════════════════════════════════════════
+  var RETIRED = true
+  if (RETIRED) {
+    ServerEvents.loaded(function () {
+      console.info('[whispers] RETIRED - idle.js speaks for the gods now.')
+    })
+    return
+  }
+
   var EVERY = 600                      // check each player every 30s
   var ANCHOR_CHANCE = 0.34             // ~1 whisper in 3 is the refrain
 

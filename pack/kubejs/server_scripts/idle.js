@@ -43,6 +43,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   // Weighted: the rarer the moment, the better the line, so it wins more often.
   var WEIGHT = { combat: 6, near: 5, hold: 2, loc: 1 }
+  var RARE_CHANCE = 0.15           // a rare sibling, when one exists
 
   var lastHurt = {}                // uuid -> world ticks
 
@@ -167,10 +168,25 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (!god) return null
     if (!VELDORA.voice) return null
 
+    var now = dayNow(server)
+
+    // ⭐ BELOW THE CUTOFF THE GOD CANNOT REACH YOU (deep_speaker.js). The voice that
+    // has been arming and testing you goes silent, and something else speaks
+    // instead. That is the point of descending, not a side effect of it.
+    try {
+      if (VELDORA.speaker && VELDORA.speaker.active(p)) {
+        if (VELDORA.speaker.say(p, 'common')) {
+          if (now !== null) { try { p.persistentData.putInt(LAST_KEY + god, now + 1) } catch (e) { } }
+          console.info(TAG + p.username + ' <- the Speaker (below y' + VELDORA.speaker.cutoff + ')')
+          return 'speaker'
+        }
+        return null            // out of earshot and she had nothing: SILENCE
+      }
+    } catch (e) { console.warn(TAG + 'speaker check threw :: ' + e) }
+
     // Never over a scene.
     try { if (VELDORA.ritual && VELDORA.ritual.active(p)) return null } catch (e) { }
 
-    var now = dayNow(server)
     if (!force) {
       if (now === null) return null            // no clock, no cooldown, no speech
       var stored = 0
@@ -202,6 +218,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         tag = any
       }
       tried[tag] = true
+      // ⭐ RARE SIBLINGS. A pool may have a `rare_<tag>` twin, rolled first and
+      // seldom. Ethan's rare lines are where Blade is a PERSON - he had a name, he
+      // is a prisoner here too, he feels attachment to the spider he claims to
+      // despise - and none of that should ever be common enough to become wallpaper.
+      if (Math.random() < RARE_CHANCE && VELDORA.voice.say(p, god, 'rare_' + tag)) {
+        if (now !== null) { try { p.persistentData.putInt(LAST_KEY + god, now + 1) } catch (e) { } }
+        console.info(TAG + p.username + ' <- ' + god + '/rare_' + tag)
+        return 'rare_' + tag
+      }
       if (VELDORA.voice.say(p, god, tag)) {
         if (now !== null) { try { p.persistentData.putInt(LAST_KEY + god, now + 1) } catch (e) { } }
         console.info(TAG + p.username + ' <- ' + god + '/' + tag)

@@ -33,6 +33,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // god -> tag -> { opens: [], closes: [] }
   var POOLS = {}
 
+  // god -> colour code. The gods speak in bold dark red (23 §5, the pack's one
+  // delivery channel). The Speaker below does NOT - she is not a god, she is what
+  // is left when yours cannot reach you, and grey is the whole point.
+  var COLOUR = {}
+  var DEFAULT_COLOUR = '§4§l'
+
+  function setColour(god, code) { COLOUR[god] = code }
+
   // What a player last heard, so the same pairing does not repeat back to back.
   // In memory: a repeat across a restart is not worth persisting state for.
   var lastSaid = {}
@@ -91,7 +99,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   function say(player, god, tag) {
     var s = line(god, tag, player)
     if (!s) return false
-    try { player.tell(Text.of('§4§l' + s)) } catch (e) { return false }
+    try { player.tell(Text.of((COLOUR[god] || DEFAULT_COLOUR) + s)) } catch (e) { return false }
     return true
   }
 
@@ -102,12 +110,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (subs) for (var k in subs) {
       if (subs.hasOwnProperty(k)) s = s.split('{' + k + '}').join(String(subs[k]))
     }
-    try { player.tell(Text.of('§4§l' + s)) } catch (e) { return false }
+    try { player.tell(Text.of((COLOUR[god] || DEFAULT_COLOUR) + s)) } catch (e) { return false }
     return true
   }
 
   VELDORA.voice = {
     register: register,
+    setColour: setColour,
     registerLines: registerLines,
     line: line,
     say: say,
@@ -145,7 +154,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
               (pool.whole ? pool.opens.length + ' whole lines'
                           : pool.opens.length + ' x ' + pool.closes.length + ' = ' +
                             (pool.opens.length * pool.closes.length) + ' possible')))
-            for (var i = 0; i < 8; i++) p.tell(Text.of('§4§l' + line(god, tag, null)))
+            for (var i = 0; i < 8; i++) {
+              p.tell(Text.of((COLOUR[god] || DEFAULT_COLOUR) + line(god, tag, null)))
+            }
             return 1
           }))))
   })

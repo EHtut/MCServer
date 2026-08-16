@@ -527,23 +527,82 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var K_TRIAL = 'veldora_blade_trial'        // uuid of the champion, while it lives
   var Q = String.fromCharCode(39)            // a single quote that cannot be mangled
 
+  // ⭐ A CUTSCENE, NOT A CHAT LINE. Ethan wrote the Harvest opening as a fixed
+  // sequence, so it runs through the RITUAL - blind, rooted, staggered - which is
+  // the one thing in the pack that can hold a player still and make them read.
+  //
+  // It is also the only time he talks about himself. He had a champion once, and
+  // that man is gone, and his end was merciful. He does not explain further, and
+  // the silence at the end of it is deliberate: the scene stops before the answer.
+  var HARVEST_SCENE = [
+    'You have proven yourself capable.',
+    'In a sense I feel almost proud.',
+    'However, to slay the goddess of death we will need more.',
+    'Centuries ago I had a champion. A man who stood by my side above all else.',
+    'He is long since gone.',
+    'His end merciful.',
+  ]
+
   function harvestArrive(server, p) {
     if (!VELDORA.spawner) return false
 
-    // "Run." - reserved, fires ONCE, and now it is not a threat. It is the last
-    // thing he says before the test begins.
-    if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'harvest_open')
-    try { p.tell(Text.of('§4§lRun.')) } catch (e) { }
-
-    var r = VELDORA.spawner.wave(p, {
-      ids: [CHAMPION], count: 1, minDist: 12, maxDist: 20,
-      // Built with a quote CONSTANT rather than escapes. The NBT wants single
-      // quotes around a JSON text component, and every attempt to escape those
-      // through a tool chain mangled them. A char code cannot be mangled.
-      nbt: '{Tags:["' + CHAMPION_TAG + '"],CustomNameVisible:1b,CustomName:' + Q +
-        '{"text":"The Strongest He Has","color":"dark_red","bold":true}' + Q + '}',
+    var opened = false
+    if (VELDORA.ritual && typeof VELDORA.ritual.begin === 'function' &&
+        !VELDORA.ritual.active(p)) {
+      opened = VELDORA.ritual.begin(p, {
+        lines: HARVEST_SCENE,
+        options: [],                 // no choice. This is not an offer.
+        onTimeout: function () { },
+      })
+    }
+    // ⚠️ TIMED OFF THE RITUAL'S OWN CONSTANTS, not off a number that looked right.
+    // ritual.js: LEAD 20 + lines x GAP 50 + TAIL 40, and a scene with no options
+    // releases at exactly that. Hard-coding 420 here would have put the silence
+    // AFTER the world came back, which is the one thing it must not do.
+    var sceneEnd = opened ? (20 + (HARVEST_SCENE.length * 50) + 40) : 0
+    if (opened) {
+      // The silence lands inside the dark, 40t after his last line and 40t before
+      // release. It IS the end of the cutscene; Ethan marked the beat himself.
+      server.scheduleInTicks(sceneEnd - 40, function () {
+        // Grey italic - the same narration style the introduction uses. It is not
+        // him speaking, and that is the whole point of the beat.
+        try { p.tell(Text.of('§7§oYou feel a heavy silence.')) } catch (e) { }
+      })
+    }
+    // Then the world returns, and only then the order.
+    server.scheduleInTicks(sceneEnd + 40, function () {
+      try { p.tell(Text.of('§4§lFace him and win.')) } catch (e) { }
     })
-    console.info(TAG + 'Harvest champion sent at ' + p.username)
+
+    var spawnAt = sceneEnd + 80
+    server.scheduleInTicks(spawnAt, function () {
+      var r = VELDORA.spawner.wave(p, {
+        ids: [CHAMPION], count: 1, minDist: 12, maxDist: 20,
+        // Built with a quote CONSTANT rather than escapes. The NBT wants single
+        // quotes around a JSON text component, and every attempt to escape those
+        // through a tool chain mangled them. A char code cannot be mangled.
+        nbt: '{Tags:["' + CHAMPION_TAG + '"],CustomNameVisible:1b,CustomName:' + Q +
+          '{"text":"The Strongest He Has","color":"dark_red","bold":true}' + Q + '}',
+      })
+      // 🚨 THE DEFERRED-ARRIVAL HAZARD. harvestArrive now returns true BEFORE the
+      // champion exists, so harvest.js has already stamped the Harvest as begun. If
+      // placement then fails the player is locked in a Harvest with nothing to
+      // fight - exactly the state harvest.js refuses to create synchronously. So
+      // the failure is caught HERE and the lock is released, which puts the phase
+      // sweep back in charge and it retries. A Harvest that did not arrive did not
+      // happen.
+      try {
+        if (!r || r.placed === 0) {
+          console.error(TAG + '!! Harvest champion FAILED to place for ' + p.username +
+            ' - releasing the lock so the sweep retries')
+          try { p.persistentData.putString('veldora_harvest_active', '') } catch (e) { }
+          if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'harvest_open')
+        }
+      } catch (e) { console.warn(TAG + 'harvest arrival check threw :: ' + e) }
+    })
+    console.info(TAG + 'Harvest scene opened for ' + p.username + ' (' +
+      (opened ? HARVEST_SCENE.length + ' lines, ends ' + sceneEnd + 't' : 'NO SCENE - ritual busy') +
+      ') - champion arrives at ' + spawnAt + 't')
     return true
   }
 
@@ -575,11 +634,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { }
   })
 
+  // ⚠️ The closing lines are DELAYED. They fire from the death hook, so undelayed
+  // they print above "Rehykt was slain by..." and read as commentary arriving too
+  // early. The god speaks after the world has finished saying what happened.
   function harvestWin(server, p) {
     // He releases you. The path is set down, and this is the ONE exit that is not
     // a failure - docs/40 PART 9 leaves the fall and absence as the others.
-    if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'harvest_won')
-    server.scheduleInTicks(60, function () {
+    server.scheduleInTicks(20, function () {
+      try { if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'harvest_won') } catch (e) { }
+    })
+    server.scheduleInTicks(80, function () {
       try { if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'harvest_offer') } catch (e) { }
     })
     console.info(TAG + p.username + ' WON the Harvest - released, and offered the stay')
@@ -588,7 +652,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   function harvestLose(server, p) {
     // A trust hit, and it is INTENDED. The test is meant to be failed before it is
     // passed - a setback, never a revocation.
-    if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'harvest_lost')
+    server.scheduleInTicks(20, function () {
+      try { if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'harvest_lost') } catch (e) { }
+    })
     try {
       if (VELDORA.counter) {
         var cur = VELDORA.counter.get(p, GOD)
