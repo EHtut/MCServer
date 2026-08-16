@@ -282,3 +282,157 @@ strongest example of it: the more you die, the **happier and gentler** she becom
 3. **Wall's pet names** and **Crown's straight-man ruling** are the two calls most
    likely to be worth reversing.
 4. **The ≈30 second budget** — shorter makes it a message, longer makes it a cutscene.
+
+---
+
+# ✍️ THE DIALOGUE PASS — writing sheet, 2026-08-16
+
+> **Ethan writes every line here.** This is the brief, not the text. Measured off the
+> three built gods (**642 lines across ~99 pools**) and off **`idle.js`'s own
+> weights**, which decide how often a player actually hears each pool:
+>
+> ```
+> combat 6  ·  near_<god> 5  ·  hold_* 2  ·  guidance 2  ·  loc_* 1
+> ```
+>
+> That weighting is why this sheet is ordered the way it is. A pool's line count means
+> nothing on its own — **thin × often-heard** is the only thing that repeats in a
+> player's ear.
+
+## 🔴 THE HEADLINE — Blade has no `combat` pool
+
+`combat` is the **highest-weighted context in the game (6)**. Wall has 4 lines in it.
+Salvage has 4. **Blade — the god of fighting — has none at all.**
+
+The moment a player is actually in a fight, the warrior is the one patron who says
+nothing. He also has no `hold_weapon`: he is silent while you hold a sword.
+
+| pool | wt | blade | wall | salvage |
+|---|---|---|---|---|
+| **`combat`** | **6** | **🔴 none** | 4 | 4 |
+| `near_blade` | 5 | n/a | 4 | 3 |
+| `near_wall` | 5 | 3 | *dead* | 3 |
+| `near_salvage` | 5 | 3 | 3 | *dead* |
+| **`hold_weapon`** | **2** | **🔴 none** | 2 | 3 |
+| `hold_food` | 2 | 🔴 none | 2 | 2 |
+| `guidance` | 2 | 9 | 11 | ✓ |
+| `loc_above` / `loc_below` | 1 | 8 / 5 | 7 / 6 | 5 / 5 |
+
+## 1. `blade / combat` — **8 lines**, the highest-value pool in the game
+
+* **fires** while you are in a fight (damaged in the last 15s) — 6× likelier than any other context
+* **who hears it** his champion, alone, mid-swing
+* **register** all three tiers draw from it, so keep them tier-neutral
+* **must do** be *useful under pressure*, and short enough to read while fighting. He is not commentary, he is a corner man.
+
+**His own register, so the new lines sit inside it:**
+> `low_push` — *"Draw your blade. Now."* · *"Something out there needs killing. Find it."*
+> `medium_test` — *"This one's a test. Don't waste it."* · *"Fight like I'm keeping score. I am."*
+> `high_silence` — *"Noted."* · *"You didn't need me for that one."*
+
+**And the same slot in the other two, so he doesn't echo them:**
+> Wall — *"Behind you. Always behind you, love."* · *"I cannot reach you in there. Hurry."*
+> Salvage — *"Two shells, Gunner. Make them count."* · *"Do not die owing me."*
+
+```
+[ ]
+[ ]
+[ ]
+[ ]
+[ ]
+[ ]
+[ ]
+[ ]
+```
+
+## 2. `blade / hold_weapon` — **4 lines**
+
+* **fires** a weapon in your main hand, out of combat
+* **must do** the sword is his whole language. This is him noticing you are armed and *not yet using it* — appraisal, not encouragement. Must not duplicate `low_push`, which already covers "go and fight".
+
+```
+[ ]
+[ ]
+[ ]
+[ ]
+```
+
+## 3. `blade / hold_food` — **3 lines**
+
+* **fires** food in hand, out of combat
+* **must do** he watches you eat. Contempt is wrong — that pass was cut — but so is warmth. A hard man noticing a body needs maintenance.
+
+```
+[ ]
+[ ]
+[ ]
+```
+
+## 4. Salvage's four lifted pools — the lines she says **most**
+
+String literals inside `salvage.js` until 2026-08-15. They fire far more often than
+any idle line — *"you are too poor even for me"* lands on every failed trade — and
+they were the ones you could not edit without opening a script. **Empty here means
+the old hardcoded literal still fires, so nothing is broken while you write.**
+
+| pool | fires when | must do |
+|---|---|---|
+| `need_gun` | you asked for ammo holding no gun | not mockery — she is *correcting an order*. The shopkeeper note |
+| `unreadable` | she cannot read your hunger or levels | something is wrong with *you*, and she finds it interesting rather than alarming |
+| `no_stock` | the ammo mint failed, her supplier let her down | 🚨 **the only moment she is not in control.** The one crack in the dealer |
+| `kept_it` | you paid and the goods did not take | she is *surprised* — and she never technically lies, so she cannot pretend it went fine |
+
+**Her register, for tone:**
+> `deal_poor` — *"You need more wealth in your life, Gunner."* · *"Hm."*
+> `deal_done` — *"Ledger signed."* · *"My favourite customer."*
+
+```
+need_gun    [ ] [ ] [ ]
+unreadable  [ ] [ ] [ ]
+no_stock    [ ] [ ] [ ]
+kept_it     [ ] [ ] [ ]
+```
+
+## 5. Thin-but-live pools — 2–3 lines each, heard at **weight 5**
+
+`near_<god>` fires whenever you stand near another god's champion. On a two-player
+server that is *constantly*, and three lines cycle audibly.
+
+| pool | now | suggest |
+|---|---|---|
+| `wall / near_blade` | 4 | 6 |
+| `blade / near_wall` | 3 | 6 |
+| `blade / near_salvage` | 3 | 6 |
+| `wall / near_salvage` | 3 | 6 |
+| `salvage / near_blade` | 3 | 6 |
+| `salvage / near_wall` | 3 | 6 |
+
+⭐ **This is the only place the gods talk about each other**, and `docs/43` already
+notes Blade and Wall are the first pair a player can hear from both sides. Six each
+makes that a conversation instead of a catchphrase.
+
+## 6. 🗑️ Pools that can never fire — delete, do not write
+
+Not gaps. **Dead content**, and writing into them is wasted effort:
+
+| pool | why it cannot fire |
+|---|---|
+| `wall / near_wall` | paths are **exclusive, one walker each** — you can never stand near another Wall champion |
+| `salvage / near_salvage` | same |
+| `blade / near_forge`, `blade / near_art` | Forge and Art are **CLOSED**; nobody can walk them |
+| `wall / near_forge`, `wall / near_art` | same |
+| `blade / near_crown` | **Crown retired 2026-08-14** (1 line) |
+
+## 7. Findings that are not about writing
+
+* **The three files disagree structurally.** Blade's `CONTEXT` uses 6-space indent
+  and double quotes; Wall's and Salvage's use 4-space and single quotes. Harmless to
+  the game — it broke two of my own extraction passes today, and it will break the
+  next tool anyone writes over these files.
+* **The same tag lives in different blocks per god.** `combat` and `guidance` sit in
+  `LINES` for Wall and Salvage but belong in `CONTEXT` by meaning. Worth normalising
+  before the pools get bigger.
+* **No lore breaks found.** The only hit my scan flagged was Wall's *"Bind one into a
+  book and it is yours to call again"* — that is Occultism's **Book of Binding**, a
+  real mod item, not the cut player-facing guidebook. Correct as written; recorded
+  here so nobody "fixes" it later.
