@@ -343,6 +343,84 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return list[list.length - 1]
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ THE CHART, MADE EXECUTABLE.  docs/23 §VI.0, built 2026-08-16.
+  //
+  // A god is a weight vector over ten event kinds. The obvious implementation -
+  // set each event's weight to its category's band - DOES NOT WORK, and the
+  // arithmetic says so plainly. Measured on Blade:
+  //
+  //     challenge   band 4, 8 events   47.1% of rolls   wanted 20.0%
+  //     boon        band 4, 1 event     5.9% of rolls   wanted 20.0%
+  //
+  // Challenges run 2.4x their share for one reason only: THERE ARE EIGHT OF THEM.
+  // To correct it with per-event weights alone, `sharpen` would need weight 16
+  // against gauntlet's 3 - and every future event would silently re-break it.
+  //
+  // 🔑 So the roll is TWO-STAGE. Pick a KIND from the chart, then an event from
+  // inside that kind by its own weight. Event weights become RELATIVE WITHIN A
+  // CATEGORY, which is what they were always trying to be, and adding a ninth
+  // Challenge no longer makes a god 12% more aggressive by accident.
+  //
+  // ⚠️ A god with NO chart keeps the old single-stage pick, byte for byte. Wall and
+  // Salvage have no column yet, and inventing one for them would silently re-tune
+  // two gods nobody asked me to touch.
+  // ═══════════════════════════════════════════════════════════════════════════
+  var KINDS = ['challenge', 'duel', 'buff', 'boon', 'invade',
+               'attack', 'aid', 'support', 'assassination', 'contract']
+
+  var CHART = {
+    // Ethan, 2026-08-16: "the warrior focuses on you and really only tests you.
+    // Most of his actions are forced with little choice as he seeks to test you."
+    blade: {
+      challenge: 4, duel: 3, buff: 4, boon: 4, invade: 2,
+      attack: 1, aid: 1, support: 1, assassination: 2, contract: 3,
+    },
+    // wall: TODO(ethan) - ten weights
+    // salvage: TODO(ethan) - ten weights
+  }
+
+  function chartPick(list, server, p, tier, god) {
+    var chart = CHART[god]
+    if (!chart) return weightedPick(list, server, p, tier)     // legacy, unchanged
+
+    // Bucket the ELIGIBLE events by kind, dropping anything already scoring zero -
+    // a category whose only event has weight 0 must not win the category roll and
+    // then have nothing to hand back.
+    var buckets = {}, keys = [], cw = [], ctot = 0
+    for (var i = 0; i < list.length; i++) {
+      var x = weightOf(list[i], server, p, tier)
+      if (x <= 0) continue
+      var k = list[i].kind || 'misc'
+      if (!buckets[k]) buckets[k] = { evs: [], ws: [], sum: 0 }
+      buckets[k].evs.push(list[i])
+      buckets[k].ws.push(x)
+      buckets[k].sum += x
+    }
+    for (var k2 in buckets) {
+      if (!buckets.hasOwnProperty(k2)) continue
+      // An unclassified event still gets to happen - at the lowest band - rather
+      // than vanishing because somebody forgot a `kind:`. report() names them.
+      var band = (k2 === 'misc') ? 1 : (chart[k2] || 0)
+      if (band <= 0) continue
+      keys.push(k2); cw.push(band); ctot += band
+    }
+    if (ctot <= 0) return null
+
+    var r = Math.random() * ctot, picked = keys[keys.length - 1]
+    for (var a = 0; a < keys.length; a++) {
+      r -= cw[a]
+      if (r <= 0) { picked = keys[a]; break }
+    }
+    var b = buckets[picked]
+    var r2 = Math.random() * b.sum
+    for (var c = 0; c < b.evs.length; c++) {
+      r2 -= b.ws[c]
+      if (r2 <= 0) return b.evs[c]
+    }
+    return b.evs[b.evs.length - 1]
+  }
+
   // Fire one. `force` skips the chance roll and the global cooldown, never the
   // floor - a test command that ignores the floor would test the wrong thing.
   function attempt(server, p, force, onlyId) {
@@ -371,7 +449,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       for (var i = 0; i < e.list.length; i++) if (e.list[i].id === onlyId) ev = e.list[i]
       if (!ev) return null
     } else {
-      ev = weightedPick(e.list, server, p, e.tier)
+      ev = chartPick(e.list, server, p, e.tier, god)
     }
     if (!ev) return null
 
@@ -524,6 +602,42 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (missing.length) {
       console.warn(TAG + 'NO DESCRIPTION on: ' + missing.join(', ') +
         ' - add a `does:` so the log says what they do')
+    }
+
+    // ⭐ THE CHART, REPORTED. A god with a chart gets the two-stage roll, and this
+    // prints what share each KIND will actually take - so the vector in docs/23 and
+    // the vector the server is running can be compared without reading any code.
+    for (var cg in CHART) {
+      if (!CHART.hasOwnProperty(cg)) continue
+      var evs = REG[cg] || [], byKind = {}, untagged = []
+      for (var ci = 0; ci < evs.length; ci++) {
+        var kk = evs[ci].kind
+        if (!kk) { untagged.push(evs[ci].id); kk = 'misc' }
+        byKind[kk] = (byKind[kk] || 0) + 1
+      }
+      var tot = 0, parts = []
+      for (var kx in byKind) {
+        if (byKind.hasOwnProperty(kx)) tot += (kx === 'misc' ? 1 : (CHART[cg][kx] || 0))
+      }
+      for (var ky in byKind) {
+        if (!byKind.hasOwnProperty(ky)) continue
+        var bd = (ky === 'misc' ? 1 : (CHART[cg][ky] || 0))
+        if (!bd) continue
+        parts.push(ky + ' ' + Math.round(100 * bd / tot) + '% (' + byKind[ky] + ' ev)')
+      }
+      console.info(TAG + cg + ' rolls BY KIND: ' + parts.join(' · '))
+      if (untagged.length) {
+        console.warn(TAG + '!! ' + cg + ' has UNTAGGED events: ' + untagged.join(', ') +
+          ' - they fall into `misc` at the lowest band. Add a `kind:`.')
+      }
+    }
+    var noChart = []
+    for (var ng in REG) {
+      if (REG.hasOwnProperty(ng) && !CHART[ng]) noChart.push(ng)
+    }
+    if (noChart.length) {
+      console.info(TAG + 'no chart yet for: ' + noChart.join(', ') +
+        ' - they keep the legacy single-stage roll, unchanged. docs/23 §VI.0.')
     }
   }
 })();

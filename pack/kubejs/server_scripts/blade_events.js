@@ -1228,52 +1228,52 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var underground = VELDORA.events.whenDeep
 
     VELDORA.events.register(GOD, {
-      id: 'gauntlet', does: 'spawns a wave scaled by trust and announces it; the player must survive it. UNDERGROUND ONLY',
+      id: 'gauntlet', kind: 'challenge', does: 'spawns a wave scaled by trust and announces it; the player must survive it. UNDERGROUND ONLY',
       hostile: true, cooldown: 2, weight: 3,
       tiers: ['low', 'medium', 'high'], guard: underground, run: runGauntlet,
     })
     VELDORA.events.register(GOD, {
-      id: 'mark', does: 'marks the player for 2 world days - no penalty, it only changes what he says',
+      id: 'mark', kind: 'assassination', does: 'marks the player for 2 world days - no penalty, it only changes what he says',
       hostile: false, cooldown: 3, weight: 2,
       tiers: ['medium', 'high'], run: runMark,
     })
     VELDORA.events.register(GOD, {
-      id: 'icarus', does: 'spawns a wave ABOVE y100 only - punishes being high and comfortable',
+      id: 'icarus', kind: 'challenge', does: 'spawns a wave ABOVE y100 only - punishes being high and comfortable',
       hostile: true, cooldown: 2, weight: 3,
       tiers: ['low', 'medium', 'high'], guard: aboveTheLine, run: runIcarus,
     })
     VELDORA.events.register(GOD, {
-      id: 'hollow', does: 'spawns a tagged wave whose drops are CANCELLED - the kills pay nothing. UNDERGROUND ONLY',
+      id: 'hollow', kind: 'challenge', does: 'spawns a tagged wave whose drops are CANCELLED - the kills pay nothing. UNDERGROUND ONLY',
       hostile: true, cooldown: 3, weight: 2,
       tiers: ['medium', 'high'], guard: underground, run: runHollow,
     })
     VELDORA.events.register(GOD, {
-      id: 'broken_rung', does: 'fires on respawn - sends a wave at a player who has just died',
+      id: 'broken_rung', kind: 'challenge', does: 'fires on respawn - sends a wave at a player who has just died',
       hostile: true, cooldown: 1, weight: 1,
       tiers: ['low', 'medium', 'high'], run: runBrokenRung,
     })
     VELDORA.events.register(GOD, {
-      id: 'sharpen', scene: true, does: 'offers a BARGAIN via the ritual: Strength for 3 min, but everything nearby is drawn to you',
+      id: 'sharpen', kind: 'boon', scene: true, does: 'offers a BARGAIN via the ritual: Strength for 3 min, but everything nearby is drawn to you',
       hostile: false, cooldown: 2, weight: 2,
       tiers: ['low', 'medium', 'high'], run: runSharpen,
     })
     VELDORA.events.register(GOD, {
-      id: 'first_blood', does: 'two staged demands, and BOTH stages cost the player something',
+      id: 'first_blood', kind: 'challenge', does: 'two staged demands, and BOTH stages cost the player something',
       hostile: true, cooldown: 2, weight: 2,
       tiers: ['low', 'medium', 'high'], run: runFirstBlood,
     })
     VELDORA.events.register(GOD, {
-      id: 'duel', does: 'high trust only - sends one strong actor; fleeing earns a taunt, not a penalty',
+      id: 'duel', kind: 'challenge', does: 'high trust only - sends one strong actor; fleeing earns a taunt, not a penalty',
       hostile: true, cooldown: 4, weight: 2,
       tiers: ['high'], run: runDuel,
     })
     VELDORA.events.register(GOD, {
-      id: 'tithe', does: 'takes extra durability from the held item each second, CAPPED so it never breaks it',
+      id: 'tithe', kind: 'buff', does: 'takes extra durability from the held item each second, CAPPED so it never breaks it',
       hostile: true, cooldown: 4, weight: 1,
       tiers: ['medium', 'high'], run: runTithe,
     })
     VELDORA.events.register(GOD, {
-      id: 'understudy', does: 'summons a buffed actor with attributes written at spawn time',
+      id: 'understudy', kind: 'challenge', does: 'summons a buffed actor with attributes written at spawn time',
       hostile: true, cooldown: 5, weight: 1,
       tiers: ['high'], run: runUnderstudy,
     })
@@ -1288,35 +1288,35 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // Ethan's call. Recorded here rather than fudged silently.
     // ═══════════════════════════════════════════════════════════════════════
     VELDORA.events.register(GOD, {
-      id: 'harden', run: runHarden, hostile: false, cooldown: 2, weight: 4,
+      id: 'harden', kind: 'buff', run: runHarden, hostile: false, cooldown: 2, weight: 4,
       tiers: ['low', 'medium', 'high'],
       does: 'BUFF (forced) - resistance II AND weakness together, 3 min. He makes ' +
         'you hard to kill and slow to kill, so the fight lasts. ARMS the release ' +
         'window. HELD until the `harden` pool is written',
     })
     VELDORA.events.register(GOD, {
-      id: 'burden', run: runBurden, hostile: false, cooldown: 3, weight: 3,
+      id: 'burden', kind: 'buff', run: runBurden, hostile: false, cooldown: 3, weight: 3,
       tiers: ['medium', 'high'],
       does: 'BUFF (forced) - slowness II for 90s, a handicap not a gift. Does NOT ' +
         'arm the release window: punishing a death under a penalty he imposed would ' +
         'be a trap. HELD until the `burden` pool is written',
     })
     VELDORA.events.register(GOD, {
-      id: 'wager', scene: true, run: runWager, hostile: true, cooldown: 3, weight: 3,
+      id: 'wager', kind: 'duel', scene: true, run: runWager, hostile: true, cooldown: 3, weight: 3,
       tiers: ['low', 'medium', 'high'],
       does: 'DUEL (choice) - he OFFERS one strong opponent. Say yes and it arrives ' +
         'tagged; kill it and it pays iron/steel/diamond by tier. A choice always ' +
         'pays. HELD until the `wager_offer` pool is written',
     })
     VELDORA.events.register(GOD, {
-      id: 'contract', scene: true, run: runContract, hostile: false, cooldown: 4, weight: 3,
+      id: 'contract', kind: 'contract', scene: true, run: runContract, hostile: false, cooldown: 4, weight: 3,
       tiers: ['medium', 'high'],
       does: 'CONTRACT (choice) - a kill order he ASKS for, on the same machinery as ' +
         'the Mark, and it pays on success. HELD until `contract_offer` is written',
     })
 
     VELDORA.events.register(GOD, {
-      id: 'watcher', does: 'places a bounded, non-attacking presence near the player - it only watches',
+      id: 'watcher', kind: 'challenge', does: 'places a bounded, non-attacking presence near the player - it only watches',
       hostile: true, cooldown: 3, weight: 2,
       tiers: ['medium', 'high'], run: runWatcher,
     })
