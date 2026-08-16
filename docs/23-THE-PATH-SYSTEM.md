@@ -171,13 +171,57 @@ that already exist. **This is the only structural change the design needs.**
 six: Crown merged into Wall (`35` §6, Ethan 2026-08-15) and **Wall stays mercantile
 because Wall is about building.**
 
+> ⚠️ **REBALANCED 2026-08-16.** The numbers below are Ethan's, not the originals. Three
+> rules changed with them and all three are enforced in code:
+> 1. **Nothing goes below 1.0.** *"we should never have a coeffecient go under 1 it
+>    should always be an increase."* `FLOOR = 1.0`. A coefficient may make a path
+>    better; it may never make it worse. The old `×0.4`/`×0.6` entries are gone.
+> 2. **The online softening is gone.** *"we will never have a full squad so there's no
+>    point. keep the difficulty. for blade its needed."*
+> 3. **`drops` moved from CHANCE to QUANTITY** — a ×3 that only rolled more often was
+>    invisible; it now multiplies the stack.
+
 | path | role | spawns | power | drops | phase | alone |
 |---|---|---|---|---|---|---|
-| blade | combat | **×4** | ×3 | ×0.6 | ×2 | poor |
-| salvage | combat | **×4** | ×2.5 | ×0.8 + guns/ammo | ×1.5 | poor |
-| forge | mercantile | ×1 | **×0.4** | **×3** | ×1 | worst |
-| wall | mercantile | ×1.5 + raids | ×0.6 | ×2.5 + quests | ×1 | safe at home, supplies the server |
-| art | explorer | ×1.5 | ×1.2 | ×1 + maps | ×1 | **good** |
+| blade | combat | **3.0** | **5.0** | 1.0 | 2.0 | poor |
+| salvage | combat | 2.5 | 3.0 | 2.0 | 1.5 | poor |
+| **wall** | mercantile | **1.0 → 2.5 ⤴ curve** | **2.5 → 1.0 ⤵ curve** | 3.0 | 1.0 | safe at home, supplies the server |
+| forge | mercantile | 1.0 | 1.0 | **5.0** | 1.0 | worst |
+| art | explorer | 2.0 | 2.0 | 1.0 | **3.0** | **good** |
+
+**`spawns` also scales with depth** (*"add a multiplier to spawn rate scaling with -y
+and then also add flat increases per depth level"*): a smooth ramp to **×1.5 at y=-128**,
+plus flat adds of **+0.25 below y=0**, **+0.5 below y=-64**, **+1.0 below y=-120**. Depth
+touches `spawns` only.
+
+### ⭐ Wall's two numbers are CURVES, not constants
+
+Everyone else's row is a constant. Hers reads her own counter, **backwards** —
+Ethan, 2026-08-16:
+
+> *"Wall starts at their strongest but as you take damage and die her focus shifts
+> which means more attacks on other players and more minion spawns. So as you get
+> weaker she gets stronger and more active."*
+
+| her rage | what it means | `power` | `spawns` |
+|---:|---|:--:|:--:|
+| **0** | all of her attention is on you | **2.5** | **1.0** |
+| 45 | half of it has drifted | 1.75 | 1.75 |
+| **90** | none of it is | **1.0** | **2.5** |
+
+**So her attention is a resource the player manages.** Stay whole and she shields you.
+Get hurt and she turns to punish whoever did it — which leaves you weaker *and* the
+world around you louder, at the exact moment you can least take it. Her
+protectiveness is what abandons you.
+
+⚠️ **A spiral, deliberately — but not a trap.** Healing lowers rage (−1 per 6 healed),
+so retreating and recovering pulls her focus back. The way out is the thing her
+dialogue has been asking for all along.
+
+⚠️ **An unreadable counter reads as her CEILING, never her floor.** A storage hiccup
+must not present to a player as the game deciding they are weak. Asserted in
+`tools/coeff_harness.js` (30/30), which also proves the two curves are monotonic and
+in opposite directions — otherwise this is a difficulty slider with extra steps.
 
 *`crown` is aliased to `wall` in the table until the world reset removes the key from
 `paths.js`. A live Crown walker gets Wall's numbers rather than falling through to
@@ -764,7 +808,7 @@ the table has been following without anyone writing it down:
 |---|---|:--:|
 | **Blade** | nothing. No mod makes a swordsman scale | **5.0** |
 | Salvage | TACZ guns, but they need feeding | 3.0 |
-| Wall | Goety minions fight for her | 1.5 |
+| Wall | Goety minions fight for her — **but only while she is watching** | **2.5 -> 1.0** |
 | Art | Ars Nouveau scales with investment | 2.0 |
 | **Forge** | **Create. He builds a mech suit** | **1.0** |
 
@@ -792,21 +836,29 @@ mod leaves.
 | Salvage | scrappy marksman | trades taken | ✅ — *"you find the gun, then you feed it forever"*; the counter measures the feeding |
 | Forge | Builder | **blocks placed** + crafted + smelted | ✅ **fixed 2026-08-16** — it was crafted-only, so the Builder did not count building |
 | Art | explorer→overwhelming | new biomes seen | ✅ |
-| **Wall** | **minion master** | **rage** | 🔴 **no** — see below |
+| **Wall** | **minion master** | **rage** | ✅ **resolved 2026-08-16** — see below |
 
-> ### 🔴 WALL'S COUNTER IS THE ODD ONE OUT, and it blocks the counter rewiring
-> Hers is **rage**, which is a *mood*, not service: `+1 minion raised, −1 slain, +8
-> YOUR death, −2 per quiet day`. It rises when her champion **dies** and falls when
-> nothing happens.
+> ### ✅ WALL'S COUNTER WAS THE ODD ONE OUT — the inversion answers it
+> **The problem, as it stood:** hers is **rage**, a *mood*, not service. It rises when
+> her champion **dies** and falls when nothing happens. Fine for choosing her events,
+> apparently wrong as a progression input — reading it straight would make Wall
+> **stronger the more her champion fails**.
 >
-> That is right for choosing her events — but it is wrong as a progression input. If
-> `power` and `drops` read the counter (§5c), Wall would get **stronger the angrier
-> she is**, i.e. stronger the more her champion fails — and weaker while the minion
-> master is quietly raising minions.
+> The fix drafted here was *"she needs a second number"*: a lifetime minions-raised
+> tally beside rage. **That was the wrong answer twice over.** A second counter is the
+> exact shape of the 274-rage bug (one quantity doing two jobs, then two quantities
+> nobody keeps in sync), and the minion tally it proposed was retired the same day —
+> *"Minion counts feel a bit too uncountable especially with goety's timegated
+> minions."*
 >
-> **She needs a second number**: a lifetime *minions raised* tally, separate from
-> rage. Minion master should progress by mastering minions. Nothing else in the
-> pantheon has this problem, because nothing else uses its counter as a mood.
+> **The actual fix: read the mood BACKWARDS.** Rage keeps doing one job — attention —
+> and both readings fall out of it: her events get angrier as it rises, her champion
+> gets weaker as it rises, because both are the same fact about where she is looking.
+> No second number, no sync problem, and the mechanic is better than the one it
+> replaced. See the curve table in §7.
+>
+> ⚠️ **Rage is now measured on the PLAYER, not on minions** (2026-08-16): `+8` per
+> death, `+1` per 4 damage taken, `−1` per 6 healed, `−2` per quarter-day alive.
 
 ## 6. ⭐ WEIGHTING AND DECAY *(design, 2026-08-16, NOT BUILT)*
 
@@ -863,23 +915,42 @@ output."* The 08-15 rewrite should have moved it rather than left it behind.
 
 > Ethan: *"Wall is on death or minion death? Same incremental."*
 
-**Both, plus your own death — and it is the one counter that must NOT be normalised
-with the others.** Today:
+**Neither, as of 2026-08-16 — it is on YOUR BODY.** *"wall should no longer be based on
+minions... deaths + losing hearts increase rage. gaining hearts and not dying for a
+quarter of a day decreases it. Minion counts feel a bit too uncountable especially
+with goety's timegated minions."*
 
 ```
-+1  a minion raised        -1  a minion slain
-+8  YOUR death             -2  per quiet world day
++8  YOUR death                    -1  per 6 healing GAINED
++1  per 4 damage TAKEN            -2  per quarter world day alive
 ```
 
-Every other counter measures **something you did to progress.** Hers measures **how
-she feels**, on a slider from boons to attacks. Giving it a "step per act" would
-re-conflate a tally with a mood — which is precisely the mistake that produced the
-274-rage bug. **Rage stays as it is.**
+The minion apparatus is **deleted** — `isGoety`, `idOf`, `isMinion`, `wallWalkers`,
+`nbtOf`, `ownerFromNbt`, `creditNearest`, `ownerFromTags`, `hasTag`, the `spawned` hook
+and the minion death hook, ~120 lines. Goety gates summons behind cooldowns and
+durations, so *"minions raised"* measured a mod's timers as much as a player's intent,
+and attribution alone needed a namespace filter, an NBT owner search and a once-ever
+tag guard — all to answer the wrong question.
 
-⚠️ **There is a real smell to fix while we are here.** `wall_voice.js` reads that same
-number for her *voice tier* (`MEDIUM_AT 10` / `HIGH_AT 50`), so **her mood and her
-familiarity with you are one variable.** She cannot be furious and new to you, or
-calm and old friends. No other god has that collision. Flagged, not silently changed.
+**It is still the one counter that must NOT be normalised with the others.** Every
+other counter measures *something you did to progress*; hers measures *how she feels*.
+Giving it a "step per act" would re-conflate a tally with a mood — precisely the
+mistake that produced the 274-rage bug. **Rage stays a mood.**
+
+⚠️ **Health is SAMPLED, not hooked** (every 2s), because a hurt hook cannot see healing
+and a regen hook fires dozens of times a second. One mechanism reads both directions.
+The fractional remainder is carried in memory, or every small hit would round to zero
+and rage would never move outside of deaths. And the death hook **clears the body
+baseline** — otherwise the respawn full-heal reads as the largest heal in the game and
+instantly refunds the `+8` the death just cost her.
+
+⚠️ **The smell got sharper, not weaker.** `wall_voice.js` reads that same number for her
+*voice tier* (`MEDIUM_AT 10` / `HIGH_AT 50`), so **her mood and her familiarity with
+you are one variable** — she cannot be furious and new to you, or calm and old
+friends. As of 2026-08-16 that number now drives **three** consumers: her event chart,
+her voice tier, and her coefficients. Three readings of one integer is defensible only
+because all three genuinely mean *attention* — but the voice tier is the one that does
+NOT, since familiarity is not attention. **Still flagged, still not silently changed.**
 
 ### 6.4 Salvage — the inversion, and the one genuine ambiguity
 

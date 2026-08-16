@@ -99,7 +99,53 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var TABLE = {
     blade:   { role: 'combat',     spawns: 3.0, power: 5.0, drops: 1.0, phase: 2.0 },
     salvage: { role: 'combat',     spawns: 2.5, power: 3.0, drops: 2.0, phase: 1.5 },
-    wall:    { role: 'mercantile', spawns: 1.0, power: 1.5, drops: 3.0, phase: 1.0 },
+    // ═══════════════════════════════════════════════════════════════════════
+    // ⭐ WALL IS INVERTED, and it is the best idea in the table.  Ethan, 2026-08-16:
+    //     "Wall starts at their strongest but as you take damage and die her focus
+    //      shifts which means more attacks on other players and more minion spawns.
+    //      So as you get weaker she gets stronger and more active."
+    //
+    // Rage is ATTENTION, not anger (his earlier ruling), so her champion's numbers
+    // read it BACKWARDS from everyone else's:
+    //
+    //     rage 0    all of her is pointed at you   -> power 2.5, world quiet (1.0)
+    //     rage 90   none of it is                  -> power 1.0, world loud (2.5)
+    //
+    // 🔑 SO HER ATTENTION IS A RESOURCE THE PLAYER MANAGES. Stay whole and she
+    // shields you. Get hurt and she drifts off to punish whoever did it - which
+    // leaves you weaker AND the world around you louder, at exactly the moment you
+    // are least able to take it. Her protectiveness is what abandons you.
+    //
+    // ⚠️ It is a spiral, deliberately, but NOT a trap: healing lowers rage (-1 per 6
+    // healed), so retreating and recovering pulls her focus back. The way out is the
+    // thing her dialogue has been begging for all along.
+    //
+    // ⚠️ And it resolves the counter-rewiring problem instead of dodging it. Rage was
+    // going to have to drive both her mood AND her progression - one number, two
+    // jobs, which is what produced the 274-rage bug. Inverted, it does ONE job
+    // (attention) and both readings fall out of it.
+    //
+    // drops and phase stay flat: her economy and her Harvest clock have nothing to
+    // do with where she is looking.
+    // ═══════════════════════════════════════════════════════════════════════
+    wall: {
+      role: 'mercantile',
+      spawns: function (server, p) {
+        var m = wallMood(p)
+        return m === null ? 1.0 : 1.0 + 1.5 * m     // 1.0 calm -> 2.5 fury
+      },
+      power: function (server, p) {
+        var m = wallMood(p)
+        return m === null ? 2.5 : 2.5 - 1.5 * m     // 2.5 calm -> 1.0 fury
+      },
+      drops: 3.0,
+      phase: 1.0,
+    },
+
+    // Her mood, read from the file that owns it. null propagates as "unreadable",
+    // and every curve above treats that as her BEST state rather than her worst -
+    // a storage hiccup must not quietly strip a player's power.
+    // (declared after the table so the function objects above close over it)
     forge:   { role: 'mercantile', spawns: 1.0, power: 1.0, drops: 5.0, phase: 1.0 },
     art:     { role: 'explorer',   spawns: 2.0, power: 2.0, drops: 1.0, phase: 3.0 },
   }
@@ -108,6 +154,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // until the world reset removes it. Aliasing it to Wall means a live Crown walker
   // gets Wall's numbers instead of silently falling through to neutral - which would
   // look identical to "no path" and be invisible.
+  function wallMood(p) {
+    try {
+      if (VELDORA.wall && typeof VELDORA.wall.mood === 'function') return VELDORA.wall.mood(p)
+    } catch (e) { }
+    return null
+  }
+
   TABLE.crown = TABLE.wall
 
   var AXES = ['spawns', 'power', 'drops', 'phase']
@@ -255,7 +308,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       return NEUTRAL
     }
 
+    // ⭐ A TABLE VALUE MAY BE A FUNCTION of (server, player). Wall needs it - her
+    // numbers move with her own counter - and the same door is open to any future
+    // god. Same rule godevents' chart bands already use.
+    //
+    // The try/catch is a BACKSTOP for curves yet to be written. Wall's own curves
+    // cannot reach it: wallMood() swallows its own failure and returns null, which
+    // the curves map to her CEILING. That is deliberate and the two must not be
+    // confused - a curve that throws for an unforeseen reason should fall to
+    // neutral, but a counter that is merely unreadable must never cost a player
+    // power they had a second ago.
     var v = row[axis]
+    if (typeof v === 'function') {
+      try { v = v(server, player) } catch (e) { return NEUTRAL }
+    }
 
     // ⭐ DEPTH, and only on `spawns`. Ethan, 2026-08-16: "add a multiplier to spawn
     // rate scaling with -y and then also add flat increases per depth level."
@@ -269,6 +335,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   // A whole-player readout, for /path coefficients and for the boot report.
+  function baseOf(key, a, server, player) {
+    var row = TABLE[key]
+    if (!row) return NEUTRAL
+    var b = row[a]
+    if (typeof b === 'function') {
+      try { return 'curve(' + (Math.round(b(server, player) * 100) / 100) + ')' }
+      catch (e) { return 'curve(?)' }
+    }
+    return (typeof b === 'number') ? b : NEUTRAL
+  }
+
   function explain(server, player) {
     var key = pathOf(player)
     var out = {
@@ -282,7 +359,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       out.axes.push({
         axis: a,
         value: Math.round(of(server, player, a) * 1000) / 1000,
-        base: (TABLE[key] && TABLE[key][a]) || NEUTRAL,
+        // ⚠️ A base may be a FUNCTION now (Wall's are). Printing one gives
+        // "[object Function]" in /path coefficients, so a curve reports itself as
+        // a curve and the `value` beside it is the number actually in force.
+        base: baseOf(key, a, server, player),
         live: !!CONSUMED[a],
       })
     }
