@@ -16,7 +16,124 @@
 
 ---
 
-## 1. Who she is
+## 0. ⭐ THE CHARACTER BRIEF — Ethan, 2026-08-16. **This supersedes §1.**
+
+> ### Who she was
+> **The daughter of the great general** — and, as far as anyone in that world was
+> concerned, nothing else. She grew up in high society being introduced as somebody's
+> child, and **never once felt like she belonged in a room she was born into.**
+>
+> She had heard voices since birth. On her eighteenth she went south to the dustlands
+> to find them, and reached a hospital, and was treated by **a doctor who looked almost
+> exactly like her.** She was lying in that bed, resting, when the world broke.
+>
+> As she ascended she saw **thousands of souls being forced downward, and she reached
+> for them.** She has not stopped.
+>
+> ### 🔑 THESIS
+> **"I saw them falling and I reached. I am still reaching."**
+>
+> ### What she wants from the player
+> **Retrieval.** Not victory, not killing — *bringing things back*. She is **the only
+> patron who does not send you down to fight.** She sends you down to fetch, and she
+> will keep sending you.
+>
+> ### 🚨 THE LIE
+> **That reaching is the same as catching.** It isn't, and she cannot afford to know
+> it — so she will ask you to save people who are already gone, and **will not hear
+> the answer** when you tell her.
+>
+> ### The arc — she TIGHTENS, she does not soften
+> ⭐ **The exact inverse of the Warrior, and worth playing deliberately against him.
+> He starts cruel and warms. She starts warm and closes her hand.**
+> 1. **Open.** Overfamiliar from the first second. Delighted you exist. Gives you
+>    things you didn't ask for. Asks nothing difficult.
+> 2. **Asking.** Starts naming individuals — specific people, specific levels, details
+>    she should not know. The requests get heavier and **she stops noticing.**
+> 3. **Desperate.** Asks for the impossible and won't take the answer. Sends you back
+>    for someone who cannot be brought up. **Still perfectly kind about it.** That is
+>    the horror — she never turns cruel. She just never stops.
+>
+> ### Voice rules
+> * **Fast.** Run-ons, comma splices, sentences that change direction halfway.
+> * ⭐ **She uses the player's name constantly** — the exact inverse of the Warrior,
+>   who will not use it at all. *Same word, opposite meaning.*
+> * **She never gives orders. She asks.** And the asks are harder than orders, because
+>   you can refuse them.
+> * ⭐⭐ **She speaks about the dead in the present tense.** *"She's on the fourth
+>   level."* Never *was*. That is the thesis rendered as grammar, and **it must never
+>   slip.**
+> * ⭐ **She goes quiet exactly once per conversation**, and that is when the true
+>   thing comes out. One short sentence, then straight back to talking.
+> * Never talks about herself unless asked, then deflects to the voices.
+> * **Never says gone, lost, or dead.**
+>
+> ### Sample lines
+> **One** — *"You're here. You're actually here — okay, okay, sit, I've got things for
+> you, most of it's useless but some of it isn't."* · *"I'm not going to make you fight
+> anything. I want you to find someone."*
+> **Two** — *"Fourth level, past the water. Her name is Ilse and she's still down
+> there, I can feel her, she's been there the whole time."* · *"You came back with two.
+> Two is — that's good, that's good. There were more."*
+> **Three** — *"Go back. Please. I know what you saw. Go back anyway."* · *"Don't tell
+> me that. Don't — no. Say the next part."*
+> **The quiet line, once** — *"I don't think I'm catching any of them."*
+>
+> ### In the depths: **ALICE**
+> **The doctor with her face.** The last person to be kind to her before the world
+> ended, and the only one who could have told her what she was.
+>
+> > **I let go. It's allowed. Put your hands down.**
+>
+> Alice is the woman who held someone's hand, set it back on the bed, and left before
+> he woke. She is **not** arguing that the Spider is wrong to care — she is arguing
+> that **reaching costs the reacher**, that stopping is survivable, and she is speaking
+> from experience.
+>
+> > *"She'll ask you to go back. She always asks. Say no once and see what happens — I
+> > promise you it's less than you think."*
+>
+> ### 🔒 GM NOTE — keep in your pocket
+> **The Warrior is her father. Alice is the woman she was made from.** Her father is a
+> god above her and her mother is in the dark below her, **on opposite sides of a
+> war**, and *the Spider does not know about either.*
+
+---
+
+### 🚨 What this brief COLLIDES with. None of it is small.
+
+**1. Her whole thesis has no mechanic.** *"Retrieval… the only patron who does not send
+you down to fight"* — and she currently has **nine events, four of which send spiders at
+other players, and none of which involve fetching anything.** The taxonomy in `docs/23`
+§VI.0 has no row for *go there and bring something back*, and the no-taking-items ruling
+does not cover it, because retrieval is the opposite. **This is the biggest open
+question in her design.**
+
+**2. `Assassinations ++` contradicts a voice rule.** An Assassination is a kill order
+*with no choice* — and her rule is **"She never gives orders. She asks."** `Contracts
++++` outranking it is the right shape, but the `++` needs a ruling: either she breaks
+her own rule once desperate (that is stage three, and defensible), or the row is `0`.
+
+**3. Gregor.** §1 below says her father was **Gregor**, *"a once-great warrior of the
+church"* and **Blade's dead champion.** The GM note says **the Warrior is her father.**
+Those cannot both be true unless Gregor *is* Blade — which also resolves `docs/40`'s
+*"Daughter of Arkh"* into **his own daughter**, and makes the Speaker's apology at the
+bottom of the world an apology to himself. Extraordinary if intended, a contradiction
+if not. **One ruling settles it.**
+
+**4. Alice is half-built already.** Her deep speaker is **the Doctor** — and Alice is
+*a doctor with her face*. `deep_speaker.js` already runs her below y −64. Whether the
+Doctor simply *becomes* Alice or they are two voices decides whether that file is a
+rename or a rewrite. *(Blade has the same open question with Caebrim.)*
+
+**5. The arc inverts and the code does not know it.** *She starts warm and closes her
+hand.* Her tiers are `MEDIUM_AT 10` / `HIGH_AT 50` on **rage**, so the registers already
+move the right way — but the `low`/`medium`/`high` naming now reads backwards: her
+**low** tier is her most generous and her **high** is her worst.
+
+---
+
+## 1. Who she is *(⚠️ SUPERSEDED by §0 — kept for the reasoning, not the ruling)*
 
 **The Spider. Mera Arkhdottir.** Obsessive. She wants nothing except to stand closer
 to her champion, and she is not embarrassed about it.

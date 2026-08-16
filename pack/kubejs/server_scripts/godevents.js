@@ -400,24 +400,58 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // events for everything." An explicit 0 means she will never do that thing; a
     // MISSING key means nobody has decided yet, and the boot log tells them apart.
     // ═══════════════════════════════════════════════════════════════════════
+    // ⭐ ETHAN'S COLUMN, 2026-08-16. It corrected mine in three places, and each
+    // correction is a character note I had got backwards:
+    //
+    //   boon           I derived 0 ("she never asks before giving"). He says ++++.
+    //                  Her brief: "She never gives orders. She ASKS. And the asks
+    //                  are harder than orders, because you can refuse them." She
+    //                  does both - forces gifts AND asks - and the asking is the
+    //                  worse half.
+    //   assassination  I derived 0. He says ++.
+    //   contract       I derived 0. He says +++.  She DOES send you to kill.
+    //
+    // ⚠️ HIS BANDS ARE STATIC AND HER MECHANIC IS A SLIDER, so the bands here are
+    // his ratios with her rage curve applied - NOT numbers I invented. At any rage
+    // the shape below is his chart; what rage changes is how much of the "kind to
+    // you" half survives against the "cruel to them" half. Flatten these to plain
+    // numbers and she stops sliding, which is the one thing she must never do.
     wall: {
-      challenge: 0,        // she sends nothing AT her champion. Ever.
-      duel: 0,
-      buff: function (server, p) {                 // her gifts, and they are forced
+      challenge: 0,        // blank on his chart. She sends nothing AT her champion.
+      duel: 0,             // blank.
+      // ++++ — forced gifts, heaviest while she is still gentle
+      buff: function (server, p) {
         var m = wallMood(p)
-        return m === null ? 0 : 1 + (1 - m) * 3    // 4 at calm -> 1 at fury
+        return m === null ? 0 : 4 * (1 - 0.6 * m)          // 4.0 calm -> 1.6 fury
       },
-      boon: 0,             // ⭐ she never ASKS before giving. That is the character.
-      invade: function (server, p) {               // forced harm to another player
+      // ++++ — the gifts she ASKS about. Same band as forced, and it fades the same
+      // way: her brief's arc is that she stops noticing she is asking.
+      boon: function (server, p) {
         var m = wallMood(p)
-        return m === null ? 0 : m * 3              // 0 at calm -> 3 at fury
+        return m === null ? 0 : 4 * (1 - 0.7 * m)          // 4.0 calm -> 1.2 fury
       },
-      attack: function (server, p) {               // the ASK - peaks in the middle
+      // ++++ — forced harm to another player, and the one that GROWS
+      invade: function (server, p) {
         var m = wallMood(p)
-        return m === null ? 0 : 4 * m * (1 - m) * 2
+        return m === null ? 0 : 4 * m                      // 0 calm -> 4.0 fury
       },
-      aid: 0, support: 0,  // she helps nobody but her own
-      assassination: 0, contract: 0,   // she does not order kills. She does them.
+      // ++ — asking permission to hurt somebody. Peaks in the middle, because at
+      // calm there is nothing to ask about and at fury she no longer asks.
+      attack: function (server, p) {
+        var m = wallMood(p)
+        return m === null ? 0 : 2 * (4 * m * (1 - m))      // 0 -> 2.0 -> 0
+      },
+      aid: 0, support: 0,  // blank on his chart. She helps nobody but her own.
+      // ++ / +++ — she DOES give kill orders, and the asked form outweighs the
+      // commanded one, which is her whole grammar.
+      assassination: function (server, p) {
+        var m = wallMood(p)
+        return m === null ? 0 : 2 * m                      // only once she is angry
+      },
+      contract: function (server, p) {
+        var m = wallMood(p)
+        return m === null ? 0 : 3 * (0.4 + 0.6 * m)        // 1.2 calm -> 3.0 fury
+      },
     },
 
     // salvage: NOT FILLED IN. She keeps the legacy single-stage roll until Ethan

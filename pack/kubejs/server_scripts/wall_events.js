@@ -101,9 +101,81 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   //
   // The owner is then STAMPED ON THE ENTITY, so the debit on death is exact even if
   // the minion dies alone on the far side of the world.
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ ASK THE ENTITY WHO OWNS IT.  Ethan, 2026-08-16: "make sure the minion
+  // assigning is fixed aswell."
+  //
+  // Proximity alone was wrong in a way that mattered. Goety's hostile necromancers,
+  // sorcerers and bonescallers SUMMON THINGS, and several of those summons carry the
+  // `_servant` suffix - so a wall walker fighting a necromancer was being credited
+  // for the necromancer's minions. Her rage counted her ENEMY'S army as her family.
+  //
+  // The old comment said reading owner NBT was too mod-specific to attempt. That is
+  // true if you try to know the key - Goety, Occultism and goety_cataclysm all store
+  // it differently. But you do not need the key: an owned summon has its owner's
+  // UUID SOMEWHERE in its NBT, so searching the whole blob for the UUID of an online
+  // player answers the question without knowing any mod's schema at all.
+  //
+  // Order matters:
+  //   1. NBT says an owner  -> definitive. Credit ONLY if they walk wall; if the
+  //      owner is a mob or another god's champion, credit NOBODY.
+  //   2. NBT says nothing   -> fall back to proximity, as before.
+  // ═══════════════════════════════════════════════════════════════════════════
+  function nbtOf(e) {
+    var s = null
+    try { s = String(e.nbt) } catch (x) { }
+    if (!s) { try { s = String(e.fullNBT) } catch (x) { } }
+    return s || null
+  }
+
+  // Returns the owning PLAYER, or null for "no player owns this", or the string
+  // 'unreadable' for "this entity has no readable NBT" - three answers, because
+  // "nobody owns it" and "I could not look" must not share a value.
+  function ownerFromNbt(server, e) {
+    var s = nbtOf(e)
+    if (!s) return 'unreadable'
+    var low = s.toLowerCase()
+    try {
+      var ps = server.players
+      for (var i = 0; i < ps.length; i++) {
+        var u = ''
+        try { u = String(ps[i].uuid) } catch (x) { continue }
+        if (!u) continue
+        // Dashed form, and the dashless form some mods write.
+        if (low.indexOf(u.toLowerCase()) >= 0) return ps[i]
+        var bare = u.split('-').join('').toLowerCase()
+        if (bare && low.indexOf(bare) >= 0) return ps[i]
+      }
+    } catch (x) { }
+    return null
+  }
+
+  var NBT_MODE_LOGGED = false
+
   function creditNearest(server, e) {
     var walkers = wallWalkers(server)
     if (!walkers.length) return null
+
+    var owner = ownerFromNbt(server, e)
+    if (!NBT_MODE_LOGGED) {
+      NBT_MODE_LOGGED = true
+      console.info(TAG + 'minion attribution: NBT owner lookup is ' +
+        (owner === 'unreadable' ? 'NOT READABLE on this build - falling back to ' +
+          'proximity, which will over-credit enemy summons' : 'WORKING'))
+    }
+    if (owner !== 'unreadable') {
+      // 🚨 A definite answer, including a definite NO. If something else summoned
+      // this - a necromancer, or another god's champion - she gets nothing. That is
+      // the whole point of the fix.
+      if (!owner) return null
+      var op = ''
+      try { if (VELDORA.paths) op = VELDORA.paths.pathOf(owner) || '' } catch (x) { }
+      if (op !== GOD) return null
+      return owner
+    }
+
+    // Unreadable NBT: the old behaviour, and it is now the fallback rather than the
+    // rule. Still bounded to CREDIT_RANGE, still only wall walkers.
     var best = null, bestD = CREDIT_RANGE * CREDIT_RANGE
     for (var i = 0; i < walkers.length; i++) {
       var p = walkers[i]
