@@ -161,7 +161,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   ServerEvents.loaded(function (event) {
     if (!GATE) { console.info(TAG + 'counter hooks GATED OFF'); return }
     sampleBiomes(event.server)
+    // ⚠️ This line is the surface an admin uses to CHECK the hooks, so it said
+    // "wall:placed" for one boot after the hook was removed - advertising the exact
+    // defect that had just been fixed. A banner that describes intent instead of
+    // state is the same rot as a doc that does; if a hook changes, change this too.
     console.info(TAG + 'counter hooks live - blade:slain forge:crafted+smelted ' +
-      'wall:placed art:new-biomes (salvage:trades lives in salvage.js)')
+      'art:new-biomes (salvage:trades lives in salvage.js)')
+    console.info(TAG + 'wall is NOT hooked here - her counter is RAGE, written only ' +
+      'by wall_events.js. `blocks placed` was removed 2026-08-16 after it drove her ' +
+      'to 274 against a fury threshold of 90.')
   })
 })();
