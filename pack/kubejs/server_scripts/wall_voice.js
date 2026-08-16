@@ -47,18 +47,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // A `rare_<tag>` pool is rolled by idle.js at 15% BEFORE its common twin. Put the
   // lines where this god is a person in there, and nowhere else.
   var LINES = {
-    // ⭐ GUIDANCE - how to progress on this path, in this god's voice.
-    // This is what REPLACED the path guidebooks (cut 2026-08-15). A book said
-    // the same thing to everyone and went stale silently; this arrives from the
-    // god you actually follow, and reads like advice from someone with an
-    // opinion about you rather than a wiki page.
+    // ⭐ REBUILT 2026-08-15 FROM THE ACTUAL MOD GUIDES, and deliberately naming
+    // no mod, no menu and no item id. A god does not know what a thing is called
+    // in a wiki; it knows there is a shape you draw and something answers. If the
+    // progression cannot survive being spoken by somebody who never read the
+    // guide, we did not understand it. FOR ETHAN'S REVIEW.
     guidance: [
-      "Goety is yours. Chalk, a brazier, and something that used to be alive.",
-      "Occultism binds spirits. Start with a Foliot. It is the smallest thing that will listen.",
-      "Every one you raise pleases me. Please me often.",
-      "Your kills pay in chalk and soul braziers. Kill deeper for the rest.",
+      "Chalk first, love. A shape on the floor, drawn exactly, or nothing comes.",
+      "The shape is the whole of it. One line wrong and you have drawn nothing at all.",
+      "Stand something at each corner and speak. The first thing that answers will be small. Let it be small.",
+      "Small ones first. The ones worth having will not come for a beginner's chalk.",
+      "Bind one into a book and it is yours to call again. Loose ones belong to nobody.",
+      "The dead carry a kind of power in them. Take it before it goes out.",
+      "That power is the currency down here. Everything I can teach you is bought with it.",
+      "A rod is only a rod until you seat something in it. Then it speaks.",
+      "What you seat in it decides what it says. Collect them.",
+      "Raise them, keep them, feed them. Every one that stands is one more of us.",
       "Do not let them die, love. I feel every one.",
-      "The dark below is not a problem for us. We are what is in it.",
     ],
     low_gift: [
       "Heal, love. Heal.",

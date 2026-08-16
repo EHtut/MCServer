@@ -54,18 +54,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   // ── the lines ──────────────────────────────────────────────────────────────
   var LINES = {
-    // ⭐ GUIDANCE - how to progress on this path, in this god's voice.
-    // This is what REPLACED the path guidebooks (cut 2026-08-15). A book said
-    // the same thing to everyone and went stale silently; this arrives from the
-    // god you actually follow, and reads like advice from someone with an
-    // opinion about you rather than a wiki page.
+    // ⭐ REBUILT 2026-08-15 FROM THE ACTUAL MOD GUIDES, and deliberately naming
+    // no mod, no menu and no item id. A god does not know what a thing is called
+    // in a wiki; it knows there is a shape you draw and something answers. If the
+    // progression cannot survive being spoken by somebody who never read the
+    // guide, we did not understand it. FOR ETHAN'S REVIEW.
     guidance: [
-      "Better Combat is per weapon. Learn one properly, not five badly.",
-      "Combat Roll is bound in your controls. It is the difference between deep and dead.",
-      "Your kills pay in iron, bronze and eventually netherite. Kill deeper, get paid better.",
-      "Strength is not a stat. It is a potion, and you will need it for what I gave you.",
-      "Nothing above y40 will ever hurt you enough to be useful. Go down.",
-      "Carry your power on your body. A base can be raided. You cannot.",
+      "Learn one weapon until it is boring. Then learn what it does that the others cannot.",
+      "Every weapon swings its own way. A man who carries five has mastered none.",
+      "You can roll out of a blow. Learn where that is bound before you need it.",
+      "The blade I gave you is too heavy for you. That is not a flaw, it is an instruction.",
+      "Strength is not a thing you are. It is a thing you drink. Find it.",
+      "Nothing above the treeline will ever be worth killing. Go down.",
+      "Deeper corpses pay better. That is the only economy I respect.",
+      "Armour is borrowed. A weapon in your hand is not. Carry your power where it cannot be raided.",
+      "Two hands on it. Even that will not be enough yet.",
     ],
     low_gift: [
       "Take it. You're no use to me dead.",

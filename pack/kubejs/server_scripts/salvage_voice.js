@@ -299,14 +299,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         "Back to business.",
       ],
     },
+    // ⭐ REBUILT 2026-08-15 FROM THE ACTUAL MOD GUIDES, and deliberately naming
+    // no mod, no menu and no item id. A god does not know what a thing is called
+    // in a wiki; it knows there is a shape you draw and something answers. If the
+    // progression cannot survive being spoken by somebody who never read the
+    // guide, we did not understand it. FOR ETHAN'S REVIEW.
     guidance: {
       opens: [
-        "TaCZ guns want the right calibre. The wrong ammo does nothing at all.",
-        "A double barrel holds two. That is the entire lesson.",
-        "Your kills pay in gunpowder and iron. Deeper pays better.",
-        "Ammo is the bottleneck. It was always going to be the bottleneck.",
-        "You can pay me in hunger, in levels, or in sight. Your choice.",
-        "Everything I take is something you were carrying anyway.",
+        "You will not make a gun, Gunner. Nobody makes them any more. You find one and you feed it forever.",
+        "The feeding is the business. That is where I come in.",
+        "Rounds are built on a bench, not pulled out of the ground.",
+        "The wrong round does nothing at all. Not a misfire - nothing.",
+        "Match the round to the piece. Every piece takes one kind and only one.",
+        "A short double takes two. Two. Count them before you need to.",
+        "Powder and iron come off the things you kill. Deeper things carry better powder.",
+        "You can pay me in hunger, in levels, or in sight. Your choice, always.",
       ],
       closes: [
         "That is free advice. Note the word.",
@@ -315,6 +322,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         "You will work out the rest.",
         "Come and see me when you do.",
         "There is more where that came from.",
+        "Write it down, Gunner.",
+        "You are welcome.",
       ],
     },
     blade: {

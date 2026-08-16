@@ -1,36 +1,49 @@
 // chosen.js - YOU DO NOT CHOOSE A PATH. YOU ARE CHOSEN.  docs/23, docs/45
 //
 // Ethan, 2026-08-15:
-//   "I am also thinking we introduce one mechanic. You no longer choose your path.
-//    You are chosen.
-//      Blade   - Obtain or craft an iron sword
-//      Wall    - Rejected another path and did not choose a path for x amount of days
-//      Salvage - Crossbow
-//      Forge   - Wrench
-//      Art     - Lapis"
+//   "You no longer choose your path. You are chosen."
+//     Blade   iron sword      Salvage crossbow
+//     Forge   wrench          Art     lapis
+//     Wall    rejected another path and did not choose for x days
 //
-// ── ⭐ WHY THIS IS THE BEST VERSION OF PATH SELECTION ───────────────────────
-// `/path blade` asks a player to pick a god off a menu before they have met any of
-// them. It is the single most video-game moment in a project that has spent weeks
-// removing video-game moments - and it puts the most important decision in the game
-// behind a command nobody has a reason to trust.
+//   "Chosen should exist in such a way that after you obtain the item it flags it
+//    so when you are not in combat it triggers the offer from the patron. It only
+//    fires once. You can get the path again by doing /path, but for it to appear
+//    on /path you need to unlock it."
 //
-// This inverts it. **You are noticed for what you were already doing.** You picked
-// up an iron sword because you wanted to fight something, and the god of war saw
-// that. You crafted a crossbow, and the dealer noticed you had chosen a weapon that
-// needs feeding. Nobody explained the system to you; the system was watching.
+// ── ⭐ WHY THIS IS BETTER THAN THE MENU IT REPLACES ─────────────────────────
+// `/path blade` asked a player to pick a god off a list before meeting any of them
+// - the most video-game moment left in a project that spent weeks removing them.
 //
-// ⭐ AND WALL'S IS THE BEST ONE. She does not have a trigger item, because she is
-// not something you reach for. She is what happens when you REFUSED somebody else
-// and then stood still. She takes what nobody else claimed, which is exactly what
-// her whole character is - "They rejected you too. I won't."
+// This inverts it. You are noticed for what you were ALREADY DOING. You picked up
+// an iron sword because you wanted to fight something, and the god of war saw it.
+// Nobody explained the system; the system was watching.
+//
+// ⭐ WALL'S IS THE BEST OF THEM. She has no trigger item because she is not
+// something you reach for. She is what happens when you REFUSED somebody and then
+// stood still. She takes what nobody else claimed - "They rejected you too. I
+// won't."
+//
+// ── THE THREE-PART SHAPE (Ethan's, and it is the good part) ────────────────
+//
+//   1. UNLOCK    picking the item up flags that path FOREVER. Irreversible, and
+//                it is what makes the path exist for you at all.
+//   2. THE OFFER fires ONCE, and only out of combat. A god does not interrupt a
+//                fight to recruit you.
+//   3. /path     is no longer a menu of five strangers. It only lists what you
+//                have unlocked, so it reads as "come back to one you have met"
+//                rather than "pick a god".
+//
+// 🚨 THE UNLOCK AND THE OFFER ARE SEPARATE FLAGS, deliberately. Refusing an offer
+// must not re-lock the path - you met them, that cannot be undone - and the offer
+// must not re-fire every time you pick the sword back up. Conflating them would
+// either nag forever or lock a player out of a god they turned down once.
 //
 // ── HOW IT CLAIMS ───────────────────────────────────────────────────────────
-// 🚨 IT RUNS THE PLAYER'S OWN `/path <key>` COMMAND rather than reimplementing the
-// claim. That gauntlet is long - CLOSED paths, the post-fall lockout, escrow, one
-// walker per path, the introduction ritual, the XP toll, the books - and a second
-// copy of it would drift from the first within a week. Being chosen must be
-// EXACTLY the same act as choosing, or the two will disagree and one will be wrong.
+// 🚨 IT RUNS THE PLAYER'S OWN `/path <key>` rather than reimplementing the claim.
+// That gauntlet is long - CLOSED paths, the post-fall lockout, escrow, one walker
+// each, the introduction ritual, the XP toll - and a second copy would drift from
+// the first inside a week. Being chosen must be EXACTLY the same act as choosing.
 //
 ;
 var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
@@ -39,18 +52,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var TAG = '[chosen] '
   var GATE = true
 
-  var SWEEP = 200                  // 10s. Fast enough to feel like being noticed.
-  var K_LAST = 'veldora_chosen_try' // world day + 1 of the last approach; 0 = never
-  var RETRY_DAYS = 1               // a god who was refused waits a day before asking
+  var SWEEP = 100                  // 5s. Fast enough to feel like being noticed.
+  var COMBAT_WINDOW = 300          // 15s since damage still counts as fighting
+  var OFFER_DELAY = 60             // a beat between the notice and the scene
 
-  // ── THE TRIGGERS ──────────────────────────────────────────────────────────
-  // Ethan's, exactly. Held anywhere in the inventory, not just the hand - you are
-  // being noticed for what you CARRY, and a player who crafted a sword and put it
-  // in a chest has still told the world something.
+  var K_UNLOCK = 'veldora_unlocked_'   // + path. 1 = you have met them, forever
+  var K_OFFERED = 'veldora_offered_'   // + path. 1 = the one offer has been made
+  var K_DRIFT = 'veldora_pathless_since'
+
+  // ── THE TRIGGERS.  Ethan's, exactly. ─────────────────────────────────────
+  // Held ANYWHERE in the inventory, not just the hand. You are noticed for what
+  // you carry, and a sword in a chest still says something about you.
   //
-  // ⚠️ Art and Forge are CLOSED in paths.js. Their triggers stay listed so the
-  // table remains the design rather than the leftovers, and the claim refuses them
-  // on its own. Nothing here needs to know which gods are open.
+  // ⚠️ Art and Forge are CLOSED in paths.js. Their triggers stay listed so this
+  // table is the design rather than the leftovers - and the claim refuses them on
+  // its own, so nothing here needs to know which gods are open.
   var TRIGGERS = {
     blade: ['minecraft:iron_sword'],
     salvage: ['minecraft:crossbow'],
@@ -58,21 +74,77 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     art: ['minecraft:lapis_lazuli'],
   }
 
-  // ── WALL: not an item. A refusal, and then time. ─────────────────────────
   var WALL_DAYS = 3                // pathless days after a refusal before she comes
 
-  function worldDay(server) {
+  // ── combat, borrowed from idle.js's approach ─────────────────────────────
+  var lastHurt = {}                // uuid -> world ticks
+
+  EntityEvents.beforeHurt(function (event) {
+    try {
+      var e = event.entity
+      if (e && e.player) lastHurt[String(e.uuid)] = -1
+    } catch (x) { }
+  })
+
+  function worldTicks(server) {
     try {
       var d = server.overworld().dayTime()
-      if (typeof d === 'number' && isFinite(d)) return Math.floor(d / 24000)
+      if (typeof d === 'number' && isFinite(d)) return d
     } catch (e) { }
     return null
   }
 
-  // ⚠️ SCANS THE WHOLE INVENTORY, defensively. There is no single accessor in this
-  // codebase that has been proven for a full inventory walk, so this tries the
-  // indexed route and gives up quietly rather than throwing inside a sweep that
-  // runs every ten seconds for every player.
+  function worldDay(server) {
+    var t = worldTicks(server)
+    return t === null ? null : Math.floor(t / 24000)
+  }
+
+  // ⚠️ UNREADABLE COUNTS AS IN COMBAT. If we cannot tell, we do not interrupt -
+  // an offer that lands mid-fight is the one thing Ethan asked this to avoid, and
+  // a missed offer costs nothing because the sweep comes back in five seconds.
+  function inCombat(server, p) {
+    var uuid = null
+    try { uuid = String(p.uuid) } catch (e) { return true }
+    var now = worldTicks(server)
+    if (now === null) return true
+    if (lastHurt[uuid] === -1) { lastHurt[uuid] = now; return true }
+    var at = lastHurt[uuid]
+    if (!at) return false                    // never hurt this session
+    var ago = now - at
+    if (ago < 0) { lastHurt[uuid] = now; return true }   // clock moved
+    return ago < COMBAT_WINDOW
+  }
+
+  // ── the flags ────────────────────────────────────────────────────────────
+  function isUnlocked(p, key) {
+    try { return (p.persistentData.getInt(K_UNLOCK + key) || 0) > 0 } catch (e) { return false }
+  }
+
+  function unlock(p, key) {
+    if (isUnlocked(p, key)) return false
+    try { p.persistentData.putInt(K_UNLOCK + key, 1) } catch (e) { return false }
+    console.info(TAG + p.username + ' UNLOCKED ' + key)
+    return true
+  }
+
+  function wasOffered(p, key) {
+    try { return (p.persistentData.getInt(K_OFFERED + key) || 0) > 0 } catch (e) { return true }
+  }
+
+  // Published so paths.js can gate its listing and its claim on it.
+  VELDORA.chosen = {
+    unlocked: isUnlocked,
+    unlock: unlock,
+    triggers: TRIGGERS,
+    // Every path this player has met, for the /path listing.
+    unlockedList: function (p) {
+      var out = []
+      for (var k in TRIGGERS) if (TRIGGERS.hasOwnProperty(k) && isUnlocked(p, k)) out.push(k)
+      if (isUnlocked(p, 'wall')) out.push('wall')
+      return out
+    },
+  }
+
   function carries(p, ids) {
     var inv = null
     try { inv = p.inventory } catch (e) { return false }
@@ -86,16 +158,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       var id = null
       try { id = String(st.id) } catch (e) { continue }
       if (!id) continue
-      for (var j = 0; j < ids.length; j++) {
-        if (id === ids[j]) return true
-      }
+      for (var j = 0; j < ids.length; j++) if (id === ids[j]) return true
     }
     return false
   }
 
-  // Has this player refused somebody? introductions.js stamps a per-path cooldown
-  // key when a scene is declined or walked away from, so the presence of ANY of
-  // them is the record of a refusal.
+  // introductions.js stamps veldora_refused_<key> when a scene is declined or
+  // walked away from. Any of them present means this player has turned somebody
+  // down, which is Wall's whole entry condition.
   function hasRefused(p) {
     var keys = ['blade', 'salvage', 'forge', 'art', 'wall', 'crown']
     for (var i = 0; i < keys.length; i++) {
@@ -105,10 +175,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     }
     return false
   }
-
-  // How long they have been pathless AND refused. Stamped the first time we see
-  // them in that state - day+1, because getInt returns 0 for a missing key.
-  var K_DRIFT = 'veldora_pathless_since'
 
   function driftDays(server, p) {
     var now = worldDay(server)
@@ -120,80 +186,76 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       return 0
     }
     var since = stored - 1
-    // Clock moved backwards (an admin ran /time set) - re-stamp rather than
-    // treating it as ten thousand days of drifting.
+    // An admin ran /time set - re-stamp rather than reading ten thousand days.
     if (since > now) { try { p.persistentData.putInt(K_DRIFT, now + 1) } catch (e) { } return 0 }
     return now - since
   }
 
-  // ── who wants this player ────────────────────────────────────────────────
-  // Returns a path key, or null. Item triggers first; Wall is the fallback, which
-  // is thematically exact - she gets you when nobody else did.
-  function whoWants(server, p) {
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 1. THE UNLOCK - carrying the thing marks the path, whatever else is going on
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Runs even mid-combat and even while you already walk another path: noticing is
+  // not the same as recruiting, and a player who finds a crossbow during a fight
+  // has still been noticed.
+  function scanUnlocks(server, p) {
+    var newly = null
     for (var key in TRIGGERS) {
       if (!TRIGGERS.hasOwnProperty(key)) continue
-      if (carries(p, TRIGGERS[key])) return key
+      if (isUnlocked(p, key)) continue
+      if (!carries(p, TRIGGERS[key])) continue
+      if (unlock(p, key)) newly = newly || key
     }
-    if (hasRefused(p)) {
+    // Wall unlocks by drifting, not by carrying.
+    if (!isUnlocked(p, 'wall') && hasRefused(p)) {
       var d = driftDays(server, p)
-      if (d !== null && d >= WALL_DAYS) return 'wall'
+      if (d !== null && d >= WALL_DAYS) {
+        if (unlock(p, 'wall')) newly = newly || 'wall'
+      }
+    }
+    return newly
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 2. THE OFFER - once, ever, and never mid-fight
+  // ═══════════════════════════════════════════════════════════════════════════
+  function pendingOffer(p) {
+    var keys = ['blade', 'salvage', 'forge', 'art', 'wall']
+    for (var i = 0; i < keys.length; i++) {
+      if (isUnlocked(p, keys[i]) && !wasOffered(p, keys[i])) return keys[i]
     }
     return null
   }
 
-  // ── the approach ─────────────────────────────────────────────────────────
-  // 🚨 RUNS THE PLAYER'S OWN /path COMMAND. See the header - being chosen must be
-  // the same act as choosing, or the two implementations will disagree.
-  //
-  // ⚠️ p.runCommandSilent, not server.runCommandSilent. The player's own permission
-  // level is correct here: if a player could not take this path by typing it, a god
-  // must not be able to take it for them.
-  function approach(server, p, key) {
-    var now = worldDay(server)
-    if (now !== null) {
-      try { p.persistentData.putInt(K_LAST, now + 1) } catch (e) { }
-    }
-    console.info(TAG + '!! ' + key + ' has noticed ' + p.username)
+  function makeOffer(server, p, key) {
+    // 🚨 STAMPED BEFORE THE SCENE, not after. "It only fires once" has to survive
+    // the scene failing to open - if the stamp waited for success, a player stuck
+    // in another ritual would be re-approached every five seconds forever.
+    try { p.persistentData.putInt(K_OFFERED + key, 1) } catch (e) { }
+    console.info(TAG + '!! ' + key + ' makes its ONE offer to ' + p.username)
 
-    // A beat first, so it reads as being seen rather than as a command firing.
     try {
       p.tell(Text.of(''))
       p.tell(Text.of('§8Something has noticed you.'))
     } catch (e) { }
 
-    server.scheduleInTicks(50, function () {
+    server.scheduleInTicks(OFFER_DELAY, function () {
       try {
+        // ⚠️ The player's own permission, not the server's: if a player could not
+        // take this path by typing it, a god must not take it for them.
         p.runCommandSilent('path ' + key)
-      } catch (e) { console.error(TAG + 'claim threw for ' + p.username + ' :: ' + e) }
+      } catch (e) { console.error(TAG + 'offer threw for ' + p.username + ' :: ' + e) }
     })
   }
 
-  function eligible(server, p) {
-    // Already walking one - nothing to do, and clear the drift clock so a future
-    // release starts it fresh.
+  function canBeOffered(server, p) {
     var path = ''
     try { if (VELDORA.paths) path = VELDORA.paths.pathOf(p) || '' } catch (e) { return false }
-    if (path) {
-      try { if (p.persistentData.getInt(K_DRIFT)) p.persistentData.putInt(K_DRIFT, 0) } catch (e) { }
-      return false
-    }
-    // Never over a scene.
+    if (path) return false                              // already walking one
     try { if (VELDORA.ritual && VELDORA.ritual.active(p)) return false } catch (e) { }
-    // The post-fall lockout. /path would refuse anyway, but a god should not be
-    // seen reaching for somebody it cannot have.
+    if (inCombat(server, p)) return false               // ⭐ Ethan's rule
     try {
       if (VELDORA.pathBlocked && VELDORA.pathBlocked(server, p).blocked) return false
     } catch (e) { }
-    // Approached recently - do not nag.
-    var now = worldDay(server)
-    if (now === null) return false
-    var stored = 0
-    try { stored = p.persistentData.getInt(K_LAST) } catch (e) { }
-    if (stored) {
-      var last = stored - 1
-      if (last > now) { try { p.persistentData.putInt(K_LAST, now + 1) } catch (e) { } return false }
-      if ((now - last) < RETRY_DAYS) return false
-    }
     return true
   }
 
@@ -203,10 +265,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       var ps = server.players
       for (var i = 0; i < ps.length; i++) {
         var p = ps[i]
-        if (!eligible(server, p)) continue
-        var key = whoWants(server, p)
-        if (!key) continue
-        approach(server, p, key)
+
+        // Walking a path clears the drift clock, so a later release starts fresh.
+        try {
+          var cur = VELDORA.paths ? (VELDORA.paths.pathOf(p) || '') : ''
+          if (cur && p.persistentData.getInt(K_DRIFT)) p.persistentData.putInt(K_DRIFT, 0)
+        } catch (e) { }
+
+        scanUnlocks(server, p)                          // always
+        if (!canBeOffered(server, p)) continue
+        var key = pendingOffer(p)
+        if (key) makeOffer(server, p, key)
       }
     } catch (e) { console.warn(TAG + 'sweep threw :: ' + e) }
     schedule(server)
@@ -214,45 +283,58 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   function schedule(server) { server.scheduleInTicks(SWEEP, function () { sweep(server) }) }
 
-  VELDORA.chosen = { whoWants: whoWants, triggers: TRIGGERS, approach: approach }
-
   ServerEvents.commandRegistry(function (event) {
     var Commands = event.commands
     function ADMIN(s) { try { return s.hasPermission(2) } catch (e) { return false } }
 
-    // Why is nobody choosing me? - the question this system will always raise.
-    event.register(Commands.literal('chosen').requires(ADMIN).executes(function (ctx) {
+    // "Why has nobody chosen me?" - the question this system will always raise.
+    var root = Commands.literal('chosen').executes(function (ctx) {
       var p = ctx.source.player
       if (!p) return 0
       var srv = ctx.source.server
       var path = ''
       try { if (VELDORA.paths) path = VELDORA.paths.pathOf(p) || '' } catch (e) { }
       p.tell(Text.of('§8§m                                        '))
-      p.tell(Text.of('§6You are chosen, you do not choose.'))
-      p.tell(Text.of('§8current path: §f' + (path || 'none')))
-      for (var key in TRIGGERS) {
-        if (!TRIGGERS.hasOwnProperty(key)) continue
-        var has = carries(p, TRIGGERS[key])
-        p.tell(Text.of((has ? '§a  CARRYING ' : '§8  no       ') + '§f' + key +
-          ' §8- ' + TRIGGERS[key].join(', ')))
+      p.tell(Text.of('§6You are chosen. You do not choose.'))
+      p.tell(Text.of('§8walking: §f' + (path || 'nothing')))
+      var keys = ['blade', 'salvage', 'forge', 'art', 'wall']
+      for (var i = 0; i < keys.length; i++) {
+        var k = keys[i]
+        var u = isUnlocked(p, k)
+        var o = wasOffered(p, k)
+        p.tell(Text.of((u ? '§a  unlocked ' : '§8  locked   ') + '§f' + k +
+          (u ? (o ? ' §8(offer made - use /path ' + k + ')' : ' §e(offer pending)') : '')))
       }
-      var d = driftDays(srv, p)
-      p.tell(Text.of('§8  wall §8- refused someone: §f' + (hasRefused(p) ? 'yes' : 'no') +
-        '§8, drifting §f' + (d === null ? '?' : d) + '§8/' + WALL_DAYS + ' days'))
-      p.tell(Text.of('§8eligible right now: §f' + (eligible(srv, p) ? 'yes' : 'no') +
-        ' §8· wants you: §f' + (whoWants(srv, p) || 'nobody')))
+      p.tell(Text.of('§8in combat: §f' + (inCombat(srv, p) ? 'yes - no offers now' : 'no')))
+      return 1
+    })
+    // Testing: forget everything so the whole flow can be run again.
+    root = root.then(Commands.literal('reset').requires(ADMIN).executes(function (ctx) {
+      var p = ctx.source.player
+      if (!p) return 0
+      var keys = ['blade', 'salvage', 'forge', 'art', 'wall']
+      for (var i = 0; i < keys.length; i++) {
+        try {
+          p.persistentData.putInt(K_UNLOCK + keys[i], 0)
+          p.persistentData.putInt(K_OFFERED + keys[i], 0)
+        } catch (e) { }
+      }
+      try { p.persistentData.putInt(K_DRIFT, 0) } catch (e) { }
+      p.tell(Text.of('§7Nobody knows you.'))
       return 1
     }))
+    event.register(root)
   })
 
   ServerEvents.loaded(function (event) {
-    if (!GATE) { console.info(TAG + 'GATED OFF - players choose with /path'); return }
+    if (!GATE) { console.info(TAG + 'GATED OFF - players choose freely with /path'); return }
     schedule(event.server)
     var t = []
     for (var k in TRIGGERS) if (TRIGGERS.hasOwnProperty(k)) t.push(k + ':' + TRIGGERS[k][0])
-    console.info(TAG + 'YOU ARE CHOSEN, NOT CHOOSING - ' + t.join(', ') +
-      ', wall: refused + ' + WALL_DAYS + ' pathless days. Sweep ' + SWEEP + 't, ' +
-      'one approach per ' + RETRY_DAYS + ' world day(s). CLOSED paths refuse ' +
-      'themselves via /path.')
+    console.info(TAG + 'YOU ARE CHOSEN - ' + t.join(', ') + ', wall: refused + ' +
+      WALL_DAYS + ' pathless days.')
+    console.info(TAG + 'carrying it UNLOCKS the path forever; the offer fires ONCE, ' +
+      'out of combat only (' + COMBAT_WINDOW + 't since damage). After that /path ' +
+      'takes you back - and /path only lists what you have unlocked.')
   })
 })();

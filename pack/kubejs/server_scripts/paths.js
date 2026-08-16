@@ -471,18 +471,37 @@
       p.tell(cur && PATHS[cur]
         ? '§6You walk ' + PATHS[cur].name + '§7. ' + PATHS[cur].blurb
         : '§7You have declared no path. §f/path <name>')
+      var shown = 0
       Object.keys(PATHS).forEach(k => {
+        shown++
         var h = holderOf(srv, k)
         var esc = escrowHolder(h)
         var tag = esc
           ? (esc === p.username ? '§e(held for you)' : '§e(held - ' + esc + ' is choosing)')
           : (!h ? '§a(open)' : (h === p.username ? '§6(yours)' : '§c(' + h + ')'))
+        // ⭐ ONLY WHAT YOU HAVE UNLOCKED. Ethan, 2026-08-15: "for it to appear on
+        // /path you need to unlock it." A menu of five strangers was the most
+        // video-game thing left in the project; a list of the ones who have
+        // actually approached you reads as "go back to one you have met".
+        var known = true
+        try {
+          if (VELDORA.chosen && typeof VELDORA.chosen.unlocked === 'function') {
+            known = VELDORA.chosen.unlocked(p, k)
+          }
+        } catch (e) { }
         if (CLOSED[k]) {
-          p.tell('  §8' + k + ' - ' + PATHS[k].name + ' §8(silent)')
+          if (known) p.tell('  §8' + k + ' - ' + PATHS[k].name + ' §8(silent)')
+        } else if (!known) {
+          // Not "locked" - that names a system. They simply are not there.
+          shown--
         } else {
           p.tell('  §e' + k + ' §8- §7' + PATHS[k].name + ' ' + tag)
         }
       })
+      if (shown <= 0) {
+        p.tell('§8Nothing is listed. Nothing has noticed you yet.')
+        p.tell('§8They are watching what you carry.')
+      }
       // Do NOT advertise /path release any more - it is admin-only, and a listed
       // command that refuses you reads as a bug rather than a rule.
       p.tell('§8One walker each, and a path is not something you set down.')
@@ -665,6 +684,21 @@
           console.info('[paths] ' + p.username + ' reached for CLOSED path ' + key)
           return 0
         }
+
+        // ⭐ YOU CANNOT TAKE A GOD YOU HAVE NEVER MET. The unlock is set by
+        // chosen.js the moment you carry their thing, so this is not a grind gate -
+        // it is the difference between answering somebody and cold-calling a
+        // stranger. Fails OPEN if chosen.js is missing: a broken unlock system
+        // must not lock everybody out of the game.
+        try {
+          if (VELDORA.chosen && typeof VELDORA.chosen.unlocked === 'function' &&
+              !VELDORA.chosen.unlocked(p, key)) {
+            p.tell(Text.of('§8They do not know you.'))
+            p.tell(Text.of('§7Something has to notice you first.'))
+            console.info('[paths] ' + p.username + ' reached for LOCKED path ' + key)
+            return 0
+          }
+        } catch (e) { }
 
         // E2d: a patron that gave up on you locks you out of EVERY path, not only
         // the one you lost - otherwise the punishment is a two-second detour into
