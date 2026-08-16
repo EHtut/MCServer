@@ -8,7 +8,8 @@
 //
 //   blade    enemies slain     he set a test; you take it
 //   salvage  trades taken      ALREADY BUILT in salvage.js - she is the inversion
-//   forge    items crafted     the only patron who pays for your actual output
+//   forge    BUILDING          blocks placed + items crafted + smelted. He is the
+//                              Builder, and the only direct non-combat path
 //   wall     RAGE              🔴 NOT a verb, and NOT counted here - see below
 //   art      new biomes seen   she sends you out; arriving is the point
 //
@@ -84,6 +85,24 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   ItemEvents.smelted(function (event) {
     if (!GATE) return
     try { if (event.player) bump(event.player, 'forge', 1, 'smelted') } catch (e) { }
+  })
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ FORGE: BLOCKS PLACED — re-homed 2026-08-16, finishing a ruling from earlier
+  // the same day. Ethan, on the event taxonomy: "Forge will be block placed."
+  //
+  // The hook was DELETED from Wall when it turned out to be driving her rage, and
+  // the design doc recorded it as "re-homed to Forge" - but nothing ever moved it,
+  // so for several hours the Builder's counter was `crafted + smelted` and did not
+  // count a single placed block. Ethan, 2026-08-16: "Forge - Builder."
+  //
+  // ⚠️ CRAFTING STILL COUNTS TOO. It is not either/or: he is the production path,
+  // and a Create contraption is built out of both acts. Placing is the cheaper of
+  // the two per-action, which is exactly what §6.2's step-weighting is for - a
+  // block placed should be worth a fraction of a crafted stack when that lands.
+  BlockEvents.placed(function (event) {
+    if (!GATE) return
+    try { if (event.player) bump(event.player, 'forge', 1, 'placed') } catch (e) { }
   })
 
   // ═══════════════════════════════════════════════════════════════════════════

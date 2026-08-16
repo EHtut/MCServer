@@ -739,6 +739,75 @@ is no second choice.
 
 ---
 
+## 5b. ⭐ THE FIVE PLAYSTYLES — Ethan, 2026-08-16
+
+> **Blade** — Combat / power fantasy
+> **Salvage** — Scrappy marksman
+> **Wall** — Minion master
+> **Forge** — Builder
+> **Art** — grinds into overwhelming
+>
+> *"The only direct noncombat class is forge but they have the highest power level
+> because they can potentially just build a mech suit. Same with art, they become
+> overpowered if they grind. But regardless this at the end is a combat server we
+> created."*
+
+### 🔑 What that explains about the coefficient table
+
+It looks wrong at first glance that **Forge has the LOWEST `power` (1.0)** while being
+described as the highest power ceiling in the game. It isn't wrong — it is the rule
+the table has been following without anyone writing it down:
+
+> **The coefficient supplies what the mod tree cannot.**
+
+| path | where its power comes from | `power` coeff |
+|---|---|:--:|
+| **Blade** | nothing. No mod makes a swordsman scale | **5.0** |
+| Salvage | TACZ guns, but they need feeding | 3.0 |
+| Wall | Goety minions fight for her | 1.5 |
+| Art | Ars Nouveau scales with investment | 2.0 |
+| **Forge** | **Create. He builds a mech suit** | **1.0** |
+
+Blade needs the biggest number because he is the only path with **no external power
+curve at all** — the patron *is* his progression. Forge needs the smallest because
+Create already hands him one, and stacking a coefficient on top would make the
+non-combat path the best combatant.
+
+**So a coefficient is not a reward for the path being good. It is compensation for
+what the path cannot get elsewhere.** Any future number should be argued that way.
+
+### ⚠️ And it is a combat server
+
+*"at the end this is a combat server we created."* Which means **Forge and Art must
+still be able to fight** — their coefficients are low on `power` precisely because
+their mods carry it, so if Create or Ars ever gets cut or nerfed those two paths lose
+their entire combat identity and the table would not notice. Worth a check whenever a
+mod leaves.
+
+### Counters must match the fantasy
+
+| path | fantasy | counter | matches? |
+|---|---|---|---|
+| Blade | combat | enemies slain | ✅ |
+| Salvage | scrappy marksman | trades taken | ✅ — *"you find the gun, then you feed it forever"*; the counter measures the feeding |
+| Forge | Builder | **blocks placed** + crafted + smelted | ✅ **fixed 2026-08-16** — it was crafted-only, so the Builder did not count building |
+| Art | explorer→overwhelming | new biomes seen | ✅ |
+| **Wall** | **minion master** | **rage** | 🔴 **no** — see below |
+
+> ### 🔴 WALL'S COUNTER IS THE ODD ONE OUT, and it blocks the counter rewiring
+> Hers is **rage**, which is a *mood*, not service: `+1 minion raised, −1 slain, +8
+> YOUR death, −2 per quiet day`. It rises when her champion **dies** and falls when
+> nothing happens.
+>
+> That is right for choosing her events — but it is wrong as a progression input. If
+> `power` and `drops` read the counter (§5c), Wall would get **stronger the angrier
+> she is**, i.e. stronger the more her champion fails — and weaker while the minion
+> master is quietly raising minions.
+>
+> **She needs a second number**: a lifetime *minions raised* tally, separate from
+> rage. Minion master should progress by mastering minions. Nothing else in the
+> pantheon has this problem, because nothing else uses its counter as a mood.
+
 ## 6. ⭐ WEIGHTING AND DECAY *(design, 2026-08-16, NOT BUILT)*
 
 > Ethan: *"it should be incremental increase for easier tasks and larger increase
