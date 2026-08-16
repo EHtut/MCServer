@@ -879,3 +879,133 @@ not happen.
 - **The other four gods.** Blade is the template now: a voice, an actor it sends, a
   contextual idle pool with a rare sibling, and a cutscene for the one moment that
   earns one.
+
+---
+
+# PART 16 — ⭐ THE CONFESSION *(Ethan's writing, 2026-08-15)*
+
+**The rarest thing in the game, and the only one that reorganises everything above
+it.** Four stanzas, staged one after another, at the lowest level of the world.
+
+## What it does to the rest of the project
+
+The Harvest cutscene has Blade say this, and it has been in the game for hours:
+
+> *Centuries ago I had a champion. A man who stood by my side above all else.*
+> *He is long since gone.*
+> ***His end merciful.***
+
+**She is the mercy.** Gregor was Blade's champion, she was meant to protect him, she
+made a choice, and she has been apologising to a god who cannot hear her ever since.
+
+> 🚨 **NOTHING IN THE CODE CONNECTS THE TWO SCENES.** There is no flag, no trigger,
+> no callback. The player connects them, or does not. **That is precisely why it must
+> stay rare and must never repeat** — it is a thing you *found* at the bottom of the
+> world, not a thing the game told you. A repeatable *"Gregor, I am sorry"* would be
+> wallpaper within a week, and it would take the Harvest down with it.
+
+She also stops being the goddess of death's mouthpiece for the length of it. Her
+whole register elsewhere is patient, complete, formal sentences — the deliberate
+opposite of the gods' fragments. **The confession is her failing to finish a
+sentence four times in a row**, and it works *because* of how composed she is
+everywhere else.
+
+## Where and how often
+
+| | |
+|---|---|
+| depth | **y ≤ −120** — the Sealed Floor, the number `/help` already promises |
+| chance | **10%** per 60s sweep, so **~10 real minutes SPENT down there** |
+| repeat | **never.** Once per champion, ever |
+| requires | she must have introduced herself first — this is not the first thing she says |
+| length | 16 lines, 4 stanzas, ~39s blind and rooted |
+
+> ⚠️ **IT RIDES ITS OWN SWEEP, NOT THE IDLE COOLDOWN.** The god's idle speech is
+> capped at once per *world day*. Hanging the confession off that would have meant
+> roughly **ten in-game days spent at the floor** to see it — which is not rare, it
+> is unreachable. Its own sweep turns the cost into an *expedition*, which is the
+> thing actually worth rewarding.
+
+> 🚨 **The once-ever flag is stamped only AFTER `ritual.begin` returns true.** Burning
+> it on a refused scene would silently cost a player the biggest beat in the game and
+> there would be no way to tell it had happened.
+
+## The staging
+
+Ethan: *"they should be staged in a way that they happen one after another."* A blank
+line is a beat. **Two blanks before the last stanza** — *"Gregor, I am sorry"* is the
+only line in the scene she says to someone who is not you, and it needs the room.
+
+Delivered through `ritual.js`, so she holds you blind, rooted, invisible and
+continuously de-targeted for the whole 39 seconds. **It is the only cutscene in the
+game that is not a god demanding something.**
+
+*One word changed from Ethan's draft: "Tell im sorry" → "Tell him I'm sorry", read as
+a typo. Everything else, including every ellipsis and the repetition in "None of this,
+none of what happened", is verbatim — the halting is the performance.*
+
+## ⚠️ The cutoff was wrong, and a stale doc is why
+
+I set the Speaker's cutoff to **−40** off `15-LORE.md`, which says the Sealed Floor is
+*"minus sixty to the bottom"*. **That doc predates the world extension** — the
+overworld floor is **−128**, not −64 (`tools/make_depth_datapack.py`). So −40 was a
+third of the way down, inside the old diggings, when Ethan had asked for *"low or
+almost lowest"*.
+
+Corrected to **−64** (where the deep works begin), and `docs/15` is fixed with a note
+on what the staleness cost. The numbers now match `/help`, which is the only version a
+player can check.
+
+## 🚨 Three collision bugs the confession exposed
+
+**The Speaker was jumping the queue.** Her block in `idle.js` sat *above* both the
+scene guard and the daily cooldown — so she ignored the cooldown (stamping it without
+ever reading it) and **could talk straight over a running cutscene.** Below the cutoff
+she would have spoken every ~17 minutes and could have landed a line in the middle of
+the Harvest. Both guards now gate every voice, hers included.
+
+**The Harvest pushed through running scenes.** The confession is **the first
+autonomous ritual in the game** — every earlier one was player-initiated, so a
+collision was not really possible. `harvestArrive` now refuses and returns `false`, so
+the phase sweep retries.
+
+**`deep_speaker`'s `ServerEvents.loaded` took no `event` parameter**, so `event.server`
+threw and the confession never armed — while the line *before* the throw had already
+printed *"the Speaker waits below y-64"*, which read as success.
+
+## 🚨 …and that last one exposed a much bigger problem
+
+**`logq errors` has never been able to see a KubeJS script error.** KubeJS logs script
+failures under `KubeJS Server/` with **no level at all**, and `cmd_errors` required
+`/ERROR` or `/FATAL`. It printed *"0 real error(s)"* while `deep_speaker.js` was dying.
+
+**The tool written to prevent searches that cannot match had one inside it.** Fixed:
+script-failure signatures now count whatever level they claim and are tagged `SCRIPT`.
+Re-scanning every archived log:
+
+```
+325 real errors, 321 of them SCRIPT errors, 7 distinct signatures
+```
+
+| signature | count | last seen | status |
+|---|---|---|---|
+| `telemetry.js#123` / `#135` / `#318` | 269 | 08-15 18:08 | ✅ fixed today (`f0acf84`) |
+| `EntityEvents.death` → **java.lang.NullPointerException** | 49 | 08-12 19:01 | ⏸️ **watch** — has not fired once during today's death-heavy testing |
+| `withNBT` build probe | 2 | 08-13 | build-time only |
+| `deep_speaker.js#272` | 1 | 08-15 18:54 | ✅ fixed above |
+
+## Testing it
+
+```
+/speaker            where you are, whether you are eligible, and what she says
+/speaker confess    force the whole cutscene right now, at any depth
+/speaker reset      forget you entirely - introduction and confession both again
+```
+
+## Still open
+
+- **Her register after the confession.** She currently goes straight back to *"your
+  end shall be swift"* as though nothing happened. That wants a small `after` pool —
+  **but it is Ethan's writing, not mine to invent.**
+- The `EntityEvents.death` NPE above.
+- PART 9, the release mechanic; the drop-curve retune; the absence route; four gods.
