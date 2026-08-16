@@ -9,8 +9,15 @@
 //   blade    enemies slain     he set a test; you take it
 //   salvage  trades taken      ALREADY BUILT in salvage.js - she is the inversion
 //   forge    items crafted     the only patron who pays for your actual output
-//   wall     blocks placed     the household, made of walls
+//   wall     RAGE              🔴 NOT a verb, and NOT counted here - see below
 //   art      new biomes seen   she sends you out; arriving is the point
+//
+// 🚨 WALL IS THE EXCEPTION AND THIS FILE USED TO GET IT WRONG. Her counter is not
+// something you DO, it is how she FEELS, and it is written only by wall_events.js
+// (+1 minion raised / -1 slain / +8 your death / -2 per quiet day). This file
+// counted `blocks placed` into that same key for a Wall that stopped existing on
+// 2026-08-15, which meant building a house made the Spider angrier. Removed
+// 2026-08-16 after it was found live at 274 against a fury threshold of 90.
 //
 // ── ART IS NOT SLEEP, AND THE REASON IS THE SERVER ───────────────────────────
 // Sleep is her written demand and it is unbuildable here. There is no sleep event
@@ -79,11 +86,41 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     try { if (event.player) bump(event.player, 'forge', 1, 'smelted') } catch (e) { }
   })
 
-  // ── WALL: blocks placed ───────────────────────────────────────────────────
-  BlockEvents.placed(function (event) {
-    if (!GATE) return
-    try { if (event.player) bump(event.player, 'wall', 1, 'placed') } catch (e) { }
-  })
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔴 WALL'S HOOK IS GONE — REMOVED 2026-08-16, found live.
+  //
+  // Rehykt's rage read 274 with fury at 90. Triple fury, inside an hour, climbing
+  // three points a second while he built a wall.
+  //
+  // WHY. This file counted `blocks placed` for the OLD Wall - "the household, made
+  // of walls", the header of this very file still says it. That Wall stopped
+  // existing on 2026-08-15 when she was rewritten into the Spider and the same
+  // counter became RAGE. Nobody updated this file, so two systems wrote one key
+  // meaning opposite things:
+  //
+  //     counter_hooks.js   +1 per block placed                "the household grows"
+  //     wall_events.js     +1 minion raised, +8 YOUR death    "she is getting angrier"
+  //
+  // mood() maps that key from 10..90 onto boons..attacks, so PLACING A BLOCK MADE
+  // HER ANGRIER. Building a house was arithmetically indistinguishable from watching
+  // her champion die eleven times. Her sliding scale - the best thing in her design,
+  // and the reason she has three registers instead of tiers - has never once been
+  // reachable in play, because anyone who builds anything is pinned at fury within
+  // minutes of claiming her.
+  //
+  // 🚨 THE LESSON, AND IT IS THE THIRD TIME: when a character is redesigned, the
+  // counter's MEANING changes, and every writer to that key has to be re-read. Same
+  // shape as docs/35 (the Crown merge lived in one doc while six others called him
+  // live) and as `veldora_refused_` (a cooldown stamp load-bearing for an unlock in
+  // another file). A merge that lives in one file is not a merge.
+  //
+  // Rage now has exactly FOUR sources and all four are in wall_events.js, which is
+  // where anyone looking for them would look.
+  //
+  // ⚠️ AN INFLATED NUMBER DOES NOT HEAL ITSELF. Decay is -2 per quiet day, so 274
+  // would take 92 quiet days to fall back to fury. Existing walkers need
+  // `/counters set wall <n>` by hand.
+  // ═══════════════════════════════════════════════════════════════════════════
 
   // ── ART: new biomes ───────────────────────────────────────────────────────
   // Sampled rather than hooked - there is no biome-entered event (23 PART V.7 §2).

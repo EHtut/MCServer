@@ -10,11 +10,68 @@ so changes queue here instead of going in one at a time.
 
 | change | what it does |
 |---|---|
-| **Wall's minion double-credit** | the spawn hook tagged the entity but never *read* the tag, so a persistent familiar could re-credit `+1` on every chunk load. One-line guard. **Found by reading, not playing — nobody has ever walked Wall, so `creditNearest()` has returned null on every summon this world has seen and the whole rage mechanic is UNPLAYED.** |
+| **🔴 blocks placed no longer raise the Spider's rage** | **the biggest live defect found so far.** See below — measured at **274 against a fury threshold of 90** |
+| **Wall's minion double-credit** | the spawn hook tagged the entity but never *read* the tag, so a persistent familiar could re-credit `+1` on every chunk load. One-line guard |
 | **🆕 Blade's hordes go underground** | `gauntlet` + `hollow` now need **no sky AND y < 50**. `icarus` (above y100) and `broken_rung` (fires on respawn) are exempt — see below |
 | **🆕 Wall only reaches you at night** | all **five** of her outward events — `offer` `snare` `dark` `web` `swarm` — gated to 13000–23000. Her four boons are untouched |
 
-### Where these came from
+### 🔴 Building a house made the Spider furious
+
+Ethan, live: *"check why is rage so high already. its been less than an hour."*
+
+**Measured from the log, and the arithmetic is exact:**
+
+| source | count | contribution |
+|---|---|---|
+| `placed` | **266** | **+266** |
+| `champion died` | 1 | +8 |
+| `minion raised` | 2 | +2 |
+| quiet-day decay | — | −2 |
+| | | **= 274.** Fury is **90** |
+
+**`placed` was 96% of her rage.** `counter_hooks.js` counted *blocks placed* into
+Wall's counter for the **old** Wall — *"the household, made of walls"* — and that
+Wall stopped existing on **2026-08-15**, when she was rewritten into the Spider and
+the same key became **rage**. Nobody updated the sensor, so two systems wrote one
+key meaning opposite things:
+
+```
+counter_hooks.js   +1 per block placed              "the household grows"
+wall_events.js     +1 minion raised, +8 your death  "she is getting angrier"
+```
+
+`mood()` maps that key from 10→90 onto boons→attacks. **Placing a block was
+arithmetically indistinguishable from watching her champion die eleven times.** Her
+sliding scale — the best thing in her design, and the reason she has registers
+instead of tiers — **has never once been reachable in play.** Anyone who builds
+anything is pinned at fury within minutes of claiming her.
+
+Removed. Rage now has exactly four sources and **all four are in `wall_events.js`**,
+where a reader would look for them.
+
+> ### 🚨 It compounds with the night gate shipped in the same batch
+> At fury, `wBoon → 0` and every attack is now night-gated, so a Wall walker at 274
+> would see **absolutely nothing from her all day** and a full assault every night.
+> Two separately-reasonable changes producing a god who looks broken.
+
+> ### ⚠️ REQUIRED BY HAND AFTER THE RESTART
+> The number does not heal — decay is −2 per quiet day, so 274 takes **92 quiet
+> days** to reach fury, let alone calm. Rehykt's legitimate total is **8**
+> (`+8` death `+2` minions `−2` decay), which is below `RAGE_CALM`, so:
+> ```
+> /counters set wall 8
+> ```
+> **Run it as the player, after the restart.** `/counters set` needs a player
+> context so it cannot be done over RCON, and doing it *before* the restart is
+> pointless — the old hook is still loaded and would climb straight back.
+
+**The lesson, and it is the third instance.** When a character is redesigned, the
+counter's *meaning* changes and every writer to that key has to be re-read. Same
+shape as `docs/35` (the Crown merge lived in one doc while six others still called
+him live) and as `veldora_refused_` (a cooldown stamp load-bearing for an unlock in
+a different file). **A merge that lives in one file is not a merge.**
+
+### Where the day/night rules came from
 
 > Ethan's brother: spawn challenges should only happen during the day.
 > Ethan, agreeing partially: *"Hordes events for blade should only be underground.
