@@ -833,6 +833,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         p.tell(Text.of('§8boons ' + bar + ' §8attacks  §f' + pct + '%§8 toward fury'))
         p.tell(Text.of('§8calm at §f' + RAGE_CALM + '§8, fury at §f' + RAGE_FURY +
           '§8 · she asks most at §f' + Math.round((RAGE_CALM + RAGE_FURY) / 2)))
+
+        // THE LEGIBILITY LAW. Gating every attack to night means a furious Spider
+        // does NOTHING all day - correct, and indistinguishable from broken unless
+        // the player is told. This is the telling.
+        var night = null
+        try { if (VELDORA.events) night = VELDORA.events.isNight(ctx.source.server) } catch (e) { }
+        if (night === null) {
+          p.tell(Text.of('§8reach: §cclock unreadable §8- gates are open by default'))
+        } else if (night) {
+          p.tell(Text.of('§8it is §fNIGHT§8. She can reach the others.' +
+            (m >= 0.7 ? ' §c§lAnd she wants to.' : '')))
+        } else {
+          p.tell(Text.of('§8it is §fDAY§8. Nothing of hers touches another player.'))
+          if (m > 0.9) {
+            p.tell(Text.of('§c§lShe is at fury and cannot act. She is only waiting.'))
+          }
+        }
       }
       return 1
     }))
@@ -866,31 +883,69 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         'minions, so this gift RAISES her rage and slides her toward attacking',
     })
 
+    // ═══════════════════════════════════════════════════════════════════════
+    // ⭐ SHE ONLY REACHES ANOTHER PLAYER AT NIGHT.  Ethan, 2026-08-16:
+    //     "Attacks from wall should only be at night."
+    //
+    // All FIVE things that touch someone else are gated, not just the four called
+    // ATTACK. `offer` is the ask - and saying yes runs sendSpiders() twenty ticks
+    // later, so leaving it open would have let her attack at noon through the one
+    // event that has a consent screen on it. The rule is "nothing of hers reaches
+    // another player in daylight", and that is what is implemented.
+    //
+    // ⭐ WHAT THIS DOES TO HER, AND IT IS THE GOOD PART. Her weights already swing
+    // with rage: wBoon is base x (1-mood) and wAttack is base x mood. So
+    //
+    //     day, low rage     boons. She feeds you, carries you, gives you spiders
+    //     day, high rage    wBoon -> 0 and every attack is gated -> SHE SAYS
+    //                       NOTHING. Total weight is 0 and godevents fires nothing
+    //     night, high rage  all of it lands at once
+    //
+    // 🚨 THAT DAYTIME SILENCE IS DELIBERATE AND IT IS ALSO THE §8.3 TRAP - "a god
+    // whose state never fires goes silent, and a silent god reads as broken". The
+    // difference here is that the player can SEE it coming: /rage shows the number
+    // and now says so in words, and her idle voice still speaks. A whole day of a
+    // furious Spider doing nothing, paid off at dusk, is the mechanic. If it reads
+    // as broken instead of as dread, the fix is a daylight event she can spend her
+    // fury on - NOT removing the gate.
+    // ═══════════════════════════════════════════════════════════════════════
+    var atNight = VELDORA.events.atNight
+    var andNight = function (fn) { return VELDORA.events.allOf(fn, atNight) }
+
     VELDORA.events.register(GOD, {
       id: 'offer', scene: true, run: evOffer, hostile: false, cooldown: 2, weight: wAsk(5), tiers: ALL,
+      guard: atNight,
       does: 'THE ASK - permission to attack another player, via the ritual. Refusable. ' +
         'Weight PEAKS in the middle of the rage range and vanishes at both ends',
     })
 
     VELDORA.events.register(GOD, {
       id: 'snare', run: evSnare, hostile: false, cooldown: 1, weight: wAttack(3), tiers: ALL,
-      does: 'ATTACK - slowness II + weakness on another player for 12s',
+      guard: atNight,
+      does: 'ATTACK - slowness II + weakness on another player for 12s. NIGHT ONLY',
     })
     VELDORA.events.register(GOD, {
       id: 'dark', run: evDark, hostile: false, cooldown: 2, weight: wAttack(3), tiers: ALL,
-      does: 'ATTACK - blindness on another player for 8s',
+      guard: atNight,
+      does: 'ATTACK - blindness on another player for 8s. NIGHT ONLY',
     })
     VELDORA.events.register(GOD, {
       id: 'web', run: evWeb, hostile: false, cooldown: 2, weight: wAttack(4), tiers: ALL,
-      does: 'ATTACK - 5 buffed spiders at another player, no choice',
+      guard: atNight,
+      does: 'ATTACK - 5 buffed spiders at another player, no choice. NIGHT ONLY',
     })
     VELDORA.events.register(GOD, {
       id: 'swarm', run: evSwarm, hostile: false, cooldown: 4, weight: wAttack(2), tiers: ALL,
       // Only at the far end. A 9-spider wave should be the thing that happens when
       // she has stopped being a person about it.
-      guard: function (server, p) { var m = mood(p); return m !== null && m >= 0.7 },
-      does: 'ATTACK - NINE buffed spiders at another player. Guarded to rage >= 70% ' +
-        'of the way to fury',
+      //
+      // ⚠️ COMPOSED, never replaced. Writing the night check into this function by
+      // hand would have made "is it night" have two implementations in one file -
+      // which is exactly how veldora_refused_ ended up load-bearing for a mechanic
+      // that lived somewhere else.
+      guard: andNight(function (server, p) { var m = mood(p); return m !== null && m >= 0.7 }),
+      does: 'ATTACK - NINE buffed spiders at another player. NIGHT ONLY, and guarded ' +
+        'to rage >= 70% of the way to fury',
     })
 
     if (VELDORA.harvest) {

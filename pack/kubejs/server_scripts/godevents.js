@@ -210,6 +210,106 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return { tier: tier, list: out, wellEnough: wellEnough }
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ WHERE AND WHEN — shared conditions, 2026-08-16
+  //
+  // Ethan's brother: spawn challenges should only happen during the day. Ethan,
+  // partially agreeing: "Hordes events for blade should only be underground.
+  // Attacks from wall should only be at night."
+  //
+  // These live HERE and not in a god file, because docs/41 §4 says rolling,
+  // cooldowns and the floor are never per-god - and "is it night" is the same kind
+  // of fact. Two gods want it today and every future god will.
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // Minecraft's night: monsters spawn at ~13000 and sunrise is 23000.
+  // ⚠️ dayTime() is ABSOLUTE and accumulates forever, so the modulo is required.
+  // Reading it raw would have made `isNight` true for one day and then wrong.
+  var NIGHT_FROM = 13000
+  var NIGHT_TO = 23000
+
+  function isNight(server) {
+    try {
+      var d = server.overworld().dayTime()
+      if (typeof d !== 'number' || !isFinite(d)) return null
+      var t = ((d % 24000) + 24000) % 24000
+      return t >= NIGHT_FROM && t < NIGHT_TO
+    } catch (e) { return null }
+  }
+
+  // ⚠️ TWO CONDITIONS, AND BOTH ARE LOAD-BEARING.
+  //
+  //   no sky   alone is wrong: a player under a tree canopy or standing in their
+  //            own surface base has no sky either, and neither is "underground".
+  //   depth    alone is wrong: an open ravine at y30 has full sky and reads as a
+  //            cave; a mountain base at y90 reads as the surface it is.
+  //
+  // Together they mean what the word means: roofed AND below the world.
+  //
+  // 🚨 canSeeSky IS PROBED, NOT ASSUMED. If this KubeJS build does not expose it,
+  // the depth half still works and the boot log SAYS SO - rather than every horde
+  // silently becoming "anywhere below y50", which is a different mechanic wearing
+  // the same name. "I could not read the sky" and "there is no sky" are different
+  // answers and this project has shipped them sharing a value twice.
+  var DEEP_Y = 50
+  var SKY_MODE = null              // 'sky+depth' | 'depth-only', decided on first use
+
+  function canSeeSky(p) {
+    try {
+      var lvl = p.level
+      if (!lvl) return null
+      if (typeof lvl.canSeeSky === 'function') return !!lvl.canSeeSky(p.blockPosition())
+    } catch (e) { }
+    try {
+      var b = p.block                                   // the KubeJS block wrapper
+      if (b && typeof b.canSeeSky === 'boolean') return !!b.canSeeSky
+      if (b && typeof b.canSeeSky === 'function') return !!b.canSeeSky()
+    } catch (e) { }
+    return null
+  }
+
+  function isUnderground(server, p) {
+    var y = null
+    try { y = p.y } catch (e) { }
+    if (y === null || typeof y !== 'number' || !isFinite(y)) return null
+    var deep = y < DEEP_Y
+
+    var sky = canSeeSky(p)
+    if (SKY_MODE === null) {
+      SKY_MODE = (sky === null) ? 'depth-only' : 'sky+depth'
+      if (SKY_MODE === 'depth-only') {
+        console.warn(TAG + 'canSeeSky is NOT readable on this build - "underground" ' +
+          'falls back to y < ' + DEEP_Y + ' ALONE. An open ravine now counts as a ' +
+          'cave. This is a degraded mode, not the design.')
+      } else {
+        console.info(TAG + '"underground" = no sky AND y < ' + DEEP_Y + ' (sky is readable)')
+      }
+    }
+    if (sky === null) return deep
+    return deep && !sky
+  }
+
+  // Compose guards without any of them losing their own condition. swarm already
+  // had `mood >= 0.7` and bolting night on by hand would have been the third place
+  // in this repo where one fact got two implementations.
+  function allOf() {
+    var fns = Array.prototype.slice.call(arguments)
+    return function (server, p) {
+      for (var i = 0; i < fns.length; i++) {
+        var ok = false
+        try { ok = !!fns[i](server, p) } catch (e) { return false }   // a throwing
+        if (!ok) return false                                        // guard is closed
+      }
+      return true
+    }
+  }
+
+  // Guards fail CLOSED (eligible() treats a throw as "no"), so an unreadable clock
+  // must not silently mute a god forever. null = could not read = let it through,
+  // and the caller's own condition still applies.
+  function atNight(server) { var n = isNight(server); return n === null ? true : n }
+  function whenDeep(server, p) { var u = isUnderground(server, p); return u === null ? true : u }
+
   // A weight of 0 means "not right now" and is a legitimate answer - it is how a
   // sliding scale switches a whole family of events off at one end of the range.
   //
@@ -315,6 +415,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     aboveFloor: aboveFloor,
     health: HEALTH,
     registry: REG,
+
+    // ⭐ WHERE AND WHEN, published for every god (2026-08-16).
+    //   isNight / isUnderground  return TRUE / FALSE / null-for-unreadable
+    //   atNight  / whenDeep      are the GUARD forms - unreadable lets it through
+    // Use the guard forms in a register() call; use the raw ones for reporting.
+    isNight: isNight,
+    isUnderground: isUnderground,
+    atNight: atNight,
+    whenDeep: whenDeep,
+    allOf: allOf,
   }
 
   ServerEvents.commandRegistry(function (event) {

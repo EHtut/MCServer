@@ -959,10 +959,34 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   ServerEvents.loaded(function (event) {
     if (!VELDORA.events) { console.error(TAG + 'godevents.js missing'); return }
+    // ═══════════════════════════════════════════════════════════════════════
+    // ⭐ HIS HORDES ARE UNDERGROUND ONLY.  Ethan, 2026-08-16, refining his
+    // brother's "spawn challenges should only be during the day":
+    //     "Hordes events for blade should only be underground."
+    //
+    // It also fixes the complaint that started this: "im sending people to fight
+    // you every 10-20 minutes" was landing while he was standing in a field.
+    //
+    // ⚠️ ONLY THE TWO AMBIENT HORDES ARE GATED. The other two waves are exempt and
+    // both exemptions are deliberate:
+    //
+    //   icarus       is the ABOVE-ground counterpart - its own guard is y >= 100.
+    //                Gating it underground makes it y>=100 AND y<50, which is
+    //                unsatisfiable, and the event would have gone silently dead.
+    //                Together they now read as one idea: he sends fliers when you
+    //                are high, hordes when you are deep, and nothing at all while
+    //                you stand in a field at sea level.
+    //   broken_rung  is a consequence of DYING, not a fact about a place, and it
+    //                fires from the respawn hook - where you are standing is your
+    //                bed, which is on the surface. Gating it would have killed it.
+    //                (force:true skips the roll and the cooldown but NOT guards.)
+    // ═══════════════════════════════════════════════════════════════════════
+    var underground = VELDORA.events.whenDeep
+
     VELDORA.events.register(GOD, {
-      id: 'gauntlet', does: 'spawns a wave scaled by trust and announces it; the player must survive it',
+      id: 'gauntlet', does: 'spawns a wave scaled by trust and announces it; the player must survive it. UNDERGROUND ONLY',
       hostile: true, cooldown: 2, weight: 3,
-      tiers: ['low', 'medium', 'high'], run: runGauntlet,
+      tiers: ['low', 'medium', 'high'], guard: underground, run: runGauntlet,
     })
     VELDORA.events.register(GOD, {
       id: 'mark', does: 'marks the player for 2 world days - no penalty, it only changes what he says',
@@ -975,9 +999,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       tiers: ['low', 'medium', 'high'], guard: aboveTheLine, run: runIcarus,
     })
     VELDORA.events.register(GOD, {
-      id: 'hollow', does: 'spawns a tagged wave whose drops are CANCELLED - the kills pay nothing',
+      id: 'hollow', does: 'spawns a tagged wave whose drops are CANCELLED - the kills pay nothing. UNDERGROUND ONLY',
       hostile: true, cooldown: 3, weight: 2,
-      tiers: ['medium', 'high'], run: runHollow,
+      tiers: ['medium', 'high'], guard: underground, run: runHollow,
     })
     VELDORA.events.register(GOD, {
       id: 'broken_rung', does: 'fires on respawn - sends a wave at a player who has just died',

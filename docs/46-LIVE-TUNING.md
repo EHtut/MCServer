@@ -11,6 +11,65 @@ so changes queue here instead of going in one at a time.
 | change | what it does |
 |---|---|
 | **Wall's minion double-credit** | the spawn hook tagged the entity but never *read* the tag, so a persistent familiar could re-credit `+1` on every chunk load. One-line guard. **Found by reading, not playing — nobody has ever walked Wall, so `creditNearest()` has returned null on every summon this world has seen and the whole rage mechanic is UNPLAYED.** |
+| **🆕 Blade's hordes go underground** | `gauntlet` + `hollow` now need **no sky AND y < 50**. `icarus` (above y100) and `broken_rung` (fires on respawn) are exempt — see below |
+| **🆕 Wall only reaches you at night** | all **five** of her outward events — `offer` `snare` `dark` `web` `swarm` — gated to 13000–23000. Her four boons are untouched |
+
+### Where these came from
+
+> Ethan's brother: spawn challenges should only happen during the day.
+> Ethan, agreeing partially: *"Hordes events for blade should only be underground.
+> Attacks from wall should only be at night."*
+
+**Blade now reads as one idea rather than three.** Fliers when you are high
+(`icarus`, y≥100), hordes when you are deep (y<50 and roofed), and **nothing at all
+while you stand in a field at sea level** — which is exactly where *"im sending
+people to fight you"* kept landing.
+
+Two exemptions, both deliberate and both worth arguing with if you disagree:
+
+* **`icarus`** — its own guard is `y >= 100`. Adding "underground" makes it
+  `y>=100 AND y<50`, which is **unsatisfiable**, and the event would have gone
+  silently dead. This is the failure mode `docs/20` exists for.
+* **`broken_rung`** — a consequence of **dying**, not a fact about a place, and it
+  fires from the respawn hook. You respawn at your bed, which is on the surface, so
+  gating it would have killed it. (`force:true` skips the roll and the cooldown but
+  **not** guards.)
+
+### 🚨 What Wall's gate does to her — read this before calling it broken
+
+Her weights already swing with rage (`wBoon = base × (1−mood)`, `wAttack = base × mood`).
+Adding the night gate produces this:
+
+| | |
+|---|---|
+| **day, low rage** | boons. She feeds you, carries you, gives you spiders |
+| **day, high rage** | `wBoon → 0` and every attack is gated → **total weight 0, she fires nothing at all** |
+| **night, high rage** | all of it, at once |
+
+**That daytime silence is intended** — a whole day of a furious Spider doing
+nothing, paid off at dusk. But it is also **exactly the §8.3 trap** ("a god whose
+state never fires goes silent, and a silent god reads as broken"), so `/rage` now
+says it in words:
+
+```
+it is DAY. Nothing of hers touches another player.
+She is at fury and cannot act. She is only waiting.
+```
+
+**If it reads as broken rather than as dread, the fix is a daylight event she can
+spend fury on — not removing the gate.**
+
+### Verify before trusting it
+
+```bash
+node tools/gates_harness.js
+```
+
+48/48. Covers the trap that has bitten this pack twice: `dayTime()` is **absolute
+and accumulates**, so a raw comparison is right on day 0 and wrong every day after
+— day 40 midnight is tick 978000. Also covers unreadable-clock and unreadable-`y`
+**failing open**, because `eligible()` treats a throwing guard as *closed* and a
+broken clock would otherwise mute a god forever with no error anywhere.
 
 **Still open, decided but not built:** the attention model —
 **`docs/41-BUILDING-A-GOD.md` §8**. Do not tune `CHANCE` before reading §8.1; the
