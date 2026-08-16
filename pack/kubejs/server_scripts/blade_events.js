@@ -312,7 +312,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return true
   }
 
+  // ⚠️ RE-ENABLED 2026-08-15 after Ethan's diagnosis: "the issue is stemming from
+  // anything that messes with respawn mechanics. Not necessarily what happens after
+  // a respawn."
+  //
+  // That line draws the right boundary. instant_respawn.js INTERCEPTED the respawn
+  // and moved the player - it is deleted. The Broken Rung only READS that a respawn
+  // happened and then sends a wave; it never touches where or whether you respawn.
+  //
+  // Kept behind a flag anyway. If a join ever hangs again this is one edit, and
+  // "it only reacts" is a claim about code, not a guarantee about a client.
+  var RESPAWN_HOOK = true
+
   PlayerEvents.respawned(function (event) {
+    if (!RESPAWN_HOOK) return
     var p = event.player
     if (!p) return
     var server = null

@@ -314,9 +314,30 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // way the crimson-eyed figure can be SEEN for one line - the gods are voice-only
   // since the actor reframe, and this is the single exception the scene system gets.
   var NARRATE = '§7§o'
-  function dress(text) {
+
+  // 🚨 THE PATRON'S OWN COLOUR, NOT BLADE'S.
+  // Measured live 2026-08-15 (Ethan): "Introduction is still red." Every scene line
+  // came out bold dark red because this hardcoded RED - which was correct back when
+  // Blade was the only patron with a voice, and became a lie the moment the Spider
+  // got hers. It is the same fault that was fixed in ritual.js, regard.js, fall.js,
+  // paths.js and reckoning.js earlier today; this call site was missed because it
+  // pre-dresses its own lines and therefore never reaches ritual.js's painter.
+  //
+  // voice.js is the only file that knows what colour a god is. Ask it.
+  function godColour(key) {
+    try {
+      if (VELDORA.voice && typeof VELDORA.voice.colourOf === 'function') {
+        return VELDORA.voice.colourOf(key)
+      }
+    } catch (e) { }
+    return RED
+  }
+
+  // `colour` is the speaking patron's. A line starting with `*` is NARRATION and
+  // keeps its own grey italic - it is not the god talking.
+  function dress(text, colour) {
     if (text && text.charAt(0) === '*') return NARRATE + text.substring(1)
-    return RED + text
+    return (colour || RED) + text
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -388,8 +409,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
     var lines = []
     var i
-    for (i = 0; i < scene.arrival.length; i++) lines.push(dress(scene.arrival[i]))
-    for (i = 0; i < scene.demand.length; i++) lines.push(dress(scene.demand[i]))
+    var colour = godColour(key)
+    for (i = 0; i < scene.arrival.length; i++) lines.push(dress(scene.arrival[i], colour))
+    for (i = 0; i < scene.demand.length; i++) lines.push(dress(scene.demand[i], colour))
 
     var closing = Math.max(scene.accept.length, scene.refuse.length)
     var hold = (closing * CLOSE_GAP) + 30
@@ -406,8 +428,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         var say = (id === 'accept') ? scene.accept : scene.refuse
         for (var n = 0; n < say.length; n++) {
           (function (idx, text) {
-            try { srv.scheduleInTicks(idx * CLOSE_GAP, function () { tell(pl, dress(text)) }) }
-            catch (e) { tell(pl, dress(text)) }
+            try { srv.scheduleInTicks(idx * CLOSE_GAP, function () { tell(pl, dress(text, colour)) }) }
+            catch (e) { tell(pl, dress(text, colour)) }
           })(n, say[n])
         }
         if (id === 'accept') {
