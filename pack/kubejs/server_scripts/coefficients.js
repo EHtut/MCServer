@@ -71,15 +71,36 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   //     1.0  untouched
   //     1.6  60% of eligible monster spawns come twice
   //
-  // ⭐ AND MERCANTILE PATHS GO BELOW 1, which is what finally makes the suppression
-  // half live - it has existed and worked since it was written, and nothing ever
-  // asked it for anything because no path was under 1.0. A quieter world around the
-  // Spider and the Goat is a real, felt path difference that costs zero extra mobs.
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ NOTHING GOES BELOW 1.  Ethan, 2026-08-16: "we should never have a
+  // coeffecient go under 1 it should always be an increase."
+  //
+  // The old table used sub-1 values as the PRICE of a path: Blade paid for his
+  // pressure with 0.6 drops, Forge paid for his economy with 0.6 spawns and 0.4
+  // power. That is a trade-off design, and this is now explicitly not one. A path
+  // is a set of things you are BETTER at, never a set of things you are worse at.
+  //
+  // What changed, and it is worth being able to see at a glance:
+  //     blade   drops   0.6 -> 1.0
+  //     salvage drops   0.8 -> 1.0
+  //     wall    spawns  0.7 -> 1.0     power 0.6 -> 1.0
+  //     forge   spawns  0.6 -> 1.0     power 0.4 -> 1.0
+  //
+  // Blade keeps every number he had. Ethan: "keep the difficulty. for blade its
+  // needed. they should have constant pressure."
+  //
+  // 🚨 THIS KILLS THE SUPPRESSION HALF OF spawn_pressure.js. `checkSpawn`'s cancel
+  // branch can only fire for a coefficient BELOW 1, and there is no longer one -
+  // so that code is now unreachable by construction. It is left in place, because
+  // the rule is a design decision that could be revisited and the mechanism costs
+  // nothing while idle, but NOBODY SHOULD SPEND AN HOUR WONDERING WHY IT NEVER
+  // FIRES. It never fires. That is the intent.
+  // ═══════════════════════════════════════════════════════════════════════════
   var TABLE = {
-    blade:   { role: 'combat',     spawns: 1.6, power: 3.0, drops: 0.6, phase: 2.0 },
-    salvage: { role: 'combat',     spawns: 1.4, power: 2.5, drops: 0.8, phase: 1.5 },
-    forge:   { role: 'mercantile', spawns: 0.6, power: 0.4, drops: 3.0, phase: 1.0 },
-    wall:    { role: 'mercantile', spawns: 0.7, power: 0.6, drops: 2.5, phase: 1.0 },
+    blade:   { role: 'combat',     spawns: 1.6, power: 3.0, drops: 1.0, phase: 2.0 },
+    salvage: { role: 'combat',     spawns: 1.4, power: 2.5, drops: 1.0, phase: 1.5 },
+    forge:   { role: 'mercantile', spawns: 1.0, power: 1.0, drops: 3.0, phase: 1.0 },
+    wall:    { role: 'mercantile', spawns: 1.0, power: 1.0, drops: 2.5, phase: 1.0 },
     art:     { role: 'explorer',   spawns: 1.0, power: 1.2, drops: 1.0, phase: 1.0 },
   }
 
@@ -128,29 +149,32 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // into Wall makes it five and four, so the problem they solved has dissolved.
   // See 23 §8. puffish_skills stays as the per-path tree; there is no second choice.
 
-  // Floor. A stack of negative deviations must never reach zero, because zero is
-  // indistinguishable from "the subsystem is broken" - the failure mode this whole
-  // codebase keeps relearning. 0.05 is small enough to feel punishing and large
-  // enough to prove the pipe is alive.
-  var FLOOR = 0.05
+  // ⭐ THE FLOOR IS NEUTRAL NOW, not 0.05. Under the no-path-is-worse rule a value
+  // below 1 is not a punishing edge case, it is a mistake - so the floor catches it
+  // at the one number that cannot make anybody worse off.
+  var FLOOR = 1.0
 
-  // ── PLAYERS ONLINE ─────────────────────────────────────────────────────────
-  // docs/24 §E3: "scale costs by players online (the 2am decision)."
-  // Only COSTS soften, never rewards - four people sharing a world should not each
-  // carry the full solo spawn pressure. Gentle and tunable; 1 player is exactly 1.0
-  // so a solo session is unaffected and the curve can be measured before it matters.
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔴 THE ONLINE SOFTENING IS GONE.  Ethan, 2026-08-16: "im thinking that we
+  // remove the 2am coefficent scaling tbh. we will never have a full squad so
+  // there's no point."
   //
-  //   1 player -> 1.00   2 -> 0.87   3 -> 0.77   4 -> 0.69
-  var ONLINE_SOFTEN = 0.15
-  var COST_AXES = { spawns: true }
-
-  function onlineScale(server, axis) {
-    if (!COST_AXES[axis]) return 1.0
-    var n = 1
-    try { n = server.players.length || 1 } catch (e) { return 1.0 }
-    if (n <= 1) return 1.0
-    return 1 / (1 + (n - 1) * ONLINE_SOFTEN)
-  }
+  // It divided the `spawns` axis by player count - docs/24 §E3's "2am decision" -
+  // on the reasoning that four people sharing a world should not each carry the
+  // full solo pressure. The premise was four players. This is a two-player server
+  // and will stay one, so the mechanism only ever did one thing: quietly take 13%
+  // off Blade at the exact moment somebody else logged in.
+  //
+  //     1 player -> 1.00   2 -> 0.87   3 -> 0.77   4 -> 0.69
+  //
+  // Blade's headline 1.6 was worth 1.39 in every session either of them played,
+  // and 1.10 if the pack ever hit four - so the ONE path built around constant
+  // pressure was also the one path that got quieter the more people showed up.
+  // Ethan: "keep the difficulty. for blade its needed."
+  //
+  // Removed rather than set to zero, so nothing has to remember it exists. If a
+  // full squad ever happens, the whole idea is nine lines in git history.
+  // ═══════════════════════════════════════════════════════════════════════════
 
   // ── reading the player ─────────────────────────────────────────────────────
   // "could not read" and "walks no path" must never share an answer. The first is
@@ -189,7 +213,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
     var v = row[axis]
 
-    v *= onlineScale(server, axis)
+    // No player-count scaling any more - see the note above the FLOOR. The only
+    // adjustment left is the floor itself, and it is now NEUTRAL: an axis can make
+    // a path better and can never make it worse.
     if (!isFinite(v) || v < FLOOR) v = FLOOR
     return v
   }

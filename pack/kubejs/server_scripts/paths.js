@@ -687,7 +687,13 @@
         p.tell('§7  ' + a.axis + ' §8' + (a.live ? '' : '§8[INERT - nothing reads this yet] ') +
           col + '×' + a.value + (a.base !== a.value ? ' §8(table ×' + a.base + ')' : ''))
       }
-      if (e.online > 1) p.tell('§8  costs softened for ' + e.online + ' players online')
+      // ⭐ The player-count softening was REMOVED 2026-08-16 (Ethan: "we will never
+      // have a full squad so there's no point"), so this line would have kept telling
+      // players their costs were softened by a mechanism that no longer exists - a
+      // readout describing intent instead of state, which is the same rot as a stale
+      // boot banner. `explain()` still returns `online` because it is genuinely
+      // useful context; it just no longer changes anything.
+      if (e.online > 1) p.tell('§8  ' + e.online + ' players online (no longer affects these numbers)')
       return 1
     }))
 
