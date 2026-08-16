@@ -152,7 +152,11 @@
         var b = VELDORA.notoriety(server, player)
         if (b && typeof b.value === 'number' && isFinite(b.value)) {
           var raw = CHANCE_BASE + CHANCE_PER * Math.min(b.value, CHANCE_CAP)
-          return Math.max(0, Math.min(1, raw * dropCoeff(server, player)))
+          // ⭐ THE COEFFICIENT IS NO LONGER HERE. It moved to the COUNT - see the
+          // note at the payout below. Multiplying a probability by 5 is a no-op
+          // past 1.0, and Forge sat pinned at 100% from notoriety 0, so his 5.0
+          // and Wall's 3.0 were the same number in play.
+          return Math.max(0, Math.min(1, raw))
         }
         warnOnce('VELDORA.notoriety returned no usable value')
         return CHANCE_FLAT
@@ -1040,6 +1044,25 @@
     var item = table[Math.floor(Math.random() * table.length)]
     var span = COUNTS[tier]
     var n = span[0] + Math.floor(Math.random() * (span[1] - span[0] + 1))
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // ⭐ `drops` SCALES QUANTITY, NOT CHANCE.  Ethan, 2026-08-16, on wanting the
+    // paths to feel central: the old design multiplied the CHANCE, which is a
+    // probability and therefore clamps at 1.0 - so Forge's 5.0 and Wall's 3.0 and
+    // a hypothetical 20.0 were all "100% of the time, 2-4 items". Three different
+    // numbers, one behaviour, and the mercantile identity was invisible.
+    //
+    // Quantity has no ceiling, so the number finally means what it says:
+    //
+    //     blade  1.0   50% x 2-4     unchanged
+    //     wall   3.0   50% x 6-12
+    //     forge  5.0   50% x 10-20   rare, and then enormous
+    //
+    // That is what mercantile should feel like - not a steadier trickle, a
+    // genuinely different scale of payout.
+    // ═══════════════════════════════════════════════════════════════════════
+    var dc = dropCoeff(server, killer)
+    if (dc > 1.0) n = Math.max(1, Math.round(n * dc))
     try {
       // NOTE: runCommandSilent's return is USELESS - E0 probe P12 measured it
       // returning undefined for valid AND invalid commands alike. Do not test it.

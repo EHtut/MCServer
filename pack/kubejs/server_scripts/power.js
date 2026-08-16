@@ -46,12 +46,30 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var CAP = 100
   var EVERY = 100          // ticks between sweeps (5s) — this is not a per-tick hook
 
-  // attribute, bonus at notoriety 100
+  // ═══════════════════════════════════════════════════════════════════════════
+  // attribute, bonus at notoriety 100 (x1.0), and the HARD CEILING for that
+  // attribute no matter what the coefficient says.
+  //
+  // ⭐ THE CEILING IS THE POINT.  Blade's power coefficient is 5.0, and without a
+  // cap that reads as +30 health, +20 ARMOUR and +1.0 KNOCKBACK RESISTANCE at
+  // notoriety 100 - which is the vanilla armour cap and total knockback immunity.
+  // Not "the strong path": unkillable by anything that is not armour-piercing.
+  //
+  // So the multiplier now decides HOW FAST you reach the ceiling, not how far past
+  // it you go. Blade maxes every attribute around notoriety 35 and stays there;
+  // Forge at 1.0 never reaches one. The spread survives, the absurdity does not.
+  //
+  //                                  at x1.0/n100   ceiling   who reaches it
+  //   max_health                          6.0        10.0     blade ~n35
+  //   armor                               4.0         8.0     blade ~n40
+  //   attack_damage                       2.0         4.0     blade ~n40
+  //   knockback_resistance                0.2         0.5     blade ~n50
+  // ═══════════════════════════════════════════════════════════════════════════
   var CURVE = [
-    ['minecraft:generic.max_health', 6.0],
-    ['minecraft:generic.armor', 4.0],
-    ['minecraft:generic.attack_damage', 2.0],
-    ['minecraft:generic.knockback_resistance', 0.2],
+    ['minecraft:generic.max_health', 6.0, 10.0],
+    ['minecraft:generic.armor', 4.0, 8.0],
+    ['minecraft:generic.attack_damage', 2.0, 4.0],
+    ['minecraft:generic.knockback_resistance', 0.2, 0.5],
   ]
 
   var lastApplied = {}     // uuid -> notoriety, so a sweep only writes on CHANGE
@@ -84,7 +102,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var m = (typeof mult === 'number' && isFinite(mult) && mult >= 0) ? mult : 1.0
     var out = []
     for (var i = 0; i < CURVE.length; i++) {
-      out.push([CURVE[i][0], Math.round(CURVE[i][1] * scale * m * 100) / 100])
+      var v = CURVE[i][1] * scale * m
+      var ceiling = CURVE[i][2]
+      // The cap is per ATTRIBUTE, not on the multiplier - so a big coefficient is
+      // still felt (you get there far sooner) without leaving the game's own limits.
+      if (typeof ceiling === 'number' && v > ceiling) v = ceiling
+      out.push([CURVE[i][0], Math.round(v * 100) / 100])
     }
     return out
   }

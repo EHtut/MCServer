@@ -60,16 +60,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // give it faster phases AND more drops AND more power - strictly the best path.
   // The challenger fights; somebody else arms it. This one coefficient is what
   // makes Blade need Forge.
-  // ⚠️ SPAWNS WAS RESCALED 2026-08-16 when the axis became a DENSITY MULTIPLIER
-  // rather than a roster trickle. The old numbers were written for "how many extra
-  // mobs to inject" and read as nonsense under the new meaning: 4.0 means a 300%
-  // chance to duplicate, which clamps to "always", which is not a difficulty knob,
-  // it is a siege.
-  //
-  // Now the number IS the world's own spawn rate around that walker:
-  //     0.7  the world is 30% quieter
+  // ⚠️ SPAWNS IS A DENSITY MULTIPLIER, not a roster count. The number IS the
+  // world's own spawn rate around that walker, and the excess is how many EXTRA
+  // mobs each eligible spawn becomes:
   //     1.0  untouched
-  //     1.6  60% of eligible monster spawns come twice
+  //     2.0  every eligible monster spawn comes twice
+  //     3.0  three times, and so on - see spawn_pressure.js, which reads the whole
+  //          and fractional parts rather than rolling once against the excess.
   //
   // ═══════════════════════════════════════════════════════════════════════════
   // ⭐ NOTHING GOES BELOW 1.  Ethan, 2026-08-16: "we should never have a
@@ -118,28 +115,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   // Which axes have a live consumer TODAY. Used by the boot report and by
   // /path coefficients, so a number nobody reads is never presented as if it acts.
-  // 🚨 spawns IS FALSE. Audited 2026-08-16, and the reason is more interesting than
-  // "it is switched off" - it is TWO regimes, inert for TWO DIFFERENT reasons:
-  //
-  //   below 1  SUPPRESSION via checkSpawn (spawn_pressure.js:140). This half is NOT
-  //            gated by AMBIENT and would work today - but it returns immediately at
-  //            `w.coeff >= 1.0`, and NO PATH IS BELOW 1 (blade 4.0, salvage 4.0,
-  //            wall 1.5, forge 1.0, art 1.5). The machinery is live; the table never
-  //            asks it for anything.
-  //   above 1  WAVES via the sweep, which IS gated off by AMBIENT = false - Ethan's
-  //            verdict on the trickle was "noise".
-  //
-  // So the axis acts on nobody. This flag exists precisely "so a number nobody reads
-  // is never presented as if it acts", and /path coefficients was reporting spawns
-  // as live. A reachable call site is not a live consumer.
-  //
-  // ⭐ TO MAKE IT REAL, the cheap route is NOT turning AMBIENT back on: give a
-  // mercantile path a coefficient below 1 and the suppression half starts working
-  // immediately, with no trickle and no noise. A quieter world around Wall or Forge
-  // is a path difference you can feel without a single extra mob spawning.
-  // spawns is LIVE again as of 2026-08-16: checkSpawn now handles BOTH regimes
-  // (cancel below 1, duplicate above 1) and the table finally has paths on both
-  // sides of neutral.
+  // ⭐ spawns IS TRUE as of 2026-08-16. This note used to say FALSE and explain at
+  // length why - the suppression half never fired because no path was below 1, and
+  // the wave half was gated off by AMBIENT. Both reasons are now dead: DENSITY
+  // replaced the wave trickle and is live, and the sub-1 half is unreachable by
+  // design under the no-path-is-worse rule. Left as a record because a flag that
+  // silently flipped from false to true is worth a sentence.
   var CONSUMED = { drops: true, power: true, phase: true, spawns: true }
 
   // ⚠️ SUBCLASSES ARE CUT (Ethan, 2026-08-15). This used to stack half of a
@@ -180,14 +161,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // 🚨 AND IT IS SPAWNS-ONLY. Depth must not touch drops, power or phase - a deep
   // player would otherwise get more loot AND more strength AND a faster Harvest for
   // standing still, which is the "strictly best" trap docs/23 §7 warns about.
+  // ⚠️ SOFTENED 2026-08-16, and the reason is a ceiling rather than taste. Density
+  // caps at MAX_DUP_PER_EVENT (4) as a TPS guard, and the first numbers pushed
+  // blade and salvage past that cap from y-64 downward - so the two DEEPEST bands
+  // produced identical pressure and the gradient died exactly where it should have
+  // been sharpest. These values keep everyone under the cap until the sealed floor,
+  // which is the one place it is meant to bite.
   var DEPTH_FULL = 128            // -y at which the multiplier reaches its cap
-  var DEPTH_MAX_MULT = 2.0        // cap: at y=-128 the base doubles
+  var DEPTH_MAX_MULT = 1.5        // was 2.0
 
   //  y at or below, flat addition
   var DEPTH_FLAT = [
-    [-120, 1.5],                  // the sealed floor
-    [-64, 1.0],                   // the deep works
-    [0, 0.5],                     // below the surface at all
+    [-120, 1.0],                  // the sealed floor      (was 1.5)
+    [-64, 0.5],                   // the deep works        (was 1.0)
+    [0, 0.25],                    // below the surface     (was 0.5)
   ]
 
   function depthOf(player) {
