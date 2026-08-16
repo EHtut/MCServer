@@ -86,6 +86,11 @@ hash = "f54cf71372645810ce22b0ba68e706139565437150e4cfd22bde4c14606099c4"
 metafile = true
 
 [[files]]
+file = "mods/atmospherics.pw.toml"
+hash = "8cbbcc790cdba5be4717c1cfa330babe9f50f3397b828c0b5f082aaea3c8e935"
+metafile = true
+
+[[files]]
 file = "mods/automaticons.pw.toml"
 hash = "b0db803088e2cec285fb3d9cc593be03d5d48d54285ec482716ca8430537de30"
 metafile = true
@@ -211,6 +216,11 @@ hash = "1d5cc2b6dcfd1fc3adba4566b1c29b57ff1175316678c1f22e63cbc3e28a5ba0"
 metafile = true
 
 [[files]]
+file = "mods/clear-water.pw.toml"
+hash = "a1f13649b8c0d8badb394119031ae9be10f6b93a797cbba5761309f192a66516"
+metafile = true
+
+[[files]]
 file = "mods/cloth-config.pw.toml"
 hash = "75181b55e0407d1fca1e2f346c6501f919f5109545990ddfb66db9cd1b771f8a"
 metafile = true
@@ -287,7 +297,7 @@ metafile = true
 
 [[files]]
 file = "mods/create-bionics.pw.toml"
-hash = "a72d8383532abbab352021f75bd6eb0cd7b1a7661438a61ad73c2fc495eaab13"
+hash = "a0c46a5e61cda0075115f20c8b81bda329e2fc63c6a0162d22e49d364316d4c8"
 metafile = true
 
 [[files]]
@@ -561,6 +571,11 @@ hash = "e0a6012ba9dad43bbcc771bb65c9ed857cb959d1ac36b5d4924ad036b4ffb07a"
 metafile = true
 
 [[files]]
+file = "mods/fallingleavesforge.pw.toml"
+hash = "e5125f8f2709fd20f8182fade3d7f9e7129872c63f042c5489c6eba4733b6b49"
+metafile = true
+
+[[files]]
 file = "mods/farmers-delight.pw.toml"
 hash = "9aab64fbec4cc794817026caf84e7d0dff14ba3892da94aa0e00d23c84560499"
 metafile = true
@@ -767,7 +782,7 @@ metafile = true
 
 [[files]]
 file = "mods/jei.pw.toml"
-hash = "de2cc54658d1fd0ec69b548ed58307c23d191acfd551f36c0a6721e96eca17ab"
+hash = "1b7de11aec3659d7240c71a5181627d34cc270c264d9ce58a944fc9dd28a85cf"
 metafile = true
 
 [[files]]
@@ -887,7 +902,7 @@ metafile = true
 
 [[files]]
 file = "mods/more-rpg-library.pw.toml"
-hash = "db57f8afe58c206e7516e147a572393ef283cf06056bda9f07102e27d47ac2e7"
+hash = "43534fff5620925bdf4a03df9f809ab2ed516d0604165cfd6482d123a9c5cc07"
 metafile = true
 
 [[files]]
@@ -958,6 +973,16 @@ metafile = true
 [[files]]
 file = "mods/particle-core.pw.toml"
 hash = "7333c29c224d843384e26b2c7d9af1d31dada870d776fb1ad8f3d8c3040b313d"
+metafile = true
+
+[[files]]
+file = "mods/particle-rain.pw.toml"
+hash = "6f24e7f5ecef862b1bdb61031637e27b093f185c3219023bea94d2d954ec4180"
+metafile = true
+
+[[files]]
+file = "mods/particular-reforged.pw.toml"
+hash = "383d9891f716981f418f6e2a97a5eeeee43912975d90d9ab4ffbfe98a832e40e"
 metafile = true
 
 [[files]]
@@ -1082,7 +1107,7 @@ metafile = true
 
 [[files]]
 file = "mods/runes.pw.toml"
-hash = "bcae679765144e82a8b181be8173bc088ca431e1573ecb170b9898430a4b67cd"
+hash = "8b21bbb112cb50411f6c71f6708a8ff85cef29a70b7f1be010e2a51502f24d7f"
 metafile = true
 
 [[files]]
@@ -1146,8 +1171,18 @@ hash = "87ce844ff87267bc95027b95c970c58298d4a6882bb2b620551c8a309f1c8e81"
 metafile = true
 
 [[files]]
+file = "resourcepacks/skyrim-music-pack.pw.toml"
+hash = "b9f2a5fb9366773e51641a3b4418f3e91c571a6d52abfbab1f6b69c6e58ac426"
+metafile = true
+
+[[files]]
 file = "mods/smartbrainlib.pw.toml"
 hash = "6e7ce9c2aee5bb72d2698eb89035c9b2458d20daa0782e1a03cfba7a6647621e"
+metafile = true
+
+[[files]]
+file = "mods/smooth-skies.pw.toml"
+hash = "a118ed58955f9bc6a9367690818520e96f11b94b2067440bed55300139fc0988"
 metafile = true
 
 [[files]]
@@ -1187,12 +1222,12 @@ metafile = true
 
 [[files]]
 file = "mods/spell-engine.pw.toml"
-hash = "f92aec321d4988bca7faddb46c0a0d929ff51b307726fb5d8a95fda44ac9bbb5"
+hash = "31b26c60c0f1bf2fa9d8fac19689ac723f8f0bfe93779117212382f45db81605"
 metafile = true
 
 [[files]]
 file = "mods/spell-power.pw.toml"
-hash = "2692737dde2f76fb308177849db90edeb2dd49655daaba4f35adf9106c6c6e10"
+hash = "cc1491f8817a246d40d0222999788e8b3b442474e2c862637e1ef654997f3826"
 metafile = true
 
 [[files]]
@@ -1306,8 +1341,13 @@ hash = "689739dbc65768a51d31729598352c5cac3fd9369203bea125d745112bba23b0"
 metafile = true
 
 [[files]]
+file = "mods/visuality-forge.pw.toml"
+hash = "3d907a6ec6e27ba52d9f8f062216b56aef39e586a4e673cfbb70dbe12671ec61"
+metafile = true
+
+[[files]]
 file = "mods/waystones.pw.toml"
-hash = "07a8aecb54b8aa2148d05a452e697643b1e7b2239060204b369a32018cf0df6e"
+hash = "18755836fe5817992e8f52bdb1d42857e85a41a7a19287b04d63a072006931b5"
 metafile = true
 
 [[files]]

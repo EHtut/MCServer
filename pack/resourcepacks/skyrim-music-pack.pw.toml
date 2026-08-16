@@ -1,0 +1,13 @@
+name = "Skyrim Music Pack"
+filename = "Skyrim Music Pack.zip"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/GKKd3F9G/versions/lBn3ahsn/Skyrim%20Music%20Pack.zip"
+hash-format = "sha512"
+hash = "8596bb0a024389d0e91a52270b10dd3882053fd2b2305f82efc666763d663ea7be11a6b912a491d169cbc8bcf27a6b9232c0fdb6464b71a5d3a493f81c8c08a3"
+
+[update]
+[update.modrinth]
+mod-id = "GKKd3F9G"
+version = "lBn3ahsn"

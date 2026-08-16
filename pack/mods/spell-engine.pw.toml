@@ -1,13 +1,13 @@
 name = "Spell Engine"
-filename = "spell_engine-neoforge-1.9.15+1.21.1.jar"
+filename = "spell_engine-neoforge-1.9.16+1.21.1.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/XvoWJaA2/versions/TYYv9406/spell_engine-neoforge-1.9.15%2B1.21.1.jar"
+url = "https://cdn.modrinth.com/data/XvoWJaA2/versions/sm8aXLMc/spell_engine-neoforge-1.9.16%2B1.21.1.jar"
 hash-format = "sha512"
-hash = "6cdf75cf8d325280241667154cf81f8b6ca0c9b8b3a5d2794913f7c08b2d92b089bbb6dad758d30bdbf8738d7ef4e6067a8fc36d6c5a8c3e64f6ea6e0e5e2915"
+hash = "c6707e21fbde6644b1fa6758fe2354911ffba66ba89ab79986c78e7096430ac7c45adf36fd2c4cb3a3a7fe6be51955f34c4a06ee433793e00d6c6ab719bae1f4"
 
 [update]
 [update.modrinth]
 mod-id = "XvoWJaA2"
-version = "TYYv9406"
+version = "sm8aXLMc"
