@@ -3,6 +3,9 @@
 // Ethan, 2026-08-15:
 //   "her counter is rage."
 //   "counter can be a plus for every minion raised and a loss for every minion slain"
+//     ^ SUPERSEDED 2026-08-16: "wall should no longer be based on minions...
+//       deaths + losing hearts increase rage. gaining hearts and not dying for a
+//       quarter of a day decreases it."
 //   "rage for the wall is something directed as less boons for you, more attacks on
 //    other players"
 //   "she will never send anything but boons to you. To other players? She spawns
@@ -41,273 +44,45 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var HOSTILE_TO_PLAYERS = true
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // WHAT COUNTS AS A MINION  (audited from the jars, 2026-08-15)
+  // 🔴 THE MINION APPARATUS IS GONE.  Ethan, 2026-08-16:
+  //     "wall should no longer be based on minions... Minion counts feel a bit too
+  //      uncountable especially with goety's timegated minions"
+  //
+  // He is right, and it is the correct call even though this machinery was built
+  // and repaired the same day. Goety gates summons behind cooldowns and durations,
+  // so "minions raised" measured a mod's timers as much as a player's intent - and
+  // the attribution alone needed a namespace filter, an NBT owner search and a
+  // once-ever tag guard, all to answer a question that was the wrong one.
+  //
+  // Removed with it: isGoety, idOf, isMinion, wallWalkers, nbtOf, ownerFromNbt,
+  // creditNearest, ownerFromTags, hasTag, the spawned hook and the minion death
+  // hook. ~120 lines. RAGE NOW WATCHES THE PLAYER - see below.
   // ═══════════════════════════════════════════════════════════════════════════
-  // Goety ships 85 entities ending `_servant` - that suffix IS its marker for a
-  // player-owned summon (bear_servant, bone_spider_servant, cave_spider_servant...).
-  // Occultism uses `_familiar`. Their UNBOUND variants carry `wild`/`unbound` and
-  // are explicitly NOT yours.
-  //
-  // ⚠️ MATCHED BY SUBSTRING, NEVER EQUALITY. `String(entity.type)` is not the bare
-  // id - it resolves to an EntityType object whose toString is a description key.
-  // This project shipped that bug twice (the_hunt, nemesis_tally) and both times it
-  // failed SILENTLY, because "could not read" and "not a minion" shared a value.
-  // isMinion() returns null for unreadable and false for no. They are different.
-  // ═══════════════════════════════════════════════════════════════════════════
-  // 🔒 GOETY ONLY.  Ethan, 2026-08-16: "we will only use goety for minions to make
-  // it simple."
-  //
-  // The suffix scan matched 101 entities across THREE mods - goety 70,
-  // goety_cataclysm 15, occultism 16 - and that breadth was the problem, not a
-  // feature: an Occultism familiar is a permanent utility pet, not a member of her
-  // household, and crediting one made her rage jump for a thing the player uses to
-  // move items around. Now the NAMESPACE is checked first and the suffix second.
-  //
-  // ⚠️ `goety_cataclysm` is EXCLUDED too. It is a separate compat mod and "goety"
-  // has to mean one thing; the check is an exact namespace match, not a prefix, or
-  // `goety_cataclysm:` would slip through on a `startsWith`.
-  var MINION_NS = 'goety'
-  var MINION_MARKS = ['_servant']
-  var NOT_YOURS = ['wild', 'unbound']
-
-  // `String(entity.type)` is a description key, not a bare id - so the namespace
-  // shows up as `entity.goety.foo` or `goety:foo` depending on the build. Both
-  // forms are checked, and NEITHER matching means not-goety rather than unreadable.
-  function isGoety(id) {
-    return id.indexOf(MINION_NS + ':') >= 0 || id.indexOf('.' + MINION_NS + '.') >= 0
-  }
-
-  function idOf(e) {
-    var s = null
-    try { s = String(e.type) } catch (x) { }
-    if (!s) { try { s = String(e.getType()) } catch (x) { } }
-    return s ? s.toLowerCase() : null
-  }
-
-  function isMinion(e) {
-    var id = idOf(e)
-    if (id === null) return null                  // unreadable is NOT "no"
-    if (!isGoety(id)) return false                // 🔒 goety, and only goety
-    for (var i = 0; i < NOT_YOURS.length; i++) if (id.indexOf(NOT_YOURS[i]) >= 0) return false
-    for (var j = 0; j < MINION_MARKS.length; j++) if (id.indexOf(MINION_MARKS[j]) >= 0) return true
-    return false
-  }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // RAGE - the counter
-  // ═══════════════════════════════════════════════════════════════════════════
-  var OWNER_PREFIX = 'veldora_wall_owner_'
-  var MINION_TAG = 'veldora_wall_minion'
-  var CREDIT_RANGE = 16                           // a summon appears beside you
-
-  function wallWalkers(server) {
-    var out = []
-    try {
-      var ps = server.players
-      for (var i = 0; i < ps.length; i++) {
-        var path = ''
-        try { if (VELDORA.paths) path = VELDORA.paths.pathOf(ps[i]) || '' } catch (e) { continue }
-        if (path === GOD) out.push(ps[i])
-      }
-    } catch (e) { }
-    return out
-  }
-
-  // ⚠️ AN APPROXIMATION, DECLARED AS ONE. Goety and Occultism both store an owner in
-  // NBT, but the shape differs per mod and per entity, and reading it wrong would
-  // fail silently - the exact class of bug this file's header warns about. A summon
-  // appears NEXT TO its summoner, so "nearest Wall walker within 16 blocks" is right
-  // in every case that actually happens; when it is wrong it credits a Wall walker
-  // standing beside another Wall walker, which is a rounding error, not a broken
-  // mechanic.
+  // ⭐ RAGE WATCHES THE PLAYER.  Ethan, 2026-08-16: "deaths + losing hearts
+  // increase rage. gaining hearts and not dying for a quarter of a day decreases
+  // it."
   //
-  // The owner is then STAMPED ON THE ENTITY, so the debit on death is exact even if
-  // the minion dies alone on the far side of the world.
-  // ═══════════════════════════════════════════════════════════════════════════
-  // ⭐ ASK THE ENTITY WHO OWNS IT.  Ethan, 2026-08-16: "make sure the minion
-  // assigning is fixed aswell."
+  // This is a better fit for what rage MEANS than counting summons ever was. It is
+  // her attention, and her attention is on your body - so it rises when you are
+  // hurt and falls when you are safe. The minion master reading is preserved where
+  // it belongs, in her EVENTS, which still hand you spiders.
   //
-  // Proximity alone was wrong in a way that mattered. Goety's hostile necromancers,
-  // sorcerers and bonescallers SUMMON THINGS, and several of those summons carry the
-  // `_servant` suffix - so a wall walker fighting a necromancer was being credited
-  // for the necromancer's minions. Her rage counted her ENEMY'S army as her family.
+  // SAMPLED, not hooked. Health is compared on a slow sweep rather than on every
+  // damage event: regeneration ticks would otherwise fire dozens of times a second
+  // and a hurt hook cannot see healing at all. One mechanism reads both directions.
   //
-  // The old comment said reading owner NBT was too mod-specific to attempt. That is
-  // true if you try to know the key - Goety, Occultism and goety_cataclysm all store
-  // it differently. But you do not need the key: an owned summon has its owner's
-  // UUID SOMEWHERE in its NBT, so searching the whole blob for the UUID of an online
-  // player answers the question without knowing any mod's schema at all.
-  //
-  // Order matters:
-  //   1. NBT says an owner  -> definitive. Credit ONLY if they walk wall; if the
-  //      owner is a mob or another god's champion, credit NOBODY.
-  //   2. NBT says nothing   -> fall back to proximity, as before.
-  // ═══════════════════════════════════════════════════════════════════════════
-  function nbtOf(e) {
-    var s = null
-    try { s = String(e.nbt) } catch (x) { }
-    if (!s) { try { s = String(e.fullNBT) } catch (x) { } }
-    return s || null
-  }
-
-  // Returns the owning PLAYER, or null for "no player owns this", or the string
-  // 'unreadable' for "this entity has no readable NBT" - three answers, because
-  // "nobody owns it" and "I could not look" must not share a value.
-  function ownerFromNbt(server, e) {
-    var s = nbtOf(e)
-    if (!s) return 'unreadable'
-    var low = s.toLowerCase()
-    try {
-      var ps = server.players
-      for (var i = 0; i < ps.length; i++) {
-        var u = ''
-        try { u = String(ps[i].uuid) } catch (x) { continue }
-        if (!u) continue
-        // Dashed form, and the dashless form some mods write.
-        if (low.indexOf(u.toLowerCase()) >= 0) return ps[i]
-        var bare = u.split('-').join('').toLowerCase()
-        if (bare && low.indexOf(bare) >= 0) return ps[i]
-      }
-    } catch (x) { }
-    return null
-  }
-
-  var NBT_MODE_LOGGED = false
-
-  function creditNearest(server, e) {
-    var walkers = wallWalkers(server)
-    if (!walkers.length) return null
-
-    var owner = ownerFromNbt(server, e)
-    if (!NBT_MODE_LOGGED) {
-      NBT_MODE_LOGGED = true
-      console.info(TAG + 'minion attribution: NBT owner lookup is ' +
-        (owner === 'unreadable' ? 'NOT READABLE on this build - falling back to ' +
-          'proximity, which will over-credit enemy summons' : 'WORKING'))
-    }
-    if (owner !== 'unreadable') {
-      // 🚨 A definite answer, including a definite NO. If something else summoned
-      // this - a necromancer, or another god's champion - she gets nothing. That is
-      // the whole point of the fix.
-      if (!owner) return null
-      var op = ''
-      try { if (VELDORA.paths) op = VELDORA.paths.pathOf(owner) || '' } catch (x) { }
-      if (op !== GOD) return null
-      return owner
-    }
-
-    // Unreadable NBT: the old behaviour, and it is now the fallback rather than the
-    // rule. Still bounded to CREDIT_RANGE, still only wall walkers.
-    var best = null, bestD = CREDIT_RANGE * CREDIT_RANGE
-    for (var i = 0; i < walkers.length; i++) {
-      var p = walkers[i]
-      try {
-        var dx = p.x - e.x, dy = p.y - e.y, dz = p.z - e.z
-        var d2 = dx * dx + dy * dy + dz * dz
-        if (d2 <= bestD) { bestD = d2; best = p }
-      } catch (x) { }
-    }
-    return best
-  }
-
-  function ownerFromTags(server, tags) {
-    try {
-      var all = String(tags)
-      var at = all.indexOf(OWNER_PREFIX)
-      if (at < 0) return null
-      var rest = all.substring(at + OWNER_PREFIX.length)
-      var name = rest.split(/[,\]\s]/)[0]
-      if (!name) return null
-      return server.getPlayer(name)
-    } catch (e) { return null }
-  }
-
-  function hasTag(e, tag) {
-    try {
-      var tags = e.tags
-      if (!tags) return false
-      return tags.contains ? tags.contains(tag) : (String(tags).indexOf(tag) >= 0)
-    } catch (x) { return false }
-  }
-
-  EntityEvents.spawned(function (event) {
-    if (!GATE) return
-    try {
-      var e = event.entity
-      if (!e || e.player) return
-      if (isMinion(e) !== true) return
-
-      // 🚨 CREDIT ONCE, EVER. This hook tagged the entity on the way OUT and never
-      // read that tag on the way IN, so the same minion could be credited again and
-      // again. EntityEvents.spawned sits on the entity JOINING THE LEVEL, which
-      // includes chunk load - and Occultism familiars and Goety servants persist.
-      // A player with three familiars would have gained rage every time they walked
-      // back into their own base, from nothing, forever.
-      //
-      // Found 2026-08-16 by reading the hook rather than by playing it: nobody has
-      // ever walked Wall, so creditNearest() has returned null on every summon this
-      // world has ever seen and the whole mechanic is still UNPLAYED. The tag is
-      // stored in entity NBT and survives save/load, which is what makes this the
-      // correct guard rather than an in-memory set.
-      if (hasTag(e, MINION_TAG)) return
-
-      var server = null
-      try { server = e.server } catch (x) { return }
-      if (!server) return
-      var owner = creditNearest(server, e)
-      if (!owner) return
-      try {
-        e.addTag(MINION_TAG)
-        e.addTag(OWNER_PREFIX + owner.username)
-      } catch (x) { }
-      if (VELDORA.counter) VELDORA.counter.add(owner, GOD, 1, 'minion raised')
-    } catch (err) { console.warn(TAG + 'spawn hook threw :: ' + err) }
-  })
-
-  EntityEvents.death(function (event) {
-    if (!GATE) return
-    try {
-      var e = event.entity
-      if (!e || e.player) return
-      if (!hasTag(e, MINION_TAG)) return
-      var server = null
-      try { server = e.server } catch (x) { return }
-      var owner = ownerFromTags(server, e.tags)
-      if (!owner) return
-      if (VELDORA.counter) VELDORA.counter.add(owner, GOD, -1, 'minion slain')
-    } catch (err) { console.warn(TAG + 'minion death hook threw :: ' + err) }
-  })
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // ⭐ RAGE ALSO ANSWERS TO DEATH AND TO TIME
-  // ═══════════════════════════════════════════════════════════════════════════
-  // Ethan, 2026-08-15: "Rage should slowly decrease over days that you do not die,
-  // rage itself increasing with death."
-  //
-  // That turns the counter from a tally into a MOOD. Minions raised and slain are
-  // the slow half; YOUR death is the loud half. Every input is the same feeling
-  // measured differently - something of hers was taken:
-  //
-  //     +1   a minion raised          the family grows
-  //     -1   a minion slain           something of hers is killed
-  //   +DEATH you died                 the worst thing that can happen to her
-  //   -DECAY a whole day, nobody died  nothing was lost. She settles.
-  //
-  // ⭐ THE SHAPE OF IT: she is calm when you are safe and dangerous when you are
-  // not, and the danger points at everyone except you. A player who dies repeatedly
-  // does not get punished - the SERVER does. That is the most coherent thing about
-  // her, and it came out of Ethan's two sentences rather than out of a design.
+  // ⚠️ FRACTIONS ARE CARRIED IN MEMORY. The counter is an integer store, so a half
+  // heart cannot be written - the accumulator holds the remainder and only whole
+  // points are committed. Without it every small hit would round to zero and rage
+  // would never move outside of deaths.
   var RAGE_ON_DEATH = 8         // ~10% of the way to fury per death
-  var RAGE_DECAY_DAY = 2        // so four quiet days undo one death
-  var K_CALM_DAY = 'veldora_wall_calmday'   // last world day decay was applied, +1
-
-  function worldDay(server) {
-    try {
-      var d = server.overworld().dayTime()
-      if (typeof d === 'number' && isFinite(d)) return Math.floor(d / 24000)
-    } catch (e) { }
-    return null
-  }
+  var DMG_PER_RAGE = 4.0        // 4 damage (2 hearts) LOST  = +1 rage
+  var HEAL_PER_RAGE = 6.0       // 6 healing (3 hearts) GAINED = -1 rage
+  var HEALTH_TICKS = 40         // sample every 2s
+  var QUIET_TICKS = 6000        // a QUARTER world day without dying
+  var QUIET_DROP = 2            // ...takes this much off
 
   // Her champion died. This is the loudest input she has.
   EntityEvents.death(function (event) {
@@ -320,25 +95,45 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (path !== GOD) return
 
       if (VELDORA.counter) VELDORA.counter.add(p, GOD, RAGE_ON_DEATH, 'champion died')
-      // Reset the calm clock: today is emphatically not a quiet day.
+      // Restart the calm clock - this is emphatically not staying alive.
       var server = null
       try { server = p.server } catch (e) { }
-      var d = server ? worldDay(server) : null
-      if (d !== null) { try { p.persistentData.putInt(K_CALM_DAY, d + 1) } catch (e) { } }
+      var nt = server ? nowTicks(server) : null
+      if (nt !== null) { try { p.persistentData.putInt(K_LAST_DEATH, nt + 1) } catch (e) { } }
+      // 🚨 And forget the body baseline, or the respawn's full heal reads as the
+      // biggest heal in the game and refunds the +8 this death just cost her.
+      forgetBody(p)
       console.info(TAG + p.username + ' died - rage +' + RAGE_ON_DEATH)
     } catch (err) { console.warn(TAG + 'death->rage hook threw :: ' + err) }
   })
 
-  // ⚠️ DECAY IS APPLIED PER WHOLE DAY ELAPSED, not per tick, and the day is STORED
-  // AS day+1 because getInt() returns 0 for a missing key - a first-ever check would
-  // otherwise read as "the beginning of the world" and calm her all the way down in
-  // one sweep. A stamp from the future (an admin ran /time set) re-stamps instead.
-  var CALM_SWEEP = 1200                       // 60s; the day check does the real work
+  // ═══════════════════════════════════════════════════════════════════════════
+  // THE CALM: a QUARTER of a world day without dying takes rage off.
+  //
+  // Ethan, 2026-08-16: "not dying for a quarter of a day decreases it." A world day
+  // is 24000 ticks, so this is 6000 - about five real minutes of staying alive.
+  // Measured from the LAST DEATH, not from the last time rage moved: getting hurt
+  // and healing should not reset her patience, only dying should.
+  //
+  // ⚠️ TICKS, AND THE CLOCK CAN MOVE. dayTime() is absolute and an admin can rewind
+  // it, so a stamp from the future is re-anchored rather than trusted - finding K9,
+  // which this project has now paid for in six places.
+  // ═══════════════════════════════════════════════════════════════════════════
+  var K_LAST_DEATH = 'veldora_wall_lastdeath'   // world tick of the last death, +1
+  var CALM_SWEEP = 200                          // 10s
+
+  function nowTicks(server) {
+    try {
+      var d = server.overworld().dayTime()
+      if (typeof d === 'number' && isFinite(d)) return Math.floor(d)
+    } catch (e) { }
+    return null
+  }
 
   function calmSweep(server) {
     try {
-      var today = worldDay(server)
-      if (today === null) { server.scheduleInTicks(CALM_SWEEP, function () { calmSweep(server) }); return }
+      var now = nowTicks(server)
+      if (now === null) { server.scheduleInTicks(CALM_SWEEP, function () { calmSweep(server) }); return }
       var ps = server.players
       for (var i = 0; i < ps.length; i++) {
         var p = ps[i]
@@ -347,28 +142,99 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         if (path !== GOD) continue
 
         var stored = 0
-        try { stored = p.persistentData.getInt(K_CALM_DAY) } catch (e) { continue }
-        if (!stored) {                         // first time we have looked at them
-          try { p.persistentData.putInt(K_CALM_DAY, today + 1) } catch (e) { }
+        try { stored = p.persistentData.getInt(K_LAST_DEATH) } catch (e) { continue }
+        if (!stored) {                          // never seen them die - start the clock
+          try { p.persistentData.putInt(K_LAST_DEATH, now + 1) } catch (e) { }
           continue
         }
         var last = stored - 1
-        if (last >= today) continue            // same day, or the clock moved back
-        if (last > today) { try { p.persistentData.putInt(K_CALM_DAY, today + 1) } catch (e) { } continue }
+        if (last > now) {                       // clock rewound; re-anchor, do not decay
+          try { p.persistentData.putInt(K_LAST_DEATH, now + 1) } catch (e) { }
+          continue
+        }
+        var chunks = Math.floor((now - last) / QUIET_TICKS)
+        if (chunks <= 0) continue
 
-        var days = today - last
         var cur = null
         try { if (VELDORA.counter) cur = VELDORA.counter.get(p, GOD) } catch (e) { }
-        try { p.persistentData.putInt(K_CALM_DAY, today + 1) } catch (e) { }
+        // Advance the stamp by exactly the quarters consumed, so the remainder
+        // carries instead of being thrown away every sweep.
+        try { p.persistentData.putInt(K_LAST_DEATH, last + chunks * QUIET_TICKS + 1) } catch (e) { }
         if (cur === null || cur <= 0) continue
 
-        var drop = Math.min(cur, days * RAGE_DECAY_DAY)
+        var drop = Math.min(cur, chunks * QUIET_DROP)
         if (drop <= 0) continue
-        if (VELDORA.counter) VELDORA.counter.add(p, GOD, -drop, 'quiet days')
-        console.info(TAG + p.username + ' had ' + days + ' quiet day(s) - rage -' + drop)
+        if (VELDORA.counter) VELDORA.counter.add(p, GOD, -drop, 'stayed alive')
+        console.info(TAG + p.username + ' survived ' + chunks + ' quarter-day(s) - rage -' + drop)
       }
     } catch (e) { console.warn(TAG + 'calm sweep threw :: ' + e) }
     server.scheduleInTicks(CALM_SWEEP, function () { calmSweep(server) })
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // THE BODY: hearts lost raise her, hearts regained settle her.
+  //
+  // Sampled rather than hooked - see the note on the constants. Two accumulators in
+  // MEMORY carry the fractional remainder, because the counter store is integers and
+  // a half-heart would otherwise round to nothing forever.
+  //
+  // 🚨 DEATH MUST NOT READ AS HEALING. Respawning restores full health, which on the
+  // next sample looks like the largest heal in the game and would immediately refund
+  // the +8 the death just cost her. The death hook clears the baseline, and a sample
+  // with no baseline only re-baselines.
+  // ═══════════════════════════════════════════════════════════════════════════
+  var lastHp = {}                 // uuid -> health at the last sample
+  var hurtAcc = {}                // uuid -> damage not yet worth a whole rage point
+  var healAcc = {}                // uuid -> healing, same
+
+  function forgetBody(p) {
+    try {
+      var u = String(p.uuid)
+      delete lastHp[u]; delete hurtAcc[u]; delete healAcc[u]
+    } catch (e) { }
+  }
+
+  function bodySweep(server) {
+    try {
+      var ps = server.players
+      for (var i = 0; i < ps.length; i++) {
+        var p = ps[i]
+        var path = ''
+        try { if (VELDORA.paths) path = VELDORA.paths.pathOf(p) || '' } catch (e) { continue }
+        if (path !== GOD) continue
+        var u = null, hp = null
+        try { u = String(p.uuid); hp = p.health } catch (e) { continue }
+        if (typeof hp !== 'number' || !isFinite(hp)) continue
+
+        var prev = lastHp[u]
+        lastHp[u] = hp
+        if (typeof prev !== 'number') continue   // first sample, or just respawned
+
+        var delta = hp - prev
+        if (delta === 0) continue
+
+        if (delta < 0) {
+          hurtAcc[u] = (hurtAcc[u] || 0) + (-delta)
+          var up = Math.floor(hurtAcc[u] / DMG_PER_RAGE)
+          if (up > 0) {
+            hurtAcc[u] -= up * DMG_PER_RAGE
+            if (VELDORA.counter) VELDORA.counter.add(p, GOD, up, 'hurt')
+          }
+        } else {
+          healAcc[u] = (healAcc[u] || 0) + delta
+          var down = Math.floor(healAcc[u] / HEAL_PER_RAGE)
+          if (down > 0) {
+            healAcc[u] -= down * HEAL_PER_RAGE
+            var cur = null
+            try { if (VELDORA.counter) cur = VELDORA.counter.get(p, GOD) } catch (e) { }
+            if (cur !== null && cur > 0) {
+              if (VELDORA.counter) VELDORA.counter.add(p, GOD, -Math.min(cur, down), 'healed')
+            }
+          }
+        }
+      }
+    } catch (e) { console.warn(TAG + 'body sweep threw :: ' + e) }
+    server.scheduleInTicks(HEALTH_TICKS, function () { bodySweep(server) })
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -791,7 +657,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   // ⭐ SHE GIVES YOU FAMILY, AND THAT RAISES HER RAGE.
-  // goety:spider_servant is a player-owned summon, so the minion hook credits it
+  // goety:spider_servant is a player-owned summon. It no longer feeds her counter
   // and rage goes UP - which slides her further toward attacking somebody. She
   // cannot give you a gift without becoming more dangerous to everyone else. That
   // loop was not designed; it fell out of her counter being what it is, and it is
@@ -1060,7 +926,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       p.tell(Text.of('§8pvp ' + (HOSTILE_TO_PLAYERS ? '§aON' : '§cOFF') +
         ' §8· target health floor §f' + Math.round(TARGET_FLOOR * 100) + '%'))
       var m = mood(p)
-      p.tell(Text.of('§8rage: §f+1§8 per minion raised, §f-1§8 per minion slain'))
+      p.tell(Text.of('§8rage: §f+8§8 death, §f+1§8 per 4 damage taken, §f-1§8 per 6 healed, §f-2§8 per quarter-day alive'))
       if (m === null) {
         p.tell(Text.of('§cmood UNREADABLE - she will say nothing at all'))
       } else {
@@ -1116,8 +982,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     })
     VELDORA.events.register(GOD, {
       id: 'brood', kind: 'buff', run: evBrood, hostile: false, cooldown: 3, weight: wBoon(2), tiers: ALL,
-      does: 'BOON - gives you 2 goety spider servants. NOTE: they count as raised ' +
-        'minions, so this gift RAISES her rage and slides her toward attacking',
+      does: 'BOON - gives you 2 goety spider servants. (Since 2026-08-16 they no ' +
+        'longer feed her rage: rage watches the player, not the minion count.)',
     })
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -1220,13 +1086,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } else console.error(TAG + 'killorder.js missing - her contract cannot resolve')
 
     calmSweep(event.server)
+    bodySweep(event.server)
     quietSweep(event.server)
     console.info(TAG + 'rage: +1 raised, -1 slain, +' + RAGE_ON_DEATH + ' on YOUR ' +
-      'death, -' + RAGE_DECAY_DAY + ' per quiet day. She never lets go - winning ' +
+      'death, +1 per ' + DMG_PER_RAGE + ' damage taken, -1 per ' + HEAL_PER_RAGE +
+      ' healed, -' + QUIET_DROP + ' per quarter-day alive. She never lets go - winning ' +
       'her Harvest is the only exit.')
     console.info(TAG + 'The Spider - 9 events on a SLIDING SCALE against rage. ' +
       'Boons at ' + RAGE_CALM + ' and below, attacks at ' + RAGE_FURY + ' and above, ' +
-      'and she only ASKS in between. Rage = +1 per minion raised, -1 per slain. ' +
+      'and she only ASKS in between. Rage watches YOUR BODY, not minions. ' +
       'PvP ' + (HOSTILE_TO_PLAYERS ? 'ON' : 'OFF') + ', target floor ' +
       Math.round(TARGET_FLOOR * 100) + '%.')
   })
