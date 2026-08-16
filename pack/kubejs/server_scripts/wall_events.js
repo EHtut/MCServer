@@ -1088,7 +1088,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     calmSweep(event.server)
     bodySweep(event.server)
     quietSweep(event.server)
-    console.info(TAG + 'rage: +1 raised, -1 slain, +' + RAGE_ON_DEATH + ' on YOUR ' +
+    // ⚠️ "+1 raised, -1 slain" survived here when the minion apparatus was deleted, so
+    // this line claimed minions still fed her rage while the line immediately BELOW
+    // it said "Rage watches YOUR BODY, not minions" - the boot report contradicting
+    // itself in two consecutive sentences. Found by reading the live log after the
+    // restart, not by any test: a banner is a string, and no harness reads strings.
+    console.info(TAG + 'rage: +' + RAGE_ON_DEATH + ' on YOUR ' +
       'death, +1 per ' + DMG_PER_RAGE + ' damage taken, -1 per ' + HEAL_PER_RAGE +
       ' healed, -' + QUIET_DROP + ' per quarter-day alive. She never lets go - winning ' +
       'her Harvest is the only exit.')
