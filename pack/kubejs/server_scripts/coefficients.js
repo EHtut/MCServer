@@ -96,12 +96,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // nothing while idle, but NOBODY SHOULD SPEND AN HOUR WONDERING WHY IT NEVER
   // FIRES. It never fires. That is the intent.
   // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ ETHAN'S NUMBERS, 2026-08-16. Wider spread than the first pass - the top of
+  // each axis roughly doubled, so a path's specialism is unmistakable rather than
+  // a nudge. Art gains a real identity for the first time (2/2/1/3).
   var TABLE = {
-    blade:   { role: 'combat',     spawns: 1.6, power: 3.0, drops: 1.0, phase: 2.0 },
-    salvage: { role: 'combat',     spawns: 1.4, power: 2.5, drops: 1.0, phase: 1.5 },
-    forge:   { role: 'mercantile', spawns: 1.0, power: 1.0, drops: 3.0, phase: 1.0 },
-    wall:    { role: 'mercantile', spawns: 1.0, power: 1.0, drops: 2.5, phase: 1.0 },
-    art:     { role: 'explorer',   spawns: 1.0, power: 1.2, drops: 1.0, phase: 1.0 },
+    blade:   { role: 'combat',     spawns: 3.0, power: 5.0, drops: 1.0, phase: 2.0 },
+    salvage: { role: 'combat',     spawns: 2.5, power: 3.0, drops: 2.0, phase: 1.5 },
+    wall:    { role: 'mercantile', spawns: 1.0, power: 1.5, drops: 3.0, phase: 1.0 },
+    forge:   { role: 'mercantile', spawns: 1.0, power: 1.0, drops: 5.0, phase: 1.0 },
+    art:     { role: 'explorer',   spawns: 2.0, power: 2.0, drops: 1.0, phase: 3.0 },
   }
 
   // Crown is retirement-bound (docs/35 §6) but is STILL a claimable key in paths.js
@@ -153,6 +156,60 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // below 1 is not a punishing edge case, it is a mistake - so the floor catches it
   // at the one number that cannot make anybody worse off.
   var FLOOR = 1.0
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ DEPTH SCALING - `spawns` ONLY.  Ethan, 2026-08-16: "add a multiplier to spawn
+  // rate scaling with -y and then also add flat increases per depth level."
+  //
+  // Two separate things, on purpose, because they do different jobs:
+  //
+  //   MULTIPLIER  smooth, continuous in -y. Every block down is slightly worse,
+  //               so descending FEELS like a gradient rather than a set of doors.
+  //   FLAT        a step at each named depth band. These are the doors, and they
+  //               line up with the ones the world already has - paths.js tiers its
+  //               loot at y>=0 / y<0 / y<=-64, and mcserver_depth extends the
+  //               overworld to -128 with sealed floor below -120.
+  //
+  //       effective = base x mult(y) + flat(y)
+  //
+  // ⚠️ It is applied HERE rather than in spawn_pressure.js so that `/path
+  // coefficients` and the boot report show the number a player is ACTUALLY under,
+  // not the table value. A readout that shows 3.0 while the game runs 5.5 is the
+  // stale-banner defect wearing arithmetic.
+  //
+  // 🚨 AND IT IS SPAWNS-ONLY. Depth must not touch drops, power or phase - a deep
+  // player would otherwise get more loot AND more strength AND a faster Harvest for
+  // standing still, which is the "strictly best" trap docs/23 §7 warns about.
+  var DEPTH_FULL = 128            // -y at which the multiplier reaches its cap
+  var DEPTH_MAX_MULT = 2.0        // cap: at y=-128 the base doubles
+
+  //  y at or below, flat addition
+  var DEPTH_FLAT = [
+    [-120, 1.5],                  // the sealed floor
+    [-64, 1.0],                   // the deep works
+    [0, 0.5],                     // below the surface at all
+  ]
+
+  function depthOf(player) {
+    try {
+      var y = player.y
+      if (typeof y === 'number' && isFinite(y)) return y
+    } catch (e) { }
+    return null
+  }
+
+  function withDepth(v, player) {
+    var y = depthOf(player)
+    if (y === null) return v      // unreadable depth: no bonus, never a penalty
+    if (y >= 0) return v          // surface is the baseline, exactly as written
+    var down = -y
+    var mult = 1.0 + Math.min(1.0, down / DEPTH_FULL) * (DEPTH_MAX_MULT - 1.0)
+    var flat = 0
+    for (var i = 0; i < DEPTH_FLAT.length; i++) {
+      if (y <= DEPTH_FLAT[i][0]) { flat = DEPTH_FLAT[i][1]; break }
+    }
+    return v * mult + flat
+  }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // 🔴 THE ONLINE SOFTENING IS GONE.  Ethan, 2026-08-16: "im thinking that we
@@ -212,6 +269,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     }
 
     var v = row[axis]
+
+    // ⭐ DEPTH, and only on `spawns`. Ethan, 2026-08-16: "add a multiplier to spawn
+    // rate scaling with -y and then also add flat increases per depth level."
+    if (axis === 'spawns') v = withDepth(v, player)
 
     // No player-count scaling any more - see the note above the FLOOR. The only
     // adjustment left is the floor itself, and it is now NEUTRAL: an axis can make

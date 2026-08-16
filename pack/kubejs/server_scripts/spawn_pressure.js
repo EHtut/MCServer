@@ -176,7 +176,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ⚠️ Duplicating is a WRITE inside a spawn event, so it is rate-limited hard
   // (DUP_COOLDOWN) and capped per player. An unbounded multiplier on an event that
   // fired 828+ times in one short sample is a server-killer, not a mechanic.
-  var DUP_COOLDOWN = 40                     // ticks between duplicates, per player
+  var DUP_COOLDOWN = 40                     // ticks between duplicate EVENTS, per player
+  // Hard cap on how many extra mobs one spawn event may become. Blade underground
+  // asks for more than this; the guard is deliberate and the log says when it bites.
+  var MAX_DUP_PER_EVENT = 4
   var lastDup = {}                          // uuid -> world ticks
 
   function isMonster(event) {
@@ -222,9 +225,32 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       }
 
       // ── above 1: DENSITY ────────────────────────────────────────────────
+      //
+      // 🚨 THIS USED TO SILENTLY CAP AT 2.0. The old line was
+      //     if (Math.random() >= (w.coeff - 1.0)) return
+      // which at coeff >= 2.0 compares against >= 1.0 and is NEVER true - so it
+      // always proceeded and always added exactly ONE mob. Every coefficient from
+      // 2.0 upward behaved identically, and Ethan's new table has blade at 3.0,
+      // salvage at 2.5, and depth scaling that pushes blade past 5 underground.
+      // All of that would have been thrown away by a comparison.
+      //
+      // The excess is now read properly: the WHOLE part is guaranteed extra mobs
+      // and the FRACTION is the chance of one more.
+      //
+      //     coeff 1.4 -> 0 guaranteed, 40% of one     (0.4 mobs on average)
+      //     coeff 3.0 -> 2 guaranteed                 (2.0)
+      //     coeff 5.5 -> 4 guaranteed, 50% of a fifth (4.5)
       if (w.coeff <= 1.0 || !DENSITY) return
-      if (Math.random() >= (w.coeff - 1.0)) return
       if (!isMonster(event)) return
+
+      var excess = w.coeff - 1.0
+      var extra = Math.floor(excess)
+      if (Math.random() < (excess - extra)) extra++
+      if (extra <= 0) return
+      // ⚠️ TPS GUARD. checkSpawn fires 828+ times in a short sample (E0 P9), so an
+      // uncapped multiplier on a hot event is a server-killer rather than a
+      // difficulty setting. Deep blade can ask for five; it gets four.
+      if (extra > MAX_DUP_PER_EVENT) extra = MAX_DUP_PER_EVENT
 
       var p = w.player
       var uuid = null
@@ -262,13 +288,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       var dim = 'minecraft:overworld'
       try { dim = String(p.level.dimension) } catch (e) { }
       if (dim.indexOf(':') < 0) dim = 'minecraft:overworld'
-      try {
-        server.runCommandSilent('execute in ' + dim + ' run summon ' + id + ' ' +
-          (Math.round(pos.x * 100) / 100) + ' ' + (Math.round(pos.y * 100) / 100) +
-          ' ' + (Math.round(pos.z * 100) / 100))
-        dupCount++
-        try { dupBy[p.username] = (dupBy[p.username] || 0) + 1 } catch (e2) { }
-      } catch (e) { }
+      // n copies, not one. `extra` is the whole+fractional excess computed above.
+      for (var d = 0; d < extra; d++) {
+        try {
+          server.runCommandSilent('execute in ' + dim + ' run summon ' + id + ' ' +
+            (Math.round(pos.x * 100) / 100) + ' ' + (Math.round(pos.y * 100) / 100) +
+            ' ' + (Math.round(pos.z * 100) / 100))
+          dupCount++
+          try { dupBy[p.username] = (dupBy[p.username] || 0) + 1 } catch (e2) { }
+        } catch (e) { }
+      }
     })
   }
 
