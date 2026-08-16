@@ -128,7 +128,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   ]
 
   function pick(a) { return a[Math.floor(Math.random() * a.length)] }
-  function speak(p, s) { try { p.tell(Text.of('§c' + s)) } catch (e) { } }
+  function speak(p, s) {
+    var c = '§6§l'
+    try {
+      if (VELDORA.voice && typeof VELDORA.voice.colourOf === 'function') {
+        c = VELDORA.voice.colourOf(PATRON)
+      }
+    } catch (e) { }
+    try { p.tell(Text.of(c + s)) } catch (e) { }
+  }
   function note(p, s) { try { p.tell(Text.of('§7' + s)) } catch (e) { } }
 
   // ── reading the gun in your hand ───────────────────────────────────────────
@@ -209,9 +217,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   function tradeHunger(p) {
     var h = null
     try { h = p.foodData.foodLevel } catch (e) { }
-    if (h === null) { speak(p, 'Something is wrong with you. Come back later.'); return false }
+    if (h === null) { speak(p, pooled('unreadable', 'Something is wrong with you. Come back later.')); return false }
     var hungerCost = Math.max(1, Math.round(HUNGER_COST * priceMul(p)))
-    if (h < hungerCost) { speak(p, 'You have nothing left to give me. Eat something.'); return false }
+    if (h < hungerCost) { speak(p, pooled('deal_poor', 'You have nothing left to give me. Eat something.')); return false }
 
     var before = h
     try { p.foodData.foodLevel = h - hungerCost } catch (e) { }
@@ -219,7 +227,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     try { after = p.foodData.foodLevel } catch (e) { }
     if (after === null || after >= before) {
       console.error(TAG + '!! hunger charge did not stick (' + before + ' -> ' + after + ')')
-      speak(p, 'You kept it. How.')
+      speak(p, pooled('kept_it', 'You kept it. How.'))
       return false
     }
     try {
@@ -232,17 +240,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   function tradeLevels(p) {
     var gun = heldGun(p)
-    if (!gun) { speak(p, 'Hold the thing you want fed, friend.'); return false }
+    if (!gun) { speak(p, pooled('need_gun', 'Hold the thing you want fed, friend.')); return false }
     var x = null
     try { x = p.xpLevel } catch (e) { }
-    if (x === null) { speak(p, 'Something is wrong with you. Come back later.'); return false }
+    if (x === null) { speak(p, pooled('unreadable', 'Something is wrong with you. Come back later.')); return false }
     var levelCost = Math.max(1, Math.round(LEVEL_COST * priceMul(p)))
-    if (x < levelCost) { speak(p, 'You are too poor even for me.'); return false }
+    if (x < levelCost) { speak(p, pooled('deal_poor', 'You are too poor even for me.')); return false }
 
     var baseRounds = gun.mag ? Math.max(AMMO_ROUNDS, gun.mag) : AMMO_ROUNDS
     var rounds = Math.max(1, Math.round(baseRounds * payMul(p)))
     var st = mintAmmo(gun.ammoId, rounds)
-    if (!st) { speak(p, 'My supplier let me down. Nothing for you tonight.'); return false }
+    if (!st) { speak(p, pooled('no_stock', 'My supplier let me down. Nothing for you tonight.')); return false }
 
     // Charge only AFTER the goods exist. The reverse order is how a player pays
     // for nothing when a mint fails.
@@ -252,7 +260,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     try { after = p.xpLevel } catch (e) { }
     if (after === null || after >= before) {
       console.error(TAG + '!! level charge did not stick (' + before + ' -> ' + after + ')')
-      speak(p, 'You kept them. How.')
+      speak(p, pooled('kept_it', 'You kept them. How.'))
       return false
     }
     try { p.give(st) } catch (e) { console.error(TAG + 'could not give ammo: ' + e) }
@@ -298,7 +306,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // She took the sight already. Give it back rather than charge for nothing.
       try { srv.runCommandSilent('effect clear ' + name + ' minecraft:blindness') } catch (e) { }
       console.error(TAG + '!! sight trade granted NOTHING - blindness refunded')
-      speak(p, 'On second thought. Keep your eyes.')
+      speak(p, pooled('kept_it', 'On second thought. Keep your eyes.'))
       return false
     }
 
@@ -314,6 +322,22 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   // ── the offer ──────────────────────────────────────────────────────────────
+  // ⭐ HER WORDS BELONG TO ETHAN, NOT TO THIS FILE.
+  // Nine of her refusals were string literals sitting in the trade code, which meant
+  // the only lines a player reliably hears - "you are too poor even for me" fires far
+  // more often than any idle line - were the nine he could not edit without opening a
+  // script. Now each is a POOL LOOKUP with the original as a fallback, so nothing
+  // breaks while the pool is empty and everything is his the moment it is not.
+  function pooled(tag, fallback) {
+    try {
+      if (VELDORA.voice && typeof VELDORA.voice.line === 'function') {
+        var s = VELDORA.voice.line(PATRON, tag, null)
+        if (s) return s
+      }
+    } catch (e) { }
+    return fallback
+  }
+
   function open(p, why) {
     if (!GATE) return false
     if (!p) return false

@@ -53,6 +53,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // A `rare_<tag>` pool is rolled by idle.js at 15% BEFORE its common twin. Put the
   // lines where this god is a person in there, and nowhere else.
   var LINES = {
+    // ── lifted out of salvage.js, 2026-08-15 ────────────────────────────────
+    // These were string literals inside the trade code. They are the lines a player
+    // hears MOST - "you are too poor even for me" fires far more often than any idle
+    // line - and they were the nine Ethan could not edit without opening a script.
+    // Empty here means the old literal is still used, so nothing breaks while he
+    // writes. TODO(ethan).
+    need_gun: [],       // you asked for ammo with nothing in your hand
+    unreadable: [],     // she cannot read your hunger/levels. Something is wrong with you
+    no_stock: [],       // the ammo mint failed. Her supplier let her down
+    kept_it: [],        // you paid a price and it did not take. She is surprised
     low_gift: [
       "It's ok to reach out. I don't bite.",
       "I have things for you. Things you need.",
