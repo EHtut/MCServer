@@ -293,10 +293,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           console.warn(TAG + 'spawner missing - the above-1 half of the axis is INERT')
           break
         }
-        var r = VELDORA.spawner.wave(c.player, { ids: roster, count: n })
-        if (r && r.placed === 0 && r.asked > 0) {
-          console.warn(TAG + 'ambient wave for ' + c.path + ' placed nothing')
-        }
+        // ⚠️ `placed` is null at return and measured a second later - see issued()
+        // in spawner.js. Read synchronously, this warning could never print.
+        VELDORA.spawner.wave(c.player, { ids: roster, count: n },
+          function (placed, asked) {
+            if (placed === 0 && asked > 0) {
+              console.warn(TAG + 'ambient wave for ' + c.path + ' placed nothing')
+            }
+          })
       }
     } catch (e) { console.warn(TAG + 'pressureTick threw :: ' + e) }
     schedule(server)

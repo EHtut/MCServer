@@ -628,6 +628,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // through a tool chain mangled them. A char code cannot be mangled.
         nbt: '{Tags:["' + CHAMPION_TAG + '"],CustomNameVisible:1b,CustomName:' + Q +
           '{"text":"The Strongest He Has","color":"dark_red","bold":true}' + Q + '}',
+      }, function (placed) {
+        // The half that answers "did it ARRIVE", which is only knowable a second
+        // later. See the issued() note in spawner.js - this rescue used to test
+        // r.placed synchronously, where it is ALWAYS null, and so never ran.
+        if (placed !== 0) return
+        console.error(TAG + '!! Harvest champion did not ARRIVE for ' + p.username +
+          ' - releasing the lock so the sweep retries')
+        try { p.persistentData.putString('veldora_harvest_active', '') } catch (e) { }
+        if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'harvest_open')
       })
       // 🚨 THE DEFERRED-ARRIVAL HAZARD. harvestArrive now returns true BEFORE the
       // champion exists, so harvest.js has already stamped the Harvest as begun. If
@@ -637,9 +646,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // sweep back in charge and it retries. A Harvest that did not arrive did not
       // happen.
       try {
-        if (!r || r.placed === 0) {
-          console.error(TAG + '!! Harvest champion FAILED to place for ' + p.username +
-            ' - releasing the lock so the sweep retries')
+        if (!VELDORA.spawner.issued(r)) {
+          console.error(TAG + '!! Harvest champion was REFUSED by the spawner for ' +
+            p.username + ' - releasing the lock so the sweep retries')
           try { p.persistentData.putString('veldora_harvest_active', '') } catch (e) { }
           if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'harvest_open')
         }

@@ -201,8 +201,38 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return result
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🚨 issued() EXISTS BECAUSE SEVEN CALLERS GOT THIS WRONG THE SAME WAY.
+  //
+  // `placed` is null at return and filled in MEASURE_DELAY ticks later - exactly as
+  // the header of wave() says in so many words. Every caller nevertheless wrote:
+  //
+  //     var r = wave(...)
+  //     if (!r || r.placed === 0) { ...recover... }        // <-- never true
+  //
+  // `null === 0` is false, so that branch has NEVER RUN, in any of them. Found
+  // 2026-08-16 from a log line that printed "Rehykt <- null of her brood" - the
+  // cosmetic symptom of a guard that was structurally dead.
+  //
+  // THREE OF THE SEVEN WERE HARVEST FAILURE-RECOVERY - "release the lock so the
+  // sweep retries". So a Harvest champion that failed to place left the player
+  // sealed in the harvest phase with nothing to fight and no way out, and the one
+  // piece of code written to rescue them could not fire.
+  //
+  // The fix separates two questions that are answerable at different times, which
+  // is this project's own rule about never letting "I failed" and "I found nothing"
+  // share a value:
+  //
+  //     issued(r)      did the spawner ACCEPT the request?   -> NOW
+  //     onMeasured()   did anything actually ARRIVE?         -> ~a second later
+  //
+  // `asked` is > 0 on exactly the path that issues summons and 0 on every early
+  // return, so this is synchronous, honest, and impossible to confuse with `placed`.
+  function issued(r) { return !!(r && typeof r.asked === 'number' && r.asked > 0) }
+
   VELDORA.spawner = {
     wave: wave,
+    issued: issued,
     validate: function (server, id) { return validate(server, id) },
     countNear: countNear,
     limits: { min: MIN_DIST, max: MAX_DIST, cap: MAX_PER_WAVE },
@@ -242,12 +272,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           var p = ctx.source.player
           if (!p) return 0
           var n = ctx.getArgument('n', Java.loadClass('java.lang.Integer'))
-          var r = wave(p, { ids: ['born_in_chaos_v1:dread_hound_not_despawn'], count: n })
-          p.tell(Text.of('§7asked §f' + r.asked + '§7, measured §f' +
-            (r.placed === null ? 'UNMEASURABLE' : r.placed)))
-          if (r.placed === 0 && r.asked > 0) {
-            p.tell(Text.of('§cNothing arrived. Ids are valid, so this is placement.'))
-          }
+          // ⚠️ THE DIAGNOSTIC HAD THE BUG IT DIAGNOSES. It read r.placed on the same
+          // tick, where it is always null, so /wave_test told every admin
+          // "UNMEASURABLE" no matter what happened - the one tool you would reach
+          // for to debug a placement failure, reporting a failure to measure.
+          var r = wave(p, { ids: ['born_in_chaos_v1:dread_hound_not_despawn'], count: n },
+            function (placed, asked) {
+              if (placed === null) {
+                p.tell(Text.of('§7asked §f' + asked + '§7, measured §cUNMEASURABLE'))
+              } else {
+                p.tell(Text.of('§7asked §f' + asked + '§7, measured §f' + placed))
+                if (placed === 0 && asked > 0) {
+                  p.tell(Text.of('§cNothing arrived. Ids are valid, so this is placement.'))
+                }
+              }
+            })
+          p.tell(Text.of(issued(r) ? '§8issued, measuring in ' + MEASURE_DELAY + 't...'
+            : '§cthe spawner REFUSED it - no valid ids, no server, or count 0'))
           return 1
         }))
       .executes(function (ctx) {

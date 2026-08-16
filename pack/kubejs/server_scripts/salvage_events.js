@@ -378,9 +378,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         ids: [ACTOR], count: 1, minDist: 12, maxDist: 20,
         nbt: '{Tags:["' + ACTOR_TAG + '","' + HARVEST_TAG + '"],CustomNameVisible:1b,' +
           'CustomName:' + Q + '{"text":"The Collector","color":"gold","bold":true}' + Q + '}',
+      }, function (placed) {
+        // ⚠️ THE OTHER HALF, AND THE HALF THAT USED TO BE UNREACHABLE. This tested
+        // r.placed synchronously, where placed is ALWAYS null - so the rescue for a
+        // player sealed in a broken Harvest could never fire. Fixed 2026-08-16.
+        if (placed !== 0) return
+        console.error(TAG + '!! Harvest champion did not ARRIVE for ' + p.username +
+          ' - releasing the lock so the sweep retries')
+        try { p.persistentData.putString('veldora_harvest_active', '') } catch (e) { }
       })
-      if (!r || r.placed === 0) {
-        console.error(TAG + '!! Harvest FAILED to place for ' + p.username +
+      if (!VELDORA.spawner.issued(r)) {
+        console.error(TAG + '!! Harvest was REFUSED by the spawner for ' + p.username +
           ' - releasing the lock so the sweep retries')
         try { p.persistentData.putString('veldora_harvest_active', '') } catch (e) { }
       }

@@ -396,10 +396,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var r = VELDORA.spawner.wave(target, {
       ids: SPIDERS, count: count, minDist: 10, maxDist: 18,
       nbt: spiderNbt(buffed),
+    }, function (placed, asked) {
+      if (placed === 0) {
+        console.error(TAG + '!! spiders for ' + target.username + ' placed NOTHING ' +
+          '(asked ' + asked + ') - she attacked and nothing arrived')
+      }
     })
-    if (!r || r.placed === 0) {
-      console.warn(TAG + 'spiders asked for ' + target.username +
-        ' and placed NOTHING - not stamping')
+    if (!VELDORA.spawner.issued(r)) {
+      console.warn(TAG + 'spiders for ' + target.username +
+        ' were REFUSED by the spawner - not stamping')
       return false
     }
 
@@ -593,16 +598,28 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var BROOD = 'goety:spider_servant'
   function evBrood(server, p) {
     if (!VELDORA.spawner) return false
+    // ⚠️ TWO QUESTIONS, TWO TIMES. issued() answers "did the spawner take the
+    // request" NOW; the callback answers "did anything arrive" a second later. The
+    // old code read r.placed synchronously, where it is ALWAYS null, so the guard
+    // never fired and this line printed "Rehykt <- null of her brood".
     var r = VELDORA.spawner.wave(p, {
       ids: [BROOD], count: 2, minDist: 3, maxDist: 6,
       nbt: '{Tags:["veldora_wall_brood"]}',
+    }, function (placed, asked) {
+      if (placed === null) return                    // unmeasurable, already logged
+      if (placed === 0) {
+        console.error(TAG + '!! brood placed NOTHING for ' + p.username +
+          ' (asked ' + asked + ') - she promised family and sent none')
+      } else {
+        console.info(TAG + p.username + ' <- ' + placed + ' of her brood')
+      }
     })
-    if (!r || r.placed === 0) {
-      console.warn(TAG + 'brood placed nothing for ' + p.username + ' - not stamping')
+    if (!VELDORA.spawner.issued(r)) {
+      console.warn(TAG + 'brood was REFUSED by the spawner for ' + p.username +
+        ' - not stamping')
       return false
     }
     if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'low_gift')
-    console.info(TAG + p.username + ' <- ' + r.placed + ' of her brood')
     return true
   }
 
@@ -632,14 +649,22 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (!target || !VELDORA.spawner) return false
     var r = VELDORA.spawner.wave(target, {
       ids: SPIDERS, count: 9, minDist: 10, maxDist: 20, nbt: spiderNbt(true),
+    }, function (placed, asked) {
+      if (placed === null) return
+      if (placed === 0) {
+        console.error(TAG + '!! SWARM at ' + target.username + ' placed NOTHING ' +
+          '(asked ' + asked + ')')
+      } else {
+        console.info(TAG + '!! ' + me.username + ' -> SWARM of ' + placed + ' at ' +
+          target.username)
+      }
     })
-    if (!r || r.placed === 0) {
-      console.warn(TAG + 'swarm placed nothing at ' + target.username + ' - not stamping')
+    if (!VELDORA.spawner.issued(r)) {
+      console.warn(TAG + 'swarm at ' + target.username +
+        ' was REFUSED by the spawner - not stamping')
       return false
     }
     if (VELDORA.voice) VELDORA.voice.say(target, GOD, 'high_hostile')
-    console.info(TAG + '!! ' + me.username + ' -> SWARM of ' + r.placed + ' at ' +
-      target.username)
     return true
   }
 
@@ -679,12 +704,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         nbt: '{Tags:["' + ACTOR_TAG + '","' + HARVEST_TAG + '"],CustomNameVisible:1b,' +
           'CustomName:' + Q + '{"text":"Her Family","color":"dark_purple","bold":true}' +
           Q + '}',
+      }, function (placed) {
+        // The other half: the spawner accepted it and nothing arrived anyway.
+        if (placed !== 0) return
+        console.error(TAG + '!! Harvest champion did not ARRIVE for ' + p.username +
+          ' - releasing the lock so the sweep retries')
+        try { p.persistentData.putString('veldora_harvest_active', '') } catch (e) { }
       })
       // 🚨 A Harvest that did not arrive did not happen. harvest.js has already
       // stamped this begun, so a failed placement must release the lock or the player
       // sits in the harvest phase with nothing to fight.
-      if (!r || r.placed === 0) {
-        console.error(TAG + '!! Harvest FAILED to place for ' + p.username +
+      //
+      // ⚠️ THIS RESCUE HAD NEVER RUN. It tested `r.placed === 0` synchronously, where
+      // placed is ALWAYS null - so the one piece of code written to free a player
+      // sealed in a broken Harvest was structurally unreachable. Fixed 2026-08-16 by
+      // asking the question at the time it can be answered.
+      if (!VELDORA.spawner.issued(r)) {
+        console.error(TAG + '!! Harvest was REFUSED by the spawner for ' + p.username +
           ' - releasing the lock so the sweep retries')
         try { p.persistentData.putString('veldora_harvest_active', '') } catch (e) { }
       }
