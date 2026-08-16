@@ -695,7 +695,36 @@ lockout**, and a defeated champion that stays turns a graduation into a death lo
 *Generalised, not special-cased: a handler declares its `tag` and `harvest.js` clears
 it — every god's Harvest will send something and every one will need this.*
 
+## ✅ The counter fired — the riskiest untested thing works
+
+`[counter] Rehykt blade 0 -> 1 (slain)`, four kills counted. **`isMonster()` took three
+attempts in `the_hunt.js`** — `getMobCategory()` exists on nothing, and `getCategory()`
+threw on every kill because Rhino reads a bare Java method reference as falsy — so
+calling it directly was the one unverified assumption in the whole counter layer.
+**And the Gauntlet fired on its own from the sweep**, unprompted.
+
+## 🚨 A pre-existing bug the test surfaced
+
+**`telemetry.js` has been failing on EVERY player death**, silently:
+
+```
+telemetry.js#135: TypeError: redeclaration of var p
+```
+
+A `const` inside a nested block of a repeatedly-invoked callback — **the exact trap
+`paths.js` documents in its own header.** So `player.death` has never emitted for as
+long as that line has existed, and **the DM's memory has a hole in it precisely where
+deaths should be.** Fixed.
+
+*It only surfaced because a Harvest death made me read the error count on a log I was
+already looking at. Nothing about it was ever going to announce itself.*
+
 ## Queued for the pass
+
+### The loss line lands BEFORE the death message
+`harvest_lost` fires from the death hook, so it prints above *"Rehykt was slain by…"*
+and reads as commentary delivered slightly too early. **Delay the closing lines a few
+ticks** so the god speaks after the world has finished saying what happened.
 
 ### ⭐ A better introduction
 *Ethan: **"we probably need to add to the polish pass a better intro."*** The

@@ -132,13 +132,20 @@
     const killer = source ? source.player : null
 
     if (victim.player) {
-      const p = posOf(victim)
+      // 🚨 `var`, NOT `const`. Rhino re-declares a const in a nested block of a
+      // repeatedly-invoked callback and THROWS - the trap paths.js documents in its
+      // own header, and this file had it. Measured 2026-08-15:
+      //     telemetry.js#135: TypeError: redeclaration of var p
+      // on EVERY player death, which means player.death has been silently failing
+      // to emit for as long as this line has existed. The DM's memory has a hole in
+      // it exactly where deaths should be.
+      var dpos = posOf(victim)
       emit('player.death', victim.username, {
         killer: idOf(source ? source.actual : null),
         cause: source ? String(source.type) : null,
         dim: dimOf(victim),
         biome: biomeOf(victim),
-        x: p.x, y: p.y, z: p.z,
+        x: dpos.x, y: dpos.y, z: dpos.z,
       })
       return
     }

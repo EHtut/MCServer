@@ -108,8 +108,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
     // The actor leaves, win or lose, BEFORE the closing line - so the last thing
     // that happens is him speaking, not it swinging.
+    // Log ALWAYS, including zero. "cleared nothing" and "could not read the tags"
+    // must be distinguishable, and a silent zero is how the champion stayed alive
+    // through a resolution in the first place.
     var cleared = clearActors(p, h.tag)
-    if (cleared) console.info(TAG + 'removed ' + cleared + ' ' + god + ' actor(s)')
+    console.info(TAG + 'cleared ' + cleared + ' ' + god + ' actor(s) tagged ' +
+      (h.tag || 'NOTHING - handler declared no tag'))
 
     try {
       if (won) {
