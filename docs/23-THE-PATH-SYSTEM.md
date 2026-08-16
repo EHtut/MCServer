@@ -737,6 +737,148 @@ it would only resurrect the concept.
 **`puffish_skills` stays** as the per-path tree: the path unlocks its tree, and there
 is no second choice.
 
+---
+
+## 6. ⭐ WEIGHTING AND DECAY *(design, 2026-08-16, NOT BUILT)*
+
+> Ethan: *"it should be incremental increase for easier tasks and larger increase
+> for harder tasks… Also it needs to build in a way that it also decreases slowly as
+> well so the player needs to work to keep it up."*
+
+### 6.1 The measurement — a flat +1 is 68× wrong
+
+Measured off tonight's live session, a clean 30-minute window with two players each
+doing their own path's verb:
+
+| act | counted | **per hour** |
+|---|---|---|
+| **blocks placed** | 270 | **545** |
+| **mobs slain** | 4 | **8** |
+
+**68 : 1.** Every counter today moves by a flat `+1`, so the god whose verb is the
+common act runs sixty-eight times faster than the god whose verb is the rare one.
+That is not a tuning problem — it is the **same defect as the 274-rage bug** wearing
+different clothes: two quantities with wildly different natural rates added to
+identical scales.
+
+⚠️ The 8/hour figure is a *low* sample — Lehykt was building more than fighting. A
+combat session is nearer 40–60/hour. **The ratio is the finding; the exact numbers
+below need one more session before they are trusted.**
+
+### 6.2 The principle — the step is the inverse of the rate
+
+> **A counter should measure an hour of effort, not a count of twitches.**
+
+Step ∝ 1 / (how often the act naturally happens). Target **~100 points per hour of
+dedicated effort** for every god, so a threshold means the same thing whoever you
+walk.
+
+| patron | verb | rate/h | step | pts/h | note |
+|---|---|---|---|---|---|
+| **Forge** | block placed | 545 | **+1 per 5** | 109 | ⭐ **re-homed from Wall** |
+| **Art** | item picked up | ~1500 est | **+1 per 15** | 100 | ⭐ **changed from biomes** |
+| **Blade** | mob slain | ~50 combat | **+2** | 100 | |
+| **Salvage** | trade taken | ~2 | **large — see 6.4** | — | the inversion |
+| **Wall** | — | — | — | — | **not a task counter — see 6.3** |
+
+Fractional steps need integer storage, so this is a **divisor with a stored
+remainder** (`+1 on every 5th block`), not floating point. `counters.js` is
+`getInt`/`putInt` throughout and must stay that way.
+
+⭐ **The block-place sensor is not deleted, it is re-homed.** Wall's hook was removed
+2026-08-16 because it pointed at the wrong god. Ethan's assignment gives it to Forge,
+whose verb it should always have been — *"the only patron who pays for your actual
+output."* The 08-15 rewrite should have moved it rather than left it behind.
+
+### 6.3 🚨 Wall is not a task counter — the answer to the question
+
+> Ethan: *"Wall is on death or minion death? Same incremental."*
+
+**Both, plus your own death — and it is the one counter that must NOT be normalised
+with the others.** Today:
+
+```
++1  a minion raised        -1  a minion slain
++8  YOUR death             -2  per quiet world day
+```
+
+Every other counter measures **something you did to progress.** Hers measures **how
+she feels**, on a slider from boons to attacks. Giving it a "step per act" would
+re-conflate a tally with a mood — which is precisely the mistake that produced the
+274-rage bug. **Rage stays as it is.**
+
+⚠️ **There is a real smell to fix while we are here.** `wall_voice.js` reads that same
+number for her *voice tier* (`MEDIUM_AT 10` / `HIGH_AT 50`), so **her mood and her
+familiarity with you are one variable.** She cannot be furious and new to you, or
+calm and old friends. No other god has that collision. Flagged, not silently changed.
+
+### 6.4 Salvage — the inversion, and the one genuine ambiguity
+
+> Ethan: *"Only one is salvage which is based on trades taken so its a flat
+> percentage increase each time."*
+
+Her verb is **rare and costly** — every trade charges hunger, levels or sight, and her
+offers sit behind a one-world-day cooldown, so **2–3 per hour is the ceiling.** She is
+the "harder task, larger increase" end of the rule.
+
+**"Flat percentage" has two readings and they behave very differently:**
+
+| | mechanic | 10 trades from 0 | feel |
+|---|---|---|---|
+| **% of the scale** | each trade `+10%` of range (`+2` on her 0–20) | 0 → 20, linear | predictable — a trade is always worth the same |
+| **% of current** | each trade `×1.15`, floor `+1` | 0 → ~21, compounding | accelerating — late trades worth far more than early |
+
+Compounding suits a *dealer* — the more you owe her the faster it runs away — but it
+makes the first trades feel worthless and needs a floor to leave zero at all.
+
+### 6.5 Decay — and the part that changes what a threshold MEANS
+
+**Today only Wall decays**, and only because `wall_events.js` runs its own sweep.
+`counters.js` has **no decay whatsoever** — it stamps the day a counter last moved and
+nothing else. Blade, Salvage, Forge and Art are pure lifetime totals that can only go
+up.
+
+Proposed: a **shared, lazy, percentage decay** in `counters.js`, paid down on read
+exactly as `regard.js` already does it — no tick loop, no sweep.
+
+```
+−8% of current per quiet world day, floor 0
+```
+
+Percentage rather than flat, because it **self-scales** and produces an equilibrium:
+
+```
+the counter settles where   daily earn  =  0.08 × counter
+```
+
+**That equilibrium IS "the player needs to work to keep it up."** At 200 you shed 16 a
+day, so holding 200 costs ~8 kills a day. Stop doing your verb and you slide back
+smoothly, with no cliff.
+
+> ### 🚨 THE CONSEQUENCE — DECIDE IT, DO NOT DISCOVER IT
+> Decay turns a counter from a **lifetime total** into a **sustained rate**, and every
+> existing threshold was chosen against the first meaning:
+>
+> | | medium | high |
+> |---|---|---|
+> | Blade | 50 | **200** slain |
+> | Salvage | 5 | 20 trades |
+> | Wall | 10 | 50 rage |
+>
+> **Blade's `high` at 200 stops meaning "kill 200 mobs eventually" and starts meaning
+> "hold a pace of 16 kills every day, forever."** `duel`, `understudy` and his entire
+> high-tier voice sit behind it. If the thresholds are not re-derived at the same
+> time, **high tier quietly becomes unreachable and every god's best content goes
+> dark** — the `docs/20` failure, exactly.
+
+### 6.6 Open
+
+1. **Salvage's percentage** — of the scale, or of the current value? (6.4)
+2. **Re-derive every threshold** alongside decay, or ship decay against the existing
+   ones and measure for a session first?
+3. Wall's mood/tier collision (6.3) — leave it, or split into two numbers?
+4. Forge and Art are **CLOSED**, so their rows are design-only until built.
+
 # PART V.9 — THE RECKONING ENGINE
 
 *The general form of E7. Designed 2026-08-15, not yet built.*
