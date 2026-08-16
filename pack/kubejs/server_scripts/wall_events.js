@@ -142,6 +142,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       var e = event.entity
       if (!e || e.player) return
       if (isMinion(e) !== true) return
+
+      // 🚨 CREDIT ONCE, EVER. This hook tagged the entity on the way OUT and never
+      // read that tag on the way IN, so the same minion could be credited again and
+      // again. EntityEvents.spawned sits on the entity JOINING THE LEVEL, which
+      // includes chunk load - and Occultism familiars and Goety servants persist.
+      // A player with three familiars would have gained rage every time they walked
+      // back into their own base, from nothing, forever.
+      //
+      // Found 2026-08-16 by reading the hook rather than by playing it: nobody has
+      // ever walked Wall, so creditNearest() has returned null on every summon this
+      // world has ever seen and the whole mechanic is still UNPLAYED. The tag is
+      // stored in entity NBT and survives save/load, which is what makes this the
+      // correct guard rather than an in-memory set.
+      if (hasTag(e, MINION_TAG)) return
+
       var server = null
       try { server = e.server } catch (x) { return }
       if (!server) return

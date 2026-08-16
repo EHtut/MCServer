@@ -6,20 +6,31 @@ so changes queue here instead of going in one at a time.
 
 ---
 
-## 🔴 PENDING RESTART — deployed, not loaded
+## 🔴 PENDING RESTART #2 — deployed 2026-08-16, awaiting Ethan's ~1hr restart
 
-Everything below is written, syntax-checked and copied into `instance/`. **None of it
-is running.** One restart takes all of it.
+| change | what it does |
+|---|---|
+| **Wall's minion double-credit** | the spawn hook tagged the entity but never *read* the tag, so a persistent familiar could re-credit `+1` on every chunk load. One-line guard. **Found by reading, not playing — nobody has ever walked Wall, so `creditNearest()` has returned null on every summon this world has seen and the whole rage mechanic is UNPLAYED.** |
 
-```bash
-python tools/serverctl.py restart
-```
+**Still open, decided but not built:** the attention model —
+**`docs/41-BUILDING-A-GOD.md` §8**. Do not tune `CHANCE` before reading §8.1; the
+obvious 25% cut buys about 8%, because the world-day cooldown sets the rate and it
+has exactly two usable settings.
+
+---
+
+## ✅ RESTART #1 — loaded 2026-08-16 01:28, boot clean, 0 errors
+
+**All of this is LIVE.** Boot verified: `logq errors` → 0, and every subsystem
+printed its banner. It is kept here as the record of what changed, and as the list
+of what has still never been *observed in play* — loaded is not played.
 
 | change | what it does |
 |---|---|
 | **spawn density** | `spawns` becomes a rate multiplier on the world's own spawns rather than a roster trickle. blade **1.6** · salvage **1.4** · art 1.0 · wall **0.7** · forge **0.6** |
 | **suppression goes live** | wall and forge below 1.0 for the first time — the `checkSpawn` half has worked since it was written and nothing ever asked it for anything |
-| **Wall route 2** | 7 pathless days **+ killed by another god's champion** |
+| **Wall's unlock** | ⚠️ **superseded the same night.** Shipped as *7 pathless days + killed by a champion*, then rewritten to **killed while pathless → she offers on respawn**, no item and no timer. Both day routes were unreachable — see the commit and `chosen.js`'s header |
+| **closed gods stop spending the one offer** | art's trigger is lapis and art is CLOSED, so the first god to notice anyone was one that then refuses them. Both players carried `offered_art=1` |
 | **cutscene budget** | scene events now cost 4 world days, quiet events still 1 |
 | **Wall's loot table** | rebuilt to her own guidance ladder — 3 Occultism + 3 Goety per tier, 6 per tier. Sealed floor now pays `raw_iesnium` / `dark_ingot` / `afrit_essence` / `soul_emerald` |
 | **🆕 the release system** | `release.js` — each god releases you for its OWN reason. Wall never · Blade 4 buff-deaths in a row · Salvage 3 refusals in a row. Regard stops being the door for all three |
