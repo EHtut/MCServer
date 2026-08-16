@@ -233,7 +233,21 @@ Ordinary work by ordinary people. Cellars, shafts, props, the occasional
 collapsed village that got greedy. Iron, copper, coal. People alive today have
 grandfathers who cut some of it. Nothing here is a secret.
 
-### The Deep Works — *nothing down to minus sixty*
+> ⚠️ **THESE NUMBERS WERE STALE AND COST A FEATURE.** This section said the Sealed
+> Floor was *"minus sixty to the bottom"*, which was written when the world bottomed
+> out at −64. **The overworld has since been extended to −128**
+> (`tools/make_depth_datapack.py`, `NEW_MIN_Y`). Reading the old numbers put the
+> Speaker's cutoff at −40 — a third of the way down, in the old diggings — when Ethan
+> had asked for *"low or almost lowest"*. Corrected 2026-08-15 to match what the game
+> actually tells a player in `/help`, which is the only version a player can check:
+>
+> | | |
+> |---|---|
+> | 0 to −64 | the old diggings |
+> | −64 to −120 | the deep works — **and where your god stops being able to reach you** |
+> | −120 to −128 | the sealed floor — **and the only place the Speaker confesses** |
+
+### The Deep Works — *minus sixty-four to minus one hundred and twenty*
 Where the straight lines start, and where the ladder begins.
 
 Corners become square. Shafts run the wrong way for ore, sized for something that
@@ -242,7 +256,7 @@ first of the metal that will not rust.
 
 The watching starts here. Everyone notices; nobody agrees on when.
 
-### The Sealed Floor — *minus sixty to the bottom*
+### The Sealed Floor — *minus one hundred and twenty to the bottom (−128)*
 Reinforced — not sturdy, *reinforced*, by people who expected to be attacked.
 
 The black residue is here. It is not a mineral and does not occur; it is left

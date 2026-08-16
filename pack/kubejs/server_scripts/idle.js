@@ -170,19 +170,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
     var now = dayNow(server)
 
-    // ⭐ BELOW THE CUTOFF THE GOD CANNOT REACH YOU (deep_speaker.js). The voice that
-    // has been arming and testing you goes silent, and something else speaks
-    // instead. That is the point of descending, not a side effect of it.
-    try {
-      if (VELDORA.speaker && VELDORA.speaker.active(p)) {
-        if (VELDORA.speaker.say(p, 'common')) {
-          if (now !== null) { try { p.persistentData.putInt(LAST_KEY + god, now + 1) } catch (e) { } }
-          console.info(TAG + p.username + ' <- the Speaker (below y' + VELDORA.speaker.cutoff + ')')
-          return 'speaker'
-        }
-        return null            // out of earshot and she had nothing: SILENCE
-      }
-    } catch (e) { console.warn(TAG + 'speaker check threw :: ' + e) }
+    // 🚨 ORDER MATTERS, AND I HAD IT WRONG. The Speaker block used to sit ABOVE
+    // both of these guards, which meant she ignored the once-per-world-day cooldown
+    // (she stamped it without ever reading it) and, far worse, could talk straight
+    // over a running cutscene. Below the cutoff she would have spoken every ~17
+    // minutes and could have landed a line in the middle of the Harvest.
+    //
+    // Both guards now gate EVERY voice, hers included. She is a different speaker,
+    // not a different set of rules.
 
     // Never over a scene.
     try { if (VELDORA.ritual && VELDORA.ritual.active(p)) return null } catch (e) { }
@@ -199,6 +194,24 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         if (last >= now) return null           // already spoke today
       }
     }
+
+    // ⭐ BELOW THE CUTOFF THE GOD CANNOT REACH YOU (deep_speaker.js). The voice that
+    // has been arming and testing you goes silent, and something else speaks
+    // instead. That is the point of descending, not a side effect of it.
+    //
+    // The confession is NOT rolled here - it runs on its own sweep in deep_speaker,
+    // because tying the rarest thing in the game to a once-per-day roll would have
+    // put it ~10 in-game days out of reach.
+    try {
+      if (VELDORA.speaker && VELDORA.speaker.active(p)) {
+        if (VELDORA.speaker.say(p, 'common')) {
+          if (now !== null) { try { p.persistentData.putInt(LAST_KEY + god, now + 1) } catch (e) { } }
+          console.info(TAG + p.username + ' <- the Speaker (below y' + VELDORA.speaker.cutoff + ')')
+          return 'speaker'
+        }
+        return null            // out of earshot and she had nothing: SILENCE
+      }
+    } catch (e) { console.warn(TAG + 'speaker check threw :: ' + e) }
 
     var ctx = contextsFor(server, p, dayNow(server) === null ? null : (function () {
       try { return server.overworld().dayTime() } catch (e) { return null }

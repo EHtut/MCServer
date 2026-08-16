@@ -84,6 +84,23 @@ NOISE = re.compile(
     r"unknown or non-serializable data attachment|Recoverable errors when loading|"
     r"using default\)|Ignoring unknown attribute|custom color set definition")
 
+# 🚨 KUBEJS DOES NOT LOG SCRIPT ERRORS AT ERROR LEVEL.
+#
+# It logs them under `KubeJS Server/` with no level at all, so the `/ERROR` test
+# below skipped every one of them. `logq errors` printed "0 real error(s)" while
+# deep_speaker.js was dying on `ReferenceError: "event" is not defined` and the
+# confession never armed — the boot log said the Speaker was live because the line
+# BEFORE the throw had already printed.
+#
+# That is the whole failure mode this tool was written to prevent, in the tool
+# itself: a search that could not have matched, reported as a clean result. Any
+# line carrying a script-failure signature is now a real error whatever level it
+# claims, and it is labelled so it cannot be mistaken for a Java stack trace.
+SCRIPT_ERR = re.compile(
+    r"Error in '|EcmaError|ReferenceError|TypeError:|SyntaxError|"
+    r"Failed to load script|is not a function|Error loading KubeJS|"
+    r"\.js#\d+:.*[Ee]rror")
+
 
 def read_text(p: pathlib.Path) -> str:
     """errors='replace' ALWAYS. The log has binary bytes in it."""
@@ -148,21 +165,28 @@ def cmd_boot(all_logs: bool) -> int:
 
 def cmd_errors(all_logs: bool, since_hours: float | None) -> int:
     now = datetime.now()
-    n = 0
+    n = scripts = 0
     for p in log_files(all_logs):
         for _ln, ts, logger, msg, _raw in parsed_lines(p):
-            if "/ERROR" not in logger and "/FATAL" not in logger:
+            # A script error counts REGARDLESS of the level it claims - see the
+            # SCRIPT_ERR note. Levelled errors still count the old way.
+            is_script = bool(SCRIPT_ERR.search(msg))
+            if not is_script and "/ERROR" not in logger and "/FATAL" not in logger:
                 continue
             if NOISE.search(msg):
                 continue
             if since_hours and (now - ts).total_seconds() > since_hours * 3600:
                 continue
-            print(f"  {ts:%H:%M:%S} [{logger.split('/')[0][:26]:<26}] {msg[:110]}")
+            mark = " SCRIPT " if is_script else ""
+            print(f"  {ts:%H:%M:%S}{mark}[{logger.split('/')[0][:26]:<26}] {msg[:110]}")
             n += 1
-    print(f"\n  {n} real error(s)" + (f" in the last {since_hours}h" if since_hours else ""))
+            scripts += is_script
+    print(f"\n  {n} real error(s)" + (f" in the last {since_hours}h" if since_hours else "")
+          + (f", {scripts} of them SCRIPT errors" if scripts else ""))
     if n == 0:
         print("  (known noise is filtered: version checks, mixin refmaps, removed-mod")
         print("   attachments, recoverable chunk errors. Use `grep` to see everything.)")
+        print("   KubeJS script errors ARE included - they log without a level.")
     return 0
 
 

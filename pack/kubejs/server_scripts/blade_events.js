@@ -546,9 +546,25 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   function harvestArrive(server, p) {
     if (!VELDORA.spawner) return false
 
+    // 🚨 REFUSE IF A SCENE IS ALREADY RUNNING, do not push through it. The Speaker's
+    // confession is the first AUTONOMOUS ritual in the game - every earlier one was
+    // player-initiated, so a collision was not really possible and this used to just
+    // skip the cutscene and spawn the champion anyway. That would now drop the
+    // strongest thing Blade has on a player who is blind, rooted and 35 seconds from
+    // being released.
+    //
+    // Returning false means harvest.js does NOT stamp it as begun and the phase
+    // sweep tries again later, which is the rule this file already lives by: a
+    // Harvest that did not arrive did not happen.
+    try {
+      if (VELDORA.ritual && VELDORA.ritual.active(p)) {
+        console.info(TAG + 'Harvest held for ' + p.username + ' - already in a scene')
+        return false
+      }
+    } catch (e) { }
+
     var opened = false
-    if (VELDORA.ritual && typeof VELDORA.ritual.begin === 'function' &&
-        !VELDORA.ritual.active(p)) {
+    if (VELDORA.ritual && typeof VELDORA.ritual.begin === 'function') {
       opened = VELDORA.ritual.begin(p, {
         lines: HARVEST_SCENE,
         options: [],                 // no choice. This is not an offer.
