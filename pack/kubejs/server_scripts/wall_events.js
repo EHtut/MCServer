@@ -268,7 +268,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       '],Health:40f}'
   }
 
-  function sendSpiders(server, me, tier) {
+  function sendSpiders(server, me) {
     var target = pickTarget(server, me)
     if (!target) {
       console.info(TAG + 'no valid target for ' + me.username + ' - nobody else ' +
@@ -277,8 +277,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     }
     if (!VELDORA.spawner) { console.error(TAG + 'no spawner'); return false }
 
-    var buffed = (tier === 'high')
-    var count = buffed ? 5 : 3
+    // ⚠️ BUFFED BY MOOD, NOT BY TIER. The tier is what she SAYS; the slider is what
+    // she IS. Keying the buff to the voice tier would have meant a champion at rage
+    // 41 (just into 'high') sending the same wave as one at rage 89, which is
+    // exactly the stepped behaviour the slider exists to remove.
+    var m = mood(me)
+    if (m === null) return false
+    var buffed = (m >= 0.5)
+    var count = 3 + Math.round(m * 3)          // 3 at calm, 6 at fury
     var r = VELDORA.spawner.wave(target, {
       ids: SPIDERS, count: count, minDist: 10, maxDist: 18,
       nbt: spiderNbt(buffed),
@@ -299,7 +305,78 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return true
   }
 
-  // ── the three events ──────────────────────────────────────────────────────
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ THE SLIDER — rage decides what she is, continuously
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Ethan, 2026-08-15: "we can frame it like a sliding scale against rage. Low rage
+  // = Boons. High rage = Attacks. Incrementally increasing. Example 10: only boons,
+  // 90: only attacks."
+  //
+  // Three tiers could not express that. `low/medium/high` is three buckets, and the
+  // whole point is that there is no step - she does not BECOME cruel at a threshold,
+  // she stops being able to help herself by degrees.
+  //
+  // So `mood(p)` is a number from 0 to 1, and every event's weight is a CURVE over
+  // it (`godevents.js` accepts a weight function for exactly this):
+  //
+  //      rage   0 ......... 10 ................... 90 ......... MAX
+  //      mood   0            0    ---------->       1            1
+  //
+  //      boons        ████████████▓▓▓▓▒▒▒▒░░░░
+  //      she asks              ░░▒▒▓▓████▓▓▒▒░░
+  //      attacks                   ░░░░▒▒▒▒▓▓████████████
+  //
+  // ⭐ THE ASK PEAKS IN THE MIDDLE AND VANISHES AT BOTH ENDS. At low rage she has no
+  // reason to ask; at high rage she no longer waits for an answer. The band where
+  // you get a say is the band where she is still conflicted, and it closes on its
+  // own. That is Ethan's "you slowly lose the ability to choose" as a shape rather
+  // than as a rule.
+  var RAGE_CALM = 10        // at or below: pure boons, she is only ever kind
+  var RAGE_FURY = 90        // at or above: pure attacks, she has stopped asking
+
+  function mood(p) {
+    var n = null
+    try { if (VELDORA.counter) n = VELDORA.counter.get(p, GOD) } catch (e) { }
+    // ⚠️ UNREADABLE IS NOT CALM. Returning 0 would make a storage failure look like
+    // serenity and quietly hand out boons forever. null propagates and every weight
+    // below scores 0, so she says nothing at all - which is the honest answer.
+    if (n === null) return null
+    if (n <= RAGE_CALM) return 0
+    if (n >= RAGE_FURY) return 1
+    return (n - RAGE_CALM) / (RAGE_FURY - RAGE_CALM)
+  }
+
+  // The three curves. Each returns a weight for godevents' weighted pick.
+  function wBoon(base) {
+    return function (server, p) {
+      var m = mood(p)
+      if (m === null) return 0
+      return base * (1 - m)
+    }
+  }
+  function wAttack(base) {
+    return function (server, p) {
+      var m = mood(p)
+      if (m === null) return 0
+      // Nothing to point at means the attack half of the slider does not exist -
+      // and then she is all boons regardless of rage, which is correct: a fury with
+      // nobody to be furious at is just a mother alone with her champion.
+      if (!pickTarget(server, p)) return 0
+      return base * m
+    }
+  }
+  // 4*m*(1-m) is a parabola: 0 at both ends, exactly 1.0 in the middle.
+  function wAsk(base) {
+    return function (server, p) {
+      var m = mood(p)
+      if (m === null) return 0
+      if (!pickTarget(server, p)) return 0
+      return base * 4 * m * (1 - m)
+    }
+  }
+
+  // ── HER EVENTS ────────────────────────────────────────────────────────────
   // ⭐ A BOON. Never anything else at her own champion.
   function evBoon(server, p) {
     var ok = false
@@ -335,7 +412,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   // ⭐ THE OFFER - the middle of the slider, and the best thing she does. She asks.
   // You may still say no, and saying no costs you nothing except her.
-  function evOffer(server, p, tier) {
+  function evOffer(server, p) {
     if (!VELDORA.ritual || typeof VELDORA.ritual.begin !== 'function') return false
     try { if (VELDORA.ritual.active(p)) return false } catch (e) { return false }
     if (!pickTarget(server, p)) return false      // nobody to offer. Do not ask.
@@ -357,7 +434,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       onChoose: function (pl, id) {
         if (id === 'yes') {
           server.scheduleInTicks(20, function () {
-            try { sendSpiders(server, pl, tier) } catch (e) { }
+            try { sendSpiders(server, pl) } catch (e) { }
           })
         } else {
           // ⚠️ REFUSING COSTS NOTHING MECHANICALLY and she does not punish it. She
@@ -371,8 +448,91 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   // ⭐ NO CHOICE. At high rage she has stopped asking.
-  function evWeb(server, p, tier) {
-    return sendSpiders(server, p, tier || 'high')
+  function evWeb(server, p) {
+    return sendSpiders(server, p)
+  }
+
+
+  // ── BOONS.  Weight falls as rage rises. ──────────────────────────────────
+  function eff(p, id, secs, amp) {
+    try { p.potionEffects.add(id, secs * 20, amp || 0, false, false); return true }
+    catch (e) { console.warn(TAG + 'effect ' + id + ' threw :: ' + e); return false }
+  }
+
+  function evFeast(server, p) {
+    // "Eat and feast, you need your strength." She feeds you before anything else.
+    if (!eff(p, 'minecraft:saturation', 6, 1)) return false
+    eff(p, 'minecraft:regeneration', 10, 0)
+    try { if (VELDORA.wall) VELDORA.wall.speak(p, 'gift') } catch (e) { }
+    return true
+  }
+
+  function evCarry(server, p) {
+    // "I will live in the walls you build." The web moves you through the world.
+    if (!eff(p, 'minecraft:speed', 90, 1)) return false
+    eff(p, 'minecraft:jump_boost', 90, 1)
+    eff(p, 'minecraft:slow_falling', 90, 0)
+    try { if (VELDORA.wall) VELDORA.wall.speak(p, 'gift') } catch (e) { }
+    return true
+  }
+
+  // ⭐ SHE GIVES YOU FAMILY, AND THAT RAISES HER RAGE.
+  // goety:spider_servant is a player-owned summon, so the minion hook credits it
+  // and rage goes UP - which slides her further toward attacking somebody. She
+  // cannot give you a gift without becoming more dangerous to everyone else. That
+  // loop was not designed; it fell out of her counter being what it is, and it is
+  // the most her thing in the file.
+  var BROOD = 'goety:spider_servant'
+  function evBrood(server, p) {
+    if (!VELDORA.spawner) return false
+    var r = VELDORA.spawner.wave(p, {
+      ids: [BROOD], count: 2, minDist: 3, maxDist: 6,
+      nbt: '{Tags:["veldora_wall_brood"]}',
+    })
+    if (!r || r.placed === 0) {
+      console.warn(TAG + 'brood placed nothing for ' + p.username + ' - not stamping')
+      return false
+    }
+    if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'low_gift')
+    console.info(TAG + p.username + ' <- ' + r.placed + ' of her brood')
+    return true
+  }
+
+  // ── ATTACKS.  Weight rises with rage. All of these land on SOMEBODY ELSE. ──
+  function evSnare(server, me) {
+    var target = pickTarget(server, me)
+    if (!target) return false
+    if (!eff(target, 'minecraft:slowness', 12, 2)) return false
+    eff(target, 'minecraft:weakness', 12, 0)
+    if (VELDORA.voice) VELDORA.voice.say(target, GOD, 'high_hostile')
+    console.info(TAG + '!! ' + me.username + ' -> snared ' + target.username)
+    return true
+  }
+
+  function evDark(server, me) {
+    var target = pickTarget(server, me)
+    if (!target) return false
+    if (!eff(target, 'minecraft:blindness', 8, 0)) return false
+    if (VELDORA.voice) VELDORA.voice.say(target, GOD, 'high_hostile')
+    console.info(TAG + '!! ' + me.username + ' -> blinded ' + target.username)
+    return true
+  }
+
+  // The far end of the slider. Twice the wave, and only once she is nearly all fury.
+  function evSwarm(server, me) {
+    var target = pickTarget(server, me)
+    if (!target || !VELDORA.spawner) return false
+    var r = VELDORA.spawner.wave(target, {
+      ids: SPIDERS, count: 9, minDist: 10, maxDist: 20, nbt: spiderNbt(true),
+    })
+    if (!r || r.placed === 0) {
+      console.warn(TAG + 'swarm placed nothing at ' + target.username + ' - not stamping')
+      return false
+    }
+    if (VELDORA.voice) VELDORA.voice.say(target, GOD, 'high_hostile')
+    console.info(TAG + '!! ' + me.username + ' -> SWARM of ' + r.placed + ' at ' +
+      target.username)
+    return true
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -534,7 +694,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         (tgt ? ' §8(grudge ' + (GRUDGE[tgt.username] || 0) + ')' : '')))
       p.tell(Text.of('§8pvp ' + (HOSTILE_TO_PLAYERS ? '§aON' : '§cOFF') +
         ' §8· target health floor §f' + Math.round(TARGET_FLOOR * 100) + '%'))
+      var m = mood(p)
       p.tell(Text.of('§8rage: §f+1§8 per minion raised, §f-1§8 per minion slain'))
+      if (m === null) {
+        p.tell(Text.of('§cmood UNREADABLE - she will say nothing at all'))
+      } else {
+        var pct = Math.round(m * 100)
+        var bar = ''
+        for (var b = 0; b < 20; b++) bar += (b < Math.round(m * 20)) ? '§c|' : '§a|'
+        p.tell(Text.of('§8boons ' + bar + ' §8attacks  §f' + pct + '%§8 toward fury'))
+        p.tell(Text.of('§8calm at §f' + RAGE_CALM + '§8, fury at §f' + RAGE_FURY +
+          '§8 · she asks most at §f' + Math.round((RAGE_CALM + RAGE_FURY) / 2)))
+      }
       return 1
     }))
   })
@@ -543,28 +714,55 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (!GATE) { console.info(TAG + 'GATED OFF'); return }
     if (!VELDORA.events) { console.error(TAG + 'godevents.js missing'); return }
 
-    // ⭐ THE WEIGHTS AND TIERS *ARE* THE SLIDER. `offer` exists only at medium, so
-    // the band where she asks your permission opens as rage rises and closes again
-    // when it gets high - which is exactly "you slowly lose the ability to choose".
+    // ⭐ NO TIER GATING. Every event is registered for every tier and the CURVE
+    // decides - that is what makes the change incremental instead of stepped. The
+    // voice still uses low/medium/high, because what she SAYS does step.
+    var ALL = ['low', 'medium', 'high']
+
     VELDORA.events.register(GOD, {
-      id: 'boon', run: evBoon, hostile: false, cooldown: 1, weight: 4,
-      tiers: ['low', 'medium', 'high'],
-      does: 'gives HER champion regeneration + absorption. She never sends anything ' +
-        'hostile at her own walker, at any rage',
+      id: 'boon', run: evBoon, hostile: false, cooldown: 1, weight: wBoon(4), tiers: ALL,
+      does: 'BOON - regeneration + absorption on her own champion. Weight falls as ' +
+        'rage rises',
     })
     VELDORA.events.register(GOD, {
-      id: 'offer', run: evOffer, hostile: false, cooldown: 2, weight: 3,
-      tiers: ['medium'],
-      does: 'ASKS her champion permission to attack another player, via the ritual. ' +
-        'Refusing costs nothing but her approval. MEDIUM RAGE ONLY - she stops ' +
-        'asking once rage is high',
+      id: 'feast', run: evFeast, hostile: false, cooldown: 1, weight: wBoon(3), tiers: ALL,
+      does: 'BOON - saturation + regeneration. She feeds you before anything else',
     })
     VELDORA.events.register(GOD, {
-      id: 'web', run: evWeb, hostile: false, cooldown: 2, weight: 3,
-      tiers: ['high'],
-      does: 'SENDS SPIDERS AT ANOTHER PLAYER, no choice. 5 buffed spiders (40hp, ' +
-        'fast, 6 dmg) at whoever has killed most of hers, else the nearest. Skips ' +
-        'anyone under 60% health or in a scene',
+      id: 'carry', run: evCarry, hostile: false, cooldown: 2, weight: wBoon(3), tiers: ALL,
+      does: 'BOON - speed, jump and slow-fall for 90s. The web carries you',
+    })
+    VELDORA.events.register(GOD, {
+      id: 'brood', run: evBrood, hostile: false, cooldown: 3, weight: wBoon(2), tiers: ALL,
+      does: 'BOON - gives you 2 goety spider servants. NOTE: they count as raised ' +
+        'minions, so this gift RAISES her rage and slides her toward attacking',
+    })
+
+    VELDORA.events.register(GOD, {
+      id: 'offer', run: evOffer, hostile: false, cooldown: 2, weight: wAsk(5), tiers: ALL,
+      does: 'THE ASK - permission to attack another player, via the ritual. Refusable. ' +
+        'Weight PEAKS in the middle of the rage range and vanishes at both ends',
+    })
+
+    VELDORA.events.register(GOD, {
+      id: 'snare', run: evSnare, hostile: false, cooldown: 1, weight: wAttack(3), tiers: ALL,
+      does: 'ATTACK - slowness II + weakness on another player for 12s',
+    })
+    VELDORA.events.register(GOD, {
+      id: 'dark', run: evDark, hostile: false, cooldown: 2, weight: wAttack(3), tiers: ALL,
+      does: 'ATTACK - blindness on another player for 8s',
+    })
+    VELDORA.events.register(GOD, {
+      id: 'web', run: evWeb, hostile: false, cooldown: 2, weight: wAttack(4), tiers: ALL,
+      does: 'ATTACK - 5 buffed spiders at another player, no choice',
+    })
+    VELDORA.events.register(GOD, {
+      id: 'swarm', run: evSwarm, hostile: false, cooldown: 4, weight: wAttack(2), tiers: ALL,
+      // Only at the far end. A 9-spider wave should be the thing that happens when
+      // she has stopped being a person about it.
+      guard: function (server, p) { var m = mood(p); return m !== null && m >= 0.7 },
+      does: 'ATTACK - NINE buffed spiders at another player. Guarded to rage >= 70% ' +
+        'of the way to fury',
     })
 
     if (VELDORA.harvest) {
@@ -574,8 +772,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       })
     } else console.error(TAG + 'harvest.js missing - her Harvest will not arrive')
 
-    console.info(TAG + 'The Spider: boon (all tiers) / offer (MEDIUM - she asks) / ' +
-      'web (HIGH - no choice). Rage = +1 per minion raised, -1 per minion slain. ' +
+    console.info(TAG + 'The Spider - 9 events on a SLIDING SCALE against rage. ' +
+      'Boons at ' + RAGE_CALM + ' and below, attacks at ' + RAGE_FURY + ' and above, ' +
+      'and she only ASKS in between. Rage = +1 per minion raised, -1 per slain. ' +
       'PvP ' + (HOSTILE_TO_PLAYERS ? 'ON' : 'OFF') + ', target floor ' +
       Math.round(TARGET_FLOOR * 100) + '%.')
   })

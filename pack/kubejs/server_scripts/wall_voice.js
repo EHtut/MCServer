@@ -21,7 +21,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ⚠️ A FIRST GUESS, and meant to be. Replace with a measured curve once there is
   // play data - do not argue about these numbers, measure them.
   var MEDIUM_AT = 10
-  var HIGH_AT = 40
+  // 40 -> 50 so the VOICE agrees with the SLIDER. The behaviour curve runs calm at
+  // 10 and fury at 90 (wall_events.js), which puts the midpoint - where she asks
+  // most - at 50. Leaving high at 40 meant she spoke her "you're hers now" register
+  // through most of the range where she was still asking permission.
+  //   low     <= 10   pure boons
+  //   medium  10-50   she asks
+  //   high    50+     attacks dominate
+  // One number; move it if it plays wrong.
+  var HIGH_AT = 50
 
   // 🚨 UNREADABLE IS NOT 'low'. A god who cannot read his own counter must say
   // NOTHING. Defaulting to the low tier turns every storage hiccup into contempt,

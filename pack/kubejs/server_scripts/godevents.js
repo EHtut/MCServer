@@ -97,7 +97,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       tiers: ev.tiers || ['low', 'medium', 'high'],
       hostile: !!ev.hostile,
       cooldown: (typeof ev.cooldown === 'number') ? ev.cooldown : 2,
-      weight: (typeof ev.weight === 'number') ? ev.weight : 1,
+      // ⭐ WEIGHT MAY BE A FUNCTION. Ethan, 2026-08-15, on the Spider: "we can frame
+      // it like a sliding scale against rage. Low rage = Boons, High rage = Attacks.
+      // Incrementally increasing. Example 10: only boons, 90: only attacks."
+      //
+      // Tiers are DISCRETE - low/medium/high - and a discrete tier cannot express
+      // "incrementally". A god that shifts character across a continuous number needs
+      // its odds to be a curve, not three buckets, so weight accepts
+      // function(server, player, tier) -> number and is evaluated at pick time.
+      //
+      // Every god gets this; the Spider is only the first to need it.
+      weight: (typeof ev.weight === 'number' || typeof ev.weight === 'function')
+        ? ev.weight : 1,
       guard: (typeof ev.guard === 'function') ? ev.guard : null,
       // ⭐ ADMIN TRANSPARENCY (Ethan, 2026-08-15). One plain-English sentence saying
       // what this event DOES TO THE PLAYER. The log used to say only
@@ -169,13 +180,34 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return { tier: tier, list: out, wellEnough: wellEnough }
   }
 
-  function weightedPick(list) {
-    var total = 0
-    for (var i = 0; i < list.length; i++) total += list[i].weight
+  // A weight of 0 means "not right now" and is a legitimate answer - it is how a
+  // sliding scale switches a whole family of events off at one end of the range.
+  //
+  // ⚠️ A THROWING WEIGHT FUNCTION SCORES 0, not 1. Defaulting a broken curve to
+  // "average" would let a god quietly keep firing attacks it had decided against,
+  // and the log would look normal. It is announced once per throw.
+  function weightOf(ev, server, p, tier) {
+    if (typeof ev.weight !== 'function') return ev.weight
+    try {
+      var w = ev.weight(server, p, tier)
+      return (typeof w === 'number' && isFinite(w) && w > 0) ? w : 0
+    } catch (e) {
+      console.warn(TAG + ev.id + ' weight() threw, scoring 0 :: ' + e)
+      return 0
+    }
+  }
+
+  function weightedPick(list, server, p, tier) {
+    var w = [], total = 0
+    for (var i = 0; i < list.length; i++) {
+      var x = weightOf(list[i], server, p, tier)
+      w.push(x)
+      total += x
+    }
     if (total <= 0) return null
     var r = Math.random() * total
     for (var j = 0; j < list.length; j++) {
-      r -= list[j].weight
+      r -= w[j]
       if (r <= 0) return list[j]
     }
     return list[list.length - 1]
@@ -209,7 +241,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       for (var i = 0; i < e.list.length; i++) if (e.list[i].id === onlyId) ev = e.list[i]
       if (!ev) return null
     } else {
-      ev = weightedPick(e.list)
+      ev = weightedPick(e.list, server, p, e.tier)
     }
     if (!ev) return null
 
@@ -336,7 +368,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         if (!ev.does) { missing.push(gg + '/' + ev.id); continue }
         console.info(TAG + '  ' + gg + '/' + ev.id +
           ' [' + (ev.hostile ? 'hostile' : 'safe') + ', cd ' + ev.cooldown +
-          'd, w' + ev.weight + ', ' + ev.tiers.join('/') + '] :: ' + ev.does)
+          'd, w' + (typeof ev.weight === 'function' ? 'CURVE' : ev.weight) +
+          ', ' + ev.tiers.join('/') + '] :: ' + ev.does)
       }
     }
     if (missing.length) {
