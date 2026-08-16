@@ -564,6 +564,165 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
   VELDORA.wall.mood = mood
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ CONTRACTS (+++) — the row her chart rated and she had nothing in.
+  //
+  // Ethan, 2026-08-16: "switch to contracts, what we can do is every battle is a
+  // choice she offers to help the player grow stronger."
+  //
+  // Mechanically this is Blade's contract. Tonally it is the opposite, and the
+  // difference is the entire character: he BUYS a kill, she offers to remove
+  // something that is holding you back. Neither of them says the quiet part.
+  //
+  // ⚠️ DUPLICATED FROM blade_events.js ON PURPOSE, FOR NOW. His version is welded
+  // into the Mark's apparatus (K_TARGET/K_DUE/markSweep) which is his alone. Two
+  // implementations of "kill that player by day N" is exactly the kind of thing this
+  // codebase gets bitten by, so this is flagged rather than hidden: when a THIRD god
+  // wants one, extract it - do not write it a third time.
+  // ═══════════════════════════════════════════════════════════════════════════
+  var C_TARGET = 'veldora_wall_ctarget'
+  var C_DUE = 'veldora_wall_cdue'          // world day, offset by one
+  var CONTRACT_DAYS = 3                    // gentler than his 2. She is patient.
+
+  function evContract(server, me) {
+    if (!HOSTILE_TO_PLAYERS) return false
+    try { if (me.persistentData.getString(C_TARGET) || '') return false } catch (e) { }
+    if (!VELDORA.ritual || typeof VELDORA.ritual.begin !== 'function') return false
+    try { if (VELDORA.ritual.active(me)) return false } catch (e) { return false }
+
+    var target = pickTarget(server, me)
+    if (!target) return false
+    var today = dayNow(server)
+    if (today === null) return false
+    var tname = '?'
+    try { tname = String(target.username) } catch (e) { return false }
+
+    var ask = ''
+    try { ask = VELDORA.voice.line(GOD, 'contract_ask', me) || '' } catch (e) { }
+    if (!ask) {
+      console.info(TAG + 'contract HELD - `contract_ask` has no lines yet')
+      return false
+    }
+
+    return VELDORA.ritual.begin(me, {
+      colour: '§5§l',
+      lines: [ask.split('{target}').join(tname)],
+      options: [{ id: 'yes', label: 'Yes.' }, { id: 'no', label: 'Not them.' }],
+      holdAfterChoice: 60,
+      onChoose: function (pl, id) {
+        if (id !== 'yes') return
+        try {
+          pl.persistentData.putString(C_TARGET, tname)
+          pl.persistentData.putInt(C_DUE, today + CONTRACT_DAYS + 1)
+        } catch (e) { return }
+        console.info(TAG + pl.username + ' accepted a contract on ' + tname +
+          ', due day ' + (today + CONTRACT_DAYS))
+      },
+      onTimeout: function () { },
+    })
+  }
+
+  // Resolution. Her reward is RAGE DOWN, not an item - she is calmer once the thing
+  // between you is removed, which is the whole fiction of the event and costs no loot.
+  EntityEvents.death(function (event) {
+    if (!GATE) return
+    try {
+      var victim = event.entity
+      if (!victim || !victim.player) return
+      var killer = event.source ? event.source.player : null
+      if (!killer) return
+      var want = ''
+      try { want = killer.persistentData.getString(C_TARGET) || '' } catch (e) { return }
+      if (!want) return
+      var vname = ''
+      try { vname = String(victim.username) } catch (e) { return }
+      if (vname !== want) return
+      try {
+        killer.persistentData.putString(C_TARGET, '')
+        killer.persistentData.putInt(C_DUE, 0)
+      } catch (e) { }
+      if (VELDORA.counter) VELDORA.counter.add(killer, GOD, -4, 'contract settled')
+      if (VELDORA.voice) VELDORA.voice.say(killer, GOD, 'contract_done')
+      console.info(TAG + killer.username + ' settled her contract on ' + vname + ' (rage -4)')
+    } catch (e) { console.warn(TAG + 'contract death hook threw :: ' + e) }
+  })
+
+  function contractSweep(server) {
+    try {
+      var today = dayNow(server)
+      if (today === null) { server.scheduleInTicks(1200, function () { contractSweep(server) }); return }
+      var ps = server.players
+      for (var i = 0; i < ps.length; i++) {
+        var p = ps[i]
+        var want = ''
+        try { want = p.persistentData.getString(C_TARGET) || '' } catch (e) { continue }
+        if (!want) continue
+        var due = 0
+        try { due = p.persistentData.getInt(C_DUE) } catch (e) { continue }
+        if (!due) continue
+        // ⚠️ A stamp from the future means the world clock moved - re-anchor rather
+        // than leaving a contract that can never lapse. Finding K9, again.
+        if ((due - 1) - today > CONTRACT_DAYS) {
+          try { p.persistentData.putInt(C_DUE, today + CONTRACT_DAYS + 1) } catch (e) { }
+          continue
+        }
+        if (today < (due - 1)) continue
+        try {
+          p.persistentData.putString(C_TARGET, '')
+          p.persistentData.putInt(C_DUE, 0)
+        } catch (e) { }
+        // 🚫 NO PENALTY. She does not punish a refusal - she absorbs it, which is
+        // worse. docs/43: "she never turns cruel. She just never stops."
+        if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'contract_lapsed')
+        console.info(TAG + p.username + ' let her contract lapse - no penalty')
+      }
+    } catch (e) { console.warn(TAG + 'contractSweep threw :: ' + e) }
+    server.scheduleInTicks(1200, function () { contractSweep(server) })
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ THE QUIET — once per session, and it is the only time she is short.
+  //
+  // Her brief: "She goes quiet exactly once per conversation, and that's when the
+  // true thing comes out. One short sentence, then straight back to talking."
+  //
+  // ⚠️ ONCE PER SESSION, NOT PER WORLD DAY. Every other cadence in this project is
+  // day-stamped, and a day is twenty minutes - which would fire this three times an
+  // hour and destroy it. "Conversation" means since you logged in, so the flag lives
+  // in MEMORY and dies with the session on purpose. It is the one piece of state
+  // here that must NOT persist.
+  // ═══════════════════════════════════════════════════════════════════════════
+  var QUIET_TICK = 2400            // 2 min between rolls
+  var QUIET_CHANCE = 0.08          // ~25 min of eligible play before it lands
+  var quietDone = {}               // uuid -> true, in memory, cleared on login
+
+  PlayerEvents.loggedIn(function (event) {
+    try { delete quietDone[String(event.player.uuid)] } catch (e) { }
+  })
+
+  function quietSweep(server) {
+    try {
+      if (!GATE) { server.scheduleInTicks(QUIET_TICK, function () { quietSweep(server) }); return }
+      var ps = server.players
+      for (var i = 0; i < ps.length; i++) {
+        var p = ps[i]
+        var uuid = ''
+        try { uuid = String(p.uuid) } catch (e) { continue }
+        if (quietDone[uuid]) continue
+        var path = ''
+        try { if (VELDORA.paths) path = VELDORA.paths.pathOf(p) || '' } catch (e) { continue }
+        if (path !== GOD) continue
+        if (Math.random() > QUIET_CHANCE) continue
+        try { if (VELDORA.ritual && VELDORA.ritual.active(p)) continue } catch (e) { }
+        if (!VELDORA.voice || !VELDORA.voice.say(p, GOD, 'quiet')) continue
+        quietDone[uuid] = true
+        console.info(TAG + p.username + ' heard THE QUIET - once this session, and ' +
+          'that is the whole point of it')
+      }
+    } catch (e) { console.warn(TAG + 'quietSweep threw :: ' + e) }
+    server.scheduleInTicks(QUIET_TICK, function () { quietSweep(server) })
+  }
+
   // The three curves. Each returns a weight for godevents' weighted pick.
   function wBoon(base) {
     return function (server, p) {
@@ -1095,7 +1254,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       })
     } else console.error(TAG + 'harvest.js missing - her Harvest will not arrive')
 
+    // +++ on her chart, and she had nothing in it until 2026-08-16.
+    VELDORA.events.register(GOD, {
+      id: 'contract', kind: 'contract', scene: true, run: evContract,
+      hostile: false, cooldown: 4, weight: 3, tiers: ALL,
+      does: 'CONTRACT (choice) - she ASKS you to remove another champion, framed as ' +
+        'helping you grow rather than as wanting them dead. Settling it takes RAGE ' +
+        'OFF her (-4) instead of paying loot. Letting it lapse costs NOTHING - she ' +
+        'absorbs a refusal, which is worse',
+    })
+
     calmSweep(event.server)
+    contractSweep(event.server)
+    quietSweep(event.server)
     console.info(TAG + 'rage: +1 raised, -1 slain, +' + RAGE_ON_DEATH + ' on YOUR ' +
       'death, -' + RAGE_DECAY_DAY + ' per quiet day. She never lets go - winning ' +
       'her Harvest is the only exit.')

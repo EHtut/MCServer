@@ -151,6 +151,46 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "I would rather you sat down.",
     ],
 
+    // ── CONTRACTS (+++). She never orders. She asks, and the ask is worse. ──────
+    // ⚠️ Framed as HELPING YOU GROW, never as wanting somebody dead (Ethan,
+    // 2026-08-16: "every battle is a choice she offers to help the player grow
+    // stronger"). Same event as an assassination; completely different god.
+    // {target} is substituted.
+    contract_ask: [
+      "{target} is in your way. I can feel you stopping when they are near.",
+      "You are not growing, love, and I think I know why. I think it is {target}.",
+      "Say yes and I will not ask again for a while. {target}. Only that.",
+      "I want you bigger than you are. {target} is what is between.",
+      "It would be quick. I am not asking you to enjoy it, I am asking you to do it.",
+      "{target}. Please. I have been so patient about this.",
+    ],
+    contract_done: [
+      "There. Do you feel it? You should feel it.",
+      "Good. Good. That is one less thing standing between you and the rest of it.",
+      "I knew you would. I did not doubt it, not once, not really.",
+      "You are bigger than you were this morning.",
+      "Thank you. I do not say that enough and I should.",
+    ],
+    contract_lapsed: [
+      "You did not. That is all right. I will hold it for you.",
+      "It is fine. It is - no, it is fine. There will be another.",
+      "I am not upset. I want you to know that I am not upset.",
+    ],
+
+    // ── THE QUIET (⭐). Once per session, and only when she is at her worst. ────
+    // Her brief: "She goes quiet exactly once per conversation, and that's when the
+    // true thing comes out. One short sentence, then straight back to talking."
+    // 🚨 SHORT. Every other pool of hers runs on; this one must not. The contrast IS
+    // the mechanic - if these get long the beat disappears.
+    quiet: [
+      "I do not think I am catching any of them.",
+      "It has been a very long time.",
+      "I cannot remember the last one I reached in time.",
+      "Sometimes I think they are not falling. I think they are being pushed.",
+      "I do not know how to stop.",
+      "You would tell me. If it were not working. You would tell me.",
+    ],
+
     high_hostile: [
       "You will never be a part of us.",
       "You. Die.",
