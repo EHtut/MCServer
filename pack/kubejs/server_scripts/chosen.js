@@ -74,7 +74,65 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     art: ['minecraft:lapis_lazuli'],
   }
 
-  var WALL_DAYS = 3                // pathless days after a refusal before she comes
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ WALL HAS TWO ROUTES, AND NEITHER IS AN ITEM
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Ethan, 2026-08-16: "what if we add another conditional instead of an item.
+  // no paths for 7 days and being killed by a player with a path?"
+  //
+  //   ROUTE 1  refused somebody, then drifted 3 days
+  //   ROUTE 2  drifted 7 days AND were killed by another player's champion
+  //
+  // ⭐ ROUTE 2 IS THE BEST TRIGGER IN THE WHOLE SYSTEM. Every other god notices you
+  // for something you ACHIEVED - you made a sword, you crafted a crossbow. She
+  // notices you at the exact moment somebody else's champion put you in the dirt,
+  // after a week of nobody wanting you. It is not a reward. It is the worst evening
+  // you have had, and she is the one who shows up.
+  //
+  // "They rejected you too. I won't." She is not lying, and now the game has watched
+  // it happen before she says it.
+  //
+  // 🚨 THE KILLER MUST HAVE A PATH. Being killed by a random player is a scuffle;
+  // being killed by a GOD'S CHAMPION while you belong to nobody is the story. If
+  // the killer is pathless too, nothing is stamped.
+  var WALL_DAYS = 3                // route 1: pathless days after a refusal
+  var WALL_LONG = 7                // route 2: pathless days before a killing counts
+  var K_STRUCK = 'veldora_wall_struck'   // a champion killed you while you had nobody
+
+  // ⚠️ The stamp happens WHENEVER it happens - before or after day 7 - and route 2
+  // simply needs both facts true. Requiring the order would make an early death
+  // silently worthless, and the player would never know why she did not come.
+  EntityEvents.death(function (event) {
+    if (!GATE) return
+    try {
+      var victim = event.entity
+      if (!victim || !victim.player) return
+
+      // Only the pathless. Somebody who walks a path already has a god.
+      var vPath = ''
+      try { if (VELDORA.paths) vPath = VELDORA.paths.pathOf(victim) || '' } catch (e) { return }
+      if (vPath) return
+
+      var killer = event.source ? event.source.player : null
+      if (!killer) return
+      try { if (String(killer.uuid) === String(victim.uuid)) return } catch (e) { return }
+
+      var kPath = ''
+      try { if (VELDORA.paths) kPath = VELDORA.paths.pathOf(killer) || '' } catch (e) { return }
+      if (!kPath) return                  // a scuffle, not a champion
+
+      try {
+        if ((victim.persistentData.getInt(K_STRUCK) || 0) > 0) return
+        victim.persistentData.putInt(K_STRUCK, 1)
+      } catch (e) { return }
+      console.info(TAG + '!! ' + victim.username + ' was killed by ' + killer.username +
+        ' (champion of ' + kPath + ') while walking no path - the Spider noticed')
+    } catch (err) { console.warn(TAG + 'struck hook threw :: ' + err) }
+  })
+
+  function wasStruck(p) {
+    try { return (p.persistentData.getInt(K_STRUCK) || 0) > 0 } catch (e) { return false }
+  }
 
   // ── combat, borrowed from idle.js's approach ─────────────────────────────
   var lastHurt = {}                // uuid -> world ticks
@@ -205,11 +263,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (!carries(p, TRIGGERS[key])) continue
       if (unlock(p, key)) newly = newly || key
     }
-    // Wall unlocks by drifting, not by carrying.
-    if (!isUnlocked(p, 'wall') && hasRefused(p)) {
+    // Wall unlocks by drifting, never by carrying. Two routes, either will do.
+    if (!isUnlocked(p, 'wall')) {
       var d = driftDays(server, p)
-      if (d !== null && d >= WALL_DAYS) {
-        if (unlock(p, 'wall')) newly = newly || 'wall'
+      if (d !== null) {
+        var route1 = hasRefused(p) && d >= WALL_DAYS
+        var route2 = wasStruck(p) && d >= WALL_LONG
+        if (route1 || route2) {
+          if (unlock(p, 'wall')) {
+            newly = newly || 'wall'
+            console.info(TAG + p.username + ' unlocked wall via ' +
+              (route2 ? 'ROUTE 2 - killed by a champion after ' + d + ' pathless days'
+                      : 'route 1 - refused someone, then drifted ' + d + ' days'))
+          }
+        }
       }
     }
     return newly
@@ -305,6 +372,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         p.tell(Text.of((u ? '§a  unlocked ' : '§8  locked   ') + '§f' + k +
           (u ? (o ? ' §8(offer made - use /path ' + k + ')' : ' §e(offer pending)') : '')))
       }
+      var dd = driftDays(srv, p)
+      p.tell(Text.of('§8wall route 1: refused §f' + (hasRefused(p) ? 'yes' : 'no') +
+        '§8 + §f' + (dd === null ? '?' : dd) + '§8/' + WALL_DAYS + ' pathless days'))
+      p.tell(Text.of('§8wall route 2: struck by a champion §f' +
+        (wasStruck(p) ? 'yes' : 'no') + '§8 + §f' + (dd === null ? '?' : dd) +
+        '§8/' + WALL_LONG + ' pathless days'))
       p.tell(Text.of('§8in combat: §f' + (inCombat(srv, p) ? 'yes - no offers now' : 'no')))
       return 1
     })
@@ -319,7 +392,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           p.persistentData.putInt(K_OFFERED + keys[i], 0)
         } catch (e) { }
       }
-      try { p.persistentData.putInt(K_DRIFT, 0) } catch (e) { }
+      try {
+        p.persistentData.putInt(K_DRIFT, 0)
+        p.persistentData.putInt(K_STRUCK, 0)
+      } catch (e) { }
       p.tell(Text.of('§7Nobody knows you.'))
       return 1
     }))
@@ -331,8 +407,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     schedule(event.server)
     var t = []
     for (var k in TRIGGERS) if (TRIGGERS.hasOwnProperty(k)) t.push(k + ':' + TRIGGERS[k][0])
-    console.info(TAG + 'YOU ARE CHOSEN - ' + t.join(', ') + ', wall: refused + ' +
-      WALL_DAYS + ' pathless days.')
+    console.info(TAG + 'YOU ARE CHOSEN - ' + t.join(', ') + '. WALL has no item: ' +
+      'route 1 = refused someone + ' + WALL_DAYS + ' pathless days, route 2 = ' +
+      "killed by another god's champion + " + WALL_LONG + ' pathless days.')
     console.info(TAG + 'carrying it UNLOCKS the path forever; the offer fires ONCE, ' +
       'out of combat only (' + COMBAT_WINDOW + 't since damage). After that /path ' +
       'takes you back - and /path only lists what you have unlocked.')
