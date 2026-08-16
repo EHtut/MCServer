@@ -170,9 +170,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { console.warn('[regard] could not store for ' + p.username + ' :: ' + e) }
   }
 
+  // Ask voice.js what colour this god is - it is the only file that knows. Falling
+  // back to the patron channel means a god with no registered colour still speaks.
+  function godColour(key) {
+    try {
+      if (VELDORA.voice && typeof VELDORA.voice.colourOf === 'function') {
+        return VELDORA.voice.colourOf(key)
+      }
+    } catch (e) { }
+    return '§4§l'
+  }
+
   function speak(p, key, text) {
     try {
-      p.tell(Text.of('§4§l' + text))     // bold red - the patrons only ever arrive this way
+      p.tell(Text.of(godColour(key) + text))
     } catch (e) { }
     console.info('[regard] ' + p.username + ' (' + key + '): ' + text)
   }

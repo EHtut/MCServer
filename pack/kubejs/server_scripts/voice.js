@@ -41,6 +41,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   function setColour(god, code) { COLOUR[god] = code }
 
+  // ⭐ THE ONE PLACE THAT KNOWS WHAT COLOUR A GOD IS.
+  //
+  // Every other file that made a patron speak hardcoded '§4§l' - Blade's bold red -
+  // because for months Blade was the only patron with a voice. The moment the Spider
+  // arrived, her death lines, her fall, her entry line and her reckoning all came out
+  // in HIS colour. Ethan, 2026-08-15: "we need to make sure all her dialogue stays in
+  // her color."
+  //
+  // Callers ask here now. A god with no registered colour still falls back to the
+  // patron channel, so nothing goes uncoloured.
+  function colourOf(god) { return COLOUR[god] || DEFAULT_COLOUR }
+
   // What a player last heard, so the same pairing does not repeat back to back.
   // In memory: a repeat across a restart is not worth persisting state for.
   var lastSaid = {}
@@ -117,6 +129,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   VELDORA.voice = {
     register: register,
     setColour: setColour,
+    colourOf: colourOf,
     registerLines: registerLines,
     line: line,
     say: say,

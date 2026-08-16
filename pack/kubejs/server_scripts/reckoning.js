@@ -161,14 +161,24 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // The ONLY per-patron part. Each returns true if it actually happened - a
   // reckoning that could not fire must not settle, or the pressure is forgiven for
   // free and the player never sees why.
-  function speak(p, s) { try { p.tell(Text.of('§4§l' + s)) } catch (e) { } }
+  // Ask voice.js what colour this god is - it is the only file that knows.
+  function godColour(key) {
+    try {
+      if (VELDORA.voice && typeof VELDORA.voice.colourOf === 'function') {
+        return VELDORA.voice.colourOf(key)
+      }
+    } catch (e) { }
+    return '§4§l'
+  }
+
+  function speak(p, s, god) { try { p.tell(Text.of(godColour(god) + s)) } catch (e) { } }
 
   function fireSalvage(server, p, a) {
     // Interest. Her own pack collects, scaled by what she has been given.
     var n = Math.max(2, Math.min(8, Math.round(a.pressure)))
     if (!VELDORA.spawner) { console.error(TAG + 'no spawner - Interest cannot fire'); return false }
-    speak(p, 'You have been such good custom, friend.')
-    speak(p, 'I have brought the family.')
+    speak(p, 'You have been such good custom, friend.', 'salvage')
+    speak(p, 'I have brought the family.', 'salvage')
 
     // The count is measured a few ticks later (a summon is not queryable in the
     // tick it is issued), so settlement waits for the callback. A reckoning that

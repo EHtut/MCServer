@@ -718,7 +718,15 @@
           }
           // The patron speaks as it takes. DRAFT lines - Ethan's own writing outranks
           // these, and the full introduction ritual (E5) will carry the real scene.
-          p.tell(Text.of('§4§l' + ENTRY_LINE[key]))
+          // The patron's own colour - voice.js is the only file that knows it, and
+          // hardcoding red here made the Spider speak in Blade's.
+          var entryColour = '§4§l'
+          try {
+            if (VELDORA.voice && typeof VELDORA.voice.colourOf === 'function') {
+              entryColour = VELDORA.voice.colourOf(key)
+            }
+          } catch (e) { }
+          p.tell(Text.of(entryColour + ENTRY_LINE[key]))
           if (had > 0) p.tell('§c§lIt took everything you had. §8(' + had + ' levels)')
 
           p.tell('§6You walk ' + PATHS[key].name + '§7.')

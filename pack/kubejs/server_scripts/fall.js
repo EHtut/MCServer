@@ -34,6 +34,17 @@
 var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
 ;(function () {
+  // Ask voice.js what colour this god is - it is the only file that knows. Falling
+  // back to the patron channel means a god with no registered colour still speaks.
+  function godColour(key) {
+    try {
+      if (VELDORA.voice && typeof VELDORA.voice.colourOf === 'function') {
+        return VELDORA.voice.colourOf(key)
+      }
+    } catch (e) { }
+    return '§4§l'
+  }
+
   var COOLDOWN_DAYS = 3                 // in-game days. ~1 hour of real play.
   var CD_KEY = 'veldora_path_cooldown'  // world day the player may take a path again
 
@@ -56,8 +67,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return null
   }
 
-  function speak(p, text) {
-    try { p.tell(Text.of('§4§l' + text)) } catch (e) { }
+  function speak(p, text, key) {
+    try { p.tell(Text.of(godColour(key) + text)) } catch (e) { }
   }
 
   // ---------------------------------------------------------------------------
@@ -203,7 +214,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // 6. The counter resets, or they fall again the moment they take a path.
     try { player.persistentData.putInt('veldora_regard', 0) } catch (e) { }
 
-    speak(player, DISMISSAL[key] || 'It is finished.')
+    speak(player, DISMISSAL[key] || 'It is finished.', key)
     try {
       player.tell(Text.of(''))
       player.tell(Text.of('§8§m                                        '))
