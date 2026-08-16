@@ -78,7 +78,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     medium_gift: [
       "Stay safe. Please.",
       "Our work isn't done. It will never be done.",
-      "You have been gone eleven minutes. I counted.",
+      // CUT 2026-08-16. "You have been gone eleven minutes. I counted." - Ethan saw
+      // it fire in play and asked what it even meant. Three things were wrong:
+      //   · "eleven minutes" was a HARDCODED string. Nothing measured anything, so
+      //     it said eleven whether you had been away thirty seconds or three days.
+      //   · it sat in `medium_gift`, which fires while she HANDS YOU SOMETHING - so
+      //     it arrived attached to a regeneration buff, about nothing.
+      //   · a real absence system already exists and works: K_SEEN stamps the world
+      //     day on logout and the `returned` pool fires on login after >= 2 world
+      //     days. That pool already says this better - "How long was that? Do not
+      //     tell me."
+      // The counting is very her; the fake number was not. Cut rather than moved,
+      // at his call.
       "Rest. I will keep watch. I do not sleep.",
       "Closer. You can stand closer than that.",
       "I have been alone a very long time. You should know that about me.",
