@@ -99,6 +99,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       cooldown: (typeof ev.cooldown === 'number') ? ev.cooldown : 2,
       weight: (typeof ev.weight === 'number') ? ev.weight : 1,
       guard: (typeof ev.guard === 'function') ? ev.guard : null,
+      // ⭐ ADMIN TRANSPARENCY (Ethan, 2026-08-15). One plain-English sentence saying
+      // what this event DOES TO THE PLAYER. The log used to say only
+      // "Rehykt <- blade/hollow", which names the event and hides the effect - so
+      // reading the log could not tell you whether a player's drops vanishing was
+      // the game working or the game broken.
+      does: (typeof ev.does === 'string' && ev.does) ? ev.does : null,
       run: ev.run,
     })
     return true
@@ -221,7 +227,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     }
     stamp(p, K_LAST + god + '_' + ev.id, today)
     stamp(p, K_ANY + god, today)
-    console.info(TAG + p.username + ' <- ' + god + '/' + ev.id + ' (tier ' + e.tier + ')')
+    console.info(TAG + p.username + ' <- ' + god + '/' + ev.id + ' (tier ' + e.tier +
+      ') :: ' + (ev.does || 'NO DESCRIPTION - add a `does:` to its register() call'))
     return ev.id
   }
 
@@ -305,5 +312,25 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     console.info(TAG + 'framework LIVE - ' + n + ' event(s) across ' + gods +
       ' god(s), ' + Math.round(CHANCE * 100) + '% per ' + TICK + 't, one at a time')
     if (!n) console.warn(TAG + 'no events registered - nothing will ever fire')
+
+    // ⭐ THE ROSTER, IN PLAIN ENGLISH. Printed at every boot so an admin reading the
+    // log knows what each event actually does to a player WITHOUT opening the source
+    // - and so an event that was registered without a description is visible now
+    // rather than the first time it fires on someone.
+    var missing = []
+    for (var gg in REG) {
+      if (!REG.hasOwnProperty(gg)) continue
+      for (var i = 0; i < REG[gg].length; i++) {
+        var ev = REG[gg][i]
+        if (!ev.does) { missing.push(gg + '/' + ev.id); continue }
+        console.info(TAG + '  ' + gg + '/' + ev.id +
+          ' [' + (ev.hostile ? 'hostile' : 'safe') + ', cd ' + ev.cooldown +
+          'd, w' + ev.weight + ', ' + ev.tiers.join('/') + '] :: ' + ev.does)
+      }
+    }
+    if (missing.length) {
+      console.warn(TAG + 'NO DESCRIPTION on: ' + missing.join(', ') +
+        ' - add a `does:` so the log says what they do')
+    }
   })
 })();

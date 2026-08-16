@@ -28,6 +28,31 @@
 // window this is not a risk of a death spiral, it is a guarantee of one - and the
 // first version of that probe measured the BED and would have reported it safe.
 ;(function () {
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔴 GATED OFF 2026-08-15 — ETHAN'S CALL.
+  //
+  //   "Death mechanic is still there. Im just going to turn off immediate respawn
+  //    instead of respawning where you died."
+  //
+  // It kept producing the J4 hazard, seen again in tonight's log immediately after
+  // a wake-where-you-fell:
+  //
+  //     [respawn] Rehykt woke where they fell (361,64,463) - 1 mob(s) detargeted
+  //     [ServerLevel/WARN] Force-added player with duplicate UUID 10e829ca-...
+  //
+  // Two player entities for one UUID is a server-level fault, not a cosmetic one:
+  // it is what was blocking joins. The design idea is good and the reasoning below
+  // still holds - but a mechanic that can wedge the server loses to the server.
+  //
+  // ⚠️ TURNING THIS OFF DOES NOT MAKE DEATH FREE. The cost was always the trip
+  // back; with this off, vanilla bed respawn returns and the trip back returns
+  // with it. Nothing else in the project depends on waking in place.
+  //
+  // TO REVIVE: set GATE = true. Everything below is intact and unmodified - fix
+  // the duplicate-UUID handshake first, do not just flip it.
+  // ═══════════════════════════════════════════════════════════════════════════
+  var GATE = false
+
   var INVASION_FLAG = 'invasion_active'   // set by D4 later; absent for now
 
   var GRACE_TICKS = 100                   // 5s of Resistance on waking
@@ -256,6 +281,7 @@
 
   // The player is back in the world - at their bed. Move them to where they fell.
   PlayerEvents.respawned(function (event) {
+    if (!GATE) return                     // vanilla owns respawn again
     var p = event.player
     if (!p) return
     var uuid = String(p.uuid)
@@ -394,6 +420,11 @@
   })
 
   ServerEvents.loaded(function () {
+    if (!GATE) {
+      console.info('[respawn] E2a GATED OFF (Ethan 2026-08-15) - vanilla bed respawn ' +
+        'is back. It was force-adding a duplicate UUID, which blocks joins.')
+      return
+    }
     console.info('[respawn] E2a active - you wake WHERE YOU FELL, not at your bed')
     console.info('[respawn] grace ' + (GRACE_TICKS / 20) + 's Resistance ' + (GRACE_AMP + 1) +
       ', detarget radius ' + DETARGET_RADIUS + ', lava/fire/void falls back to the bed')

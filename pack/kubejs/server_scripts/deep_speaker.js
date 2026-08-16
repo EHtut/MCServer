@@ -56,7 +56,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var CONFESSION_SWEEP = 1200         // 60s - so ~10 minutes SPENT on the floor
 
   var K_MET = 'veldora_speaker_met'    // she introduces herself exactly once
-  var K_CONF = 'veldora_speaker_confessed'   // and confesses exactly once
+  var K_CONF = 'veldora_speaker_stage'       // confession stage+1; 0 = never
 
   // Whole lines. She speaks in complete thoughts - a fragment grammar would make
   // her sound like the gods, and she is deliberately not one of them.
@@ -85,12 +85,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // ⭐ THE CONFESSION - Ethan's writing, 2026-08-15
+  // ⭐ THE CONFESSION - Ethan's writing, in THREE CUTSCENES
   // ═══════════════════════════════════════════════════════════════════════════
   // The rarest thing in the game, and the one that reorganises everything above it.
   //
   // She is not the goddess of death's mouthpiece here. She is the person who made
-  // the choice, and the whole scene is her failing to finish a sentence. Gregor was
+  // the choice, and the whole thing is her failing to finish a sentence. Gregor was
   // Blade's champion - "Centuries ago I had a champion. A man who stood by my side
   // above all else. He is long since gone. HIS END MERCIFUL." She is the mercy.
   //
@@ -100,41 +100,67 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // That is why it must stay rare and must never repeat - it is a thing you FOUND,
   // not a thing the game told you.
   //
-  // STAGED, per Ethan: four stanzas, one after another, separated by real silence.
-  // A blank line is a beat. Two blanks before the last stanza, because "Gregor, I am
-  // sorry" is the only line she says to someone who is not you, and it needs the
-  // room. She is held blind and rooted for the whole ~39s: this is not chat, it is
-  // the only cutscene in the game that is not a god demanding something.
+  // ── ⭐ THREE CUTSCENES, NOT ONE (Ethan, 2026-08-15) ─────────────────────────
+  // Each stage is a separate descent. You hear ①, and she stops. To hear ② you have
+  // to come back down to the floor and earn the roll again, and again for ③.
+  //
+  // This is strictly better than one long scene, for three reasons:
+  //   * 39 seconds blind and rooted was a long time to hold someone. ~13s is not.
+  //   * She is a character who cannot finish a sentence. Stopping her THREE TIMES,
+  //     mid-thought, at the bottom of the world, is the same gesture as the ellipses
+  //     inside her lines - the form now matches the writing.
+  //   * It converts the sealed floor from somewhere you visit into somewhere you
+  //     RETURN TO, and the thing pulling you back is not loot.
+  //
+  // Stage 3 carries the last two stanzas: "Gregor, I am sorry" is the only line she
+  // says to someone who is not you, so it lands after a double beat at the end of
+  // the final scene rather than opening a fourth one.
   var CONFESSION = [
-    'When you get up there... Tell your god I... Tell him I\'m sorry. For everything I did.',
-    'I didn\'t want to. But I had to make a choice.',
-    'He chose the wrong path. He was one of us. Our family. But he...',
-    'I never meant it to end like this.',
-    '',
-    'He was... He was someone I was meant to protect, but I was too weak.',
-    'None of this, none of what happened was his fault.',
-    'It was mine.',
-    '',
-    'I was too focused on the mission.',
-    'I had to rescue my goddess from that church to see what I was really doing.',
-    'I was destroying us.',
-    'Blinded by faith.',
-    '',
-    '',
-    'Gregor, I am sorry.',
+    // ① the apology, addressed to you as a messenger
+    [
+      'When you get up there... Tell your god I... Tell him I\'m sorry. For everything I did.',
+      'I didn\'t want to. But I had to make a choice.',
+      'He chose the wrong path. He was one of us. Our family. But he...',
+      'I never meant it to end like this.',
+    ],
+    // ② the admission - whose fault it was
+    [
+      'He was... He was someone I was meant to protect, but I was too weak.',
+      'None of this, none of what happened was his fault.',
+      'It was mine.',
+    ],
+    // ③ the reason, and the name
+    [
+      'I was too focused on the mission.',
+      'I had to rescue my goddess from that church to see what I was really doing.',
+      'I was destroying us.',
+      'Blinded by faith.',
+      '',
+      '',
+      'Gregor, I am sorry.',
+    ],
   ]
 
   var CONF_GAP = 45                   // 2.25s - her lines are short and halting
 
-  function hasConfessed(p) {
-    try { return !!p.persistentData.getBoolean(K_CONF) } catch (e) { return false }
+  // ⚠️ STORED AS stage+1, so 0 means "never heard any of it". getInt() returns 0 for
+  // a missing key, so a plain stage index would make "never started" and "heard the
+  // first one" the same number. docs/41 invariant #5.
+  function stageOf(p) {
+    try {
+      var v = p.persistentData.getInt(K_CONF)
+      if (typeof v === 'number' && isFinite(v) && v > 0) return v - 1
+    } catch (e) { }
+    return 0
   }
 
-  // Open the confession. Returns true only if the scene actually began.
+  function hasConfessed(p) { return stageOf(p) >= CONFESSION.length }
+
+  // Open the NEXT unheard stage. Returns true only if the scene actually began.
   //
-  // 🚨 The once-ever flag is stamped AFTER begin() succeeds, never before. Burning
-  // it on a refused ritual would silently cost a player the biggest beat in the
-  // game and there would be no way to tell it had happened.
+  // 🚨 The stage advances AFTER begin() succeeds, never before. Burning it on a
+  // refused ritual would silently cost a player a scene they can never get back, and
+  // there would be no way to tell it had happened.
   function confess(p, why) {
     if (!VELDORA.ritual || typeof VELDORA.ritual.begin !== 'function') {
       console.error(TAG + 'ritual.js missing - the confession cannot be staged')
@@ -142,9 +168,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     }
     try { if (VELDORA.ritual.active(p)) return false } catch (e) { return false }
 
+    var stage = stageOf(p)
+    if (stage >= CONFESSION.length) return false
+    var stanza = CONFESSION[stage]
+
     var lines = []
-    for (var i = 0; i < CONFESSION.length; i++) {
-      lines.push(CONFESSION[i] === '' ? '' : COLOUR + CONFESSION[i])
+    for (var i = 0; i < stanza.length; i++) {
+      lines.push(stanza[i] === '' ? '' : COLOUR + stanza[i])
     }
     var began = false
     try {
@@ -152,13 +182,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { console.error(TAG + 'confession threw :: ' + e); return false }
     if (!began) return false
 
-    try { p.persistentData.putBoolean(K_CONF, true) } catch (e) { }
-    console.info(TAG + '!! ' + p.username + ' HEARD THE CONFESSION (' + why + ') - ' +
-      CONFESSION.length + ' lines, ' + (20 + CONFESSION.length * CONF_GAP + 40) + 't')
+    try { p.persistentData.putInt(K_CONF, stage + 2) } catch (e) { }
+    var last = (stage + 1 >= CONFESSION.length)
+    console.info(TAG + '!! ' + p.username + ' HEARD CONFESSION ' + (stage + 1) + '/' +
+      CONFESSION.length + ' (' + why + ') - ' + stanza.length + ' lines, ' +
+      (20 + stanza.length * CONF_GAP + 40) + 't' + (last ? ' - SHE IS FINISHED' : ''))
     return true
   }
 
-  // Eligible = has met her, has never heard it, and is standing on the floor.
+  // Eligible = has met her, has stages left, and is standing on the floor.
   function confessionEligible(p) {
     if (hasConfessed(p)) return false
     try { if (!p.persistentData.getBoolean(K_MET)) return false } catch (e) { return false }
@@ -166,9 +198,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   // ⚠️ ITS OWN SWEEP, deliberately NOT the god's once-per-world-day idle cooldown.
-  // Riding that would have meant ~10 IN-GAME DAYS spent at the floor to see it,
-  // which is not rare, it is unreachable. This way it is ~10 real minutes SPENT
-  // down there - an expedition, which is the thing being rewarded.
+  // Riding that would have meant ~10 IN-GAME DAYS spent at the floor per stage,
+  // which is not rare, it is unreachable. This way each stage is ~10 real minutes
+  // SPENT down there - three expeditions, which is the thing being rewarded.
   function confessionSweep(server) {
     try {
       var players = server.players
@@ -194,6 +226,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     active: speakerActive,
     confess: confess,
     confessed: hasConfessed,
+    stage: stageOf,
+    stages: CONFESSION.length,
     eligible: confessionEligible,
     floor: CONFESSION_Y,
     // Say something as her. Handles the one-time introduction itself, because the
@@ -221,8 +255,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       p.tell(Text.of('§8§m                                        '))
       p.tell(Text.of('§7y §f' + Math.round(p.y) + '§8, cutoff §f' + CUTOFF_Y +
         ' §8- your god ' + (below ? '§ccannot reach you' : '§acan still hear you')))
-      p.tell(Text.of('§8the floor is §f' + CONFESSION_Y + '§8 · confession: ' +
-        (hasConfessed(p) ? '§7already heard' :
+      p.tell(Text.of('§8the floor is §f' + CONFESSION_Y + '§8 · confession §f' +
+        stageOf(p) + '§8/§f' + CONFESSION.length + '§8: ' +
+        (hasConfessed(p) ? '§7she is finished' :
           (confessionEligible(p) ? '§aELIGIBLE, rolling ' + Math.round(CONFESSION_CHANCE * 100) +
             '% every ' + CONFESSION_SWEEP + 't' :
             '§8not eligible here'))))
@@ -235,11 +270,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     root = root.then(Commands.literal('confess').executes(function (ctx) {
       var p = ctx.source.player
       if (!p) return 0
-      var was = hasConfessed(p)
-      try { p.persistentData.putBoolean(K_CONF, false) } catch (e) { }
-      var ok = confess(p, 'forced by ' + p.username)
-      if (!ok) {
-        try { p.persistentData.putBoolean(K_CONF, was) } catch (e) { }
+      // Forces the NEXT stage. If she is finished, rewind by one so the last scene
+      // can be re-watched - a polish pass should not need /speaker reset to see the
+      // ending again, and rewinding to zero would discard the whole sequence.
+      if (hasConfessed(p)) {
+        try { p.persistentData.putInt(K_CONF, CONFESSION.length) } catch (e) { }
+        p.tell(Text.of('§8she was finished - replaying the last one'))
+      }
+      if (!confess(p, 'forced by ' + p.username)) {
         p.tell(Text.of('§cdid not open - already in a scene? see the log'))
       }
       return 1
@@ -251,7 +289,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (!p) return 0
       try {
         p.persistentData.putBoolean(K_MET, false)
-        p.persistentData.putBoolean(K_CONF, false)
+        p.persistentData.putInt(K_CONF, 0)
       } catch (e) { }
       p.tell(Text.of('§7she does not know you.'))
       return 1
@@ -270,8 +308,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     console.info(TAG + 'the Speaker waits below y' + CUTOFF_Y + ' - ' + n +
       ' lines, grey. Below the cutoff a champion cannot hear their god.')
     confessionSweep(event.server)
-    console.info(TAG + 'THE CONFESSION armed - ' + CONFESSION.length + ' lines in 4 ' +
-      'stanzas, once per champion, ' + Math.round(CONFESSION_CHANCE * 100) + '% per ' +
-      CONFESSION_SWEEP + 't at or below y' + CONFESSION_Y + ' (the sealed floor).')
+    var cl = 0
+    for (var s = 0; s < CONFESSION.length; s++) cl += CONFESSION[s].length
+    console.info(TAG + 'THE CONFESSION armed - ' + CONFESSION.length + ' SEPARATE ' +
+      'cutscenes (' + cl + ' lines), one per descent, in order, once each. ' +
+      Math.round(CONFESSION_CHANCE * 100) + '% per ' + CONFESSION_SWEEP +
+      't at or below y' + CONFESSION_Y + ' (the sealed floor).')
   })
 })();

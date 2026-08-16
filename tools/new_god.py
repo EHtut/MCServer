@@ -376,10 +376,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {{}};
       return
     }}
 
-    VELDORA.events.register(GOD, {{ id: 'example', run: evExample, hostile: true }})
-    VELDORA.events.register(GOD, {{ id: 'quiet', run: evQuiet, hostile: false, cooldown: 1 }})
+    VELDORA.events.register(GOD, {{
+      id: 'example', run: evExample, hostile: true,
+      does: 'TODO(ethan): one plain sentence - what does this DO to the player?',
+    }})
+    VELDORA.events.register(GOD, {{
+      id: 'quiet', run: evQuiet, hostile: false, cooldown: 1,
+      does: 'TODO(ethan): speaks only, no danger',
+    }})
     VELDORA.events.register(GOD, {{
       id: 'guarded', run: evGuarded, hostile: false, tiers: ['medium', 'high'],
+      does: 'TODO(ethan): what condition guards it, and what it does when it passes',
     }})
 
     if (VELDORA.harvest) {{

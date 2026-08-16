@@ -69,6 +69,28 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   function keyOf(p) { try { return String(p.uuid) } catch (e) { return null } }
   function tell(p, s) { try { p.tell(Text.of(s)) } catch (e) { } }
 
+  // ── ⭐ SCENES ARE PATRON SPEECH, SO THEY ARE PATRON-COLOURED ────────────────
+  // Measured live 2026-08-15 (Ethan): the Sharpen bargain rendered in plain WHITE,
+  // and so did the Harvest cutscene and Salvage's trade. Every caller was passing
+  // bare strings and nothing painted them - only introductions.js pre-coloured its
+  // own lines, so the fault was invisible from that one call site.
+  //
+  // Fixed HERE rather than in the three callers, because a god who forgets to paint
+  // his own scene is a bug that will happen again with every new god. docs/41 §4:
+  // if it must be true for every god, it does not live in the god's file.
+  //
+  // A line that already carries its own § keeps it - that is how narration stays
+  // grey-italic and how the Speaker stays grey. A blank line stays blank.
+  var DEFAULT_COLOUR = '§4§l'      // the patron channel: bold dark red
+
+  function paint(s, colour) {
+    if (s === null || s === undefined) return ''
+    var str = String(s)
+    if (!str.length) return str                     // a blank line is a beat
+    if (str.charAt(0) === '§') return str      // caller already chose
+    return (colour || DEFAULT_COLOUR) + str
+  }
+
   // ---------------------------------------------------------------------------
   // THE RELEASE. Everything that ends a ritual comes through here, including the
   // login recovery, so there is exactly one definition of "released".
@@ -213,12 +235,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // a world that has already come back. Added for I2, which is the first
     // consumer that needed it - the primitive stays dumb about why.
     var hold = spec.holdAfterChoice || 0
+    var colour = spec.colour || DEFAULT_COLOUR
 
     var speakFor = LEAD + (lines.length * gap) + TAIL
     var whole = speakFor + (options.length ? TIMEOUT : 0) + hold
 
     STATE[k] = {
-      awaiting: false, options: options, hold: hold,
+      awaiting: false, options: options, hold: hold, colour: colour,
       onChoose: spec.onChoose, onTimeout: spec.onTimeout,
       // effect ids this scene's own release must not clear - see clearEffects
       keep: spec.keep || null,
@@ -243,7 +266,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         server.scheduleInTicks(LEAD + (idx * gap), function () {
           try {
             if (!STATE[k]) return                 // cancelled or logged out
-            tell(p, text)
+            tell(p, paint(text, colour))
           } catch (e) { }
         })
       })(i, lines[i])
