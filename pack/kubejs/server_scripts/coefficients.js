@@ -79,7 +79,26 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   // Which axes have a live consumer TODAY. Used by the boot report and by
   // /path coefficients, so a number nobody reads is never presented as if it acts.
-  var CONSUMED = { drops: true, power: true, phase: true, spawns: true }
+  // 🚨 spawns IS FALSE. Audited 2026-08-16, and the reason is more interesting than
+  // "it is switched off" - it is TWO regimes, inert for TWO DIFFERENT reasons:
+  //
+  //   below 1  SUPPRESSION via checkSpawn (spawn_pressure.js:140). This half is NOT
+  //            gated by AMBIENT and would work today - but it returns immediately at
+  //            `w.coeff >= 1.0`, and NO PATH IS BELOW 1 (blade 4.0, salvage 4.0,
+  //            wall 1.5, forge 1.0, art 1.5). The machinery is live; the table never
+  //            asks it for anything.
+  //   above 1  WAVES via the sweep, which IS gated off by AMBIENT = false - Ethan's
+  //            verdict on the trickle was "noise".
+  //
+  // So the axis acts on nobody. This flag exists precisely "so a number nobody reads
+  // is never presented as if it acts", and /path coefficients was reporting spawns
+  // as live. A reachable call site is not a live consumer.
+  //
+  // ⭐ TO MAKE IT REAL, the cheap route is NOT turning AMBIENT back on: give a
+  // mercantile path a coefficient below 1 and the suppression half starts working
+  // immediately, with no trickle and no noise. A quieter world around Wall or Forge
+  // is a path difference you can feel without a single extra mob spawning.
+  var CONSUMED = { drops: true, power: true, phase: true, spawns: false }
 
   // ⚠️ SUBCLASSES ARE CUT (Ethan, 2026-08-15). This used to stack half of a
   // subclass's DEVIATION from neutral on top of the primary's. The mechanism was
@@ -199,7 +218,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     for (var k in TABLE) if (TABLE.hasOwnProperty(k)) paths.push(k)
     console.info(TAG + 'VELDORA.coeff published OK - ' + paths.length +
       ' path keys (crown aliases wall), ' + AXES.length + ' axes')
-    console.info(TAG + 'LIVE axes: drops, power, phase, spawns. ' +
+    // ⚠️ READ FROM CONSUMED, never hardcoded. This line listed all four axes as a
+    // string literal, so flipping the flag changed /path coefficients and left the
+    // boot log still claiming spawns was live - the report and the truth drifting
+    // apart in the one file whose job is stopping exactly that.
+    var liveAx = [], deadAx = []
+    for (var ai = 0; ai < AXES.length; ai++) {
+      (CONSUMED[AXES[ai]] ? liveAx : deadAx).push(AXES[ai])
+    }
+    console.info(TAG + 'LIVE axes: ' + (liveAx.join(', ') || 'NONE') +
+      (deadAx.length ? ' | INERT: ' + deadAx.join(', ') : '') + '. ' +
       'spawns is TWO regimes (23 §7b): below 1 suppresses natural spawns via ' +
       'checkSpawn, above 1 sends waves via spawner.js - because a multiplier on ' +
       'zero is zero, and In Control denies naturals above y=40.')
