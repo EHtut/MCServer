@@ -214,6 +214,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (w.coeff < 1.0) {
         if (Math.random() < (1.0 - w.coeff)) {
           try { event.cancel() } catch (e) { }
+          // Counted for the same reason as the duplicates: "she is quieter" and
+          // "the hook never ran" looked identical before this.
+          try { suppressBy[w.player.username] = (suppressBy[w.player.username] || 0) + 1 } catch (e) { }
         }
         return
       }
@@ -264,12 +267,54 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           (Math.round(pos.x * 100) / 100) + ' ' + (Math.round(pos.y * 100) / 100) +
           ' ' + (Math.round(pos.z * 100) / 100))
         dupCount++
+        try { dupBy[p.username] = (dupBy[p.username] || 0) + 1 } catch (e2) { }
       } catch (e) { }
     })
   }
 
   var DUP_SHAPE_LOGGED = false
   var dupCount = 0
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🚨 dupCount WAS WRITTEN AND NEVER READ.  Found 2026-08-16, while Ethan asked
+  // why no mobs were spawning around Lehykt - and I could not answer, because this
+  // subsystem had NO TELEMETRY AT ALL. The counter was incremented on every
+  // duplicate and printed nowhere, so "the log shows no density activity" meant
+  // exactly nothing: there was nothing for it to show.
+  //
+  // That is the same defect this project keeps paying for in other clothes - a
+  // thing that runs in shadow with no consumer. `paths.js` already got this right
+  // (it reports paidOut every 5 minutes, and that report is what proved the drop
+  // economy was alive tonight). This is the same idea for the spawn axis.
+  //
+  // Counted PER PLAYER, because "density is working" and "density is working FOR
+  // THE PERSON ASKING" are different questions and the second is the one that gets
+  // asked.
+  // ═══════════════════════════════════════════════════════════════════════════
+  var DUP_REPORT_TICKS = 6000              // 5 min, matching paths.js
+  var dupBy = {}                           // name -> count since boot
+  var suppressBy = {}                      // name -> cancelled since boot
+
+  function dupReport(server) {
+    try {
+      var parts = []
+      for (var n in dupBy) if (dupBy.hasOwnProperty(n)) parts.push(n + '+' + dupBy[n])
+      for (var s in suppressBy) if (suppressBy.hasOwnProperty(s)) parts.push(s + '-' + suppressBy[s])
+      if (parts.length) {
+        console.info(TAG + 'density since boot: ' + parts.join(' , ') +
+          '   (+n = extra mobs added near that walker, -n = spawns cancelled)')
+      } else if (anyNonNeutral) {
+        // The honest negative. Somebody IS on a non-neutral path and the world has
+        // not offered this hook a single eligible spawn near them - which usually
+        // means their area is lit, not that the multiplier is broken. Density can
+        // only multiply what the world already chose; 1.6 x nothing is nothing.
+        console.info(TAG + 'density since boot: NOTHING - no eligible spawn has ' +
+          'occurred near a walker. Density multiplies what the world already chose, ' +
+          'so a lit area produces nothing to multiply.')
+      }
+    } catch (e) { }
+    server.scheduleInTicks(DUP_REPORT_TICKS, function () { dupReport(server) })
+  }
 
   // ── PRESSURE: the above-1 half ────────────────────────────────────────────
   function pressureTick(server) {
@@ -330,6 +375,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       event.server.scheduleInTicks(CACHE_TICKS, tick)
     })
     schedule(event.server)
+    dupReport(event.server)
     console.info(TAG + 'spawns axis LIVE - suppression via checkSpawn (<1) is ON. ' +
       'Ambient pressure (>1) is OFF by design: waves are EVENT-driven now, through ' +
       'VELDORA.pressure.send(). Set AMBIENT=true to restore the trickle.')
