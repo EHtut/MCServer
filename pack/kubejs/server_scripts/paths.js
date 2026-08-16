@@ -869,15 +869,16 @@
           continue
         }
 
-        // Escrowed paths are NOT open - /path would refuse them.
-        var open = Object.keys(PATHS).filter(function (k) {
-          return !holderOf(server, k)
-        })
-        if (!open.length) continue
-        p.tell('§8§m                                        ')
-        p.tell('§7You walk no path. §8Everything you kill pays you nothing.')
-        p.tell('§7Open: §f' + open.join('§7, §f'))
-        p.tell('§8Pick one with §f/path <name>§8. One walker each - first come.')
+        // 🔴 THE MENU NUDGE IS CUT (2026-08-15). It listed every path - including
+        // the CLOSED ones and retired Crown - and told a pathless player to "pick
+        // one with /path <name>", which is the exact model `chosen.js` replaced.
+        //
+        // You do not pick a god off a list any more. You are noticed for what you
+        // carry, and until then `pathless.js` speaks for the silence. A timer that
+        // nags you to choose undoes both.
+        //
+        // The escrow branch above still runs, because "your path is held for you"
+        // is a real thing a player needs telling.
       }
     } catch (e) { console.warn('[paths] nudge threw :: ' + e) }
     server.scheduleInTicks(NUDGE_TICKS, function () { nudge(server) })

@@ -39,6 +39,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var TICK = 1200                  // 60s between rolls, same beat as idle.js
   var CHANCE = 0.10                // slightly likelier than a walker's idle - this
                                    // is the state we WANT a player to leave
+
+  // ⚠️ ONCE PER WORLD DAY IS RIGHT FOR A GOD AND WRONG FOR WEATHER. A patron's idle
+  // line is an event; "you take a breath" is texture, and texture that fires once a
+  // day is not texture, it is a rare event that reads as broken. Ambience ignores
+  // the daily stamp; the legible pieces still respect it.
+  var AMBIENT_CAP = false
   var LAST_KEY = 'veldora_pathless_day'   // world day + 1; 0 means never
   var PAIR_GAP = 55                // ticks between the two speakers
 
@@ -180,6 +186,143 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return true
   }
 
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ AMBIENCE - what the world does while nobody has claimed you
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Ethan, 2026-08-16: "just things like 'You take a breath' 'You wipe sweat from
+  // your brow' With random whispers from the gods arguing above but it shouldn't be
+  // anything understandable."
+  //
+  // Two registers doing opposite jobs:
+  //
+  //   BODY      grey italic. Small, physical, ordinary. Nothing is happening to you
+  //             and that IS the content - being pathless is the only stretch of the
+  //             game where the world is just weather.
+  //
+  //   WHISPER   the gods, still arguing, still about you, and UNREADABLE. The
+  //             Arrival is the one time you hear them clearly; everything after is
+  //             a fragment through a wall.
+  //
+  // 🚨 THE WHISPERS MUST NOT DECODE. A fragment a player can piece together is just
+  // quiet exposition, and they WILL piece it together. So the meaning-bearing middle
+  // of every whisper is §k - Minecraft's obfuscated text, which renders as characters
+  // scrambling in place. You get the COLOUR, so you know who is speaking, and the
+  // rhythm of an argument. Nothing else.
+  var BODY = [
+      "You take a breath.",
+      "You wipe sweat from your brow.",
+      "You roll your shoulders. Something in your back clicks.",
+      "Your hands are cold.",
+      "You catch yourself listening for something.",
+      "You shift your grip on nothing in particular.",
+      "You blink hard. The light is wrong here, or your eyes are.",
+      "You breathe out, slowly, and it steadies less than you wanted.",
+      "You rub your thumb across your palm. There is dirt in the lines of it.",
+      "You look up. There is nothing to look up at.",
+      "Your ears ring for a second, then stop.",
+      "You swallow. Your throat is dry.",
+      "You stand still for a moment longer than you meant to.",
+      "You are aware of your own heartbeat, briefly.",
+      "Something behind you. Nothing behind you."
+  ]
+
+  // [god, before the scramble, after it]
+  var WHISPER = [
+      [
+          "blade",
+          "...must prove",
+          "or be nothing at all-"
+      ],
+      [
+          "blade",
+          "-stand above the",
+          "like every other one before-"
+      ],
+      [
+          "blade",
+          "...I will not carry",
+          "again-"
+      ],
+      [
+          "wall",
+          "-but they are so",
+          "and nobody has even-"
+      ],
+      [
+          "wall",
+          "...please, just let me",
+          "once-"
+      ],
+      [
+          "wall",
+          "-you always say that when I",
+          "-"
+      ],
+      [
+          "salvage",
+          "...everything has a",
+          "and they will learn it-"
+      ],
+      [
+          "salvage",
+          "-hardly my fault if the terms are",
+          "-"
+      ],
+      [
+          "salvage",
+          "...I could have them by",
+          "if you two would-"
+      ],
+      [
+          "forge",
+          "-built nothing, owed nothing, and you call that",
+          "-"
+      ],
+      [
+          "forge",
+          "...they will break before they",
+          "-"
+      ],
+      [
+          "art",
+          "-ENOUGH of this. You will all",
+          "-"
+      ],
+      [
+          "art",
+          "...they cannot hear us properly and that is",
+          "-"
+      ],
+      [
+          "art",
+          "-let them be",
+          "for once-"
+      ]
+  ]
+
+  var SCRAMBLE = ["§k▓▓▓▓§r", "§k▓▓▓▓▓▓§r", "§k▓▓▓§r", "§k▓▓▓▓▓§r", "§k▓▓▓▓▓▓▓§r"]
+
+  function whisperLine(p) {
+    var w = pick(WHISPER)
+    var mid = pick(SCRAMBLE)
+    // The god's own colour, dimmed to italic - they are not addressing you, and a
+    // full-weight patron line would read as being spoken TO the player.
+    var c = colourOf(w[0])
+    return c + '§o' + w[1] + ' ' + mid + c + '§o ' + w[2]
+  }
+
+  function ambience(p) {
+    // Bodies more often than whispers. The gods are far away and mostly not
+    // thinking about you, which is the point of the stretch.
+    if (Math.random() < 0.62) {
+      tell(p, '§7§o' + pick(BODY))
+    } else {
+      tell(p, whisperLine(p))
+    }
+    return true
+  }
+
   function dayNow(server) {
     try {
       var d = server.overworld().dayTime()
@@ -198,7 +341,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     try { if (VELDORA.ritual && VELDORA.ritual.active(p)) return null } catch (e) { }
 
     var now = dayNow(server)
-    if (!force) {
+    // Roll FIRST, so the daily cap can be applied only to the legible pieces.
+    var roll = Math.random()
+
+    if (!force && !(roll < 0.55 && !AMBIENT_CAP)) {
       if (now === null) return null
       var stored = 0
       try { stored = p.persistentData.getInt(LAST_KEY) } catch (e) { }
@@ -211,15 +357,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       }
     }
 
-    // Weighted: mostly the pantheon, sometimes your own head, rarely the how.
-    var r = Math.random()
+    // Weighted. AMBIENCE is the common case now - the small physical beats and the
+    // unreadable argument overhead are what the pathless stretch actually sounds
+    // like, and the bigger pieces (a legible exchange, a feeling, the /path hint)
+    // are the rarer punctuation.
+    var r = roll
     var did = false
-    if (r < 0.55) did = overheard(server, p)
-    else if (r < 0.90) did = feel(p)
+    if (r < 0.55) did = ambience(p)
+    else if (r < 0.78) did = overheard(server, p)
+    else if (r < 0.94) did = feel(p)
     else did = how(p)
-    if (!did) did = feel(p)              // the gods had nothing; you still do
+    if (!did) did = ambience(p)          // whatever failed, the body still happens
 
-    if (did && now !== null) {
+    // Ambience does not consume the day. Only the legible pieces do.
+    if (did && now !== null && r >= 0.55) {
       try { p.persistentData.putInt(LAST_KEY, now + 1) } catch (e) { }
     }
     return did ? 'pathless' : null
@@ -265,6 +416,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // which run after this one.
     event.server.scheduleInTicks(1, function () {
       var live = written()
+      console.info(TAG + BODY.length + ' body beats, ' + WHISPER.length +
+        ' unreadable whispers (the gods, still arguing, still about you).')
       console.info(TAG + 'the pathless overhear the pantheon - ' + live.length +
         ' written voice(s): ' + (live.join(', ') || 'NONE') + '. ' +
         FEELINGS.length + ' feelings, ' + Math.round(CHANCE * 100) + '% per ' +

@@ -36,7 +36,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   var K_SEEN = 'veldora_arrival_seen'   // once ever, per player
   var GAP = 55                          // ticks between lines
-  var JOIN_DELAY = 100                  // 5s after login, so the world has settled
+  // ⏱️ ONE MINUTE. Ethan, 2026-08-15: "the intro needs to be a minute after joining
+  // to allow for actually loading in."
+  //
+  // 5s was wrong and would have wasted the scene: on a 218-mod pack a client is
+  // still streaming chunks, resolving Distant Horizons and settling its framerate
+  // for most of the first minute. The best writing in the project would have played
+  // over a loading screen.
+  var JOIN_DELAY = 1200                 // 60s
 
   // ⚠️ FORGE AND ART GET THEIR COLOURS HERE because this scene needs them before
   // either god exists. Registered into voice.js so there is still exactly ONE place
@@ -137,10 +144,26 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       var server = null
       try { server = p.server } catch (e) { return }
       if (!server) return
-      // A beat after login so it does not land under the join spam and the chunks
-      // around them have loaded.
+      // 🚨 A MINUTE IS LONG ENOUGH TO LEAVE IN. The stamp lives in play(), so a
+      // player who joins and disconnects inside the window would be marked as having
+      // seen the Arrival and would NEVER get it - they only ever get one first join.
+      // So the timer re-checks that they are still online, and if they are not it
+      // does nothing at all: no stamp, no scene, and it fires on their next join.
+      //
+      // It also re-checks `seen`, because two logins inside one minute would
+      // otherwise queue two timers and play the scene twice.
       server.scheduleInTicks(JOIN_DELAY, function () {
-        try { play(server, p) } catch (e) { console.error(TAG + 'play threw :: ' + e) }
+        try {
+          var still = null
+          try { still = server.getPlayer(p.username) } catch (e) { }
+          if (!still) {
+            console.info(TAG + p.username + ' left before the Arrival could play - ' +
+              'NOT stamped, they will get it next time')
+            return
+          }
+          if (seen(still)) return
+          play(server, still)
+        } catch (e) { console.error(TAG + 'play threw :: ' + e) }
       })
     } catch (err) { console.warn(TAG + 'login hook threw :: ' + err) }
   })
