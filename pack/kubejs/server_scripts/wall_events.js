@@ -1,9 +1,30 @@
-// wall_events.js - what The Spider sends.
+// wall_events.js - THE SPIDER'S RAGE.  docs/43
 //
-// ⚠️ GENERATED SKELETON (tools/new_god.py). Three example events and a Harvest
-// handler, all correctly wired and all deliberately thin. Read docs/41 §2 ⑦: START
-// WITH THREE, NOT TWELVE. Blade has twelve because he is the combat god and eight of
-// them are spawner calls.
+// Ethan, 2026-08-15:
+//   "her counter is rage."
+//   "counter can be a plus for every minion raised and a loss for every minion slain"
+//   "rage for the wall is something directed as less boons for you, more attacks on
+//    other players"
+//   "she will never send anything but boons to you. To other players? She spawns
+//    spiders to attack them."
+//
+// ── ⭐ SHE IS THE FIRST GOD WHO POINTS AT SOMEBODY ELSE ─────────────────────
+// Every other patron's events happen TO their champion. Hers happen to everyone
+// else, and that inverts the whole relationship: Blade's champion is being TESTED,
+// hers is being PROTECTED. You are not the target of your own god. You are the
+// reason other people are.
+//
+// RAGE IS ONE SLIDER, NOT TWO SYSTEMS. It does not switch modes at a threshold; it
+// slides. At 0 she is entirely gifts. At the top she is entirely spiders. The middle
+// is where she ASKS, and that question is the best thing she does:
+//
+//     0 ............... rage ............... MAX
+//     [ boons to you ]                  [ spiders at them ]
+//              [ she asks first ]
+//
+// ⚠️ THE MIDDLE BAND DISAPPEARS AS RAGE CLIMBS. Ethan: "as the counters increase you
+// lose the ability slowly to choose to take the boon." She stops asking - not
+// because she is angry with you, but because she has stopped believing you say no.
 //
 ;
 var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
@@ -11,96 +32,339 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 ;(function () {
   var TAG = '[wallev] '
   var GOD = 'wall'
+  var GATE = true
 
-  var ACTOR = 'born_in_chaos_v1:mother_spider'
-  var ACTOR_TAG = 'veldora_wall_actor'
+  // ⚠️ THE PVP SWITCH. Everything that points at another player reads this first.
+  // A real flag, not a comment, because "she attacks other players" is a
+  // server-social decision and it must be revocable in one edit without unpicking
+  // her character.
+  var HOSTILE_TO_PLAYERS = true
 
-  // NBT quoting through a char code. The NBT wants single quotes around a JSON text
-  // component, and every attempt to escape those through a tool chain mangled them.
-  // A char code cannot be mangled.
-  var Q = String.fromCharCode(39)
+  // ═══════════════════════════════════════════════════════════════════════════
+  // WHAT COUNTS AS A MINION  (audited from the jars, 2026-08-15)
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Goety ships 85 entities ending `_servant` - that suffix IS its marker for a
+  // player-owned summon (bear_servant, bone_spider_servant, cave_spider_servant...).
+  // Occultism uses `_familiar`. Their UNBOUND variants carry `wild`/`unbound` and
+  // are explicitly NOT yours.
+  //
+  // ⚠️ MATCHED BY SUBSTRING, NEVER EQUALITY. `String(entity.type)` is not the bare
+  // id - it resolves to an EntityType object whose toString is a description key.
+  // This project shipped that bug twice (the_hunt, nemesis_tally) and both times it
+  // failed SILENTLY, because "could not read" and "not a minion" shared a value.
+  // isMinion() returns null for unreadable and false for no. They are different.
+  var MINION_MARKS = ['_servant', '_familiar']
+  var NOT_YOURS = ['wild', 'unbound']
 
-  function say(p, tag) {
-    try { if (VELDORA.voice) return VELDORA.voice.say(p, GOD, tag) } catch (e) { }
+  function idOf(e) {
+    var s = null
+    try { s = String(e.type) } catch (x) { }
+    if (!s) { try { s = String(e.getType()) } catch (x) { } }
+    return s ? s.toLowerCase() : null
+  }
+
+  function isMinion(e) {
+    var id = idOf(e)
+    if (id === null) return null                  // unreadable is NOT "no"
+    for (var i = 0; i < NOT_YOURS.length; i++) if (id.indexOf(NOT_YOURS[i]) >= 0) return false
+    for (var j = 0; j < MINION_MARKS.length; j++) if (id.indexOf(MINION_MARKS[j]) >= 0) return true
     return false
   }
 
-  function dayNow(server) {
+  // ═══════════════════════════════════════════════════════════════════════════
+  // RAGE - the counter
+  // ═══════════════════════════════════════════════════════════════════════════
+  var OWNER_PREFIX = 'veldora_wall_owner_'
+  var MINION_TAG = 'veldora_wall_minion'
+  var CREDIT_RANGE = 16                           // a summon appears beside you
+
+  function wallWalkers(server) {
+    var out = []
     try {
-      var d = server.overworld().dayTime()
-      if (typeof d === 'number' && isFinite(d)) return Math.floor(d / 24000)
+      var ps = server.players
+      for (var i = 0; i < ps.length; i++) {
+        var path = ''
+        try { if (VELDORA.paths) path = VELDORA.paths.pathOf(ps[i]) || '' } catch (e) { continue }
+        if (path === GOD) out.push(ps[i])
+      }
     } catch (e) { }
-    return null
+    return out
   }
 
-  // ⚠️ getInt() RETURNS 0 FOR A MISSING KEY, so the stored value is day+1 and 0 means
-  // "never". And the clock is NOT monotonic - admins run /time set, and a stamp from
-  // the future must re-stamp rather than lock the player out for ten thousand days.
-  // docs/41 invariants #5 and #6.
-  function daysSince(server, p, key) {
-    var now = dayNow(server)
-    if (now === null) return null
-    var stored = 0
-    try { stored = p.persistentData.getInt(key) } catch (e) { return null }
-    if (!stored) return null                       // never
-    var last = stored - 1
-    if (last > now) {
-      try { p.persistentData.putInt(key, now + 1) } catch (e) { }
-      return 0
+  // ⚠️ AN APPROXIMATION, DECLARED AS ONE. Goety and Occultism both store an owner in
+  // NBT, but the shape differs per mod and per entity, and reading it wrong would
+  // fail silently - the exact class of bug this file's header warns about. A summon
+  // appears NEXT TO its summoner, so "nearest Wall walker within 16 blocks" is right
+  // in every case that actually happens; when it is wrong it credits a Wall walker
+  // standing beside another Wall walker, which is a rounding error, not a broken
+  // mechanic.
+  //
+  // The owner is then STAMPED ON THE ENTITY, so the debit on death is exact even if
+  // the minion dies alone on the far side of the world.
+  function creditNearest(server, e) {
+    var walkers = wallWalkers(server)
+    if (!walkers.length) return null
+    var best = null, bestD = CREDIT_RANGE * CREDIT_RANGE
+    for (var i = 0; i < walkers.length; i++) {
+      var p = walkers[i]
+      try {
+        var dx = p.x - e.x, dy = p.y - e.y, dz = p.z - e.z
+        var d2 = dx * dx + dy * dy + dz * dz
+        if (d2 <= bestD) { bestD = d2; best = p }
+      } catch (x) { }
     }
-    return now - last
+    return best
   }
 
-  function stampDay(server, p, key) {
-    var now = dayNow(server)
-    if (now === null) return
-    try { p.persistentData.putInt(key, now + 1) } catch (e) { }
+  function ownerFromTags(server, tags) {
+    try {
+      var all = String(tags)
+      var at = all.indexOf(OWNER_PREFIX)
+      if (at < 0) return null
+      var rest = all.substring(at + OWNER_PREFIX.length)
+      var name = rest.split(/[,\]\s]/)[0]
+      if (!name) return null
+      return server.getPlayer(name)
+    } catch (e) { return null }
+  }
+
+  function hasTag(e, tag) {
+    try {
+      var tags = e.tags
+      if (!tags) return false
+      return tags.contains ? tags.contains(tag) : (String(tags).indexOf(tag) >= 0)
+    } catch (x) { return false }
+  }
+
+  EntityEvents.spawned(function (event) {
+    if (!GATE) return
+    try {
+      var e = event.entity
+      if (!e || e.player) return
+      if (isMinion(e) !== true) return
+      var server = null
+      try { server = e.server } catch (x) { return }
+      if (!server) return
+      var owner = creditNearest(server, e)
+      if (!owner) return
+      try {
+        e.addTag(MINION_TAG)
+        e.addTag(OWNER_PREFIX + owner.username)
+      } catch (x) { }
+      if (VELDORA.counter) VELDORA.counter.add(owner, GOD, 1, 'minion raised')
+    } catch (err) { console.warn(TAG + 'spawn hook threw :: ' + err) }
+  })
+
+  EntityEvents.death(function (event) {
+    if (!GATE) return
+    try {
+      var e = event.entity
+      if (!e || e.player) return
+      if (!hasTag(e, MINION_TAG)) return
+      var server = null
+      try { server = e.server } catch (x) { return }
+      var owner = ownerFromTags(server, e.tags)
+      if (!owner) return
+      if (VELDORA.counter) VELDORA.counter.add(owner, GOD, -1, 'minion slain')
+    } catch (err) { console.warn(TAG + 'minion death hook threw :: ' + err) }
+  })
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // WHO SHE POINTS AT
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Ethan: "the player who's either nearby or killed the champion the most."
+  // A grudge first, proximity second.
+  var GRUDGE = {}                                 // username -> how many of hers
+  var ACTOR_TAG = 'veldora_wall_actor'
+  var HARVEST_TAG = 'veldora_wall_harvest'
+
+  EntityEvents.death(function (event) {
+    try {
+      var e = event.entity
+      if (!e || e.player) return
+      if (!hasTag(e, ACTOR_TAG)) return
+      var killer = event.source ? event.source.player : null
+      if (!killer) return
+      var n = killer.username
+      GRUDGE[n] = (GRUDGE[n] || 0) + 1
+      console.info(TAG + n + ' has now killed ' + GRUDGE[n] + ' of hers')
+    } catch (err) { }
+  })
+
+  // ⚠️ HER OWN HEALTH FLOOR, ON THE TARGET.
+  // godevents' floor guards the player an event fires FOR. Hers fires for her
+  // champion and lands on somebody else, so that floor is guarding the wrong person
+  // entirely. Dropping a spider wave on someone at two hearts is not an event, it is
+  // an execution.
+  var TARGET_FLOOR = 0.6
+
+  function healthyEnough(p) {
+    try {
+      var max = p.getAttribute('minecraft:generic.max_health').getValue()
+      if (!max) return false
+      return (p.health / max) >= TARGET_FLOOR
+    } catch (e) { return false }                  // unreadable = leave them alone
+  }
+
+  function pickTarget(server, me) {
+    if (!HOSTILE_TO_PLAYERS) return null
+    var cands = []
+    try {
+      var ps = server.players
+      for (var i = 0; i < ps.length; i++) {
+        var p = ps[i]
+        try { if (String(p.uuid) === String(me.uuid)) continue } catch (x) { continue }
+        if (!healthyEnough(p)) continue
+        try { if (VELDORA.ritual && VELDORA.ritual.active(p)) continue } catch (x) { }
+        cands.push(p)
+      }
+    } catch (e) { return null }
+    if (!cands.length) return null
+
+    var best = null, bestG = 0
+    for (var j = 0; j < cands.length; j++) {
+      var g = GRUDGE[cands[j].username] || 0
+      if (g > bestG) { bestG = g; best = cands[j] }
+    }
+    if (best) return best
+
+    var near = null, nearD = Infinity
+    for (var k = 0; k < cands.length; k++) {
+      try {
+        var dx = cands[k].x - me.x, dy = cands[k].y - me.y, dz = cands[k].z - me.z
+        var d2 = dx * dx + dy * dy + dz * dz
+        if (d2 < nearD) { nearD = d2; near = cands[k] }
+      } catch (x) { }
+    }
+    return near
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // THE EVENTS
+  // WHAT SHE SENDS
   // ═══════════════════════════════════════════════════════════════════════════
-  // 🚨 A run() RETURNING false DOES NOT STAMP THE COOLDOWN. An event that could not
-  // happen has not happened, and must be tried again. docs/41 invariant #9.
+  // Ethan's phasing, 2026-08-15:
+  //   med / high    minecraft:spider  +  born_in_chaos_v1:baby_spider
+  //   high (rare)   waves of BUFFED spiders
+  //
+  // Both ids validated live against this server with the E0 P13 probe. Sightstealer
+  // was CUT - it does not exist in this pack under any id or display name, and a
+  // buffed wave is the better answer anyway: it scales with her rage instead of
+  // introducing a mob nobody has a relationship with.
+  var SPIDERS = ['minecraft:spider', 'born_in_chaos_v1:baby_spider']
 
-  function evExample(server, p) {
-    // TODO(ethan): what does The Spider actually do here?
-    if (!VELDORA.spawner) return false
-    var r = VELDORA.spawner.wave(p, {
-      ids: [ACTOR], count: 1, minDist: 12, maxDist: 20,
-      nbt: '{Tags:["' + ACTOR_TAG + '"]}',
-    })
-    if (!r || r.placed === 0) {
-      console.warn(TAG + 'example: nothing placed for ' + p.username + ' - not stamping')
+  var Q = String.fromCharCode(39)
+
+  function spiderNbt(buffed) {
+    var base = '{Tags:["' + ACTOR_TAG + '"]'
+    if (!buffed) return base + '}'
+    // ⚠️ ATTRIBUTES ARE WRITTEN AT SUMMON, never set afterwards - the same route
+    // Understudy uses. Setting them post-spawn races the mod's own finalizeSpawn.
+    return base + ',CustomNameVisible:1b,CustomName:' + Q +
+      '{"text":"Hers","color":"dark_purple","bold":true}' + Q +
+      ',attributes:[' +
+      '{id:"minecraft:generic.max_health",base:40},' +
+      '{id:"minecraft:generic.movement_speed",base:0.36},' +
+      '{id:"minecraft:generic.attack_damage",base:6}' +
+      '],Health:40f}'
+  }
+
+  function sendSpiders(server, me, tier) {
+    var target = pickTarget(server, me)
+    if (!target) {
+      console.info(TAG + 'no valid target for ' + me.username + ' - nobody else ' +
+        'online, or everyone is hurt / in a scene. Nothing sent.')
       return false
     }
-    say(p, 'push')
+    if (!VELDORA.spawner) { console.error(TAG + 'no spawner'); return false }
+
+    var buffed = (tier === 'high')
+    var count = buffed ? 5 : 3
+    var r = VELDORA.spawner.wave(target, {
+      ids: SPIDERS, count: count, minDist: 10, maxDist: 18,
+      nbt: spiderNbt(buffed),
+    })
+    if (!r || r.placed === 0) {
+      console.warn(TAG + 'spiders asked for ' + target.username +
+        ' and placed NOTHING - not stamping')
+      return false
+    }
+
+    // ⭐ SHE SPEAKS TO THE TARGET, not to her champion. That is what high_hostile is
+    // for - she is explaining herself to the person she is killing, which is worse
+    // than threatening them.
+    if (VELDORA.voice) VELDORA.voice.say(target, GOD, 'high_hostile')
+    console.info(TAG + '!! ' + me.username + ' -> ' + count +
+      (buffed ? ' BUFFED' : '') + ' spiders sent at ' + target.username +
+      ' (grudge ' + (GRUDGE[target.username] || 0) + ')')
     return true
   }
 
-  function evQuiet(server, p) {
-    // A non-hostile event: it only speaks. Every god wants at least one of these, or
-    // the god becomes nothing but a threat generator.
-    return say(p, 'push')
+  // ── the three events ──────────────────────────────────────────────────────
+  // ⭐ A BOON. Never anything else at her own champion.
+  function evBoon(server, p) {
+    var ok = false
+    try {
+      p.potionEffects.add('minecraft:regeneration', 300, 1, false, false)
+      p.potionEffects.add('minecraft:absorption', 1200, 1, false, false)
+      ok = true
+    } catch (e) { console.warn(TAG + 'boon effects threw :: ' + e) }
+    if (!ok) return false
+    try { if (VELDORA.wall) VELDORA.wall.speak(p, 'gift') } catch (e) { }
+    return true
   }
 
-  function evGuarded(server, p) {
-    // TODO(ethan): the guarded one - fires only under a condition worth noticing.
-    return say(p, 'lore')
+  // ⭐ THE OFFER - the middle of the slider, and the best thing she does. She asks.
+  // You may still say no, and saying no costs you nothing except her.
+  function evOffer(server, p, tier) {
+    if (!VELDORA.ritual || typeof VELDORA.ritual.begin !== 'function') return false
+    try { if (VELDORA.ritual.active(p)) return false } catch (e) { return false }
+    if (!pickTarget(server, p)) return false      // nobody to offer. Do not ask.
+
+    return VELDORA.ritual.begin(p, {
+      colour: '§5§l',
+      lines: [
+        'They dare.',
+        'I can reach them. I only need you to not stop me.',
+      ],
+      options: [
+        { label: 'Do it.', id: 'yes' },
+        { label: 'Leave them.', id: 'no' },
+      ],
+      holdAfterChoice: 60,
+      onChoose: function (pl, id) {
+        if (id === 'yes') {
+          server.scheduleInTicks(20, function () {
+            try { sendSpiders(server, pl, tier) } catch (e) { }
+          })
+        } else {
+          // ⚠️ REFUSING COSTS NOTHING MECHANICALLY and she does not punish it. She
+          // is disappointed, and being disappointed by her is the entire price.
+          if (VELDORA.voice) VELDORA.voice.say(pl, GOD, 'medium_gift')
+          console.info(TAG + pl.username + ' refused her the kill')
+        }
+      },
+      onTimeout: function () { },
+    })
+  }
+
+  // ⭐ NO CHOICE. At high rage she has stopped asking.
+  function evWeb(server, p, tier) {
+    return sendSpiders(server, p, tier || 'high')
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // THE HARVEST
+  // THE HARVEST - she collects, and she is sorry about it
   // ═══════════════════════════════════════════════════════════════════════════
-  // Four gods COLLECT. Blade GRADUATES. harvest.js is a registry precisely so this
-  // may differ per god - decide which this one is before writing arrive().
+  var HARVEST_SCENE = [
+    'I\'m sorry about this.',
+    'My family grows restless.',
+    'They want to feast.',
+    'And I can\'t hold them back.',
+    'I want to. But...',
+  ]
 
   function harvestArrive(server, p) {
     if (!VELDORA.spawner) return false
-
-    // 🚨 REFUSE IF A SCENE IS ALREADY RUNNING. Do not push through it - the Speaker's
-    // confession holds a player blind and rooted for ~39s, and dropping a Harvest on
-    // them mid-scene is docs/41 invariant #11.
     try {
       if (VELDORA.ritual && VELDORA.ritual.active(p)) {
         console.info(TAG + 'Harvest held for ' + p.username + ' - already in a scene')
@@ -108,151 +372,133 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       }
     } catch (e) { }
 
-    var r = VELDORA.spawner.wave(p, {
-      ids: [ACTOR], count: 1, minDist: 12, maxDist: 20,
-      nbt: '{Tags:["' + ACTOR_TAG + '"],CustomNameVisible:1b,CustomName:' + Q +
-        '{"text":"TODO name me","color":"white","bold":true}' + Q + '}',
-    })
-    // 🚨 A HARVEST THAT DID NOT ARRIVE DID NOT HAPPEN. Returning false means
-    // harvest.js does NOT stamp it as begun, and the phase sweep retries.
-    if (!r || r.placed === 0) {
-      console.error(TAG + '!! Harvest actor FAILED to place for ' + p.username)
-      return false
+    var opened = false
+    if (VELDORA.ritual && typeof VELDORA.ritual.begin === 'function') {
+      opened = VELDORA.ritual.begin(p, {
+        colour: '§5§l', lines: HARVEST_SCENE, options: [],
+      })
     }
-    console.info(TAG + 'Harvest sent at ' + p.username)
+    // Timed off ritual.js's OWN constants: LEAD 20 + n x GAP 50 + TAIL 40.
+    var sceneEnd = opened ? (20 + (HARVEST_SCENE.length * 50) + 40) : 0
+    var spawnAt = sceneEnd + 40
+
+    server.scheduleInTicks(spawnAt, function () {
+      var r = VELDORA.spawner.wave(p, {
+        ids: ['born_in_chaos_v1:mother_spider'], count: 1, minDist: 12, maxDist: 20,
+        nbt: '{Tags:["' + ACTOR_TAG + '","' + HARVEST_TAG + '"],CustomNameVisible:1b,' +
+          'CustomName:' + Q + '{"text":"Her Family","color":"dark_purple","bold":true}' +
+          Q + '}',
+      })
+      // 🚨 A Harvest that did not arrive did not happen. harvest.js has already
+      // stamped this begun, so a failed placement must release the lock or the player
+      // sits in the harvest phase with nothing to fight.
+      if (!r || r.placed === 0) {
+        console.error(TAG + '!! Harvest FAILED to place for ' + p.username +
+          ' - releasing the lock so the sweep retries')
+        try { p.persistentData.putString('veldora_harvest_active', '') } catch (e) { }
+      }
+    })
+    console.info(TAG + 'Harvest scene opened for ' + p.username +
+      ' - hers arrives at ' + spawnAt + 't')
     return true
   }
 
-  // ⚠️ THE CLOSING LINES ARE DELAYED. They fire from a death hook, so undelivered
-  // they print ABOVE "X was slain by..." and read as commentary arriving too early.
-  // The god speaks after the world has finished saying what happened.
+  // Delayed, so she speaks AFTER the world has said what happened.
   function harvestWin(server, p) {
-    server.scheduleInTicks(20, function () { try { say(p, 'harvest_won') } catch (e) { } })
+    server.scheduleInTicks(20, function () {
+      try { if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'harvest_won') } catch (e) { }
+    })
   }
-
   function harvestLose(server, p) {
-    server.scheduleInTicks(20, function () { try { say(p, 'harvest_lost') } catch (e) { } })
+    server.scheduleInTicks(20, function () {
+      try { if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'harvest_lost') } catch (e) { }
+    })
   }
 
-  // Winning is killing it. The tag is how we know which corpse mattered.
   EntityEvents.death(function (event) {
     try {
-      var victim = event.entity
-      if (!victim || victim.player) return
-      var tags = null
-      try { tags = victim.tags } catch (x) { return }
-      if (!tags) return
-      var has = false
-      try {
-        has = tags.contains ? tags.contains(ACTOR_TAG) : (String(tags).indexOf(ACTOR_TAG) >= 0)
-      } catch (x) { return }
-      if (!has) return
+      var v = event.entity
+      if (!v || v.player) return
+      if (!hasTag(v, HARVEST_TAG)) return
       var killer = event.source ? event.source.player : null
       if (!killer) return
       if (VELDORA.harvest) VELDORA.harvest.resolve(killer.server, killer, true)
-    } catch (e) { console.warn(TAG + 'harvest kill hook threw :: ' + e) }
+    } catch (e) { }
   })
 
-  // Losing is dying to it. Dying AT ALL while a Harvest is active counts.
   EntityEvents.death(function (event) {
     try {
-      var victim = event.entity
-      if (!victim || !victim.player) return
-      if (!VELDORA.harvest || !VELDORA.harvest.active(victim)) return
-      VELDORA.harvest.resolve(victim.server, victim, false)
+      var v = event.entity
+      if (!v || !v.player) return
+      if (!VELDORA.harvest || !VELDORA.harvest.active(v)) return
+      var path = ''
+      try { if (VELDORA.paths) path = VELDORA.paths.pathOf(v) || '' } catch (x) { }
+      if (path !== GOD) return
+      VELDORA.harvest.resolve(v.server, v, false)
     } catch (e) { }
   })
 
-  // 🚨 AN UNWRITTEN GOD MUST BE INERT, NOT MERELY LOUD.
-  //
-  // The scaffold goes LIVE the instant it deploys - `[events] framework LIVE - 14
-  // events across 2 gods` - and a walker on this path would then start drawing
-  // placeholder events that spawn an actor and say NOTHING, because the voice pools
-  // are still empty. That is worse than an unbuilt god: it is a built one that
-  // appears broken.
-  //
-  // So registration is gated on the voice actually having lines. Write the pools in
-  // <god>_voice.js and this wires itself up on the next restart, with no flag to
-  // remember to flip - docs/41 §3, and the standing rule that a gate ships with a
-  // live consumer or not at all.
-  function voiceIsWritten() {
-    // Ask the god's OWN published count (set at script-eval time). Asking
-    // VELDORA.voice.pools here is a RACE - that registry fills inside a `loaded`
-    // handler that runs AFTER this one.
-    try {
-      if (VELDORA[GOD] && typeof VELDORA[GOD].written === 'number') {
-        return VELDORA[GOD].written > 0
-      }
-    } catch (e) { }
-    try {
-      var g = VELDORA.voice && VELDORA.voice.pools ? VELDORA.voice.pools[GOD] : null
-      if (!g) return false
-      for (var k in g) if (g.hasOwnProperty(k)) return true
-    } catch (e) { }
-    return false
-  }
+  ServerEvents.commandRegistry(function (event) {
+    var Commands = event.commands
+    function ADMIN(s) { try { return s.hasPermission(2) } catch (e) { return false } }
+    event.register(Commands.literal('rage').requires(ADMIN).executes(function (ctx) {
+      var p = ctx.source.player
+      if (!p) return 0
+      var n = null
+      try { if (VELDORA.counter) n = VELDORA.counter.get(p, GOD) } catch (e) { }
+      var t = null
+      try { if (VELDORA.wall) t = VELDORA.wall.tier(p) } catch (e) { }
+      var tgt = pickTarget(ctx.source.server, p)
+      p.tell(Text.of('§8§m                                        '))
+      p.tell(Text.of('§5§lRAGE §f' + (n === null ? 'UNREADABLE' : n) +
+        ' §8· tier §f' + (t || 'UNREADABLE')))
+      p.tell(Text.of('§8she would point at: §f' + (tgt ? tgt.username : 'nobody') +
+        (tgt ? ' §8(grudge ' + (GRUDGE[tgt.username] || 0) + ')' : '')))
+      p.tell(Text.of('§8pvp ' + (HOSTILE_TO_PLAYERS ? '§aON' : '§cOFF') +
+        ' §8· target health floor §f' + Math.round(TARGET_FLOOR * 100) + '%'))
+      p.tell(Text.of('§8rage: §f+1§8 per minion raised, §f-1§8 per minion slain'))
+      return 1
+    }))
+  })
 
   ServerEvents.loaded(function (event) {
+    if (!GATE) { console.info(TAG + 'GATED OFF'); return }
     if (!VELDORA.events) { console.error(TAG + 'godevents.js missing'); return }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // 🚨 HELD ON PURPOSE - THE SCAFFOLD'S EVENTS ARE WRONG FOR HER.
-    //
-    // The generated `example` event spawns a hostile actor AT the champion. For
-    // Blade that is the whole design. For the Spider it is a contradiction:
-    //
-    //   Ethan, 2026-08-15: "she will never send anything but boons to you.
-    //                       To other players? She spawns spiders to attack them."
-    //
-    // She is the first god whose NEGATIVE events do not point at her own champion,
-    // and the placeholder points them exactly there. Her voice is written, so the
-    // written-voice guard below would have let these through - "has lines" and "has
-    // correct events" are different claims and this file must not conflate them.
-    //
-    // WHAT SHE STILL NEEDS, before this flips:
-    //   * the rage counter (+1 per minion raised, -1 per minion slain)
-    //   * an audit of goety / occultism / automaticons for the actual boon items
-    //     (MineColonies was CUT - docs/35's premise is stale)
-    //   * Ethan's ruling on the player-vs-player half
-    //
-    // TO ARM: set EVENTS_READY = true once real events replace the three below.
-    var EVENTS_READY = false
-    if (!EVENTS_READY) {
-      console.warn(TAG + 'HELD - The Spider has a VOICE but not yet EVENTS. The ' +
-        'scaffold would send a hostile spider at her own champion, and she only ' +
-        'ever sends boons to hers. Needs the rage counter + a goety/occultism/' +
-        'automaticons item audit. See docs/43.')
-      return
-    }
-
-    if (!voiceIsWritten()) {
-      console.warn(TAG + 'HELD - The Spider has no written lines yet, so nothing is ' +
-        'registered. A walker on this path would have drawn silent placeholder ' +
-        'events. Fill the pools in wall_voice.js and restart; this arms itself.')
-      return
-    }
-
+    // ⭐ THE WEIGHTS AND TIERS *ARE* THE SLIDER. `offer` exists only at medium, so
+    // the band where she asks your permission opens as rage rises and closes again
+    // when it gets high - which is exactly "you slowly lose the ability to choose".
     VELDORA.events.register(GOD, {
-      id: 'example', run: evExample, hostile: true,
-      does: 'TODO(ethan): one plain sentence - what does this DO to the player?',
+      id: 'boon', run: evBoon, hostile: false, cooldown: 1, weight: 4,
+      tiers: ['low', 'medium', 'high'],
+      does: 'gives HER champion regeneration + absorption. She never sends anything ' +
+        'hostile at her own walker, at any rage',
     })
     VELDORA.events.register(GOD, {
-      id: 'quiet', run: evQuiet, hostile: false, cooldown: 1,
-      does: 'TODO(ethan): speaks only, no danger',
+      id: 'offer', run: evOffer, hostile: false, cooldown: 2, weight: 3,
+      tiers: ['medium'],
+      does: 'ASKS her champion permission to attack another player, via the ritual. ' +
+        'Refusing costs nothing but her approval. MEDIUM RAGE ONLY - she stops ' +
+        'asking once rage is high',
     })
     VELDORA.events.register(GOD, {
-      id: 'guarded', run: evGuarded, hostile: false, tiers: ['medium', 'high'],
-      does: 'TODO(ethan): what condition guards it, and what it does when it passes',
+      id: 'web', run: evWeb, hostile: false, cooldown: 2, weight: 3,
+      tiers: ['high'],
+      does: 'SENDS SPIDERS AT ANOTHER PLAYER, no choice. 5 buffed spiders (40hp, ' +
+        'fast, 6 dmg) at whoever has killed most of hers, else the nearest. Skips ' +
+        'anyone under 60% health or in a scene',
     })
 
     if (VELDORA.harvest) {
       VELDORA.harvest.register(GOD, {
         arrive: harvestArrive, onWin: harvestWin, onLose: harvestLose,
-        tag: ACTOR_TAG,     // resolve() removes it, WIN OR LOSE
+        tag: ACTOR_TAG,
       })
-    } else console.error(TAG + 'harvest.js missing - this god\'s Harvest will not arrive')
+    } else console.error(TAG + 'harvest.js missing - her Harvest will not arrive')
 
-    console.info(TAG + 'The Spider sends: example, quiet, guarded - SKELETON, ' +
-      'see docs/41 section 2 step 7. Actor: ' + ACTOR)
+    console.info(TAG + 'The Spider: boon (all tiers) / offer (MEDIUM - she asks) / ' +
+      'web (HIGH - no choice). Rage = +1 per minion raised, -1 per minion slain. ' +
+      'PvP ' + (HOSTILE_TO_PLAYERS ? 'ON' : 'OFF') + ', target floor ' +
+      Math.round(TARGET_FLOOR * 100) + '%.')
   })
 })();
