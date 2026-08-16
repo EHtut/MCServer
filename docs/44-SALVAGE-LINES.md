@@ -1,161 +1,582 @@
-# SALVAGE — everything she needs you to write
+# SALVAGE — the fill-in sheet
 
-**Every pool is empty and waiting.** Write into `salvage_voice.js` (the tags are
-already there in this order) or write here and hand it back.
+Write in the blanks, hand it back, I build it. Skip anything you like — blank pools
+stay blank rather than get filled by me.
 
-She boots saying so, on purpose:
-
-```
-[salvage] THE HOUND HAS NO VOICE - every pool is empty
-[salvev]  HELD - her EVENTS do not register
-```
-
-Her **trades still work** — `salvage.js` carries its own text — so the path is
-playable while you write.
+**She boots saying she has no voice, on purpose.** Her trades still work (`salvage.js`
+carries its own text), so the path is playable while you write.
 
 ---
 
-## Who she is *(already written, docs/27 — here so you don't have to look)*
+## Who she is *(already written — check it still reads true)*
 
-> **CANON:** *"Sneaky, bartering. Trade with her if you dare."*
+> **The Hound. The Wolf.** *"Sneaky, bartering. Trade with her if you dare."*
 >
-> **Coaxing, familiar, never quite honest.** Calls you *friend* — **twice at most**,
-> so it lands rather than becoming wallpaper. **Never states the full price up front
-> and never technically lies.**
+> Coaxing, familiar, **never quite honest**. Calls you *friend* — **twice at most**.
+> **Never states the full price up front and never technically lies.**
 >
 > **Wants:** to be needed. A dying player needs something, and needing is her trade.
 >
-> **Manipulates by** reframing every taking as a giving. She is not asking for your
-> levels, she is *holding them for you.*
+> **Manipulates by** reframing every taking as a giving — she is not asking for your
+> levels, she is *holding them for you*.
 >
-> **Never** threatens. Never resents a refusal — a dealer does not resent a customer
-> who walks out, she is simply certain they will be back.
->
-> **Canon lines:** *"Lets do a deal."* · *"Give me your hunger, and i'll give you
-> life."* · *"Give me your levels and i shall grant you ammo."* · *"Give me your
-> sight and i will grant you the power to kill."*
+> **Never** threatens, and never resents a refusal. A dealer does not resent a
+> customer who walks out. She is simply certain they will be back.
 
-**Harness** is her counter — deals struck. Low = she charges you 1.5× and pays 1×.
-High = 1× and 2×. **Her hold on you is a discount, not a threat.**
+Still right? ................................................................
+
+**Her counter is HARNESS** — deals struck. Low = she charges 1.5× and pays 1×. High =
+1× and 2×. **Her hold on you is a discount, not a threat.**
 
 ---
 
-# 1. WHOLE LINES — 16 pools
+# 1. GIFTS — she hands you something
 
-*Complete sentences. One is picked at random. 4–6 each is plenty; fewer is fine.*
-
-| pool | when it fires | notes |
-|---|---|---|
-| `low_gift` | she hands you something, early | you're a stranger |
-| `medium_gift` | ″, once you've dealt a few times | |
-| `high_gift` | ″, once you're worth keeping | |
-| `low_silence` | **you did well**, early | despite the name — it's the praise pool |
-| `medium_silence` | ″ | |
-| `high_silence` | ″ at high harness | ⭐ the rarest praise she has |
-| `deal_open` | a trade begins | includes *"Lets do a deal."* |
-| `deal_done` | a trade completes | ⚠️ **must not say what it cost** |
-| `deal_refused` | you said no | she does not mind. She is certain you'll be back |
-| `deal_poor` | you couldn't afford it | |
-| `harvest_won` | you beat what she sent | this **releases** you |
-| `harvest_lost` | it beat you | you stay hers |
-| `combat` | idle, while fighting | |
-| `hold_weapon` | idle, holding a weapon | her ammo business |
-| `hold_food` | idle, holding food | she'd take that off you |
-| `returned` | you logged in after 2+ days away | |
-
----
-
-# 2. FRAGMENTS — 8 pools, **opens × closes**
-
-**This is where the volume comes from.** The game joins one random *open* + one
-random *close* with a space, so 12 opens × 12 closes = 144 lines from 24 written.
-
-> ⚠️ **Every close must work after EVERY open in its own pool.** Keep them short and
-> self-contained. Hers are easy — a dealer's second sentence is usually a deflection,
-> and a deflection fits after anything.
-
-| pool | what it is | suggested size |
-|---|---|---|
-| `lore` | the world, through her eyes | 12 + 12 |
-| `blade` | what she says about **the Warrior** | 4 + 4 |
-| `wall` | ″ **the Spider** | 4 + 4 |
-| `forge` | ″ **the Goat** | 3 + 3 |
-| `art` | ″ **the Matriarch** | 3 + 3 |
-| `push` | urging you onward | 12 + 12 |
-| `idling` | just being there — **most-heard pool** | 12 + 12 |
-| `guidance` | ⭐ **how to progress on her path** | 6 + 6 |
-
-**`guidance` replaced the path guidebooks** (cut 2026-08-15). Hers is the only one
-that's also a sales pitch. Practical things worth saying: TaCZ guns need the right
-calibre, a double barrel holds two, ammo is the bottleneck, her three prices are
-hunger / levels / sight.
-
-> ⭐ **`blade` and `wall` matter more than their size suggests.** Blade already says
-> *"I despise that damnable god"* about the Spider, and she already answers. A
-> pathless player **overhears these two arguing**, each in their own colour. Whatever
-> you write here is half of a conversation someone can hear both sides of.
+### Early. You're a stranger and she's establishing a habit.
+```
+1.
+2.
+3.
+4.
+```
+### Mid. You've dealt a few times.
+```
+1.
+2.
+3.
+4.
+```
+### High. You're worth keeping.
+```
+1.
+2.
+3.
+4.
+```
 
 ---
 
-# 3. CONTEXT — 7 pools
+# 2. PRAISE — you did well
 
-*Whole lines, picked by where you're standing.*
-
-| pool | when |
-|---|---|
-| `loc_above` | idle, above ground |
-| `loc_below` | idle, underground |
-| `rare_loc_above` | ⭐ **15% roll — where she's a person, not a shop** |
-| `rare_loc_below` | ″ underground |
-| `near_blade` | a Blade champion is within 16 blocks |
-| `near_wall` | a Spider champion is |
-| `near_salvage` | another of hers is |
-
-⭐ **The `rare_` pools are the best writing in Blade and Wall.** His are *"I had a
-name in life once"*; hers are *"I carried a light once. It is not mine any more."*
-For the Hound: what does a dealer let slip? What was she owed and never collected?
-
----
-
-# 4. HER SPEAKER — below y −64
-
-**Each patron has a different voice at the bottom of the world.** Blade gets the
-Speaker (grey); the Spider gets the Doctor (light blue). **Salvage has none yet.**
-
-Below −64 her voice stops entirely and this one replaces it. Needed:
-
-| | |
-|---|---|
-| **who** | who meets a Hound champion down there, and what colour |
-| `intro` | 1–5 lines. Fires **once**, ever |
-| `common` | 8–10 lines |
-| `abandoned` | 3 lines — *she cannot reach you down here* |
-| **confession** | ⭐ **3 cutscenes**, 4–9 lines each |
-
-**The confessions are phase-paced** — stage 1 at `companion`, 2 at `absence`, 3 as
-the Harvest becomes due. So the last thing a player hears before something comes for
-them is stanza 3. Blade's ends *"Gregor, I am sorry."* The Doctor's ends *"Tell Mera
-that it's her time."*
-
-A line starting with `*` is **narration** — grey italic, describing the room or the
-player's body rather than the speaker talking.
+### Early
+```
+1.
+2.
+3.
+4.
+```
+### Mid
+```
+1.
+2.
+3.
+4.
+```
+### High ⭐ *the rarest thing she says. Blade's is near-silence; hers should be the moment she stops pricing you.*
+```
+1.
+2.
+3.
+4.
+5.
+6.
+```
 
 ---
 
-# 5. TWO THINGS ALREADY WRITTEN — do you want to redo them?
+# 3. THE DEAL ITSELF
 
-**Her introduction** (`docs/28-THE-SCENES.md` → generated into the game). Written in
-the 2026-08-12 pass, before the rewrites that changed Blade and the Spider. Arrival,
-demand, two options, accept, refuse.
-
-**Nine lines hardcoded inside `salvage.js`** — the trade responses: *"Hold the thing
-you want fed, friend."*, *"You are too poor even for me."*, *"My supplier let me
-down."* Those live in the trade code rather than a pool. Say the word and I'll lift
-them into pools so they're yours to edit.
+### She opens one *(includes your canon "Lets do a deal.")*
+```
+1.
+2.
+3.
+4.
+```
+### It completes ⚠️ *must NOT say what it cost*
+```
+1.
+2.
+3.
+4.
+5.
+```
+### You said no *(she doesn't mind — she's certain you'll be back)*
+```
+1.
+2.
+3.
+```
+### You couldn't afford it
+```
+1.
+2.
+3.
+```
 
 ---
 
-## Minimum to make her real
+# 4. ONE POOL PER EVENT — her seven
 
-`deal_open` · `deal_done` · `deal_refused` · one `*_gift` · `idling`. Everything
-else can come after you've heard her talk.
+*Blade has one per event too. This is where most of his 27 pools come from.*
+
+### `deal` — she opens her counter: hunger, levels or sight
+```
+1.
+2.
+3.
+```
+### `credit` — she gives now, writes it down. **A real debt.**
+```
+1.
+2.
+3.
+```
+### `collect` — she comes for the debt. Still pleasant about it.
+```
+1.
+2.
+3.
+```
+### `sample` — free. The first one always is.
+```
+1.
+2.
+3.
+```
+### `markup` — openly a bad rate. Low harness only. *She isn't cheating — that IS the stranger price.*
+```
+1.
+2.
+3.
+```
+### `tipoff` — free information. Good customers only. *The most suspicious thing she does.*
+```
+1.
+2.
+3.
+```
+### `insurance` — pay now, your next death hurts less
+```
+1.
+2.
+3.
+```
+### The policy pays out *(spoken when you die insured)*
+```
+1.
+2.
+```
+
+---
+
+# 5. HER HARVEST
+
+### It begins *(a held cutscene — blind, rooted)*
+```
+1.
+2.
+3.
+4.
+5.
+```
+### You won *(this **releases** you)*
+```
+1.
+2.
+3.
+```
+### You lost *(you stay hers)*
+```
+1.
+2.
+3.
+```
+
+---
+
+# 6. IDLE — situational
+
+### Above ground
+```
+1.
+2.
+3.
+4.
+```
+### Underground
+```
+1.
+2.
+3.
+4.
+```
+### ⭐ RARE, above ground — *where she's a person, not a shop. What was she owed and never collected?*
+```
+1.
+2.
+3.
+4.
+5.
+```
+### ⭐ RARE, underground
+```
+1.
+2.
+3.
+```
+### While fighting
+```
+1.
+2.
+3.
+```
+### Holding a weapon *(her ammo business)*
+```
+1.
+2.
+```
+### Holding food *(she'd take that off you)*
+```
+1.
+2.
+```
+### You came back after days away
+```
+1.
+2.
+3.
+```
+### A Blade champion is standing near you
+```
+1.
+2.
+```
+### A Spider champion is
+```
+1.
+2.
+```
+### Another of hers is
+```
+1.
+2.
+```
+
+---
+
+# 7. FRAGMENTS — **two halves that get joined**
+
+**This is where the volume comes from.** The game picks one line from the top box and
+one from the bottom box and joins them with a space. 12 + 12 = **144 lines**.
+
+> ⚠️ Every bottom line has to work after **every** top line in the same section. Keep
+> the bottom ones short — a dealer's second sentence is usually a deflection, and a
+> deflection fits after anything.
+
+## LORE — the world through her eyes
+**Openers**
+```
+1.
+2.
+3.
+4.
+5.
+6.
+7.
+8.
+9.
+10.
+11.
+12.
+```
+**Follow-ons**
+```
+1.
+2.
+3.
+4.
+5.
+6.
+7.
+8.
+9.
+10.
+11.
+12.
+```
+
+## PUSH — urging you onward
+**Openers**
+```
+1.
+2.
+3.
+4.
+5.
+6.
+7.
+8.
+9.
+10.
+11.
+12.
+```
+**Follow-ons**
+```
+1.
+2.
+3.
+4.
+5.
+6.
+7.
+8.
+9.
+10.
+11.
+12.
+```
+
+## IDLING — just being there. **Most-heard pool in the game.**
+**Openers**
+```
+1.
+2.
+3.
+4.
+5.
+6.
+7.
+8.
+9.
+10.
+11.
+12.
+```
+**Follow-ons**
+```
+1.
+2.
+3.
+4.
+5.
+6.
+7.
+8.
+9.
+10.
+11.
+12.
+```
+
+## GUIDANCE — ⭐ how to progress on her path. **This replaced the guidebooks.**
+*Hers is the only one that's also a sales pitch. Worth saying: TaCZ guns need the
+right calibre, a double barrel holds two, ammo is the bottleneck, her three prices
+are hunger / levels / sight.*
+**Openers**
+```
+1.
+2.
+3.
+4.
+5.
+6.
+```
+**Follow-ons**
+```
+1.
+2.
+3.
+4.
+5.
+6.
+```
+
+## WHAT SHE SAYS ABOUT THE OTHER FOUR
+
+> ⭐ **These are half of a conversation.** A player with no path **overhears two gods
+> arguing**, each in their own colour. Blade already says *"I despise that damnable
+> god"* about the Spider and she already answers back. Whatever you write here,
+> somebody will hear both sides of.
+
+### BLADE — the Warrior
+**Openers**
+```
+1.
+2.
+3.
+4.
+```
+**Follow-ons**
+```
+1.
+2.
+3.
+4.
+```
+### WALL — the Spider
+**Openers**
+```
+1.
+2.
+3.
+4.
+```
+**Follow-ons**
+```
+1.
+2.
+3.
+4.
+```
+### FORGE — the Goat
+**Openers**
+```
+1.
+2.
+3.
+```
+**Follow-ons**
+```
+1.
+2.
+3.
+```
+### ART — the Matriarch
+**Openers**
+```
+1.
+2.
+3.
+```
+**Follow-ons**
+```
+1.
+2.
+3.
+```
+
+---
+
+# 8. HER SPEAKER — below y −64
+
+**Each patron has a different voice at the bottom of the world.** Below −64 hers stops
+entirely and someone else talks instead. Blade gets *the Speaker* (grey). The Spider
+gets *the Doctor*, light blue, who is the goddess of death herself.
+
+**Salvage has nobody yet.**
+
+**Who meets a Hound champion down there?** ..................................
+
+**What colour?** ............................................................
+
+### The first thing they ever say *(fires once, ever)*
+```
+1.
+2.
+3.
+4.
+5.
+```
+### Ordinary lines down there
+```
+1.
+2.
+3.
+4.
+5.
+6.
+7.
+8.
+```
+### When they notice she can't reach you
+```
+1.
+2.
+3.
+```
+
+## The confession — ⭐ **three cutscenes**
+
+*Phase-paced: the first plays when you stop being new, the second when your god starts
+to lose patience, the third as the Harvest becomes due — so **stanza 3 is the last
+thing a player hears before something comes for them.** Blade's ends "Gregor, I am
+sorry." The Doctor's ends "Tell Mera that it's her time."*
+
+*A line starting with `*` becomes narration — grey italic, describing the room or the
+player's body instead of someone speaking.*
+
+### One
+```
+1.
+2.
+3.
+4.
+```
+### Two
+```
+1.
+2.
+3.
+4.
+```
+### Three *(ends on the line that lands hardest)*
+```
+1.
+2.
+3.
+4.
+5.
+```
+
+---
+
+# 9. HER INTRODUCTION — do you want to redo it?
+
+Her scene in `docs/28` is from the 2026-08-12 pass, **before** the rewrites that
+changed Blade and the Spider.
+
+Circle: **keep it** · **rewrite it**
+
+If rewriting — arrival, what she asks for, the two options, and what she says either
+way. *(`*` = narration.)*
+```
+arrival:
+1.
+2.
+3.
+4.
+
+the ask:
+1.
+2.
+
+options:   ............................  /  ............................
+
+if you accept:
+1.
+2.
+3.
+
+if you refuse:
+1.
+2.
+```
+
+---
+
+# 10. ANYTHING ELSE
+
+*Words she overuses. Things she'd never say. What she calls you. Nine of her trade
+responses are currently hardcoded in `salvage.js` — want those lifted into pools so
+they're yours to edit?*
+
+..............................................................................
+
+..............................................................................
+
+---
+
+**Minimum to make her real:** section 3 (the deal), one gift box, and IDLING.
+Everything else can come after you've heard her talk.
