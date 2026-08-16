@@ -54,6 +54,26 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   // ── the lines ──────────────────────────────────────────────────────────────
   var LINES = {
+    // ═══════════════════════════════════════════════════════════════════════
+    // 🔴 THE THREE ROWS THE TAXONOMY FOUND EMPTY (docs/23 §VI.0, built 2026-08-16)
+    //
+    // The MECHANICS are finished and registered. These pools are the only thing
+    // missing, and every one of those events REFUSES TO FIRE while its pool is
+    // empty - see hasVoice()/mute() in blade_events.js. That is deliberate: an
+    // event that runs mute is worse than one that waits, and voice.js's own rule is
+    // that a caller must never substitute its own text.
+    //
+    // Writing sheets - what each line has to DO - in docs/45-BLADE-LINES.md §12.
+    // TODO(ethan).
+    // ═══════════════════════════════════════════════════════════════════════
+    harden: [],           // forced: resistance + weakness. "Last. Do not win yet."
+    burden: [],           // forced: slowness. A handicap, and he is not sorry for it
+    wager_offer: [],      // he OFFERS one strong opponent. The ask itself
+    wager_won: [],        // you killed it. He pays - and paying is not praising
+    wager_declined: [],   // you said no to a fight. NOT fleeing; he asked
+    contract_offer: [],   // a kill order he ASKS for. {target} is substituted
+    contract_paid: [],    // you collected. The only time he settles a debt
+
     // ⭐ REBUILT 2026-08-15 FROM THE ACTUAL MOD GUIDES, and deliberately naming
     // no mod, no menu and no item id. A god does not know what a thing is called
     // in a wiki; it knows there is a shape you draw and something answers. If the

@@ -738,3 +738,101 @@ you would expect from a merge nobody finished.
    length rule. I have **not** moved it, because moving it before stage-three lines
    exist would leave high trust with nothing to say — which is worse than a wrong
    register. It moves when there is something to move it for.
+
+---
+
+# 12. 🔴 THE THREE EMPTY ROWS — mechanics built, lines wanted
+
+`docs/23` §VI.0 found that **seven of his eleven events were Challenges**, and that he
+had *nothing* in three categories rated at his top band. Those four events are now
+**built, registered and deployed** — and every one of them **refuses to fire** until
+its pool below is written.
+
+That is on purpose. An event that runs mute is worse than one that waits, and
+`voice.js`'s own rule is that a caller must never substitute its own text. `/events`
+will show them held, and the boot log names each empty pool.
+
+## Buffs — forced status effects · `++++` · he had none
+
+### `harden` — **5 lines**
+*He gives you **Resistance II and Weakness together**, 3 minutes, no choice.*
+You become hard to kill **and** slow to kill, so the fight has to last. This is his
+thesis as a status effect: **he does not want you to win quickly, he wants you to
+last.** ⚠️ This one **arms the release window** — dying with it on is a strike.
+```
+1.
+2.
+3.
+4.
+5.
+```
+
+### `burden` — **4 lines**
+*Slowness II, 90 seconds, no choice. A handicap, not a gift, and he is not sorry.*
+Pairs with `duel_fled` — he already despises running, and this removes the option.
+He should not explain himself here; explaining is stage two.
+```
+1.
+2.
+3.
+4.
+```
+
+## Duels — a wave you were ASKED about · `+++` · he had none
+
+> **The rule the whole taxonomy rests on: a choice always pays.** So this one carries
+> a prize — iron / steel / diamond by tier — and `harden` and `burden` do not.
+
+### `wager_offer` — **4 lines**
+*He offers one strong opponent. Say yes and The Wager arrives; kill it and it pays.*
+The ask itself. He is not selling it and he will not repeat it — compare
+`harvest_offer`, which is the only other place he offers rather than orders.
+```
+1.
+2.
+3.
+4.
+```
+
+### `wager_won` — **4 lines**
+*You killed it. He pays.* **Paying is not praising** — `high_silence` already owns
+approval. This is a debt settled, which is a colder thing.
+```
+1.
+2.
+3.
+4.
+```
+
+### `wager_declined` — **3 lines**
+*You said no.* 🚨 **Not fleeing.** `duel_fled` is contempt for running; **he asked
+this time**, and refusing an offer is allowed. Whatever this is, it is not that.
+```
+1.
+2.
+3.
+```
+
+## Contracts — a kill order he ASKS for · `+++` · he had none
+
+### `contract_offer` — **5 lines**
+*A kill order, offered rather than declared, on the same machinery as the Mark.*
+**`{target}` is substituted** with the player's name — use it. The difference from
+`mark_declare` is the whole point: that pool *commands* (*"Kill {target}. Do it before
+I forget I asked."*), this one **asks**, and asking is the generous branch.
+```
+1.
+2.
+3.
+4.
+5.
+```
+
+### `contract_paid` — **3 lines**
+*You collected.* The only time in the game he settles a debt. `mark_success` already
+covers the kill itself — this is the payment, and he should like it less than you do.
+```
+1.
+2.
+3.
+```

@@ -166,6 +166,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       } catch (e) { }
       if (VELDORA.voice) VELDORA.voice.say(killer, GOD, 'mark_success')
 
+      // ⭐ A CONTRACT is the same kill, bought rather than ordered - so it resolves
+      // through this exact hook and only differs in that it pays. docs/23 §VI.0.
+      // ⚠️ tierOf() does NOT exist in this file - blade_voice.js owns it and
+      // publishes VELDORA.blade.tier. Reading it any other way is how a null tier
+      // silently becomes 'low' and quietly underpays every contract.
+      try {
+        var kt = 'low'
+        try { if (VELDORA.blade && VELDORA.blade.tier) kt = VELDORA.blade.tier(killer) || 'low' } catch (x) { }
+        payContract(killer, kt)
+      } catch (e) { console.warn(TAG + 'payContract threw :: ' + e) }
+
       // The reward. Maintenance-grade and temporary - he does not hand out power
       // you did not earn (docs/40 PART 7).
       try {
@@ -966,6 +977,230 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return true
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ THE THREE EMPTY ROWS.  docs/23 §VI.0, built 2026-08-16.
+  //
+  // The taxonomy found that SEVEN of his eleven events were Challenges, and that he
+  // had NOTHING in three categories rated at his top band:
+  //
+  //     Duels      +++   wave spawns / CHOICE      -> `wager`
+  //     Buffs      ++++  status effects / FORCED   -> `harden`, `burden`
+  //     Contracts  +++   kill orders / CHOICE      -> `contract`
+  //
+  // The rule that separates the halves: A CHOICE ALWAYS PAYS. Forced events often
+  // pay nothing. So `wager` and `contract` carry a reward and `harden`/`burden` do
+  // not - the player is being told, and being told is the demanding branch.
+  //
+  // 🚨 EVERY LINE POOL BELOW SHIPS EMPTY. Ethan writes the dialogue; voice.js
+  // returns false for an empty pool and its own rule is that "callers must not
+  // substitute". So these events REFUSE TO FIRE until their lines exist, rather
+  // than running mute or wearing text I wrote. The boot log names every empty pool,
+  // and `/events` will show them held.
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // Does this god actually have something to say for this tag? An event that cannot
+  // speak must not consume its cooldown slot.
+  function hasVoice(p, tag) {
+    try {
+      if (!VELDORA.voice || typeof VELDORA.voice.line !== 'function') return false
+      var l = VELDORA.voice.line(GOD, tag, p)
+      return !!(l && String(l).length)
+    } catch (e) { return false }
+  }
+
+  function mute(id, tag) {
+    console.info(TAG + id + ' HELD - "' + tag + '" has no lines yet (TODO(ethan)). ' +
+      'The mechanic is built; it fires the moment the pool is written.')
+    return false
+  }
+
+  // ── BUFFS: forced status effects, no choice, no reward ─────────────────────
+  // ⚠️ `harden` ARMS the release window - it is a gift, and dying with his gift on
+  // is what release.js counts (docs/47). `burden` does NOT: it is a handicap, and
+  // punishing a player for dying under a penalty he imposed would be a trap.
+  var HARDEN_SECONDS = 180
+  var BURDEN_SECONDS = 90
+
+  function runHarden(server, p, tier) {
+    if (!hasVoice(p, 'harden')) return mute('harden', 'harden')
+    var name = '?'
+    try { name = String(p.username) } catch (e) { return false }
+    var ok = false
+    try {
+      // Resistance AND Weakness together: he makes you HARDER TO KILL and LESS able
+      // to kill, which forces a longer fight. That is the thesis as a status effect -
+      // he does not want you to win quickly, he wants you to last.
+      server.runCommandSilent('effect give ' + name + ' minecraft:resistance ' +
+        HARDEN_SECONDS + ' 1 false')
+      server.runCommandSilent('effect give ' + name + ' minecraft:weakness ' +
+        HARDEN_SECONDS + ' 0 false')
+      ok = true
+    } catch (e) { console.error(TAG + 'harden failed :: ' + e) }
+    if (!ok) return false
+    try {
+      if (VELDORA.release) VELDORA.release.armed(server, p, GOD, HARDEN_SECONDS * 20)
+    } catch (e) { }
+    VELDORA.voice.say(p, GOD, 'harden')
+    console.info(TAG + name + ' HARDENED - resistance II + weakness for ' +
+      HARDEN_SECONDS + 's (armed)')
+    return true
+  }
+
+  function runBurden(server, p, tier) {
+    if (!hasVoice(p, 'burden')) return mute('burden', 'burden')
+    var name = '?'
+    try { name = String(p.username) } catch (e) { return false }
+    try {
+      server.runCommandSilent('effect give ' + name + ' minecraft:slowness ' +
+        BURDEN_SECONDS + ' 1 false')
+    } catch (e) { console.error(TAG + 'burden failed :: ' + e); return false }
+    // 🚫 deliberately NOT armed - see the note above.
+    VELDORA.voice.say(p, GOD, 'burden')
+    console.info(TAG + name + ' BURDENED - slowness II for ' + BURDEN_SECONDS + 's')
+    return true
+  }
+
+  // ── DUELS: a wave you were ASKED about, and winning pays ───────────────────
+  var WAGER_TAG = 'veldora_blade_wager'
+  var WAGER_ACTOR = 'born_in_chaos_v1:fallen_chaos_knight'
+  // His own idiom, tiered the way his drop table is: carried metal, never armour.
+  var WAGER_PRIZE = {
+    low: ['minecraft:iron_ingot', 3],
+    medium: ['magistuarmory:steel_ingot', 2],
+    high: ['minecraft:diamond', 2],
+  }
+
+  function runWager(server, p, tier) {
+    if (!hasVoice(p, 'wager_offer')) return mute('wager', 'wager_offer')
+    if (!VELDORA.ritual || typeof VELDORA.ritual.begin !== 'function') return false
+    try { if (VELDORA.ritual.active(p)) return false } catch (e) { return false }
+    if (!VELDORA.spawner) return false
+
+    return VELDORA.ritual.begin(p, {
+      lines: [VELDORA.voice.line(GOD, 'wager_offer', p)],
+      // Functional, not characterful - two words a player clicks. If Ethan wants
+      // these in his voice they move into the pool like every other line.
+      options: [{ id: 'yes', label: 'Send it.' }, { id: 'no', label: 'No.' }],
+      holdAfterChoice: 40,
+      onChoose: function (pl, id) {
+        if (id !== 'yes') {
+          VELDORA.voice.say(pl, GOD, 'wager_declined')
+          return
+        }
+        var prize = WAGER_PRIZE[tier] || WAGER_PRIZE.low
+        var r = VELDORA.spawner.wave(pl, {
+          ids: [WAGER_ACTOR], count: 1, minDist: 10, maxDist: 16,
+          nbt: '{Tags:["' + WAGER_TAG + '"],CustomNameVisible:1b,CustomName:' + Q +
+            '{"text":"The Wager","color":"dark_red","bold":true}' + Q + '}',
+        }, function (placed) {
+          if (placed === 0) {
+            console.error(TAG + '!! wager placed NOTHING for ' + pl.username +
+              ' - they said yes to an empty field')
+          }
+        })
+        if (!VELDORA.spawner.issued(r)) {
+          console.warn(TAG + 'wager was REFUSED by the spawner for ' + pl.username)
+          return
+        }
+        // The prize rides on the ENTITY, not on a timer: kill it and it pays.
+        try { pl.persistentData.putString('veldora_wager_prize', prize[0] + ' ' + prize[1]) } catch (e) { }
+        console.info(TAG + pl.username + ' TOOK the wager (' + tier + ') - prize ' +
+          prize[1] + 'x ' + prize[0])
+      },
+      onTimeout: function () { },
+    })
+  }
+
+  // Winning the wager pays. A choice ALWAYS pays - that is the rule the whole
+  // taxonomy rests on, so this hook is the rule made real.
+  EntityEvents.death(function (event) {
+    try {
+      var e = event.entity
+      if (!e || e.player) return
+      var tags = null
+      try { tags = e.tags } catch (x) { return }
+      if (!tags) return
+      var has = false
+      try { has = tags.contains ? tags.contains(WAGER_TAG) : (String(tags).indexOf(WAGER_TAG) >= 0) } catch (x) { return }
+      if (!has) return
+      var killer = event.source ? event.source.player : null
+      if (!killer) return
+      var prize = ''
+      try { prize = killer.persistentData.getString('veldora_wager_prize') || '' } catch (x) { }
+      if (!prize) return
+      try { killer.persistentData.putString('veldora_wager_prize', '') } catch (x) { }
+      try { killer.server.runCommandSilent('give ' + killer.username + ' ' + prize) } catch (x) { }
+      VELDORA.voice.say(killer, GOD, 'wager_won')
+      console.info(TAG + killer.username + ' WON the wager - paid ' + prize)
+    } catch (err) { console.warn(TAG + 'wager death hook threw :: ' + err) }
+  })
+
+  // ── CONTRACTS: a kill order you were ASKED about, and it pays ──────────────
+  // Reuses the Mark's whole apparatus - K_TARGET, K_DUE, markSweep, and the death
+  // hook that resolves it - so there is ONE implementation of "kill that player by
+  // day N". The only new state is a flag saying this one was bought rather than
+  // ordered, which is what makes it pay.
+  var K_CONTRACT = 'veldora_mark_paid'
+  var CONTRACT_PRIZE = {
+    low: ['minecraft:iron_ingot', 4],
+    medium: ['magistuarmory:steel_ingot', 3],
+    high: ['minecraft:netherite_scrap', 1],
+  }
+
+  function runContract(server, p, tier) {
+    if (!hasVoice(p, 'contract_offer')) return mute('contract', 'contract_offer')
+    if (!VELDORA.ritual || typeof VELDORA.ritual.begin !== 'function') return false
+    try { if (VELDORA.ritual.active(p)) return false } catch (e) { return false }
+    // Already carrying a mark? One kill order at a time.
+    try { if ((p.persistentData.getString(K_TARGET) || '')) return false } catch (e) { }
+
+    var t = findTarget(server, p)
+    if (!t) return false                     // nobody to point at. Not a failure.
+    var today = dayNow(server)
+    if (today === null) return false
+    var tname = '?'
+    try { tname = String(t.username) } catch (e) { return false }
+
+    return VELDORA.ritual.begin(p, {
+      // ⚠️ voice.js has say/sayAbout and line, but NO `lineAbout` - and the ritual
+      // takes STRINGS, not a speak call, so the {target} substitution has to happen
+      // here. My first version probed for a lineAbout that does not exist and fell
+      // back to line(), which would have shown a player the literal text "{target}".
+      // Same substitution rule as sayAbout, deliberately.
+      lines: [String(VELDORA.voice.line(GOD, 'contract_offer', p) || '')
+        .split('{target}').join(tname)],
+      options: [{ id: 'yes', label: 'It is done.' }, { id: 'no', label: 'No.' }],
+      holdAfterChoice: 40,
+      onChoose: function (pl, id) {
+        if (id !== 'yes') return
+        try {
+          pl.persistentData.putString(K_TARGET, tname)
+          pl.persistentData.putInt(K_DUE, today + MARK_DAYS + 1)
+          pl.persistentData.putInt(K_CONTRACT, 1)
+        } catch (e) { return }
+        console.info(TAG + pl.username + ' SIGNED a contract on ' + tname +
+          ', due day ' + (today + MARK_DAYS))
+      },
+      onTimeout: function () { },
+    })
+  }
+
+  // Paid on resolution. The existing mark death-hook clears K_TARGET; this runs
+  // beside it and only pays when the kill was BOUGHT.
+  function payContract(killer, tier) {
+    var paid = 0
+    try { paid = killer.persistentData.getInt(K_CONTRACT) || 0 } catch (e) { return }
+    if (!paid) return
+    try { killer.persistentData.putInt(K_CONTRACT, 0) } catch (e) { }
+    var prize = CONTRACT_PRIZE[tier] || CONTRACT_PRIZE.low
+    try {
+      killer.server.runCommandSilent('give ' + killer.username + ' ' + prize[0] + ' ' + prize[1])
+    } catch (e) { return }
+    VELDORA.voice.say(killer, GOD, 'contract_paid')
+    console.info(TAG + killer.username + ' was PAID for the contract - ' +
+      prize[1] + 'x ' + prize[0])
+  }
+
   ServerEvents.loaded(function (event) {
     if (!VELDORA.events) { console.error(TAG + 'godevents.js missing'); return }
     // ═══════════════════════════════════════════════════════════════════════
@@ -1042,6 +1277,44 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       hostile: true, cooldown: 5, weight: 1,
       tiers: ['high'], run: runUnderstudy,
     })
+    // ═══════════════════════════════════════════════════════════════════════
+    // THE THREE ROWS THE TAXONOMY FOUND EMPTY (docs/23 §VI.0)
+    //
+    // ⚠️ WEIGHTS ARE PER-EVENT; HIS CHART IS PER-CATEGORY. He rates Challenges and
+    // Buffs both ++++, but he has SEVEN Challenges and two Buffs, so equal per-event
+    // weights would leave Challenges ~3.5x heavier than the chart asks for. These
+    // are set high (w4/w3) to close some of that, and the rest of the gap is a
+    // REBALANCE OF THE SEVEN CHALLENGES DOWNWARD, which is a separate pass and
+    // Ethan's call. Recorded here rather than fudged silently.
+    // ═══════════════════════════════════════════════════════════════════════
+    VELDORA.events.register(GOD, {
+      id: 'harden', run: runHarden, hostile: false, cooldown: 2, weight: 4,
+      tiers: ['low', 'medium', 'high'],
+      does: 'BUFF (forced) - resistance II AND weakness together, 3 min. He makes ' +
+        'you hard to kill and slow to kill, so the fight lasts. ARMS the release ' +
+        'window. HELD until the `harden` pool is written',
+    })
+    VELDORA.events.register(GOD, {
+      id: 'burden', run: runBurden, hostile: false, cooldown: 3, weight: 3,
+      tiers: ['medium', 'high'],
+      does: 'BUFF (forced) - slowness II for 90s, a handicap not a gift. Does NOT ' +
+        'arm the release window: punishing a death under a penalty he imposed would ' +
+        'be a trap. HELD until the `burden` pool is written',
+    })
+    VELDORA.events.register(GOD, {
+      id: 'wager', scene: true, run: runWager, hostile: true, cooldown: 3, weight: 3,
+      tiers: ['low', 'medium', 'high'],
+      does: 'DUEL (choice) - he OFFERS one strong opponent. Say yes and it arrives ' +
+        'tagged; kill it and it pays iron/steel/diamond by tier. A choice always ' +
+        'pays. HELD until the `wager_offer` pool is written',
+    })
+    VELDORA.events.register(GOD, {
+      id: 'contract', scene: true, run: runContract, hostile: false, cooldown: 4, weight: 3,
+      tiers: ['medium', 'high'],
+      does: 'CONTRACT (choice) - a kill order he ASKS for, on the same machinery as ' +
+        'the Mark, and it pays on success. HELD until `contract_offer` is written',
+    })
+
     VELDORA.events.register(GOD, {
       id: 'watcher', does: 'places a bounded, non-attacking presence near the player - it only watches',
       hostile: true, cooldown: 3, weight: 2,
