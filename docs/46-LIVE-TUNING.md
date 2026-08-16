@@ -21,6 +21,8 @@ python tools/serverctl.py restart
 | **suppression goes live** | wall and forge below 1.0 for the first time — the `checkSpawn` half has worked since it was written and nothing ever asked it for anything |
 | **Wall route 2** | 7 pathless days **+ killed by another god's champion** |
 | **cutscene budget** | scene events now cost 4 world days, quiet events still 1 |
+| **Wall's loot table** | rebuilt to her own guidance ladder — 3 Occultism + 3 Goety per tier, 6 per tier. Sealed floor now pays `raw_iesnium` / `dark_ingot` / `afrit_essence` / `soul_emerald` |
+| **`/help` pathless hints** | 4 of 7 lines were stale ("Six paths", "/path fixes that", the books, the stalker) |
 | **the 60s Arrival** | already loaded ✅ |
 | **pathless ambience** | already loaded ✅ |
 
@@ -71,7 +73,29 @@ means 30% of them are cancelled.
 0.7 reads as calm or as an empty world. Guards in place: monsters only, one duplicate
 per player per 40 ticks, never mid-scene.
 
-### 4. The things that have still never fired
+### 4. Wall's payout rate — 🆕 *measured, never played*
+
+`dropChanceFor()` is `(CHANCE_BASE + CHANCE_PER × notoriety) × dropCoeff`, **clamped
+to 1.0**. Wall's `drops` coefficient is **2.5**, so:
+
+| notoriety | raw | × 2.5 | actual |
+|---|---|---|---|
+| 0 | 0.250 | 0.625 | **62.5%** of kills |
+| 60 | 0.400 | 1.000 | **100%** — saturated |
+| 100 | 0.500 | 1.250 | 100% (clamp eats the rest) |
+
+**She pays out on every single kill from notoriety 60 onward.** That is why her table
+is six wide rather than three — the same firehose across more items. It is also why
+her sealed tier can hold `raw_iesnium` without being a mistake, and why it is the
+first thing to watch:
+
+**Watch for:** a champion who reaches the Other Place without ever going there. At
+notoriety 60+ a sealed-floor kill is `1/6 × 2–4` = ~0.5 raw iesnium, so **≈10 deep
+kills per 5 ingots.** If that reads as trivialising Occultism's mid-game, the fix is
+to cut `raw_iesnium` and `afrit_essence` from tier 2 — *not* to lower her coefficient,
+which is her whole character.
+
+### 5. The things that have still never fired
 
 `playtest.py` after the last session: **1 of 27 events fired.** That is correct for
 thirteen minutes, and it is also the number that matters — anything still at zero

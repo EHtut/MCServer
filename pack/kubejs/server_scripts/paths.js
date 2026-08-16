@@ -217,22 +217,68 @@
     wall: {
       name: 'The Wall',
       blurb: 'It wins nothing. It only refuses to lose.',
-      // The reinforcer is in tiers 2 AND 3 because it is the Wall's ENTRY item,
-      // not a reward for finishing it: every reinforced block in SecurityCraft
-      // bootstraps from one, and buried_tech disables all three of its recipes.
-      // Before this it was obtainable NOWHERE and the whole path was dead - see
-      // docs/20-AUDIT-2026-08-11.md B1. It stays a deep drop rather than becoming
-      // craftable again because it is modern tech, and modern tech is salvage.
-      // ⚠️ REWRITTEN 2026-08-15. Every tier here was SecurityCraft, which was cut in
-      // the A2 Wall audit - so the path's entire payout was items that cannot
-      // exist. Wall is Goety + Occultism now (the household of the living and the
-      // dead), and these ids are verified present in those jars.
+      // ═══════════════════════════════════════════════════════════════════════
+      // ⭐ HER TABLE IS HER OWN GUIDANCE, IN ORDER.  Ethan, 2026-08-16:
+      //     "wall should be a bit more specific with an emphasis on both
+      //      occultism and goety"
+      //
+      // Her eleven `guidance` lines in wall_voice.js are not flavour - they are
+      // the two mods' progression, in sequence, phrased so neither is named:
+      //
+      //   "Chalk first, love."                     -> occultism chalk + pentacle
+      //   "Small ones first."                      -> foliot before djinni
+      //   "Bind one into a book"                   -> book of binding
+      //   "The dead carry a kind of power in them" -> goety ectoplasm
+      //   "That power is the currency down here"   -> ectoplasm, literally
+      //   "A rod is only a rod until you seat
+      //    something in it"                        -> goety wand + focus
+      //   "What you seat in it decides what it
+      //    says. Collect them."                    -> the cores
+      //
+      // So the tiers below ARE that ladder: surface = the bootstrap she tells you
+      // to do first, below = the currency and the first real gear, sealed = the
+      // things that are otherwise a long grind. Three Occultism and three Goety in
+      // every tier, because she is the household of the living AND the dead and a
+      // tier that is all one mod reads as the wrong god.
+      //
+      // 🚨 WHAT IS DELIBERATELY *NOT* HERE. `occultism:otherstone` and the other
+      // otherworld blocks are invisible without the Third Eye, and that vision gate
+      // is the best mechanic Occultism has. She hands you the INGREDIENTS for the
+      // road to the goggles (datura seeds, silver), never the payoff behind the
+      // veil. Likewise `goety:dark_wand` is gone: a finished tool teaches nothing,
+      // and her own line is about what you SEAT in the rod, not the rod.
+      //
+      // ⚠️ SIX PER TIER IS NOT DILUTION HERE. One item is rolled uniformly, so a
+      // longer list DOES lower each item's share - but wall's drops coefficient is
+      // 2.5 and dropChanceFor() clamps at 1.0, so raw >= 0.4 saturates her: she
+      // pays out on EVERY kill from notoriety 60 onward. Six entries spread a
+      // firehose across six items instead of dumping all of it into four.
+      //
+      // Every id below was verified present in the installed jars AND confirmed to
+      // be consumed downstream - the ingredient-count pass, 2026-08-16. Not
+      // superficially: `goety:grave_dust` looked thematic and was cut because
+      // nothing in Goety actually crafts with it.
+      // ═══════════════════════════════════════════════════════════════════════
       drops: [
-        ['minecraft:iron_ingot', 'minecraft:copper_ingot', 'minecraft:redstone'],
-        ['minecraft:iron_ingot', 'occultism:chalk_white', 'minecraft:redstone_block',
-         'occultism:burnt_otherstone'],
-        ['goety:blackstone_soul_brazier', 'occultism:book_of_binding_empty',
-         'minecraft:diamond', 'goety:dark_wand'],
+        // surface - "Chalk first, love." The bootstrap for both mods, plus one
+        // vanilla anchor so a daylight kill is not always esoteric.
+        ['occultism:datura_seeds', 'occultism:chalk_white_impure',
+         'occultism:raw_silver', 'goety:ectoplasm', 'goety:savage_tooth',
+         'minecraft:iron_ingot'],
+        // below - "That power is the currency down here." No vanilla at all: this
+        // is the depth where she stops topping you up and starts teaching.
+        ['occultism:chalk_white', 'occultism:otherworld_essence',
+         'occultism:book_of_binding_empty', 'goety:ectoplasm',
+         'goety:cursed_ingot', 'goety:occult_fabric'],
+        // sealed - "The ones worth having will not come for a beginner's chalk."
+        // Every one of these is otherwise a dimension, a boss or a vault:
+        //   raw_iesnium    the Other Place, and the gate to mid-game Occultism
+        //   dark_ingot     NO recipe at all - treasure pouch / vault_unique only
+        //   soul_emerald   sorcerer drop / vault_unique
+        //   afrit_essence  a wild Afrit, or a high-tier ritual
+        ['occultism:raw_iesnium', 'occultism:spirit_attuned_gem',
+         'occultism:afrit_essence', 'goety:dark_ingot', 'goety:soul_emerald',
+         'goety:animation_core'],
       ],
     },
   }

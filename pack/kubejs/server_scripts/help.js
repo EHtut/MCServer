@@ -22,14 +22,29 @@
   var HINT_MAX = 72000            // 60 min
   var RECENT = 3                  // never repeat within this many hints
 
+  // ⚠️ FOUR OF THE SEVEN LINES HERE WERE WRONG (audited 2026-08-16, from a
+  // screenshot of the live game). Each was true when written:
+  //
+  //   "Six paths"                      -> five, and two of those are CLOSED
+  //   "/path fixes that"               -> you do not pick a god off a menu any
+  //                                       more, you are chosen (chosen.js)
+  //   "/guide hands you every book"    -> BOOKS ARE CUT
+  //   "Something is following you"     -> the stalker, RETIRED
+  //
+  // 🚨 AND THE WHOLE POOL OVERLAPPED pathless.js, which now owns what a pathless
+  // player hears - the body beats, the unreadable argument, the gods' verdicts. Two
+  // systems talking to the same silence, one of them describing a game that no
+  // longer exists.
+  //
+  // What is left is only what this file is actually FOR: durable world facts a
+  // player cannot infer, and which no god would bother to say. Atmosphere belongs to
+  // pathless.js; progression belongs to the `guidance` pool. This is the almanac.
   var PATHLESS = [
-    'You walk no path. Everything you kill pays you nothing. §f/path§7 fixes that.',
-    'Six paths. One walker each, first come. §f/path§7 to see what is still open.',
-    '§f/guide§7 hands you every book in this world. Most are better than this hint.',
-    'Your notoriety is the XP level you are carrying, plus the days. §f/path§7 shows it.',
-    'Something is following you. It is not hostile. Not yet.',
     'Iron is richest between y54 and y120 - and nothing hostile spawns above y40.',
     'Above y40 the dark is empty. Below y0 nothing holds it back. Choose your depth.',
+    'Your notoriety is the XP level you are carrying, and it rises on its own with the days.',
+    'Spending experience is the only thing that lowers notoriety.',
+    'Nothing has claimed you. Things are watching what you carry.',
   ]
 
   var HINTS = {
