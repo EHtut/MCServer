@@ -134,13 +134,20 @@ ok('blade beat-5 line is SUPPRESSED (it threatens a fall that cannot happen)', R
   ok('SURVIVING a gift resets the streak to zero', streak(b, 'blade'), 0)
   ok('and that death is not itself a strike', fell.length, 0)
 
-  // all the way this time
-  for (let i = 1; i <= 4; i++) {
+  // all the way this time.
+  // ⚠️ READ THE THRESHOLD FROM THE REGISTRY, do not hardcode it. This test asserted
+  // a literal 4 and failed the moment the taxonomy ruling moved Blade to 6
+  // (docs/23 §VI.0) - correctly, but for the wrong reason: it was testing the
+  // number rather than the behaviour. It now tests that N-in-a-row releases him,
+  // whatever N is.
+  const NEED = R.rules.blade.need
+  for (let i = 1; i <= NEED; i++) {
     R.armed(server, b, 'blade', 600)
     TICK += 100
     death(b)
   }
-  ok('the FOURTH consecutive buff-death releases him', fell, ['BladeWalker:blade'])
+  ok('buff-death #' + NEED + ' (the registry threshold) releases him',
+    fell, ['BladeWalker:blade'])
   ok('and the streak is cleared behind it', streak(b, 'blade'), 0)
 }
 

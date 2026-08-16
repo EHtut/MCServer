@@ -1290,6 +1290,115 @@ each **already hooked or one line.**
 
 # PART VI — THE EVENTS
 
+## ⭐ VI.0 — THE EVENT TAXONOMY *(Ethan, 2026-08-16 — the generalisation)*
+
+> **Every event any god will ever send is one of ten kinds.** Five mechanics × two
+> levels of agency. A god is then a **weight vector** over those ten, and that vector
+> IS the character — the same way `coefficients.js` makes a god a vector over
+> spawns/power/drops/phase.
+
+| | mechanic | **no choice** | **choice** |
+|---|---|---|---|
+| 1 | wave spawns | **Challenges** | **Duels** |
+| 2 | Minecraft status effects | **Buffs** | **Boons** |
+| 3 | hurt other players | **Invade** | **Attacks** |
+| 4 | help other players | **Aids** | **Support** |
+| 5 | kill orders | **Assassinations** | **Contracts** |
+
+### 🔑 The rule that makes agency mean something
+
+> **Choice always gives a reward.**
+> **No choice often gives none — or a debuff if you do not fulfil it.**
+
+So being *asked* is the generous branch and being *told* is the demanding one. A god
+who mostly commands is a god who mostly takes, and that falls out of the weights
+rather than needing to be written.
+
+### The weight chart — the per-patron dial
+
+`+` … `++++`. **The Warrior, as ruled 2026-08-16:**
+
+| kind | blade | wall | salvage | forge | art |
+|---|:--:|:--:|:--:|:--:|:--:|
+| **Challenges** *(wave / forced)* | **++++** | | | | |
+| **Duels** *(wave / choice)* | **+++** | | | | |
+| **Buffs** *(status / forced)* | **++++** | | | | |
+| **Boons** *(status / choice)* | **++++** | | | | |
+| **Invade** *(hurt others / forced)* | **++** | | | | |
+| **Attacks** *(hurt others / choice)* | **+** | | | | |
+| **Aids** *(help others / forced)* | **+** | | | | |
+| **Support** *(help others / choice)* | **+** | | | | |
+| **Assassinations** *(kill order / forced)* | **++** | | | | |
+| **Contracts** *(kill order / choice)* | **+++** | | | | |
+
+> **Blade's shape, in one sentence:** *"The Warrior focuses on you and really only
+> tests you. Most of his actions are forced, with little choice, as he seeks to test
+> you. He increases challenge as you go deeper."*
+
+The other four columns are **deliberately blank** — they get filled when each god is
+audited, not guessed at now.
+
+### 🚨 What the chart immediately found
+
+Mapping Blade's eleven built events onto it:
+
+| kind | he wants | he has |
+|---|:--:|---|
+| **Challenges** | ++++ | **7** — gauntlet · hollow · broken_rung · icarus · first_blood · duel · understudy |
+| **Duels** | +++ | **0** |
+| **Buffs** | ++++ | **0** |
+| **Boons** | ++++ | 1 — sharpen |
+| **Assassinations** | ++ | 1 — mark |
+| **Contracts** | +++ | **0** |
+
+**Seven of his eleven events are the same category, and he has zero of three things
+rated at his top band.** That is the real answer to "his events are the weakest" —
+they are not weak, they are *undifferentiated*. Nothing else in this document found
+that; the chart found it in a minute.
+
+Three consequences fall straight out:
+
+* **`duel` is misnamed.** It has no choice, so it is a **Challenge**. The Duels row is
+  genuinely empty.
+* **`mark` should be a Contract, not an Assassination.** He is `+++` on Contracts and
+  `++` on Assassinations, so kill orders are core to him — but *offered*, not declared.
+  (This also retires an earlier concern of mine that `mark` was off-thesis. It is not.)
+* **`tithe` has no home.** Doubling durability wear is not a wave, not a status effect,
+  and not player-targeted. See ruling A.
+
+### The three rulings — Ethan, 2026-08-16
+
+**A. 🚫 No taking items. Ever.**
+> *"No we don't take items from players, that is how you cause them to quit."*
+
+So there is **no eleventh pair.** Two things follow:
+
+* **Salvage is unaffected** — her prices are **live resources** (hunger, levels,
+  sight), never inventory, which `PART V` already required. A trade is a **Boon** whose
+  cost happens to be a resource. The taxonomy covers her as written.
+* **`tithe` is the casualty.** It degrades gear, which is the nearest thing in the game
+  to taking an item. Either cut it, or convert it into a real forced debuff — Mining
+  Fatigue, Weakness — which lands cleanly in **Buffs**, a row he is `++++` on and has
+  nothing in.
+
+**B. Targets are chosen by PLAYER PROXIMITY**, not by inter-god stance. Simple, already
+half-built (`wall_events.js` `pickTarget`), and no new state.
+
+> ⭐ And it is better in character than the stance idea it replaces. Blade will
+> sometimes **Aid the Spider's champion** because they were the one standing there —
+> and *that is the lie he tells about himself failing in public.* A god who despises
+> the Spider and helps her champion anyway is the brief working exactly as written.
+
+**C. The release streak moves, not the chart.**
+`Buffs ++++` means his armed window is open far more often, and `release.js` drops a
+player after **4 buff-deaths in a row**. Bending his weight vector to protect a
+mechanic would be backwards — **the vector is the character.** So the streak goes
+**4 → 6**, and the release stays as rare as it was designed to be.
+
+---
+
+## VI.1 — the original twelve-per-path sketch *(pre-taxonomy, kept for the ideas)*
+
 Twelve per path, early/cheap → late/expensive. `[M]` marks a non-obvious hook.
 **All delivered as bold red chat.**
 

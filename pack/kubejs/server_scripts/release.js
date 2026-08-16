@@ -70,7 +70,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     wall: { mode: 'never', speaksAtMax: true },
 
     blade: {
-      mode: 'streak', kind: 'buff_death', need: 4, speaksAtMax: false,
+      // ⚠️ 4 -> 6 on 2026-08-16, and the reason is not balance, it is the event
+      // taxonomy (docs/23 §VI.0). Blade's weight vector puts **Buffs at ++++**, so
+      // forced status effects become one of the commonest things he does - which
+      // means his armed window is open far more often than when this number was
+      // chosen, and a release designed to be nearly unreachable would start firing.
+      //
+      // Ethan's ruling was to move THIS rather than bend his weights: the vector is
+      // the character, and distorting a god's shape to protect a mechanic is
+      // backwards. If Buffs ever drop a band for him, this comes back down.
+      mode: 'streak', kind: 'buff_death', need: 6, speaksAtMax: false,
       // What the player sees. Grey system text, never dialogue - Ethan writes the
       // lines, and there is no voice tag for this beat yet. If he wants Blade to
       // speak here, the hook is speakOnStrike() below and it needs one tag name.
