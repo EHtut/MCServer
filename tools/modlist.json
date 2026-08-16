@@ -239,7 +239,6 @@
       "better-third-person": "1.9.0",
       "valarian-conquest": "4.2.1.1",
       "the-knocker": "1.5.2",
-      "obsessed": "1.5.1e",
       "server-side-horror": "1.21.1-neoforge-4.2",
       "frights-delight": "neoforge-1.21.1-1.4.8",
       "rottencreatures": "1.21.1-1.1.2",
@@ -945,7 +944,7 @@
           "create-aeronautics",
           "Buildable airships and planes - spectacular, still alpha",
           "risky"
-],
+        ],
         [
           "create-bionics",
           "Three fuelled robot animals. The Anole repels spiders and insects; the Oxhauler is a rideable pack mule. Added 2026-08-12 as a Forge-path boon - power the builder MANUFACTURES rather than is given",
@@ -1122,7 +1121,6 @@
           "major"
         ],
         [
-          "obsessed",
           "A stalker whose behaviour escalates with every encounter",
           "major"
         ],
@@ -1927,8 +1925,7 @@
         "Redundant once Superb Warfare, Vic's Point Blank, TaCZ and Create: Gunsmithing are in."
       ],
       [
-        "hollowsteve",
-        "Third boss-stalker; Obsessed and Kenny already cover escalating stalkers."
+        "hollowsteve"
       ],
       [
         "horror-faces",
@@ -2323,8 +2320,7 @@
         "F16. Figura 0.1.6 declares it incompatible with the reason 'This addon's features are already included in this Figura version!'. Adding it was my error; the mod's own manifest is the authority."
       ],
       [
-        "fungal-infectionspore",
-        "F43. Ethan, 2026-08-02: 'i kinda think we should get rid of spore... it breaks alot. for one there's a modern day lab at the spawn.'\n\n        The lab is the argument. The buried-tech thesis puts modern technology at the BOTTOM of the world as the reward for descending; Spore generates a modern laboratory at spawn, which inverts the pack's central progression on the first screen a new player sees. No config gates its structure generation.\n\n        It was restored by Ethan after the bloat cut and is being cut again knowingly - the horror roster keeps Grim and Bleak, The Knocker, The Obsessed, Distant Friends, Weeping Angels, Born in Chaos and Cataclysm, so the pillar survives losing it.\n\n        Nothing depends on it (checked all 229 server jars) and it pulls in no libraries of its own, so this is a clean one-mod removal."
+        "fungal-infectionspore"
       ],
       [
         "geore",
@@ -2383,8 +2379,7 @@
         "F31. Orphaned library - zero dependents anywhere; the mod that needed it was already cut."
       ],
       [
-        "kenny",
-        "F14. Same DEDICATED_SERVER crash. One stalker of six, and the least distinctive; The Knocker, Obsessed, The Skinwalker Hunt, Distant Friends and Weeping Angels remain."
+        "kenny"
       ],
       [
         "knight-quest",
