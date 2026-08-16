@@ -80,6 +80,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     }
     if (active(p)) return false               // one at a time, per champion
 
+    // ⭐ NOT HERE. Held, not failed - the sweep above brings it when they surface.
+    if (!aboveGround(p)) {
+      console.info(TAG + god + ' Harvest holds for ' + p.username +
+        ' - underground. It will come when they surface.')
+      return false
+    }
+
     var ok = false
     try { ok = !!h.arrive(server, p) } catch (e) {
       console.error(TAG + god + ' arrive threw :: ' + e)
@@ -123,14 +130,78 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         h.onLose(server, p)
       }
     } catch (e) { console.error(TAG + god + ' resolve threw :: ' + e) }
+    // 🚨 MARK IT DONE, or the retry sweep sends another one immediately: notoriety
+    // is still >= 100, so the phase is still `harvest`. Cleared when they drop out
+    // of the phase, so a future Harvest is still possible.
+    try { p.persistentData.putBoolean(K_DONE, true) } catch (e) { }
     console.info(TAG + god + ' Harvest resolved for ' + p.username + ' - ' +
       (won ? 'WON' : 'lost'))
     return true
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ ABOVE GROUND ONLY, AND IT WAITS FOR YOU (Ethan, 2026-08-15)
+  // ═══════════════════════════════════════════════════════════════════════════
+  //   "Harvests only occurring above ground."
+  //
+  // A Harvest is the god collecting you. Doing it in a corridor at y-90, where the
+  // patron cannot even reach you and a Speaker is talking instead, is the wrong
+  // room for it. So it HOLDS and fires the moment you surface - a delay, not a
+  // refusal, because a refusal would let a player dodge their Harvest forever by
+  // living in a cave.
+  //
+  // 🚨 THIS ALSO FIXES A LATENT BUG THAT PREDATES THE DEPTH RULE.
+  //
+  // `phase.js` calls begin() on the TRANSITION into harvest, and only then:
+  //     if (next === 'harvest' && prev !== 'harvest') { ... }
+  // Once the phase is stored as harvest the transition never repeats. So ANY failed
+  // arrival was permanent - the player sat in the harvest phase forever and nothing
+  // ever came. The "not marking it done, it will be attempted again" promise in
+  // begin() was relying on a retry that did not exist.
+  //
+  // This sweep IS that retry, and it is the only thing that makes the promise true.
+  var SWEEP = 200                            // 10s - responsive without being busy
+  var K_DONE = 'veldora_harvest_done'        // resolved for THIS phase-entry
+
+  function aboveGround(p) {
+    // Sky is the honest test: a deep ravine at y70 is still outside. Fall back to
+    // depth rather than guessing wrong in both directions.
+    try { return !!p.level.canSeeSky(p.block.pos) } catch (e) { }
+    try { return p.y >= 55 } catch (e) { }
+    return false                             // unreadable = do not collect them
+  }
+
+  function harvestSweep(server) {
+    try {
+      var players = server.players
+      for (var i = 0; i < players.length; i++) {
+        var p = players[i]
+        var path = ''
+        try { if (VELDORA.paths) path = VELDORA.paths.pathOf(p) || '' } catch (e) { continue }
+        if (!path) continue
+
+        var ph = ''
+        try { if (VELDORA.phase) ph = VELDORA.phase.of(server, p) || '' } catch (e) { continue }
+
+        // Left the harvest phase - clear the marker so a FUTURE harvest can happen.
+        if (ph !== 'harvest') {
+          try { if (p.persistentData.getBoolean(K_DONE)) p.persistentData.putBoolean(K_DONE, false) } catch (e) { }
+          continue
+        }
+        if (active(p)) continue
+        try { if (p.persistentData.getBoolean(K_DONE)) continue } catch (e) { }
+        if (!aboveGround(p)) continue        // hold. She waits.
+        try { if (VELDORA.ritual && VELDORA.ritual.active(p)) continue } catch (e) { }
+
+        begin(server, p, path)
+      }
+    } catch (e) { console.warn(TAG + 'sweep threw :: ' + e) }
+    server.scheduleInTicks(SWEEP, function () { harvestSweep(server) })
+  }
+
   VELDORA.harvest = {
     register: register, begin: begin, resolve: resolve, active: active,
-    handlers: HANDLERS,
+    handlers: HANDLERS, aboveGround: aboveGround,
   }
 
   ServerEvents.commandRegistry(function (event) {
@@ -187,11 +258,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // about to register three more. The numbers were not wrong when written; they
     // were written before the answer existed.
     // One tick is after every loaded handler and long before the first sweep.
+    harvestSweep(event.server)
     event.server.scheduleInTicks(1, function () {
       var gods = []
       for (var g in HANDLERS) if (HANDLERS.hasOwnProperty(g)) gods.push(g)
       console.info(TAG + 'VELDORA.harvest published OK - handlers: ' +
-        (gods.join(', ') || 'NONE YET'))
+        (gods.join(', ') || 'NONE YET') + '. ABOVE GROUND ONLY; a due Harvest ' +
+        'holds and retries every ' + SWEEP + 't until they surface.')
     })
   })
 })();

@@ -51,9 +51,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   //   -64 to -120    the deep works
   //  -120 to -128    THE SEALED FLOOR
   var CUTOFF_Y = -64
-  var CONFESSION_Y = -120           // the lowest level of the world
-  var CONFESSION_CHANCE = 0.10      // per sweep, at that depth
-  var CONFESSION_SWEEP = 1200       // 60s - so ~10 minutes SPENT on the floor
+  // ⚠️ NO LONGER A GATE. Confessions are phase-paced now (see below); this is kept
+  // only because it is the published `VELDORA.speaker.floor` and other systems and
+  // the /speaker readout still want to name the bottom of the world.
+  var CONFESSION_Y = -120           // the sealed floor, for reference
+  var CONFESSION_CHANCE = 0.10      // per sweep, once a stage is DUE
+  var CONFESSION_SWEEP = 1200       // 60s between rolls
   var CONF_GAP = 45                 // 2.25s between lines; these voices are halting
 
   var SPEAKERS = {}                 // path key -> speaker
@@ -297,27 +300,72 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return true
   }
 
-  // Eligible = has met them, has stages left, and is standing on the floor.
-  function confessionEligible(p) {
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ THE CONFESSIONS ARE PACED BY THE PHASE, NOT BY DEPTH (Ethan, 2026-08-15)
+  // ═══════════════════════════════════════════════════════════════════════════
+  //   "I kinda want to stage the confessions as something that happens right
+  //    before a harvest."
+  //
+  // They used to roll at 10% a minute while you stood at y-120, which meant the
+  // story was told to whoever camped the sealed floor longest and had NO relation
+  // to what was happening to that player. Riding `phase.js` instead ties each stage
+  // to how close the god is to collecting you:
+  //
+  //   stage 1 -> companion   the phase where you stop being new
+  //   stage 2 -> absence     the phase where the god starts to lose patience
+  //   stage 3 -> harvest     the phase that IS the Harvest
+  //
+  // So the last thing you hear before something comes for you is "Gregor, I am
+  // sorry" - or, if you walk with the Spider, "Tell Mera that it's her time."
+  // That line was written to be a herald. Now it is one.
+  //
+  // ⚠️ DEPTH STILL GATES *WHO*, NEVER *WHEN*. You must have gone below y-64 at
+  // least once to have MET them - the descent is still how you find these voices.
+  // But having met them, they will reach up to you. Her breaking her own silence to
+  // finish the story is the point, not a loophole.
+  var CONFESSION_PHASES = ['companion', 'absence', 'harvest']
+
+  function phaseRank(ph) {
+    if (ph === 'helper') return 0
+    if (ph === 'companion') return 1
+    if (ph === 'absence') return 2
+    if (ph === 'harvest') return 3
+    return -1                                  // unreadable is NOT 'helper'
+  }
+
+  // Eligible = has met them, has stages left, and has climbed far enough that the
+  // next stage is due.
+  function confessionEligible(p, server) {
     var s = speakerFor(p)
     if (!s || !s.confession) return false
     if (finished(p, s)) return false
     try { if (!p.persistentData.getBoolean(metKey(s))) return false } catch (e) { return false }
-    try { return p.y <= CONFESSION_Y } catch (e) { return false }
+
+    var ph = ''
+    try {
+      if (!server) server = p.server
+      if (VELDORA.phase) ph = VELDORA.phase.of(server, p) || ''
+    } catch (e) { return false }
+    var have = phaseRank(ph)
+    if (have < 0) return false                 // no phase = no pacing = say nothing
+
+    var stage = stageOf(p, s)
+    var need = phaseRank(CONFESSION_PHASES[stage] || 'harvest')
+    return have >= need
   }
 
-  // ⚠️ ITS OWN SWEEP, deliberately NOT the god's once-per-world-day idle cooldown.
-  // Riding that would have meant ~10 IN-GAME DAYS at the floor per stage, which is
-  // not rare, it is unreachable. This way each stage is ~10 real minutes SPENT down
-  // there - three expeditions, which is the thing being rewarded.
+  // The roll is still a roll - a stage that fired the instant a band changed would
+  // read as a cutscene bolted to a number. It should feel like she chose a moment.
   function confessionSweep(server) {
     try {
       var players = server.players
       for (var i = 0; i < players.length; i++) {
         var p = players[i]
-        if (!confessionEligible(p)) continue
+        if (!confessionEligible(p, server)) continue
         if (Math.random() > CONFESSION_CHANCE) continue
-        confess(p, 'y' + Math.round(p.y))
+        var ph = ''
+        try { if (VELDORA.phase) ph = VELDORA.phase.of(server, p) || '?' } catch (e) { ph = '?' }
+        confess(p, 'phase ' + ph)
       }
     } catch (e) { console.warn(TAG + 'confession sweep threw :: ' + e) }
     server.scheduleInTicks(CONFESSION_SWEEP, function () { confessionSweep(server) })
@@ -353,12 +401,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         p.tell(Text.of('§8no speaker for your path - below the cutoff you get SILENCE'))
         return 1
       }
-      p.tell(Text.of('§8down here you meet §f' + s.name + '§8 · floor §f' + CONFESSION_Y))
-      p.tell(Text.of('§8confession §f' + stageOf(p, s) + '§8/§f' + s.confession.length +
-        '§8: ' + (finished(p, s) ? '§7finished' :
-          (confessionEligible(p) ? '§aELIGIBLE, rolling ' +
-            Math.round(CONFESSION_CHANCE * 100) + '% every ' + CONFESSION_SWEEP + 't' :
-            '§8not eligible here'))))
+      var st = stageOf(p, s)
+      var nowPh = ''
+      try { if (VELDORA.phase) nowPh = VELDORA.phase.of(ctx.source.server, p) || '?' } catch (e) { nowPh = '?' }
+      p.tell(Text.of('§8down here you meet §f' + s.name))
+      p.tell(Text.of('§8confession §f' + st + '§8/§f' + s.confession.length +
+        '§8 · phase §f' + nowPh + '§8, next stage needs §f' +
+        (CONFESSION_PHASES[st] || 'harvest')))
+      p.tell(Text.of('§8  ' + (finished(p, s) ? '§7finished' :
+        (confessionEligible(p, ctx.source.server) ? '§aDUE - rolling ' +
+          Math.round(CONFESSION_CHANCE * 100) + '% every ' + CONFESSION_SWEEP + 't' :
+          '§8not yet - climb further'))))
       p.tell(Text.of('§8/speaker confess §7force the next §8· /speaker reset §7forget you'))
       say(p, 'common')
       return 1
@@ -418,9 +471,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     }
     confessionSweep(event.server)
     console.info(TAG + 'below y' + CUTOFF_Y + ' your god cannot reach you. ' +
-      names.length + ' speaker(s): ' + names.join(', ') +
-      '. Confessions at or below y' + CONFESSION_Y + ', ' +
-      Math.round(CONFESSION_CHANCE * 100) + '% per ' + CONFESSION_SWEEP + 't.')
+      names.length + ' speaker(s): ' + names.join(', ') + '.')
+    console.info(TAG + 'confessions are PHASE-PACED (' + CONFESSION_PHASES.join(' -> ') +
+      '), ' + Math.round(CONFESSION_CHANCE * 100) + '% per ' + CONFESSION_SWEEP +
+      't once due. You must have MET them below y' + CUTOFF_Y + ' first.')
     console.info(TAG + 'a path with no speaker gets SILENCE down there, not a stand-in.')
   })
 })();
