@@ -63,12 +63,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "Learn one weapon until it is boring. Then learn what it does that the others cannot.",
       "Every weapon swings its own way. A man who carries five has mastered none.",
       "You can roll out of a blow. Learn where that is bound before you need it.",
-      "The blade I gave you is too heavy for you. That is not a flaw, it is an instruction.",
-      "Strength is not a thing you are. It is a thing you drink. Find it.",
       "Nothing above the treeline will ever be worth killing. Go down.",
-      "Deeper corpses pay better. That is the only economy I respect.",
+      "Deeper corpses pay better. Descend, Champion.",
       "Armour is borrowed. A weapon in your hand is not. Carry your power where it cannot be raided.",
       "Two hands on it. Even that will not be enough yet.",
+      "Do not let short sightedness blind you. Master every blade.",
     ],
     low_gift: [
       "Take it. You're no use to me dead.",
@@ -86,7 +85,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "Move. The fight won't come to you.",
       "Enough standing. Fight.",
       "Find something and kill it.",
-      "Draw your blade. Now.",
+      "You are wasting time, Champion.",
       "There's no strength in waiting. Go.",
       "Something out there needs killing. Find it.",
       "You don't grow standing still. Move.",
@@ -134,7 +133,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // the lines that acknowledge without ever approving.
     high_silence: [
       "Noted.",
-      "That's... not nothing.",
+      "That's not nothing.",
       "Few make it this far.",
       "I've stopped worrying about you.",
       "You didn't need me for that one.",
@@ -277,7 +276,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       'You failed to matter today. Try not to make it a habit.',
       'The moment passed you by, as most do.',
       'Forget it. I already have.',
-    ],
+    ]
   }
 
   // -- COMBINATORIAL POOLS: one open + one close, joined within a tag --------
@@ -456,7 +455,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
             "Every idle moment is one you don't get back.",
             "Get moving."
         ]
-    },
+    }
   }
 
   // -- CONTEXTUAL IDLE POOLS -------------------------------------------------
@@ -478,7 +477,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           "I can feel your trepidation. Descend, champion.",
           "The Goat god and their champion are your path to sustenance. Lean on your allies.",
           "Be wary of the Wolf's deals, for one day she may offer you one. Deny her.",
-          "The Dreamwalker has led the Court for centuries. Do not mistake authority for power.",
+          "The Matriarch has led the Court for centuries. Do not mistake authority for power.",
           "The spider. I despise that damnable god. She is but a step away from the evil we fight against."
       ],
       "loc_below": [
@@ -494,30 +493,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           "I had a name in life once. That was centuries ago.",
           "I am a prisoner here, like you. Know that we fight for the same cause.",
           "The Spider and her consort... they are the closest to my kind. I cannot help but feel attachment.",
-          "What does the sun feel like on your skin? I barely remember."
+          "What does the sun feel like on your skin? I barely remember.",
+          "The Spider... Why can I hear her name?",
+          "The goat, he has caused thousands of atrocities and yet he was deemed worthy of ascension.",
+          "The Matriarch once led my kind. Once. Be wary of her champion."
       ],
       "near_salvage": [
           "The emissary of the wolf. Do not trust them.",
           "That one deals before they draw. Watch which they reach for first.",
           "Their might is respectable. Their patron is noise."
       ],
-      "near_forge": [
-          "It is only through the fires of industry that we are able to keep our march. Lean on them.",
-          "The engineer. Glory is not attained alone - use them.",
-          "That one builds what your arm cannot. Respect it."
-      ],
-      "near_art": [
-          "I have never trusted the goddess of magic. Their champion? Even less so.",
-          "She leads, and I follow. That does not mean I like her hand.",
-          "Magic answers to her. Keep your own answers closer."
-      ],
       "near_wall": [
           "The spider's underling. Keep distance from that one, lest they bore you.",
           "They fight with borrowed strength. Do not learn it from them.",
           "Mercy, dressed up as devotion. Walk on."
-      ],
-      "near_crown": [
-          "The spider's underling. Keep distance from that one, lest they bore you."
       ]
   }
 
@@ -530,7 +519,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       var t = tierOf(player)
       if (!t) return false
       return VELDORA.voice ? VELDORA.voice.say(player, GOD, t + '_' + kind) : false
-    },
+    }
   }
 
   ServerEvents.commandRegistry(function (event) {

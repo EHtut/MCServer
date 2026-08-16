@@ -5,33 +5,32 @@ numbers freely — the numbering is only for reading, nothing depends on it. I
 rebuild `blade_voice.js` from whatever comes back.
 
 Generated from the source 2026-08-16, so this IS what is in the game right now.
-**317 lines across 42 pools.**
+**312 lines across 39 pools.**
 
 > ### His thesis, so you can write against it
-WARRIOR — "Strength is the only apology I have left."
-He was the general and he survived. Every soft thing he ever did got someone killed, so he drills you toward unbreakable, because he broke. His lie: that he's hard. He isn't — he's a kind man performing the discipline he thinks would have saved his home. Sentences: imperative, clipped, no subordinate clauses. Again. Get up. Again. As he warms they get longer and start ending in questions, which is the tell. He never says "I'm sorry"; he says "you're not ready," and means the same thing.
+> **Borrowed strength is not strength.** It is the axis he judges everyone on —
+> you, the Spider, and the Spider's champion. His gifts are a scaffold he expects
+> you to throw away, and his highest praise is that you no longer need him to
+> speak. *"Carry your power where it cannot be raided."*
 
 > 🔴 marks something I think fights that thesis. ⭐ marks something that nails it.
-
 
 ---
 
 # 1. THE IDLE VOICE — what he says unprompted
 
-### `guidance` — 9 lines
+### `guidance` — 8 lines
 *idle, weight 2 — his standing advice on how to get stronger*
 
 ```
 1. Learn one weapon until it is boring. Then learn what it does that the others cannot.
 2. Every weapon swings its own way. A man who carries five has mastered none.
 3. You can roll out of a blow. Learn where that is bound before you need it.
-4. The blade I gave you is too heavy for you. That is not a flaw, it is an instruction. (Cut - this doens't make sense anymore)
-5. Strength is not a thing you are. It is a thing you drink. Find it. (What?)
-6. Nothing above the treeline will ever be worth killing. Go down.
-7. Deeper corpses pay better. Descemd, Champion.
-8. Armour is borrowed. A weapon in your hand is not. Carry your power where it cannot be raided.
-9. Two hands on it. Even that will not be enough yet. (My brother finds this line very funny)
-10. Do not let short sightedness blind you. Master every blade.
+4. Nothing above the treeline will ever be worth killing. Go down.
+5. Deeper corpses pay better. Descend, Champion.
+6. Armour is borrowed. A weapon in your hand is not. Carry your power where it cannot be raided.
+7. Two hands on it. Even that will not be enough yet.
+8. Do not let short sightedness blind you. Master every blade.
 ```
 
 ### `low_push` — 10 lines
@@ -79,7 +78,7 @@ He was the general and he survived. Every soft thing he ever did got someone kil
 5. She was banished down here for a reason, the goddess of death. We will remind her why.
 ```
 
-### `rare_loc_above` — 6 lines
+### `rare_loc_above` — 9 lines
 *15% roll BEFORE loc_above — put the lines where he is a person here*
 
 ```
@@ -680,21 +679,62 @@ the one patron who says nothing.
 Not gaps. Unreachable, so writing into them is wasted effort. Confirm and I
 remove them.
 
-### `near_forge` — 3 lines · Forge is CLOSED — nobody can walk it
+---
+
+# 10. 🧊 PARKED — removed from the code, kept here on purpose
+
+These three pools were deleted from `blade_voice.js` on 2026-08-16 because they
+**cannot fire**: Forge and Art are CLOSED so nobody can walk them, and Crown was
+retired on 2026-08-14. A pool that can never be selected is dead weight in the file.
+
+**But the writing is not dead.** The moment Forge or Art opens, Blade needs an opinion
+about their champion again — so the lines are parked here rather than left only in git
+history, where nobody would think to look for them.
+
+### `near_forge` — 3 lines · restore when Forge opens
+⭐ These are the only place he tells you to **cooperate**, and they matter: *"Glory is
+not attained alone"* is the one thing that softens him at low trust. `loc_above` also
+sends the player to lean on the Goat, so **that line is currently pointing at a god who
+does not exist** — the two should come back together.
 ```
 1. It is only through the fires of industry that we are able to keep our march. Lean on them.
 2. The engineer. Glory is not attained alone - use them.
 3. That one builds what your arm cannot. Respect it.
 ```
 
-### `near_art` — 3 lines · Art is CLOSED — nobody can walk it
+### `near_art` — 3 lines · restore when Art opens
+⚠️ Line 2 — *"She leads, and I follow. That does not mean I like her hand."* — is the
+clearest statement anywhere of his relationship to the Matriarch, and it agrees with
+`docs/15` ("the god of war defers to her without being asked"). Worth keeping whatever
+happens to the pool.
 ```
 1. I have never trusted the goddess of magic. Their champion? Even less so.
 2. She leads, and I follow. That does not mean I like her hand.
 3. Magic answers to her. Keep your own answers closer.
 ```
 
-### `near_crown` — 1 lines · Crown was RETIRED 2026-08-14
+### `near_crown` — 1 line · 🗑️ do NOT restore
+Crown is **retired**, not closed — he was merged into Wall, so this will never come
+back. The line is also a **verbatim duplicate** of `near_wall` line 1, which is what
+you would expect from a merge nobody finished.
 ```
 1. The spider's underling. Keep distance from that one, lest they bore you.
 ```
+
+---
+
+# 11. ⚠️ STILL NEEDS YOUR RULING
+
+1. **`guidance` contradicts itself.** Lines 1–2 say *learn one weapon* / *"a man who
+   carries five has mastered none"*. Your new line 8 says *"Master every blade."* Both
+   are in the pool right now and a player will hear both. One position has to go.
+2. **Art has three names in live use** — *the Nightmare* (canon station, `docs/15`),
+   *the Matriarch*, *the Dreamwalker*. `wall_voice.js` uses **two of them four lines
+   apart**. I changed only the one line you changed. Epithets are good for a pantheon;
+   three unexplained ones is drift. Pick which are deliberate.
+3. **Wall has the same dead pools** — `near_wall`, `near_forge`, `near_art`. I have not
+   touched her file; that is your writing and a separate pass.
+4. **The stage-three inversion.** `high_silence` reads as stage ONE under your own
+   length rule. I have **not** moved it, because moving it before stage-three lines
+   exist would leave high trust with nothing to say — which is worse than a wrong
+   register. It moves when there is something to move it for.
