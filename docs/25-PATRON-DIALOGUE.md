@@ -6,8 +6,8 @@
 > being the spider mother wants you to build a family, a web, like hers. Also
 > missionary is kinda a boring patron compared to the others."*
 >
-> **WALL absorbs him.** Her household holds the living (MineColonies citizens) and the
-> dead (Goety minions) — the colony IS the court IS the family IS the web.
+> **WALL absorbs him.** Her household is everything she raises and binds — Goety
+> servants, Occultism familiars, Automaticons. The court IS the family IS the web.
 >
 > ### Live paths: **Blade · Salvage · Forge · Wall · Art**
 >

@@ -1,5 +1,11 @@
 # The mod taxonomy — every path is its own modpack
 
+> ⚠️ **STALE ROWS: MineColonies and Theurgy are NOT in the pack** (verified against
+> `instance/mods/`, 2026-08-15). Any row below that assigns either of them to Wall
+> describes a plan, not the build. Wall's real roster is **Goety + Occultism +
+> Automaticons + the building palette**. See the banner on `35-WALL-REFRESH.md`.
+
+
 *Ethan, 2026-08-14: **"these mods for the other class hold a specific power in that
 they have progression and a mod they are based around... So no, lets define it like
 this. Each path should essentially be it's own modpack of content. We can add new

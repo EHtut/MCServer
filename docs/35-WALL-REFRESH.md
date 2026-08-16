@@ -1,5 +1,39 @@
 # Wall — the refresh. MineColonies.
 
+> # 🚨 THIS DOCUMENT IS BUILT ON TWO MODS THAT ARE NO LONGER IN THE PACK
+>
+> **Verified against `instance/mods/` on 2026-08-15** (219 jars):
+>
+> | claim in this doc | reality |
+> |---|---|
+> | MineColonies is Wall's base | **NOT INSTALLED** — nor `structurize`, `blockui`, `domum_ornamentum` |
+> | Theurgy stays with Wall as the resource half | **NOT INSTALLED** |
+>
+> Ethan, 2026-08-15: *"We don't have minecolonies anymore."*
+>
+> ### What Wall actually has
+> **Goety** (2 jars) · **Occultism** (1) · **Automaticons** (1), plus the building
+> palette (`chipped`, `framedblocks`, `handcrafted`, `macaws-*`, `medieval-buildings`,
+> `interiors`, `bellsandwhistles`).
+>
+> ### ⭐ What survives, and what it means
+> **§6 CROWN MERGES INTO WALL still stands** — that was Ethan's ruling and it is not
+> affected. What changes is the *argument* for it. The merge was justified by "the
+> colony IS the court IS the family IS the web", and there is no colony.
+>
+> **The household is simply everything she raises and binds**: Goety servants,
+> Occultism familiars, Automaticons. There is no living half any more — it is all
+> bound, all hers, none of it able to leave. Which is a colder idea than the original
+> and fits the Spider better than it fitted the Mother.
+>
+> ✅ **The code already assumes this.** Her rage counter is `+1 per minion raised, -1
+> per minion slain` (`wall_events.js`) — her family IS her minions, and it was built
+> that way before this correction was written.
+>
+> ⚠️ **§§1–5 below are kept as the reasoning trail, not as instructions.** Do not build
+> from them. Read `docs/43` for what she actually is.
+
+
 *Ethan, 2026-08-14: **"i do not think anyone will ever choose that path because
 security craft is not a good base... i got it wrong wall is a building/resource
 path"*** and then, cutting through a page of my wrong answers: **"I have an idea.

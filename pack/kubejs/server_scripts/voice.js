@@ -174,7 +174,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           }))))
   })
 
-  ServerEvents.loaded(function () {
+  // 🚨 REPORTED ONE TICK LATE, like godevents and harvest.
+  // ServerEvents.loaded fires in SCRIPT LOAD ORDER and this file sorts before every
+  // <god>_voice.js - so counting here counted only the gods that happened to load
+  // first. It printed "828 possible lines" on the boot where the Spider had just
+  // gained 624 of her own, because none of hers existed yet when it looked.
+  // One tick is after every loaded handler and long before anybody speaks.
+  ServerEvents.loaded(function (event) {
+    event.server.scheduleInTicks(1, function () { report() })
+  })
+
+  function report() {
     var gods = 0, tags = 0, total = 0
     for (var g in POOLS) {
       if (!POOLS.hasOwnProperty(g)) continue
@@ -190,5 +200,5 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       ' tag(s), ' + total + ' possible lines')
     if (!gods) console.warn(TAG + 'no pools registered yet - every god is silent ' +
       'through this file. That is the expected state until content lands.')
-  })
+  }
 })();

@@ -30,10 +30,13 @@ sitting.** Nothing here is a test; it's just the writing only you can do.
 > family, a web, like hers. Also missionary is kinda a boring patron compared to the
 > others."*
 >
-> **Her household holds the living AND the dead.** MineColonies citizens arrived and
-> stayed and cannot leave. Goety is necromancy. `15-LORE` says the same of you: you
-> cannot die. So her web is a settlement of people who cannot leave, tended by a mother
-> who also raises the ones who stopped moving.
+> **Her household is everything she raises and binds.** Goety servants, Occultism
+> familiars, Automaticons. `15-LORE` says you cannot die either — so her web is a
+> household of things that cannot leave, tended by someone who never could.
+>
+> ⚠️ **MineColonies was CUT**, so there is no living half any more. It is all bound,
+> all hers. Colder than the original idea, and it suits the Spider better than it
+> suited the Mother.
 >
 > She also inherited Crown's one social hook: **your colony supplies the server** —
 > which is exactly what a codependent wants, and no other path has it.
@@ -75,8 +78,7 @@ Blade counts enemies slain. Wall counts **the household growing**.
 
 Circle one, or write your own:
 
-**citizens in your colony** · **buildings raised** · **citizens + raised dead** ·
-**people you've fed**
+✅ **ANSWERED:** rage = **+1 per minion raised, −1 per minion slain.** Built.
 
 ..............................................................................
 
@@ -190,7 +192,7 @@ yours? What happened to it? Who is the consort Blade mentions?*
 
 ---
 
-### When a citizen dies *(if the counter drops — see §2)*
+### When one of hers is killed *(rage drops — see §2)*
 ```
 1.
 2.

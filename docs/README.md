@@ -15,8 +15,11 @@ rot."*** He was right — ten new documents were created in a single session.
 > build a family, a web, like hers. Also missionary is kinda a boring patron compared
 > to the others."*
 >
-> Wall's household holds the **living** (MineColonies citizens) and the **dead**
-> (Goety minions) — the colony IS the court IS the family IS the web.
+> Wall's household is everything she **raises and binds** — Goety servants, Occultism
+> familiars, Automaticons. The court IS the family IS the web.
+>
+> ⚠️ **MineColonies was CUT.** The merge was originally argued on a colony; that mod is
+> no longer in the pack (nor is Theurgy). `35-WALL-REFRESH.md` carries the correction.
 >
 > **Crown's writing is kept on purpose**, marked RETIRED in `27` and `28`, in case a
 > sixth patron is ever wanted. **Nothing is built from it and nothing new is written
