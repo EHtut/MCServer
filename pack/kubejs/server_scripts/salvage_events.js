@@ -124,6 +124,31 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
+  // 🚨 THREE OF HER EVENTS BREAK HER OWN RULE, AND ARE LEFT UNTAGGED TO SAY SO.
+  //
+  // Ethan, 2026-08-16: "She will never do anything without the player's permission."
+  // Her chart proves he means it - every FORCED row is blank and every CHOICE row is
+  // filled. She is the only god in the pantheon who cannot act ON you.
+  //
+  // But `collect`, `sample` and `tipoff` were written before that rule existed and
+  // none of them asks:
+  //
+  //   collect   TAKES 4 LEVELS to settle a debt. No prompt. The sharpest violation,
+  //             and the hardest to fix, because a debt you can decline is not a debt
+  //             - her whole credit loop leans on this one being non-optional.
+  //   sample    a free buff, unasked. "The first one's free" is perfect dealer
+  //             behaviour and still technically something done TO you.
+  //   tipoff    a free guidance line. Arguably not an action at all - she is only
+  //             talking - so this may belong in her idle pools rather than as an event.
+  //
+  // ⚠️ THEY ARE DELIBERATELY LEFT WITHOUT A `kind:`. Tagging `sample` as a Buff would
+  // have set its band to 0 and killed it silently, which is the exact failure this
+  // project keeps paying for. Untagged, they land in `misc` at the lowest band - they
+  // still fire, and godevents WARNS about them by name at every boot until they are
+  // ruled on. Loud and alive beats quiet and dead.
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // ═══════════════════════════════════════════════════════════════════════════
   // THE TRADES
   // ═══════════════════════════════════════════════════════════════════════════
 
@@ -499,12 +524,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var ALL = ['low', 'medium', 'high']
 
     VELDORA.events.register(GOD, {
-      id: 'deal', scene: true, run: evDeal, hostile: false, cooldown: 1, weight: wAlways(5), tiers: ALL,
+      id: 'deal', kind: 'boon', scene: true, run: evDeal, hostile: false, cooldown: 1, weight: wAlways(5), tiers: ALL,
       does: 'TRADE - opens her counter (salvage.js): hunger, levels or sight. Terms ' +
         'scale with harness',
     })
     VELDORA.events.register(GOD, {
-      id: 'credit', scene: true, run: evCredit, hostile: false, cooldown: 2, weight: wAlways(3), tiers: ALL,
+      id: 'credit', kind: 'boon', scene: true, run: evCredit, hostile: false, cooldown: 2, weight: wAlways(3), tiers: ALL,
       does: 'TRADE - strength now, a real debt written. One tab at a time',
     })
     VELDORA.events.register(GOD, {
@@ -517,7 +542,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         'at low harness',
     })
     VELDORA.events.register(GOD, {
-      id: 'markup', scene: true, run: evMarkup, hostile: false, cooldown: 2, weight: wPoor(3), tiers: ALL,
+      id: 'markup', kind: 'boon', scene: true, run: evMarkup, hostile: false, cooldown: 2, weight: wPoor(3), tiers: ALL,
       does: 'TRADE - resistance for 3 levels, openly a bad rate. Low harness only. ' +
         'She is not cheating; that IS the stranger price',
     })
@@ -527,7 +552,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         'the most suspicious thing she does',
     })
     VELDORA.events.register(GOD, {
-      id: 'insurance', scene: true, run: evInsurance, hostile: false, cooldown: 4, weight: wRich(3), tiers: ALL,
+      id: 'insurance', kind: 'boon', scene: true, run: evInsurance, hostile: false, cooldown: 4, weight: wRich(3), tiers: ALL,
       does: 'TRADE - 6 hunger now, and your NEXT death pays out resistance III + ' +
         'regeneration. She always keeps her word',
     })

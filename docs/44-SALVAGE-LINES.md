@@ -1,4 +1,136 @@
-# SALVAGE — the fill-in sheet
+# SALVAGE — THE WOLF
+
+## 0. ⭐ THE CHARACTER BRIEF — Ethan, 2026-08-16
+
+> ### Who she was
+> **Nobody.**
+>
+> A merchant. She moved goods between cities and was known, locally and mildly, for
+> being sharp — the sort of person who got a better price than she should have and
+> made you laugh about it. She was in the middle of a trade when the rift opened.
+>
+> **Why her, out of everyone alive, nobody knows. Including her.**
+>
+> ### ⚠️ THE MOST IMPORTANT NOTE IN THIS BRIEF
+> **Do not give her a secret identity later.** The pull will be strong — a hidden
+> lineage, a forgotten role, a reason. **Resist it.** The entire pantheon means
+> something different because one of the five is random, and the moment she turns out
+> to have been special all along, the other four stop being frightening and start
+> being *earned*. **Her emptiness is load-bearing.** It is the only thing in this
+> cosmology that tells the truth about how any of them got there.
+>
+> ### 🔑 THESIS
+> **"None of you were chosen. I'm just the only one who says so."**
+>
+> ### What she wants from the player
+> **To survive.** Not to win, not to descend, not to bring anything back. She is the
+> only patron who will **tell you to stop**, and the only one who considers quitting a
+> legitimate outcome. Merchant logic: take the deal, cut the loss, go home alive.
+>
+> That makes her **the least useful patron and the only trustworthy one**, and players
+> will work that out fast.
+>
+> ### 🚨 THE LIE
+> **That she doesn't care.** She cares enormously and finds it embarrassing.
+>
+> ### The arc — she gets more HONEST, not warmer
+> 1. **Transactional.** Deals, prices, dry jokes. Refuses to discuss godhood at all.
+>    Treats the whole arrangement as a job she didn't apply for.
+> 2. **Candid.** Admits she has no idea why she's a god. Starts genuinely liking the
+>    player and is **visibly irritated about it.**
+> 3. **Frightened.** Tries to get you out. Not dramatically — practically, the way
+>    you'd talk a friend out of a bad investment. And because **she has never once
+>    oversold you anything**, this is the only warning in the game that lands.
+>
+> ### Voice rules
+> * **Short.** Contractions. Trade vocabulary — *cost, worth, margin, cut your losses,
+>   that's a bad buy.*
+> * ⭐⭐ **She does not monologue. Cap her at three sentences** unless the player asks
+>   twice. The other four all sermonise; **she is the one who stops talking**, and that
+>   is her whole texture.
+> * **Jokes are deflection, always.** When she is not joking, pay attention.
+> * ⭐ She never says **chosen**, **destiny** or **fate** except to take the piss.
+> * ⭐ **She is the only god who asks the player questions about themselves.** None of
+>   the others are curious about you.
+>
+> ### Sample lines
+> **One** — *"Right. What do you want, and what've you got."* · *"I'm not going to tell
+> you you're special. You'd stop listening to everything else I said."* · *"That's a
+> bad buy. Put it down."*
+> **Two** — *"I sold fabric. That's the story. That's all of it. I've had a long time
+> to come up with a better one and I haven't."* · *"You want a reason. There isn't one.
+> I've looked."*
+> **Three** — *"Go home. I'm serious, and I'm not being clever."* · *"There's no
+> version of this where you get everything. Take a smaller number and leave."*
+> **The true line, flat** — *"I keep waiting for someone to come and tell me there's
+> been a mistake."*
+>
+> ### In the depths: **ANK**
+> He tried to save a merchant when the world came apart, and failed, and has been
+> carrying it ever since. **He does not know she ascended. He thinks she died in front
+> of him.**
+>
+> > **I couldn't reach her either.**
+>
+> ⭐ The devastating part is that **they agree.** Her thesis — *none of this is chosen,
+> survival is luck* — said lightly, as a joke, to keep it bearable. His is the same
+> sentence said in grief, by a man who is proof of it. **He is her argument, he is
+> mourning her, and neither of them knows.**
+>
+> > *"I had a hand on her. I want you to understand that I had a hand on her, and it
+> > didn't matter."*
+>
+> **GM note:** she has exactly one emotional lever and this is it. Nobody in the world
+> knew the Wolf. One person did, he is in the dark below, and he is wrong about how the
+> story ended. **Spend it once.**
+
+---
+
+## 0b. 🔑 HER CHART SAYS SOMETHING NO OTHER GOD'S DOES
+
+> *"She will never do anything without the player's permission."*
+
+Look at which rows are filled:
+
+| | **forced** | **choice** |
+|---|---|---|
+| wave spawns | Challenges **—** | Duels **++** |
+| status effects | Buffs **—** | Boons **++++** |
+| hurt others | Invade **—** | Attacks **+++** |
+| help others | Aids **—** | Support **+** |
+| kill orders | Assassinations **—** | Contracts **+++** |
+
+**Her entire column is the choice half of the taxonomy.** Every forced row blank,
+every chosen row filled. She is **the only god in the pantheon who cannot do anything
+*to* you** — every single thing she has is an offer.
+
+That is *"none of you were chosen"* rendered as a permissions model, and it is the
+cleanest thing the chart has produced for anybody.
+
+### 🚨 But three of her seven built events break it
+
+| event | what it does | why it breaks the rule |
+|---|---|---|
+| **`collect`** | **takes 4 levels** to settle a debt | no prompt. The sharpest violation — **and the hardest to fix**, because a debt you can decline is not a debt, and her whole credit loop leans on this one being non-optional |
+| **`sample`** | a free buff, unasked | *"the first one's free"* is perfect dealer behaviour and still something done **to** you |
+| **`tipoff`** | a free guidance line | arguably **not an action at all** — she is only talking. May belong in her idle pools rather than as an event |
+
+⚠️ **They are deliberately left without a `kind:`.** Tagging `sample` as a Buff would
+have set its band to `0` and **killed it silently** — the exact failure this project
+keeps paying for. Untagged they land in `misc` at the lowest band: they still fire, and
+`godevents` **warns about them by name at every boot** until they are ruled on. Loud
+and alive beats quiet and dead.
+
+### And four rated rows are empty
+
+`Duels ++` · `Attacks +++` · `Support +` · `Contracts +++` — **she has nothing in any
+of them**, which is more empty rows than Blade or Wall started with. **`Support` is the
+one worth noticing: no god in this game has ever helped another player, and she is the
+only one rated to.**
+
+---
+
+## 1. The fill-in sheet
 
 Write in the blanks, hand it back, I build it. Skip anything you like — blank pools
 stay blank rather than get filled by me.

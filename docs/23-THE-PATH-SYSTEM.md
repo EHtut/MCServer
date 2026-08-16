@@ -1320,16 +1320,16 @@ rather than needing to be written.
 
 | kind | blade | wall | salvage | forge | art |
 |---|:--:|:--:|:--:|:--:|:--:|
-| **Challenges** *(wave / forced)* | **++++** | **0** | | | |
-| **Duels** *(wave / choice)* | **+++** | **0** | | | |
-| **Buffs** *(status / forced)* | **++++** | **++++** 📉 | | | |
-| **Boons** *(status / choice)* | **++++** | **0** 🔒 | | | |
-| **Invade** *(hurt others / forced)* | **++** | **++++** 📈 | | | |
-| **Attacks** *(hurt others / choice)* | **+** | **++** ⛰️ | | | |
-| **Aids** *(help others / forced)* | **+** | **0** | | | |
-| **Support** *(help others / choice)* | **+** | **0** | | | |
-| **Assassinations** *(kill order / forced)* | **++** | **0** 🔒 | | | |
-| **Contracts** *(kill order / choice)* | **+++** | **+++** 📈 | | | |
+| **Challenges** *(wave / forced)* | **++++** | **0** | **0** | | |
+| **Duels** *(wave / choice)* | **+++** | **0** | **++** | | |
+| **Buffs** *(status / forced)* | **++++** | **++++** 📉 | **0** | | |
+| **Boons** *(status / choice)* | **++++** | **0** 🔒 | **++++** | | |
+| **Invade** *(hurt others / forced)* | **++** | **++++** 📈 | **0** | | |
+| **Attacks** *(hurt others / choice)* | **+** | **++** ⛰️ | **+++** | | |
+| **Aids** *(help others / forced)* | **+** | **0** | **0** | | |
+| **Support** *(help others / choice)* | **+** | **0** | **+** | | |
+| **Assassinations** *(kill order / forced)* | **++** | **0** 🔒 | **0** | | |
+| **Contracts** *(kill order / choice)* | **+++** | **+++** 📈 | **+++** | | |
 
 📉 fades as rage climbs · 📈 grows with it · ⛰️ peaks in the middle
 

@@ -466,8 +466,29 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       },
     },
 
-    // salvage: NOT FILLED IN. She keeps the legacy single-stage roll until Ethan
-    // rules on her column - see the note in the boot log.
+    // ═══════════════════════════════════════════════════════════════════════
+    // ⭐ THE WOLF — and her column says something no other god's does.
+    //
+    // Ethan, 2026-08-16: "She will never do anything without the player's
+    // permission." Look at which rows he filled:
+    //
+    //     FORCED   challenge · buff · invade · aid · assassination   ALL BLANK
+    //     CHOICE   duel ++ · boon ++++ · attack +++ · support + · contract +++
+    //
+    // 🔑 HER WHOLE COLUMN IS THE CHOICE HALF OF THE TAXONOMY. She is the only god
+    // in the pantheon who cannot do anything TO you - every single thing she has is
+    // an offer. That is "none of you were chosen" rendered as a permissions model,
+    // and it is the cleanest thing the chart has produced for anybody.
+    //
+    // Static bands, unlike Wall's. Her arc (transactional -> candid -> frightened)
+    // is a tone change, not a redistribution: a frightened merchant still trades,
+    // she just tells you not to. Her existing wPoor/wRich curves keep shaping the
+    // choice WITHIN a category, which is exactly where they belong.
+    // ═══════════════════════════════════════════════════════════════════════
+    salvage: {
+      challenge: 0, buff: 0, invade: 0, aid: 0, assassination: 0,   // never forced
+      duel: 2, boon: 4, attack: 3, support: 1, contract: 3,
+    },
   }
 
   function wallMood(p) {
