@@ -70,12 +70,23 @@
       'Your kills pay in grave dust, shadow essence and soul emeralds.',
       'Guard Villagers and Automaticons are the Crown too. Numbers are numbers.',
     ],
+    // ⚠️ REWRITTEN 2026-08-15. Every line here was about SecurityCraft - the
+    // reinforcer, the keypad, keycards - and SecurityCraft was CUT. A Wall player
+    // opening /help was being told, in detail, how to use items that cannot exist.
+    // Player-facing text is the last place stale content should survive, and it was
+    // the last place anyone looked.
+    //
+    // She is Goety + Occultism now, and the thing a new walker most needs to know is
+    // that her counter is a MOOD and it points at other people.
     wall: [
-      'You cannot craft the reinforcer. Find one deep - mineshafts, strongholds, the city.',
-      'One reinforcer turns ordinary stone into your wall. Everything else follows it.',
-      'A keypad is worthless if the wall beside it is ordinary stone.',
-      'Your kills pay in redstone, keycards and diamond.',
-      'The Wall wins nothing. It only refuses to lose. That is a real answer to creepers.',
+      'You raise the dead and bind spirits. Goety and Occultism are your path.',
+      'Every minion you raise pleases her. Every one that dies does not.',
+      'Her counter is RAGE. Low rage, she only ever helps you - /rage shows it.',
+      'High rage, she stops helping you and starts hurting everyone else.',
+      'In between, she asks your permission first. That window closes as rage climbs.',
+      'Your own death enrages her most. Quiet days settle her.',
+      'Your kills pay in chalk, soul braziers and binding books.',
+      'She will never let you go. Winning her Harvest is the only way out.',
     ],
   }
 

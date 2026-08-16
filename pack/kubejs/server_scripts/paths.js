@@ -74,17 +74,14 @@
   // the pack felt like "vanilla with worse mobs" was that nothing pointed
   // anywhere. Choosing a path is the one moment we KNOW a player is asking "so
   // what do I do now", so that is when the books arrive.
+  // 🪦 BOOKS ARE CUT (2026-08-15). Progression is taught by the gods now - the
+  // `guidance` pool for a walker, pathless.js for someone who has not chosen.
+  //
+  // The table is kept EMPTY rather than deleted, because the giving machinery below
+  // is harmless and this is where anyone would look to bring books back. It was
+  // never fair anyway: Blade and Salvage got none while Wall got two.
   const PATH_BOOKS = {
-    forge:   ['enchanting', 'banking'],
-    art:     ['ars', 'brews'],
-    // Blade and Salvage had 'monsters' (legendary_monsters, CUT in A6). Nothing
-    // installed replaces it - Cataclysm ships no guidebook - so they get NONE
-    // rather than a substitute that misdescribes their path. An empty list is
-    // honest; a wrong book is worse than no book.
-    salvage: [],
-    blade:   [],
-    crown:   ['goety'],
-    wall:    ['goety', 'spirits'],
+    forge: [], art: [], salvage: [], blade: [], crown: [], wall: [],
   }
 
   // How often to nudge someone who walks no path. Long enough not to nag, short

@@ -36,7 +36,33 @@ const FLAG = 'cc_guidebook_given'
 // A silent success is worse than an error; nothing in any log said a word.
 const BOOK = 'modonomicon:modonomicon[modonomicon:book_id="mcserver:veldora"] 1'
 
+// ═══════════════════════════════════════════════════════════════════════════
+// 🪦 RETIRED 2026-08-15. Ethan: "what if we cut books entirely and we deliver
+// hints through the dialogue? Mostly because books have been buggy."
+//
+// They have. A guidebook shipped an item id that no longer existed and KICKED THE
+// PLAYER on open; four more were found dead in the same audit. And the roster was
+// never fair to begin with - Blade and Salvage were handed NO books at all because
+// nothing installed described their path, while Wall got two.
+//
+// ⭐ THE ARGUMENT IS NOT "BOOKS ARE BUGGY", IT IS THAT WE ALREADY HAD A BETTER ONE.
+// `/veldora` is the book: it cannot crash a client, cannot be lost, dropped or
+// duplicated, and it is one edit to correct. Everything a book was for, a command
+// already does better - and the things a book could NEVER do, a god can:
+//
+//     books      handed to everyone, identical, silent, and immediately stale
+//     dialogue   arrives in your god's voice, at the moment it is relevant,
+//                and says different things depending on who you follow
+//
+// So progression hints move into the idle system: `guidance` for a walker, and
+// pathless.js for someone who has not chosen yet.
+//
+// TO REVIVE: set RETIRED = false.
+// ═══════════════════════════════════════════════════════════════════════════
+var RETIRED = true
+
 PlayerEvents.loggedIn(event => {
+  if (RETIRED) return
   const player = event.player
   if (!player) return
 

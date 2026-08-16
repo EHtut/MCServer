@@ -54,6 +54,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   // ── the lines ──────────────────────────────────────────────────────────────
   var LINES = {
+    // ⭐ GUIDANCE - how to progress on this path, in this god's voice.
+    // This is what REPLACED the path guidebooks (cut 2026-08-15). A book said
+    // the same thing to everyone and went stale silently; this arrives from the
+    // god you actually follow, and reads like advice from someone with an
+    // opinion about you rather than a wiki page.
+    guidance: [
+      "Better Combat is per weapon. Learn one properly, not five badly.",
+      "Combat Roll is bound in your controls. It is the difference between deep and dead.",
+      "Your kills pay in iron, bronze and eventually netherite. Kill deeper, get paid better.",
+      "Strength is not a stat. It is a potion, and you will need it for what I gave you.",
+      "Nothing above y40 will ever hurt you enough to be useful. Go down.",
+      "Carry your power on your body. A base can be raided. You cannot.",
+    ],
     low_gift: [
       "Take it. You're no use to me dead.",
       "Iron. Don't waste it standing still.",

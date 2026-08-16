@@ -42,7 +42,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var NEAR_RANGE = 16              // another champion this close is "with you"
 
   // Weighted: the rarer the moment, the better the line, so it wins more often.
-  var WEIGHT = { combat: 6, near: 5, hold: 2, loc: 1 }
+  // ⭐ `guidance` REPLACED THE PATH GUIDEBOOKS (cut 2026-08-15). It always applies -
+  // there is no situation in which "how do I progress" is irrelevant - but it sits
+  // at the BOTTOM of the weights on purpose. A hint every minute is a tutorial; a
+  // hint now and then is a god who happens to be thinking about your prospects.
+  var WEIGHT = { combat: 6, near: 5, hold: 2, loc: 1, guidance: 2 }
   var RARE_CHANCE = 0.15           // a rare sibling, when one exists
 
   var lastHurt = {}                // uuid -> world ticks
@@ -145,6 +149,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
     var l = locContext(p)
     if (l) out.push([l, WEIGHT.loc])
+
+    out.push(['guidance', WEIGHT.guidance])
 
     return out
   }

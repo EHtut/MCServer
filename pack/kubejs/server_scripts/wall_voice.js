@@ -47,6 +47,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // A `rare_<tag>` pool is rolled by idle.js at 15% BEFORE its common twin. Put the
   // lines where this god is a person in there, and nowhere else.
   var LINES = {
+    // ⭐ GUIDANCE - how to progress on this path, in this god's voice.
+    // This is what REPLACED the path guidebooks (cut 2026-08-15). A book said
+    // the same thing to everyone and went stale silently; this arrives from the
+    // god you actually follow, and reads like advice from someone with an
+    // opinion about you rather than a wiki page.
+    guidance: [
+      "Goety is yours. Chalk, a brazier, and something that used to be alive.",
+      "Occultism binds spirits. Start with a Foliot. It is the smallest thing that will listen.",
+      "Every one you raise pleases me. Please me often.",
+      "Your kills pay in chalk and soul braziers. Kill deeper for the rest.",
+      "Do not let them die, love. I feel every one.",
+      "The dark below is not a problem for us. We are what is in it.",
+    ],
     low_gift: [
       "Heal, love. Heal.",
       "Eat and feast, you need your strength.",
