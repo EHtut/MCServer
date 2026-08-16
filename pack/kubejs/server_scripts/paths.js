@@ -442,7 +442,9 @@
           : (!h ? '§a(open)' : (h === p.username ? '§6(yours)' : '§c(' + h + ')'))
         p.tell('  §e' + k + ' §8- §7' + PATHS[k].name + ' ' + tag)
       })
-      p.tell('§8One walker each. §f/path release§8 gives yours up.')
+      // Do NOT advertise /path release any more - it is admin-only, and a listed
+      // command that refuses you reads as a bug rather than a rule.
+      p.tell('§8One walker each, and a path is not something you set down.')
       p.tell('§8Hostile kills pay in your path. Deeper kills pay better.')
 
       // Notoriety belongs HERE, where players already look - not behind a command
@@ -463,7 +465,22 @@
       return 1
     })
 
-    root = root.then(Commands.literal('release').executes(ctx => {
+    // ═══════════════════════════════════════════════════════════════════════
+    // ⚖️ RELEASE IS AN ADMIN COMMAND. Ethan's ruling, 2026-08-15. Closes docs/40
+    // PART 9, which had been sitting open as "halfway considering".
+    //
+    // A choice you can walk back is not a choice. The introduction takes an XP
+    // toll, blinds you, roots you and tells you what you are now - and a free
+    // `/path release` undid all of it for nothing. It was also the largest
+    // remaining ACT-COMMAND after `/path <name>` (23 PART V.6), and Ethan's
+    // standing direction is that a player should be typing as little as possible.
+    //
+    // 🚨 THE EXITS ARE NOW: the fall (fall.js, live) · winning Blade's challenge
+    // (PART 8, blade only) · and ABSENCE, WHICH DOES NOT EXIST YET. Until absence
+    // ships, a walker who picks wrong has one slow exit and one admin. That is
+    // the known cost of this ruling, not an oversight - see docs/41.
+    // ═══════════════════════════════════════════════════════════════════════
+    root = root.then(Commands.literal('release').requires(ADMIN).executes(ctx => {
       const p = ctx.source.player
       if (!p) return 0
       // K2. Releasing mid-Harvest cancelled it for free: the stalker unbinds, the
