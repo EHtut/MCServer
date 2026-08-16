@@ -95,13 +95,41 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // 🚨 THE KILLER MUST HAVE A PATH. Being killed by a random player is a scuffle;
   // being killed by a GOD'S CHAMPION while you belong to nobody is the story. If
   // the killer is pathless too, nothing is stamped.
-  var WALL_DAYS = 3                // route 1: pathless days after a refusal
-  var WALL_LONG = 7                // route 2: pathless days before a killing counts
-  var K_STRUCK = 'veldora_wall_struck'   // a champion killed you while you had nobody
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔴 REWRITTEN 2026-08-16. Ethan: "lets remove the refused from the 7 day. and
+  // then getting killed by a pathless player on respawn has the wall offer."
+  // Confirmed: DROP THE DAY ROUTE ENTIRELY, and the killer may be ANYBODY - only
+  // the victim has to be pathless.
+  //
+  // ── WHY THE DAY ROUTES WENT ─────────────────────────────────────────────────
+  // Both of them were unreachable in practice and one was unreachable by accident.
+  //
+  //   · Route 1 needed hasRefused(), which reads `veldora_refused_<key>` - a key
+  //     introductions.js writes as a TICK DEADLINE for its one-day silence, not as
+  //     a boolean. It worked only because the stamp is never cleared on expiry, and
+  //     refusedUntil()'s clock-moved branch writes 0 back, which would have erased
+  //     "has ever refused" with no error at all. Wall's unlock was resting on
+  //     another file's cooldown storage.
+  //   · And you could not get a refusal to refuse: art unlocks off LAPIS, so the
+  //     closed god spends everybody's one offer within minutes of spawning.
+  //     Measured on the live world - both players carried offered_art=1.
+  //
+  // ── WHAT IS LEFT IS THE BEST TRIGGER IN THE SYSTEM ──────────────────────────
+  // Every other god notices you for something you ACHIEVED - you made a sword, you
+  // carried a crossbow. She notices you at the exact moment somebody put you in the
+  // dirt while you belonged to nobody. It is not a reward. It is the worst evening
+  // you have had, and she is the one who shows up.
+  //
+  // "They rejected you too. I won't." She is not lying, and now the game has
+  // watched it happen immediately before she says it.
+  //
+  // 🚨 THE KILLER IS NOT CHECKED, AND THAT IS DELIBERATE. The old rule required a
+  // GOD'S CHAMPION, which reads better and does not work: paths are exclusive on a
+  // four-player server, so on the live world exactly one player held a path and the
+  // only pathless player could not be killed by a champion he was not fighting.
+  // A rule nobody can satisfy is not a stricter rule, it is a dead one.
+  var K_STRUCK = 'veldora_wall_struck'   // somebody killed you while you had nobody
 
-  // ⚠️ The stamp happens WHENEVER it happens - before or after day 7 - and route 2
-  // simply needs both facts true. Requiring the order would make an early death
-  // silently worthless, and the player would never know why she did not come.
   EntityEvents.death(function (event) {
     if (!GATE) return
     try {
@@ -117,18 +145,80 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (!killer) return
       try { if (String(killer.uuid) === String(victim.uuid)) return } catch (e) { return }
 
-      var kPath = ''
-      try { if (VELDORA.paths) kPath = VELDORA.paths.pathOf(killer) || '' } catch (e) { return }
-      if (!kPath) return                  // a scuffle, not a champion
-
       try {
         if ((victim.persistentData.getInt(K_STRUCK) || 0) > 0) return
         victim.persistentData.putInt(K_STRUCK, 1)
       } catch (e) { return }
+      var kPath = ''
+      try { if (VELDORA.paths) kPath = VELDORA.paths.pathOf(killer) || '' } catch (e) { }
       console.info(TAG + '!! ' + victim.username + ' was killed by ' + killer.username +
-        ' (champion of ' + kPath + ') while walking no path - the Spider noticed')
+        (kPath ? ' (champion of ' + kPath + ')' : ' (who walks no path either)') +
+        ' while walking no path - the Spider noticed. She arrives ON RESPAWN.')
     } catch (err) { console.warn(TAG + 'struck hook threw :: ' + err) }
   })
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ SHE ARRIVES ON RESPAWN, not on the next sweep. Ethan's wording was "on
+  // respawn has the wall offer", and the beat is the whole point: you are standing
+  // at your bed with nothing, and that is when she speaks.
+  //
+  // ⚠️ THE COMBAT GATE HAD TO BE HANDLED OR THIS COULD NEVER FIRE. canBeOffered()
+  // refuses inside COMBAT_WINDOW of the last damage - and you were damaged a moment
+  // ago, by definition, because you died. Dying ENDS a fight, so the death clears
+  // the stamp rather than this route bypassing the check. That is correct for every
+  // other offer too, and it was a latent bug for all of them.
+  // ═══════════════════════════════════════════════════════════════════════════
+  var RESPAWN_DELAY = 100          // 5s - let the respawn screen clear first
+
+  PlayerEvents.respawned(function (event) {
+    if (!GATE) return
+    try {
+      var p = event.player
+      if (!p) return
+      var server = null
+      try { server = p.server } catch (e) { return }
+      if (!server) return
+
+      // The fight is over. See the note above.
+      try { delete lastHurt[String(p.uuid)] } catch (e) { }
+
+      if (!wasStruck(p)) return
+      if (isUnlocked(p, 'wall')) return
+
+      server.scheduleInTicks(RESPAWN_DELAY, function () {
+        try {
+          // Re-check everything at the moment it would actually land: five seconds
+          // is long enough to take a path, die again, or be put in a scene.
+          if (isUnlocked(p, 'wall')) return
+          if (!canBeOffered(server, p)) {
+            console.info(TAG + p.username + ' was struck but cannot be offered right ' +
+              'now - the sweep will pick it up')
+            unlock(p, 'wall')
+            return
+          }
+          if (!unlock(p, 'wall')) return
+          if (wallIsTaken(server)) {
+            console.warn(TAG + 'wall is already held - unlocked it for ' + p.username +
+              ' but NOT spending their one offer on a path they cannot take')
+            return
+          }
+          makeOffer(server, p, 'wall')
+        } catch (e) { console.warn(TAG + 'respawn offer threw :: ' + e) }
+      })
+    } catch (err) { console.warn(TAG + 'respawn hook threw :: ' + err) }
+  })
+
+  // Spending the ONE offer on a path somebody else holds would burn it for nothing
+  // - paths.js would answer "held by X" and the flag would already be stamped.
+  function wallIsTaken(server) {
+    try {
+      if (VELDORA.paths && typeof VELDORA.paths.holderOf === 'function') {
+        var h = VELDORA.paths.holderOf(server, 'wall')
+        return !!(h && String(h).length)
+      }
+    } catch (e) { }
+    return false                     // unreadable: let the offer happen
+  }
 
   function wasStruck(p) {
     try { return (p.persistentData.getInt(K_STRUCK) || 0) > 0 } catch (e) { return false }
@@ -152,10 +242,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return null
   }
 
-  function worldDay(server) {
-    var t = worldTicks(server)
-    return t === null ? null : Math.floor(t / 24000)
-  }
+  // (worldDay() went with driftDays() - nothing in this file counts days any more.)
 
   // ⚠️ UNREADABLE COUNTS AS IN COMBAT. If we cannot tell, we do not interrupt -
   // an offer that lands mid-fight is the one thing Ethan asked this to avoid, and
@@ -224,30 +311,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // introductions.js stamps veldora_refused_<key> when a scene is declined or
   // walked away from. Any of them present means this player has turned somebody
   // down, which is Wall's whole entry condition.
-  function hasRefused(p) {
-    var keys = ['blade', 'salvage', 'forge', 'art', 'wall', 'crown']
-    for (var i = 0; i < keys.length; i++) {
-      try {
-        if ((p.persistentData.getInt('veldora_refused_' + keys[i]) || 0) > 0) return true
-      } catch (e) { }
-    }
-    return false
-  }
-
-  function driftDays(server, p) {
-    var now = worldDay(server)
-    if (now === null) return null
-    var stored = 0
-    try { stored = p.persistentData.getInt(K_DRIFT) } catch (e) { return null }
-    if (!stored) {
-      try { p.persistentData.putInt(K_DRIFT, now + 1) } catch (e) { }
-      return 0
-    }
-    var since = stored - 1
-    // An admin ran /time set - re-stamp rather than reading ten thousand days.
-    if (since > now) { try { p.persistentData.putInt(K_DRIFT, now + 1) } catch (e) { } return 0 }
-    return now - since
-  }
+  // 🔴 hasRefused() and driftDays() are GONE (2026-08-16, with the day routes).
+  //
+  // hasRefused() read `veldora_refused_<key>`, which introductions.js writes as a
+  // TICK DEADLINE for its one-in-game-day silence. Treating a cooldown stamp as a
+  // boolean worked only because nothing clears it on expiry - and refusedUntil()'s
+  // clock-moved branch writes 0 back, which would have silently un-refused a player
+  // and broken Wall's unlock with no error anywhere. If a future route ever needs
+  // "has ever refused somebody", it gets ITS OWN KEY. Do not read that one.
+  //
+  // K_DRIFT is still WRITTEN below (the sweep clears it when you take a path) so
+  // existing player data stays coherent, but nothing reads it for an unlock now.
 
   // ═══════════════════════════════════════════════════════════════════════════
   // 1. THE UNLOCK - carrying the thing marks the path, whatever else is going on
@@ -263,20 +337,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (!carries(p, TRIGGERS[key])) continue
       if (unlock(p, key)) newly = newly || key
     }
-    // Wall unlocks by drifting, never by carrying. Two routes, either will do.
-    if (!isUnlocked(p, 'wall')) {
-      var d = driftDays(server, p)
-      if (d !== null) {
-        var route1 = hasRefused(p) && d >= WALL_DAYS
-        var route2 = wasStruck(p) && d >= WALL_LONG
-        if (route1 || route2) {
-          if (unlock(p, 'wall')) {
-            newly = newly || 'wall'
-            console.info(TAG + p.username + ' unlocked wall via ' +
-              (route2 ? 'ROUTE 2 - killed by a champion after ' + d + ' pathless days'
-                      : 'route 1 - refused someone, then drifted ' + d + ' days'))
-          }
-        }
+    // Wall unlocks by being KILLED while pathless, never by carrying. The offer is
+    // made on respawn; this is only the catch-up for a player who was struck while
+    // the respawn hook could not reach them (mid-scene, on a fall cooldown, or the
+    // server went down between the death and the respawn).
+    if (!isUnlocked(p, 'wall') && wasStruck(p)) {
+      if (unlock(p, 'wall')) {
+        newly = newly || 'wall'
+        console.info(TAG + p.username + ' unlocked wall - killed while walking no path ' +
+          '(caught by the sweep, not the respawn)')
       }
     }
     return newly
@@ -285,9 +354,27 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ═══════════════════════════════════════════════════════════════════════════
   // 2. THE OFFER - once, ever, and never mid-fight
   // ═══════════════════════════════════════════════════════════════════════════
+  // 🚨 A CLOSED GOD MUST NEVER SPEND SOMEBODY'S ONE OFFER. Measured on the live
+  // world 2026-08-16: BOTH players carried offered_art=1, because art's trigger is
+  // LAPIS LAZULI and art is closed. So the first god that ever noticed anyone was
+  // one of the two that then refuse them - "Something has noticed you", a scene,
+  // and a rejection, and the one offer is gone.
+  //
+  // Asked at the point of use rather than hard-coded here, so reopening a god is
+  // still the single edit in paths.js that it is meant to be.
+  function isClosed(key) {
+    try {
+      if (VELDORA.paths && typeof VELDORA.paths.isClosed === 'function') {
+        return !!VELDORA.paths.isClosed(key)
+      }
+    } catch (e) { }
+    return false                     // unreadable: behave as it did before
+  }
+
   function pendingOffer(p) {
     var keys = ['blade', 'salvage', 'forge', 'art', 'wall']
     for (var i = 0; i < keys.length; i++) {
+      if (isClosed(keys[i])) continue
       if (isUnlocked(p, keys[i]) && !wasOffered(p, keys[i])) return keys[i]
     }
     return null
@@ -369,15 +456,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         var k = keys[i]
         var u = isUnlocked(p, k)
         var o = wasOffered(p, k)
-        p.tell(Text.of((u ? '§a  unlocked ' : '§8  locked   ') + '§f' + k +
-          (u ? (o ? ' §8(offer made - use /path ' + k + ')' : ' §e(offer pending)') : '')))
+        var shut = isClosed(k)
+        p.tell(Text.of((shut ? '§8  CLOSED   ' : u ? '§a  unlocked ' : '§8  locked   ') +
+          '§f' + k + (shut ? ' §8(not built - makes no offers)'
+            : u ? (o ? ' §8(offer made - use /path ' + k + ')' : ' §e(offer pending)')
+              : ' §8(' + (TRIGGERS[k] ? 'carry ' + TRIGGERS[k][0].split(':')[1] : 'be killed while pathless') + ')')))
       }
-      var dd = driftDays(srv, p)
-      p.tell(Text.of('§8wall route 1: refused §f' + (hasRefused(p) ? 'yes' : 'no') +
-        '§8 + §f' + (dd === null ? '?' : dd) + '§8/' + WALL_DAYS + ' pathless days'))
-      p.tell(Text.of('§8wall route 2: struck by a champion §f' +
-        (wasStruck(p) ? 'yes' : 'no') + '§8 + §f' + (dd === null ? '?' : dd) +
-        '§8/' + WALL_LONG + ' pathless days'))
+      p.tell(Text.of('§8the Spider: killed while pathless §f' +
+        (wasStruck(p) ? 'YES - she is coming' : 'no') +
+        '§8. She arrives on your respawn.'))
       p.tell(Text.of('§8in combat: §f' + (inCombat(srv, p) ? 'yes - no offers now' : 'no')))
       return 1
     })
@@ -407,9 +494,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     schedule(event.server)
     var t = []
     for (var k in TRIGGERS) if (TRIGGERS.hasOwnProperty(k)) t.push(k + ':' + TRIGGERS[k][0])
-    console.info(TAG + 'YOU ARE CHOSEN - ' + t.join(', ') + '. WALL has no item: ' +
-      'route 1 = refused someone + ' + WALL_DAYS + ' pathless days, route 2 = ' +
-      "killed by another god's champion + " + WALL_LONG + ' pathless days.')
+    console.info(TAG + 'YOU ARE CHOSEN - ' + t.join(', ') + '. WALL has no item and ' +
+      'no timer: somebody kills you while you walk no path, and she makes her offer ' +
+      'ON YOUR RESPAWN (' + RESPAWN_DELAY + 't later). The killer is not checked.')
+    var shut = []
+    for (var ck in TRIGGERS) if (TRIGGERS.hasOwnProperty(ck) && isClosed(ck)) shut.push(ck)
+    if (shut.length) {
+      console.info(TAG + 'CLOSED, and therefore excluded from the one-time offer: ' +
+        shut.join(', ') + ' - they can no longer spend a player\'s only offer.')
+    }
     console.info(TAG + 'carrying it UNLOCKS the path forever; the offer fires ONCE, ' +
       'out of combat only (' + COMBAT_WINDOW + 't since damage). After that /path ' +
       'takes you back - and /path only lists what you have unlocked.')

@@ -456,6 +456,12 @@
       escrowHolder: escrowHolder,
       nameOf: function (key) { return (PATHS[key] && PATHS[key].name) || key },
 
+      // ⭐ PUBLISHED 2026-08-16 so chosen.js can stop spending a player's ONE offer
+      // on a god that will refuse it. CLOSED lived only in this file, so every
+      // other system believed art and forge were live - and art's trigger is lapis,
+      // which meant the closed god got to everybody first.
+      isClosed: function (key) { return !!CLOSED[key] },
+
       // ⭐ THE RELEASE, PUBLISHED. It existed as a private function that only the
       // (now admin-only) /path release command could reach - so blade_events'
       // harvestWin logged "released, and offered the stay" while releasing nothing
