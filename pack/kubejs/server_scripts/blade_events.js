@@ -969,7 +969,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       tiers: ['low', 'medium', 'high'], run: runBrokenRung,
     })
     VELDORA.events.register(GOD, {
-      id: 'sharpen', does: 'offers a BARGAIN via the ritual: Strength for 3 min, but everything nearby is drawn to you',
+      id: 'sharpen', scene: true, does: 'offers a BARGAIN via the ritual: Strength for 3 min, but everything nearby is drawn to you',
       hostile: false, cooldown: 2, weight: 2,
       tiers: ['low', 'medium', 'high'], run: runSharpen,
     })

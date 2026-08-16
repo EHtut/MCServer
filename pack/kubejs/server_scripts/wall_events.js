@@ -852,7 +852,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     })
 
     VELDORA.events.register(GOD, {
-      id: 'offer', run: evOffer, hostile: false, cooldown: 2, weight: wAsk(5), tiers: ALL,
+      id: 'offer', scene: true, run: evOffer, hostile: false, cooldown: 2, weight: wAsk(5), tiers: ALL,
       does: 'THE ASK - permission to attack another player, via the ritual. Refusable. ' +
         'Weight PEAKS in the middle of the rage range and vanishes at both ends',
     })

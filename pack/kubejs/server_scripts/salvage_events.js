@@ -435,12 +435,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var ALL = ['low', 'medium', 'high']
 
     VELDORA.events.register(GOD, {
-      id: 'deal', run: evDeal, hostile: false, cooldown: 1, weight: wAlways(5), tiers: ALL,
+      id: 'deal', scene: true, run: evDeal, hostile: false, cooldown: 1, weight: wAlways(5), tiers: ALL,
       does: 'TRADE - opens her counter (salvage.js): hunger, levels or sight. Terms ' +
         'scale with harness',
     })
     VELDORA.events.register(GOD, {
-      id: 'credit', run: evCredit, hostile: false, cooldown: 2, weight: wAlways(3), tiers: ALL,
+      id: 'credit', scene: true, run: evCredit, hostile: false, cooldown: 2, weight: wAlways(3), tiers: ALL,
       does: 'TRADE - strength now, a real debt written. One tab at a time',
     })
     VELDORA.events.register(GOD, {
@@ -453,7 +453,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         'at low harness',
     })
     VELDORA.events.register(GOD, {
-      id: 'markup', run: evMarkup, hostile: false, cooldown: 2, weight: wPoor(3), tiers: ALL,
+      id: 'markup', scene: true, run: evMarkup, hostile: false, cooldown: 2, weight: wPoor(3), tiers: ALL,
       does: 'TRADE - resistance for 3 levels, openly a bad rate. Low harness only. ' +
         'She is not cheating; that IS the stranger price',
     })
@@ -463,7 +463,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         'the most suspicious thing she does',
     })
     VELDORA.events.register(GOD, {
-      id: 'insurance', run: evInsurance, hostile: false, cooldown: 4, weight: wRich(3), tiers: ALL,
+      id: 'insurance', scene: true, run: evInsurance, hostile: false, cooldown: 4, weight: wRich(3), tiers: ALL,
       does: 'TRADE - 6 hunger now, and your NEXT death pays out resistance III + ' +
         'regeneration. She always keeps her word',
     })

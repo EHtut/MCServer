@@ -46,6 +46,27 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var TICK = 600                    // 30s between rolls
   var CHANCE = 0.08                 // per roll, per eligible champion
   var GLOBAL_COOLDOWN = 1           // world days between ANY two events for one player
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ A CUTSCENE IS NOT THE SAME COST AS A LINE.  Ethan, 2026-08-16:
+  //   "Event cutscenes should be rarer, normal dialogue should still be uncommon
+  //    so you aren't spammed."
+  //
+  // MEASURED, not guessed. In a 13-minute live session Lehykt took his path at
+  // 00:19:15 and blade/sharpen opened a SECOND held cutscene at 00:25:07 - six
+  // minutes later. The global cooldown is one world day (20 real minutes), so the
+  // ceiling was ~3 events an hour and ANY of them could root you in the dark.
+  //
+  // The flaw was treating both kinds as one budget. A boon is a line and a shrug; a
+  // ritual takes your screen, your movement and thirty seconds. So scenes now spend
+  // a SEPARATE, much longer cooldown on top of the shared one:
+  //
+  //     any event      1 world day    ~20 real minutes
+  //     a CUTSCENE     4 world days   ~80 real minutes
+  //
+  // Quiet events keep arriving at the old rate; the held ones become an occasion.
+  var SCENE_COOLDOWN = 4           // world days between two SCENE events, per player
+  var K_SCENE = 'veldora_ev_scene_'  // + god. Last world day a scene fired, +1
   var K_LAST = 'veldora_ev_'        // + god + '_' + id -> world day, offset by one
   var K_ANY = 'veldora_ev_any_'     // + god -> world day of the last event of any kind
 
@@ -116,6 +137,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // reading the log could not tell you whether a player's drops vanishing was
       // the game working or the game broken.
       does: (typeof ev.does === 'string' && ev.does) ? ev.does : null,
+      // ⭐ Does this event HOLD the player - blind, rooted, in a ritual? Those are
+      // the ones Ethan wants rare. Declared per event because only the event knows.
+      scene: !!ev.scene,
       run: ev.run,
     })
     return true
@@ -168,6 +192,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (ev.hostile && !wellEnough) continue   // THE FLOOR
       var since = daysSince(p, K_LAST + god + '_' + ev.id, today)
       if (since !== null && since < ev.cooldown) continue
+
+      // A scene spends the scene budget as well as its own.
+      if (ev.scene) {
+        var sSince = daysSince(p, K_SCENE + god, today)
+        if (sSince !== null && sSince < SCENE_COOLDOWN) continue
+      }
       if (ev.guard) {
         var ok = false
         try { ok = !!ev.guard(server, p) } catch (e) {
@@ -259,6 +289,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     }
     stamp(p, K_LAST + god + '_' + ev.id, today)
     stamp(p, K_ANY + god, today)
+    if (ev.scene) stamp(p, K_SCENE + god, today)
     console.info(TAG + p.username + ' <- ' + god + '/' + ev.id + ' (tier ' + e.tier +
       ') :: ' + (ev.does || 'NO DESCRIPTION - add a `does:` to its register() call'))
     return ev.id
@@ -352,8 +383,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   function report() {
     var n = 0, gods = 0
     for (var g in REG) { if (REG.hasOwnProperty(g)) { gods++; n += REG[g].length } }
+    var scenes = 0
+    for (var sg in REG) {
+      if (!REG.hasOwnProperty(sg)) continue
+      for (var si = 0; si < REG[sg].length; si++) if (REG[sg][si].scene) scenes++
+    }
     console.info(TAG + 'framework LIVE - ' + n + ' event(s) across ' + gods +
-      ' god(s), ' + Math.round(CHANCE * 100) + '% per ' + TICK + 't, one at a time')
+      ' god(s), ' + Math.round(CHANCE * 100) + '% per ' + TICK + 't, one at a time. ' +
+      scenes + ' of them are CUTSCENES (' + SCENE_COOLDOWN + ' world days apart, vs ' +
+      GLOBAL_COOLDOWN + ' for any event).')
     if (!n) console.warn(TAG + 'no events registered - nothing will ever fire')
 
     // ⭐ THE ROSTER, IN PLAIN ENGLISH. Printed at every boot so an admin reading the
@@ -367,7 +405,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         var ev = REG[gg][i]
         if (!ev.does) { missing.push(gg + '/' + ev.id); continue }
         console.info(TAG + '  ' + gg + '/' + ev.id +
-          ' [' + (ev.hostile ? 'hostile' : 'safe') + ', cd ' + ev.cooldown +
+          ' [' + (ev.scene ? 'SCENE, ' : '') + (ev.hostile ? 'hostile' : 'safe') +
+          ', cd ' + ev.cooldown +
           'd, w' + (typeof ev.weight === 'function' ? 'CURVE' : ev.weight) +
           ', ' + ev.tiers.join('/') + '] :: ' + ev.does)
       }
