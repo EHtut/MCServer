@@ -178,11 +178,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     event.register(root)
   })
 
-  ServerEvents.loaded(function () {
+  ServerEvents.loaded(function (event) {
     if (!GATE) { console.info(TAG + 'harvest GATED OFF'); return }
-    var gods = []
-    for (var g in HANDLERS) if (HANDLERS.hasOwnProperty(g)) gods.push(g)
-    console.info(TAG + 'VELDORA.harvest published OK - handlers: ' +
-      (gods.join(', ') || 'NONE YET'))
+    // 🚨 REPORTED ONE TICK LATE, ON PURPOSE.
+    // ServerEvents.loaded handlers fire in SCRIPT LOAD ORDER, and this file sorts
+    // before every <god>_events.js - so reporting here counted only the gods that
+    // happened to load first. It printed "11 events across 1 god" while Wall was
+    // about to register three more. The numbers were not wrong when written; they
+    // were written before the answer existed.
+    // One tick is after every loaded handler and long before the first sweep.
+    event.server.scheduleInTicks(1, function () {
+      var gods = []
+      for (var g in HANDLERS) if (HANDLERS.hasOwnProperty(g)) gods.push(g)
+      console.info(TAG + 'VELDORA.harvest published OK - handlers: ' +
+        (gods.join(', ') || 'NONE YET'))
+    })
   })
 })();

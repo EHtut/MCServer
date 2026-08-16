@@ -141,9 +141,29 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {{}};
 {pool_src}
   }}
 
+  // 🚨 COUNTED AT SCRIPT-EVAL TIME, NOT INSIDE ServerEvents.loaded.
+  //
+  // <god>_events.js has to know whether this god has a voice before it registers
+  // anything - and BOTH files do their work in `loaded`, which fires in SCRIPT LOAD
+  // ORDER. `<god>_events.js` sorts before `<god>_voice.js`, so the events file asked
+  // the voice registry a question the voice file had not answered yet, and every god
+  // booted HELD while simultaneously reporting all pools written.
+  //
+  // Publishing the count at eval time removes the race entirely: this runs when the
+  // file is READ, long before any loaded handler.
+  var WRITTEN = 0
+  var POOL_COUNT = 0
+  for (var _k in LINES) {{
+    if (!LINES.hasOwnProperty(_k)) continue
+    POOL_COUNT++
+    if (LINES[_k].length) WRITTEN++
+  }}
+
   VELDORA.{god} = {{
     tier: tierOf,
     colour: COLOUR,
+    written: WRITTEN,
+    pools: POOL_COUNT,
     // Speak whatever this tier calls for. Returns false if there is nothing - which
     // is a legitimate answer, not a failure.
     speak: function (player, kind) {{
@@ -383,6 +403,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {{}};
   // remember to flip - docs/41 §3, and the standing rule that a gate ships with a
   // live consumer or not at all.
   function voiceIsWritten() {{
+    // Ask the god's OWN published count, which is set at script-eval time by
+    // <god>_voice.js. Asking VELDORA.voice.pools here is a RACE - that registry is
+    // filled inside a `loaded` handler that runs AFTER this one.
+    try {{
+      if (VELDORA[GOD] && typeof VELDORA[GOD].written === 'number') {{
+        return VELDORA[GOD].written > 0
+      }}
+    }} catch (e) {{ }}
+    // Fall back to the registry, in case a hand-written god predates `written`.
     try {{
       var g = VELDORA.voice && VELDORA.voice.pools ? VELDORA.voice.pools[GOD] : null
       if (!g) return false

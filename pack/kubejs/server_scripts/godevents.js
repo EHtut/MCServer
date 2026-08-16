@@ -307,6 +307,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   ServerEvents.loaded(function (event) {
     if (!GATE) { console.info(TAG + 'event framework GATED OFF'); return }
     schedule(event.server)
+    // 🚨 REPORTED ONE TICK LATE, ON PURPOSE.
+    // ServerEvents.loaded handlers fire in SCRIPT LOAD ORDER, and this file sorts
+    // before every <god>_events.js - so reporting here counted only the gods that
+    // happened to load first. It printed "11 events across 1 god" while Wall was
+    // about to register three more. The numbers were not wrong when written; they
+    // were written before the answer existed.
+    // One tick is after every loaded handler and long before the first sweep.
+    event.server.scheduleInTicks(1, function () { report() })
+  })
+
+  function report() {
     var n = 0, gods = 0
     for (var g in REG) { if (REG.hasOwnProperty(g)) { gods++; n += REG[g].length } }
     console.info(TAG + 'framework LIVE - ' + n + ' event(s) across ' + gods +
@@ -332,5 +343,5 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       console.warn(TAG + 'NO DESCRIPTION on: ' + missing.join(', ') +
         ' - add a `does:` so the log says what they do')
     }
-  })
+  }
 })();

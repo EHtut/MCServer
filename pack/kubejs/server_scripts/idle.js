@@ -206,7 +206,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (VELDORA.speaker && VELDORA.speaker.active(p)) {
         if (VELDORA.speaker.say(p, 'common')) {
           if (now !== null) { try { p.persistentData.putInt(LAST_KEY + god, now + 1) } catch (e) { } }
-          console.info(TAG + p.username + ' <- the Speaker (below y' + VELDORA.speaker.cutoff + ')')
+          var who = 'a speaker'
+          try {
+            var sp = VELDORA.speaker.forPath ? VELDORA.speaker.forPath(p) : null
+            if (sp && sp.name) who = sp.name
+          } catch (e) { }
+          console.info(TAG + p.username + ' <- ' + who + ' (below y' + VELDORA.speaker.cutoff + ')')
           return 'speaker'
         }
         return null            // out of earshot and she had nothing: SILENCE

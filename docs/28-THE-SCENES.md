@@ -217,33 +217,45 @@ it and need no change.
 > delivery. A false history only holds if it is consistent past the scene that
 > introduced it.
 
-## WALL — The Mother
-*false history: **you left it open for me** · technique: **the shrinking ask***
+## WALL — The Spider
+
+*rewritten by Ethan 2026-08-15 · **obsession, not comfort** · technique: **we were both thrown away***
+
+> ⭐ **SHE IS NOT THE KINDEST PATRON ANY MORE, AND SHE NEVER REALLY WAS.** The old
+> scene played her as a mother offering warmth. Ethan's rewrite makes the actual engine
+> visible in the first four lines: **she has been alone for centuries and you are the
+> first thing that did not leave.** She is not offering you a family. She is asking you
+> not to go.
+>
+> The manipulation is the truest one in the game because it is not a lie: *they rejected
+> you too.* She is right, and she is the only one who says it.
+>
+> 🚨 **REFUSING HER KILLS YOU.** Ethan: *"Kill player* (Like seriously.)"* Every other
+> patron lets you walk away — Crown even respected it. She does not. That single
+> difference tells you everything about her that the lines do not, and it should never
+> be softened into damage or a curse. **You say no, and she takes it back.**
 
 **ARRIVAL**
-1. Oh. You finally turned around.
-2. I have been this close the whole time, love. You never noticed.
-3. Every wall you have ever set your hand to — I was already inside it, waiting for the rest of you to catch up.
-4. You left a seam for me once. A gap under a door. A stone set a little loose, so something could get through.
-5. I do not think you meant to leave it open. But you did, and I came through it, and I have been here since.
-6. I do not mind. I am good at waiting, darling.
+1. For centuries I have been alone.
+2. A god of five, but none in companionship.
+3. They rejected me. They cursed me. Barely allowed to say a word.
+4. But you? They rejected you too.
+5. I won't. I never will.
 
 **DEMAND**
-Let us start with something small between us.
-Not much. Barely anything at all.
-You will hardly know it left you.
+1. *You feel a presence against your ear. A faint whisper of unimaginable secrets.
+2. There. My truth.
+3. *You feel an urge to reach out.
 
-**OPTIONS** — `Let us be closer.` / `Not this. Not now.`
+**OPTIONS** — `Reach out.` / `Run.`
 
 **ON ACCEPTANCE**
-There. Do you feel that?
-Oh — I felt all of you, just then. Every bit of it.
-Lighter already, aren't you, love. That is exactly how it is supposed to feel.
+1. *You feel a hand press against yours. It folds inwards, clutching hard. It feels warm.
+2. I will never let you go.
 
 **ON REFUSAL**
-That is alright. That is alright.
-Next time I will ask for less. Just less than nothing, if that is easier for you.
-I can wait that long too. I have waited longer.
+1. *You trip on your feet as you back up. An intense scream fills your ears.
+
 
 **THE GIFT** *(block reinforcer)*
 Here — take this. Stone forgets how to break once you have touched it with this in your hand.

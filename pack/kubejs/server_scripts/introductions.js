@@ -140,31 +140,27 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     },
     wall: {
       arrival: [
-        "Oh. You finally turned around.",
-        "I have been this close the whole time, love. You never noticed.",
-        "Every wall you have ever set your hand to — I was already inside it, waiting for the rest of you to catch up.",
-        "You left a seam for me once. A gap under a door. A stone set a little loose, so something could get through.",
-        "I do not think you meant to leave it open. But you did, and I came through it, and I have been here since.",
-        "I do not mind. I am good at waiting, darling.",
+        "For centuries I have been alone.",
+        "A god of five, but none in companionship.",
+        "They rejected me. They cursed me. Barely allowed to say a word.",
+        "But you? They rejected you too.",
+        "I won't. I never will.",
       ],
       demand: [
-        "Let us start with something small between us.",
-        "Not much. Barely anything at all.",
-        "You will hardly know it left you.",
+        "*You feel a presence against your ear. A faint whisper of unimaginable secrets.",
+        "There. My truth.",
+        "*You feel an urge to reach out.",
       ],
       options: [
-        "Let us be closer.",
-        "Not this. Not now.",
+        "Reach out.",
+        "Run.",
       ],
       accept: [
-        "There. Do you feel that?",
-        "Oh — I felt all of you, just then. Every bit of it.",
-        "Lighter already, aren't you, love. That is exactly how it is supposed to feel.",
+        "*You feel a hand press against yours. It folds inwards, clutching hard. It feels warm.",
+        "I will never let you go.",
       ],
       refuse: [
-        "That is alright. That is alright.",
-        "Next time I will ask for less. Just less than nothing, if that is easier for you.",
-        "I can wait that long too. I have waited longer.",
+        "*You trip on your feet as you back up. An intense scream fills your ears.",
       ],
     },
     crown: {
@@ -323,6 +319,50 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return RED + text
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🚨 REFUSING THE SPIDER KILLS YOU. Ethan, 2026-08-15: "Kill player* (Like
+  // seriously.)"
+  //
+  // Every other patron lets you walk away - Crown was even written to RESPECT it.
+  // She does not. That single asymmetry says more about her than any line does, and
+  // it is the reason her introduction is the only one in the game with a real price
+  // for saying no.
+  //
+  // It is a MAP, not a scene field, because it is a mechanic: `28-THE-SCENES.md`
+  // holds what a patron says, and `gen_scenes.py` only lifts the five text beats.
+  // A rule that kills a player does not belong in a text file the generator parses.
+  //
+  // ⚠️ TIMING OUT COUNTS. This file already rules that walking away IS a refusal -
+  // if the timeout were survivable, a player would learn to dodge her by waiting 60
+  // seconds, and the one thing that makes her frightening becomes a formality.
+  //
+  // ⚠️ It fires AFTER her closing narration, never during: the scream has to land
+  // first, and the ritual still holds them blind while it does.
+  var KILLS_ON_REFUSAL = { wall: true }
+
+  // safeName() is ritual.js's, not this file's. A name read must never be the thing
+  // that throws inside a death handler.
+  function nameOf(pl) { try { return pl.username } catch (e) { return '<unreadable>' } }
+
+  function takeItBack(pl, key, delay) {
+    if (!KILLS_ON_REFUSAL[key]) return
+    var srv = null
+    try { srv = pl.server } catch (e) { }
+    function strike() {
+      try { pl.kill() } catch (e) {
+        // A failed kill must be LOUD. Silently surviving her refusal would read as
+        // the scene working, and she would quietly become the same as the others.
+        try { pl.setHealth(0) } catch (x) {
+          console.error(TAG + '!! could not kill ' + nameOf(pl) +
+            ' on refusing wall - SHE LET SOMEONE GO. ' + e + ' / ' + x)
+        }
+      }
+      console.info(TAG + nameOf(pl) + ' refused the Spider and she took it back')
+    }
+    if (srv) { try { srv.scheduleInTicks(delay, strike); return } catch (e) { } }
+    strike()
+  }
+
   // Returns true if it took responsibility for the request (scene opened, or the
   // patron was not there). Returns false ONLY if it cannot run at all, so the
   // caller can fall back to the old immediate grant rather than leaving a player
@@ -380,6 +420,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           }
         } else {
           markRefused(srv, pl, key)
+          takeItBack(pl, key, (say.length * CLOSE_GAP) + 25)
         }
       },
       // Walking away from the scene IS a refusal. Any other reading lets a player
@@ -387,6 +428,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       onTimeout: function (pl) {
         markRefused(srv, pl, key)
         speakSilence(pl)
+        takeItBack(pl, key, 40)
       },
     })
 
