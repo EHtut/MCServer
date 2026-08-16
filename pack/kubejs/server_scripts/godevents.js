@@ -115,6 +115,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (!REG[god]) REG[god] = []
     REG[god].push({
       id: ev.id,
+      // 🚨 THIS LINE WAS MISSING AND IT MADE THE WHOLE CHART INERT.
+      //
+      // register() builds a NEW object with a whitelist of fields, so `kind:` was
+      // being written at all 36 call sites, accepted without complaint, and silently
+      // dropped here. Every god booted as `misc 100%` - one flat bucket - which is
+      // the pre-taxonomy behaviour wearing the new code's face.
+      //
+      // Found on the first boot after building it, by the UNTAGGED warning added in
+      // the same change. That warning was written to catch somebody forgetting a
+      // `kind:` on a future event; it caught the author dropping all 36 at once. A
+      // whitelist that silently discards unknown keys is worth remembering here -
+      // adding a field to an event now means adding it in TWO places.
+      kind: (typeof ev.kind === 'string' && ev.kind) ? ev.kind : null,
       tiers: ev.tiers || ['low', 'medium', 'high'],
       hostile: !!ev.hostile,
       cooldown: (typeof ev.cooldown === 'number') ? ev.cooldown : 2,
