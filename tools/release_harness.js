@@ -249,8 +249,16 @@ const SS = path.join(__dirname, '..', 'pack', 'kubejs', 'server_scripts')
 const src = (f) => fs.readFileSync(path.join(SS, f), 'utf8')
 const count = (s, needle) => s.split(needle).length - 1
 
+// Three sites grant a lasting buff and all three must arm:
+//   mark_success  strength + resistance, 600s
+//   sharpen       strength II, 180s
+//   harden        resistance II + weakness, 180s   (added 2026-08-16, docs/23 §VI.0)
+// `burden` is deliberately NOT here - it is a handicap, and counting a death under
+// a penalty he imposed would make the release a trap.
 const blade = src('blade_events.js')
-ok('blade_events arms on BOTH buff sites', count(blade, 'VELDORA.release.armed('), 2)
+ok('blade_events arms on all THREE buff sites', count(blade, 'VELDORA.release.armed('), 3)
+ok('burden does NOT arm (it is a handicap, not a gift)',
+  /runBurden[\s\S]*?deliberately NOT armed/.test(blade), true)
 
 const sal = src('salvage.js'), salE = src('salvage_events.js')
 ok('salvage.js counter denies', count(sal, 'VELDORA.release.denied('), 1)
