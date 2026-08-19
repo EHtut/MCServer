@@ -451,9 +451,43 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var COMBAT_WINDOW = 200          // ticks since last damage that still counts as mid-fight
   var DRY_SPELL_DAYS = 2           // days since her counter moved
 
-  var CHANCE_TROUBLE = 0.40        // rolled when you are hurt and low
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ A CHANCE DIVIDES THE RATE. It did not used to - see maybeOpen().
+  //
+  // Ethan, live-testing 2026-08-18: "the biggest thing for salvage is that it
+  // bothers the player too much." The log agreed, and named the culprit itself:
+  //
+  //     she opened on j0nesyboi223 - dry spell (22d) (debt=0, cooldown was 6000t)
+  //     she opened on j0nesyboi223 - dry spell (22d) (debt=0, cooldown was 6000t)
+  //
+  // ...twice in thirteen minutes, on the trigger whose own comment read
+  // "deliberately rare". It was not rare. It was 99.2% certain within a minute of
+  // every cooldown expiry, because the roll ran once per 2-SECOND SAMPLE instead of
+  // once per approach. The chance bought about ten seconds of jitter and nothing
+  // else; the cooldown was the entire rate.
+  //
+  // 🔑 THE EFFECTIVE INTERVAL IS NOW `cooldown / chance`, which is what these
+  // numbers always read as if they meant:
+  //
+  //             chance   at debt 0 (6000t)   at the floor (2400t)
+  //     combat   0.15         33 min               13 min
+  //     death    0.30         17 min                7 min
+  //     dry      0.40         12 min                5 min
+  //
+  // ⚠️ AND THE TWO ARE SWAPPED (was combat 0.40 / dry 0.15). Her LIKELIEST approach
+  // used to be her most intrusive one - mid-fight, at low health, control taken
+  // away - while the safe unprompted one was her rarest. That is backwards. She now
+  // mostly turns up when you are NOT busy, and interrupting a fight is the rare
+  // thing. Revert by swapping these two numbers back; nothing else depends on it.
+  //
+  // For scale: every other god speaks through godevents, whose GLOBAL_COOLDOWN is
+  // one world day (~20 real min) SHARED ACROSS ALL OF THEM. She is the only patron
+  // with a second, private loop, so she is the only one who can outpace the whole
+  // rest of the pantheon - which is exactly what she was doing, by 5-13x.
+  // ═══════════════════════════════════════════════════════════════════════════
+  var CHANCE_TROUBLE = 0.15        // hurt and low, MID-FIGHT - now her rarest
   var CHANCE_AFTER_DEATH = 0.30
-  var CHANCE_DRY = 0.15            // the unprompted approach, deliberately rare
+  var CHANCE_DRY = 0.40            // unprompted, and you are safe - now her usual
 
   var SAMPLE_TICKS = 40            // 2s. Cheap: only online salvage walkers.
 
@@ -532,8 +566,27 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var cd = Math.max(COOLDOWN_FLOOR, COOLDOWN_BASE - debt * COOLDOWN_PER_DEBT)
     if (last && (now - last) < cd) return false
 
-    if (Math.random() > chance) return false
+    // ⭐ ONE ROLL PER WINDOW, NOT ONE PER SAMPLE. A LOST ROLL SPENDS THE WINDOW.
+    // Without this stamp the loser re-rolls in 2 seconds, and again, and again, so
+    // `chance` decides how many seconds she waits rather than how often she comes.
+    if (Math.random() > chance) {
+      try { p.persistentData.putDouble(LAST_OFFER, now) } catch (e) { }
+      return false
+    }
 
+    // ⚠️ KNOWN INTERACTION, and it is the behaviour we want. The sampler tries the
+    // combat trigger before the dry-spell one in the SAME sample, so a lost combat
+    // roll now spends the window and the dry-spell check finds it fresh. Net effect:
+    // ONE roll per window whoever asks first, and a player who is fighting hard gets
+    // approached LESS. Given the complaint was that she bothers you too much - and
+    // that mid-fight is the worst moment to be interrupted - that is the right way
+    // round. Split LAST_OFFER per-trigger if this ever needs to change.
+
+    // 🚨 BUT A FAILURE TO SPEAK MUST NOT SPEND IT. She lost the roll above; here she
+    // WON it and something else stopped her - a ritual that opened in between, a
+    // missing seam. Charging her the window for that would make her quieter every
+    // time the machinery hiccups, silently. Same rule godevents already states:
+    // "a run() that returns false does NOT stamp the cooldown."
     if (!open(p, why)) return false
 
     try { p.persistentData.putDouble(LAST_OFFER, now) } catch (e) { }
@@ -673,6 +726,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       p.tell(Text.of('§8Even with every gate passed she rolls ' +
         Math.round(CHANCE_TROUBLE * 100) + '% / ' + Math.round(CHANCE_AFTER_DEATH * 100) +
         '% / ' + Math.round(CHANCE_DRY * 100) + '% - she chooses, you do not.'))
+      p.tell(Text.of('§8ONE roll per cooldown - a lost roll costs her the whole ' +
+        'window, so the real wait is cooldown/chance, not cooldown.'))
       return 1
     }))
 
@@ -706,7 +761,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       console.info(TAG + 'E6b AUTO-OPEN active - triggers: low health mid-combat, ' +
         'after a death, dry spell >=' + DRY_SPELL_DAYS + 'd. Cooldown ' +
         COOLDOWN_BASE + 't shrinking ' + COOLDOWN_PER_DEBT + 't per debt, floor ' +
-        COOLDOWN_FLOOR + 't.')
+        COOLDOWN_FLOOR + 't. ONE roll per window (a lost roll spends it), so the ' +
+        'REAL interval is cooldown/chance: ~' +
+        Math.round(COOLDOWN_BASE / 20 / 60 / CHANCE_DRY) + ' min at debt 0, ~' +
+        Math.round(COOLDOWN_FLOOR / 20 / 60 / CHANCE_DRY) + ' min at the floor.')
     } else {
       console.info(TAG + 'E6b AUTO-OPEN is OFF - /trade_test only')
     }
