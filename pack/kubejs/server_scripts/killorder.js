@@ -157,9 +157,25 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   ServerEvents.loaded(function (event) {
     sweep(event.server)
-    var gods = []
-    for (var g in REG) if (REG.hasOwnProperty(g)) gods.push(g + '(' + REG[g].days + 'd)')
-    console.info(TAG + 'shared kill orders for: ' + (gods.join(', ') || 'NOBODY YET') +
-      '. Blade is deliberately NOT here - his contract shares the Mark.')
+    // ⚠️ REPORT ON THE NEXT TICK, NOT HERE. This file sorts alphabetically BEFORE
+    // salvage_events.js and wall_events.js, and both register inside their own
+    // ServerEvents.loaded - so reporting here read the registry before either of
+    // them had filled it and printed "NOBODY YET" while two gods were about to
+    // register. Kill orders were live the whole time; the report could not see them.
+    //
+    // 🚨 That is not cosmetic. This banner is the only visible answer to "can anyone
+    // issue a kill order at all", and the retaliation design in docs/49 is built on
+    // top of exactly that trigger - so the report was quietly denying the existence
+    // of the feature it was written to confirm.
+    //
+    // godevents.js hit this identically ("11 events across 1 god" while Wall was
+    // about to register three more) and its fix is the one used here. One tick is
+    // after every loaded handler and long before the first sweep.
+    event.server.scheduleInTicks(1, function () {
+      var gods = []
+      for (var g in REG) if (REG.hasOwnProperty(g)) gods.push(g + '(' + REG[g].days + 'd)')
+      console.info(TAG + 'shared kill orders for: ' + (gods.join(', ') || 'NOBODY YET') +
+        '. Blade is deliberately NOT here - his contract shares the Mark.')
+    })
   })
 })()
