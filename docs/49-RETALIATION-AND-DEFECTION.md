@@ -1,4 +1,9 @@
-# 49 — Retaliation, Interception and Defection *(design, 2026-08-16, NOT BUILT)*
+# 49 — Retaliation, Interception and Defection
+
+> **STATUS 2026-08-18** — ⭐ **A (The Warning) is BUILT AND DEPLOYED**, awaiting its
+> first restart. B, C and D are design only. The header used to read "NOT BUILT" for
+> the whole document, which stopped being true the moment `warn.js` shipped — the
+> exact rot this estate's README warns about, one subject drifting from its record.
 
 > Ethan, 2026-08-16: *"these are related to assassination and contract. Retaliatory
 > events."* Then, generalising it off Wall: *"the retaliation system will be built for

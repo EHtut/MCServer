@@ -89,6 +89,12 @@ original chunk plan; **the live state lives in 34**) · `34-THE-REMAINING-BUILD`
 `35-WALL-REFRESH` · **`47-THE-RELEASE-SYSTEM`** (how each god puts you down —
 never / 4 buff-deaths / 3 refusals)
 
+**The gods against each other** *(new axis, 2026-08-16)* —
+**`49-RETALIATION-AND-DEFECTION`** (the Warning · the Interception · the Grudge · the
+Argument; **A is built**, the rest design) · **`50-THE-TIDE`** (the Darktide loop for
+the deep, the Bickering, and the measured finding that everything below y-64 is an
+empty void)
+
 **The patrons** — `22-THE-PATRONS` · `25-PATRON-DIALOGUE` (death ladder) ·
 `26-INTRODUCTIONS` (mechanic + the I-chunk records) · `27-THE-SIX-VOICES` (the tweak
 sheet writers are briefed from) · `28-THE-SCENES` (**all final text**)

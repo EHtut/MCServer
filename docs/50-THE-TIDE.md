@@ -243,6 +243,27 @@ character down to the cutoff and then something else takes over the job, which i
 that heralds a wave and a line that does not cannot come from the same pool, or the
 tell is worthless. `warn_wave` / `deep_warn_wave`.
 
+### ✅ The shape of a wave — ruled 2026-08-18
+
+> *"wave cadence is 5-10 minutes and 30 seconds of mobs spawning at a distance then
+> pathfinding to the players and yes not on the surface."*
+
+So a wave is **not a burst, it is a 30-second arrival**. Mobs spawn at RANGE across
+that window and walk in — which is a materially different mechanic from dropping eight
+things on someone's head, and a better one:
+
+- **you hear it before you see it.** The dread lives in the walk, not the spawn.
+- **it is escapable and defensible.** Ground you chose to stand on matters, and running
+  is a real option — which is what makes staying a decision.
+- **it cannot gib you.** The failure mode of a burst wave is dying to something that
+  materialised inside your hitbox; arrival-at-range has no such case.
+- ⭐ **it uses `spawn_pressure`'s ring, not a point.** `MIN_DIST 12 / MAX_DIST 22`
+  surface, `DEEP_MIN 8 / DEEP_MAX 16` deep — already built, already tuned, and
+  `findSpot()` (2026-08-18) is what makes placement at range actually land.
+
+✅ **Never on the surface** — confirmed. The two-realm thesis holds, and the tide is
+the deep's alone.
+
 ⚠️ 5–10 minutes is a *lot* on the low end. Sustained over an hour that is 6–12 waves,
 and the fatigue Ethan already reported once ("every 10-20 minutes") was for something
 far cheaper than a 20-second assault. **Recommend the interval only runs while a run

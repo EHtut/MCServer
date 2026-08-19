@@ -138,6 +138,21 @@
   // What the gun eats. Anything in here pays Salvage extra - see THE LIFELINE
   // BONUS at the payout. Counted from TACZ's own recipes on 2026-08-16, so this is
   // the real tax rather than a guess at one.
+  // ⭐ ROUNDS, NOT JUST FEEDSTOCK.  Ethan, 2026-08-18: "their lifeline straight up is
+  // ammo and they always have a gun so run out of ammo and theyre usually dead. they
+  // should be flush in it."
+  //
+  // Gunpowder and iron are what ammo is MADE from - they are the lifeline one crafting
+  // step removed, and a player bleeding out mid-fight cannot craft. So a Salvage kill
+  // now also pays REAL ROUNDS for the gun actually in their hand, minted through
+  // salvage.js's own mintAmmo (which validates against TaCZ and refuses to hand out
+  // rounds that chamber in nothing).
+  //
+  // ⚠️ DELIBERATELY LESS THAN A TRADE. Her identity is "you find the gun, then you feed
+  // it forever" and her trades ARE that loop - a free 30 rounds per kill would retire
+  // her economy to fix her survivability. A trade still pays max(30, magazine); a kill
+  // pays a handful. Kills keep you shooting, trades restock you.
+  var AMMO_DROP_ROUNDS = [6, 10, 16]   // by tier, BEFORE the drops coefficient
   var AMMO_BONUS = 2.0
   var AMMO_FEED = {
     'minecraft:gunpowder': true,              // the feedstock
@@ -348,13 +363,16 @@
         // used here - flagged rather than silently substituted, because it is the one
         // id in this batch that is a guess about INTENT rather than a lookup.
         //
-        // 🚨 THIS DROPS THE OCCULTISM HALF, AND HER GUIDANCE LINES STILL TEACH IT.
-        // The ladder above is not decoration: "Chalk first, love" -> occultism chalk,
-        // "Small ones first" -> foliot before djinni, "Bind one into a book" -> book
-        // of binding. Those lines now describe a progression her drops no longer pay
-        // for. Either the chalk/binding entries come back into the shallow tier, or
-        // three of her eleven guidance lines want rewriting. HIS CALL - the list was
-        // explicit, so it is implemented as given.
+        // ✅ DROPPING THE OCCULTISM HALF IS DELIBERATE.  Ethan, 2026-08-18:
+        // "for wall it's on purpose because occultism is honestly alot harder to get
+        // into."
+        //
+        // ⭐ AND HER GUIDANCE LINES CAN STAY. It looked like a contradiction - "Chalk
+        // first, love" teaches Occultism while her table pays only Goety - but it is
+        // better as it stands: she ADVISES the hard road and PAYS for the walkable
+        // one. A patron who tells you the deeper craft exists while quietly funding
+        // the one you can actually start today is more like her, not less. The lines
+        // are guidance, never a receipt.
         ['goety:ectoplasm', 'goety:shadow_essence', 'goety:empty_focus'],
         // below - "That power is the currency down here." No vanilla at all: this
         // is the depth where she stops topping you up and starts teaching.
@@ -1161,6 +1179,29 @@
     // ═══════════════════════════════════════════════════════════════════════
     if (key === 'salvage' && AMMO_FEED[item]) {
       n = Math.max(1, Math.round(n * AMMO_BONUS))
+    }
+
+    // ── real rounds, for the gun in hand ──────────────────────────────────────
+    if (key === 'salvage') {
+      try {
+        var S = VELDORA.salvage
+        if (S && typeof S.heldGun === 'function' && typeof S.mintAmmo === 'function') {
+          var gun = S.heldGun(killer)
+          if (gun && gun.ammoId) {
+            var rounds = AMMO_DROP_ROUNDS[tier] || AMMO_DROP_ROUNDS[0]
+            if (dc > 1.0) rounds = Math.max(1, Math.round(rounds * dc))
+            var st = S.mintAmmo(gun.ammoId, rounds)
+            // null means mintAmmo REFUSED - TaCZ did not recognise the calibre. It
+            // already shouted; do not paper over it by giving something broken.
+            if (st) {
+              killer.give(st)
+              paidOut[key] = (paidOut[key] || 0) + rounds
+            }
+          }
+          // No gun in hand is the normal quiet case: she pays feedstock instead,
+          // which is what the item drop above already did.
+        }
+      } catch (e) { console.warn('[paths] ammo drop threw :: ' + e) }
     }
     try {
       // NOTE: runCommandSilent's return is USELESS - E0 probe P12 measured it
