@@ -55,12 +55,16 @@ text box players click through; offered rarely, it stays an event. **The rare br
 also the only one that can be refused**, which is what makes it worth the ritual's cost
 of taking control away.
 
-### ⚠️ Salvage's warning is a real gap, not an oversight to paper over
+### ✅ Salvage's warning — RULED 2026-08-18: she warns
 
 Her governing rule is Ethan's own: *"She will never do anything without the player's
-permission."* A warning is not something done *to* a player, so it probably passes —
-but she is the one god where "probably" is not good enough, and §0b of `docs/44`
-exists precisely because her consent column keeps catching things. **Ruling needed.**
+permission."* A warning is **information**, not something done *to* a player, so it
+clears the consent column — and she is the last god who would let someone walk into an
+ambush uninformed. Ethan commissioned the pool, which is the ruling.
+
+It was worth asking rather than assuming: §0b of `docs/44` exists because her consent
+column keeps catching things that looked fine (three of her seven built events still
+break it). Drafted in `docs/44` §0c.
 
 ### ⚠️ Art doing nothing TWICE must be VISIBLE, or it reads as broken
 
