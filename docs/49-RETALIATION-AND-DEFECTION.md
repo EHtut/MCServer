@@ -1,7 +1,23 @@
 # 49 — Retaliation, Interception and Defection
 
-> **STATUS 2026-08-18** — ⭐ **A (The Warning) is BUILT AND DEPLOYED**, awaiting its
-> first restart. B, C and D are design only. The header used to read "NOT BUILT" for
+> **STATUS 2026-08-18** — ⭐ **A (The Warning), C (The Grudge) and D (The Argument)
+> are BUILT AND DEPLOYED**, awaiting their first restart. **B (The Interception) is
+> design only** and stays blocked on §8 ruling 4 — what "Wall attempts to stop them"
+> actually does.
+>
+> C and D shipped as ONE file (`grudge.js`) because they are one event, per §4. The
+> broadcast primitive they need is `broadcast.js`, and it is shared with docs/50's
+> Bickering — built once, two triggers.
+>
+> 🔴 **Nothing here has run against a live server.** `tools/grudge_harness.js` is
+> 35/35 and `tools/warn_harness.js` 27/27, but every failure mode in this family is
+> SILENT, so green harnesses are necessary and not sufficient.
+>
+> ⚠️ **The argue pools are empty.** The reprisal lands regardless — deliberately, the
+> voice failing must not disarm the mechanic — but it arrives unannounced, which is
+> the effect-from-nowhere §4 exists to prevent. `grudge.js` shouts about this at boot.
+> Needed per god: `argue_accuse` · `argue_answer` · `argue_threat` · `argue_refuse` ·
+> `argue_unanswered`. Ethan's Wall↔Blade exchange in §4 is the first four, written. The header used to read "NOT BUILT" for
 > the whole document, which stopped being true the moment `warn.js` shipped — the
 > exact rot this estate's README warns about, one subject drifting from its record.
 
@@ -385,6 +401,10 @@ Go home.
 
 ## 8. Open rulings
 
+0. ~~**Grudge decay / reset / scope**~~ ✅ **BUILT 2026-08-18** with the recommended
+   answers: per (victim, killer) PAIR · reset to zero on fire · −1 per 2 world days of
+   peace. All three asserted in the harness. Reversible — three constants at the top
+   of `grudge.js`.
 1. ~~**Salvage's warning** — does she warn her champion?~~ ✅ **ANSWERED 2026-08-18**
    — she warns. Ethan commissioned the pool, and a warning is information rather than
    something done *to* her champion, so it clears her consent rule. Drafted in

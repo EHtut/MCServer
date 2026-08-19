@@ -1,0 +1,274 @@
+// grudge_harness.js — THE GRUDGE and the broadcast it narrates with.
+//
+//     node tools/grudge_harness.js
+//
+// docs/49 §3+§4, mechanics C and D. Every failure mode in here is SILENT in play:
+//
+//   · a ticker keyed per-victim instead of per-PAIR punishes the wrong person, and
+//     is completely invisible on a two-player server
+//   · a ticker that never resets turns a reprisal into permanent weather
+//   · a grudge that never decays fires on four kills three months apart
+//   · half an exchange reads as a bug rather than a snub
+//   · `busy` latching true would mute the pantheon forever with nothing in the log
+//
+// None of those throw. All of them are asserted.
+
+'use strict'
+const fs = require('fs')
+const path = require('path')
+const SS = path.join(__dirname, '..', 'pack', 'kubejs', 'server_scripts')
+
+let TICKS = 100000
+let TOLD = []          // every line delivered, in order
+let EFFECTS = []       // effect give commands
+let WAVES = []         // spawner waves
+let ONLINE = []
+let POOLS = {}
+let PATHS = {}
+let DEATH_HOOKS = []
+let TIMERS = []        // [delay, fn] - drained manually so pacing is testable
+
+const server = {
+  overworld: () => ({ dayTime: () => TICKS }),
+  scheduleInTicks: (d, fn) => { TIMERS.push([d, fn]) },
+  runCommandSilent: (c) => { if (c.indexOf('effect give') === 0) EFFECTS.push(c) },
+  runCommand: () => '',
+}
+Object.defineProperty(server, 'players', { get: () => ONLINE })
+
+function drain() {
+  // Fire every scheduled callback in delay order, the way a server tick would.
+  const t = TIMERS.slice().sort((a, b) => a[0] - b[0])
+  TIMERS = []
+  for (const [, fn] of t) { try { fn() } catch (e) { } }
+}
+
+global.EntityEvents = { death: (fn) => DEATH_HOOKS.push(fn), beforeHurt: () => { }, spawned: () => { }, checkSpawn: () => { } }
+global.PlayerEvents = { respawned: () => { }, loggedIn: () => { }, loggedOut: () => { }, tick: () => { } }
+global.ServerEvents = { commandRegistry: () => { }, loaded: () => { }, tick: () => { } }
+global.ItemEvents = { rightClicked: () => { }, entityInteracted: () => { } }
+global.BlockEvents = { placed: () => { }, broken: () => { }, rightClicked: () => { } }
+global.Text = { of: (s) => s }
+global.Item = { of: () => ({}) }
+
+function mkPlayer(name, path) {
+  const store = {}
+  PATHS[name] = path
+  return {
+    username: name, uuid: 'u-' + name, player: true, server,
+    tell: (s) => TOLD.push({ to: name, text: String(s) }),
+    persistentData: {
+      getInt: (k) => store[k] || 0, putInt: (k, v) => { store[k] = v },
+      getDouble: (k) => store[k] || 0, putDouble: (k, v) => { store[k] = v },
+      getString: () => '', putString: () => { },
+      contains: () => true,
+    },
+    _store: store,
+  }
+}
+
+global.VELDORA = {
+  paths: { pathOf: (p) => PATHS[p && p.username] || '' },
+  voice: {
+    colourOf: (g) => '§' + g[0],
+    line: (god, tag) => {
+      const pool = (POOLS[god] || {})[tag]
+      return (pool && pool.length) ? pool[0] : null
+    },
+  },
+  spawner: { wave: (p, o) => { WAVES.push({ to: p.username, count: o.count, ids: o.ids }) } },
+  warn: { titleOf: (g) => 'the ' + g },
+}
+
+const realWarn = console.warn, realInfo = console.info, realErr = console.error
+const hush = () => { console.warn = () => { }; console.info = () => { }; console.error = () => { } }
+const speak = () => { console.warn = realWarn; console.info = realInfo; console.error = realErr }
+
+hush()
+try {
+  ;(0, eval)(fs.readFileSync(path.join(SS, 'broadcast.js'), 'utf8'))
+  ;(0, eval)(fs.readFileSync(path.join(SS, 'grudge.js'), 'utf8'))
+} catch (e) { speak(); console.error('FAIL: load threw :: ' + e); process.exit(1) }
+
+const B = global.VELDORA.broadcast
+const G = global.VELDORA.grudge
+if (!B || !G) { speak(); console.error('FAIL: seams not published'); process.exit(1) }
+
+let pass = 0, fail = 0
+function ok(name, got, want) {
+  const good = JSON.stringify(got) === JSON.stringify(want)
+  if (good) { pass++; console.log('  \x1b[32mok  \x1b[0m' + name) }
+  else { fail++; console.log('  \x1b[31mFAIL\x1b[0m ' + name + '\n         got ' + JSON.stringify(got) + '  want ' + JSON.stringify(want)) }
+}
+const grp = (t) => { speak(); console.log('\n\x1b[1m' + t + '\x1b[0m'); hush() }
+
+function fullPools() {
+  return {
+    wall: { argue_accuse: ['W accuse'], argue_answer: ['W answer'], argue_threat: ['W threat'], argue_refuse: ['W refuse'], argue_unanswered: ['W alone'] },
+    blade: { argue_accuse: ['B accuse'], argue_answer: ['B answer'], argue_threat: ['B threat'], argue_refuse: ['B refuse'], argue_unanswered: ['B alone'] },
+    salvage: { argue_accuse: ['S accuse'], argue_answer: ['S answer'], argue_threat: ['S threat'], argue_refuse: ['S refuse'], argue_unanswered: ['S alone'] },
+  }
+}
+function reset() {
+  TOLD = []; EFFECTS = []; WAVES = []; TIMERS = []; PATHS = {}
+  POOLS = fullPools(); TICKS = 100000
+}
+function kill(victim, killer) {
+  for (const fn of DEATH_HOOKS) fn({ entity: victim, source: { player: killer } })
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+grp('THE TICKER — 4 kills, and not one before')
+{
+  reset()
+  const v = mkPlayer('Vic', 'wall'), k = mkPlayer('Kil', 'blade')
+  ONLINE = [v, k]
+  for (let i = 1; i <= 3; i++) { kill(v, k); TICKS += 100 }
+  ok('nothing fires at 3', [EFFECTS.length, WAVES.length], [0, 0])
+  ok('...and the count is visible', G.count(v, 'Kil'), 3)
+  kill(v, k); drain()
+  ok('the 4th fires the reprisal', WAVES.length, 1)
+  ok('🚨 and RESETS, so it is a cycle not a ratchet', G.count(v, 'Kil'), 0)
+}
+
+grp('🔴 SCOPE — the ticker is per (victim, KILLER) pair')
+{
+  // A per-victim counter would let a third player push someone else's grudge to 4
+  // and then be punished for a single kill. Invisible at two players.
+  reset()
+  const v = mkPlayer('Vic', 'wall'), a = mkPlayer('A', 'blade'), b = mkPlayer('B', 'salvage')
+  ONLINE = [v, a, b]
+  kill(v, a); kill(v, a); kill(v, a)
+  ok('A has built a grudge', G.count(v, 'A'), 3)
+  ok('...and B carries none of it', G.count(v, 'B'), 0)
+  kill(v, b); drain()
+  ok("B's first kill fires NOTHING", [EFFECTS.length, WAVES.length], [0, 0])
+}
+
+grp('DECAY — a grudge is a mood, not a contract')
+{
+  reset()
+  const v = mkPlayer('Vic', 'wall'), k = mkPlayer('Kil', 'blade')
+  ONLINE = [v, k]
+  kill(v, k); kill(v, k); kill(v, k)
+  ok('three fresh kills', G.count(v, 'Kil'), 3)
+  TICKS += 48000 * 2               // two decay windows of peace
+  kill(v, k); drain()
+  ok('two windows of peace faded 2, so the 4th is only a 2nd', G.count(v, 'Kil'), 2)
+  ok('...and nothing fired', [EFFECTS.length, WAVES.length], [0, 0])
+}
+
+grp('THE REPRISAL TABLE — each god denies you its own domain')
+{
+  const cases = [
+    ['blade', 'minecraft:weakness'],
+    ['salvage', 'minecraft:slowness'],
+    ['forge', 'minecraft:mining_fatigue'],
+  ]
+  for (const [god, effect] of cases) {
+    reset()
+    const k = mkPlayer('Kil', 'blade'); ONLINE = [mkPlayer('X', 'wall'), k]
+    G.lash(server, god, k)
+    ok(god + ' -> ' + effect.replace('minecraft:', ''), EFFECTS.length && EFFECTS[0].indexOf(effect) > 0, true)
+  }
+  reset()
+  const k2 = mkPlayer('Kil', 'blade'); ONLINE = [k2]
+  ok('wall sends spiders instead of taking anything', G.lash(server, 'wall', k2), 'spiders')
+  ok('...five of them', WAVES[0].count, 5)
+  reset()
+  const k3 = mkPlayer('Kil', 'blade')
+  // ⭐ Art's nothing must be a POSTURE, distinguishable from a dead hook.
+  ok('art retaliates with nothing, and says so', G.lash(server, 'art', k3), 'no-posture')
+  ok('...and genuinely did nothing', [EFFECTS.length, WAVES.length], [0, 0])
+}
+
+grp('D — the argument IS the reprisal landing')
+{
+  reset()
+  const v = mkPlayer('Vic', 'wall'), k = mkPlayer('Kil', 'blade')
+  ONLINE = [v, k]
+  for (let i = 0; i < 4; i++) kill(v, k)
+  drain()
+  // ⚠️ READ ONE PLAYER'S VIEW. TOLD holds every tell to EVERY recipient, so a
+  // 4-line exchange to 2 players is 8 entries - this first asserted the flat list
+  // and failed on a correct broadcast. What matters is the sequence a person sees.
+  const texts = TOLD.filter(t => t.to === 'Vic').map(t => t.text.replace(/§./g, ''))
+  ok('four lines, alternating accuser and rival', texts, ['W accuse', 'B answer', 'W threat', 'B refuse'])
+  ok('🔑 BOTH players heard all of it', TOLD.filter(t => t.to === 'Vic').length, 4)
+  ok('...both of them', TOLD.filter(t => t.to === 'Kil').length, 4)
+  ok('and the reprisal landed too', WAVES.length, 1)
+}
+
+grp('⚠️ HALF AN EXCHANGE IS WORSE THAN NONE')
+{
+  reset()
+  const v = mkPlayer('Vic', 'wall'), k = mkPlayer('Kil', 'blade')
+  ONLINE = [v, k]
+  delete POOLS.blade.argue_answer          // the rival cannot reply
+  delete POOLS.blade.argue_refuse
+  for (let i = 0; i < 4; i++) kill(v, k)
+  drain()
+  // blade has no argue_answer, so he reads as MUTE and the accuser speaks alone -
+  // the absence becomes content rather than a dangling accusation.
+  const texts = TOLD.map(t => t.text.replace(/§./g, ''))
+  ok('the accuser speaks, then remarks on the silence', [...new Set(texts)], ['W accuse', 'W alone'])
+  ok('🚨 the reprisal still lands - the voice failing must not disarm it', WAVES.length, 1)
+}
+
+grp('SAME GOD ON BOTH SIDES — grief, but no argument')
+{
+  reset()
+  const v = mkPlayer('Vic', 'wall'), k = mkPlayer('Kil', 'wall')
+  ONLINE = [v, k]
+  for (let i = 0; i < 4; i++) kill(v, k)
+  drain()
+  ok('a god never accuses ITSELF', TOLD.length, 0)
+  ok('...but the reprisal is real, because the grief is', WAVES.length, 1)
+}
+
+grp('BROADCAST — the guards')
+{
+  reset()
+  ONLINE = [mkPlayer('Solo', 'wall')]
+  ok('🔑 no bickering to a lone player - never a teaser either',
+    B.exchange(server, [{ god: 'wall', tag: 'argue_accuse' }], { why: 't' }), 'too-few')
+
+  reset()
+  ONLINE = [mkPlayer('A', 'wall'), mkPlayer('B', 'blade')]
+  ok('an unspeakable line abandons the WHOLE exchange',
+    B.exchange(server, [{ god: 'wall', tag: 'argue_accuse' }, { god: 'blade', tag: 'nonexistent' }], { why: 't' }),
+    'incomplete')
+  ok('...and sent nothing at all', TOLD.length, 0)
+
+  reset()
+  ONLINE = [mkPlayer('A', 'wall'), mkPlayer('B', 'blade')]
+  ok('a good exchange sends', B.exchange(server, [{ god: 'wall', tag: 'argue_accuse' }], { why: 't' }), 'sent')
+  ok('one at a time, server-wide',
+    B.exchange(server, [{ god: 'blade', tag: 'argue_accuse' }], { why: 't2' }), 'busy')
+  drain()
+  // 🚨 busy is released on a TIMER, not in the last line's callback - a throwing
+  // line would otherwise latch it true and mute the pantheon forever.
+  ok('...and it releases afterwards', B.running(), false)
+  ok('verbatim text works as well as a pool tag',
+    B.exchange(server, [{ god: 'wall', text: 'said outright' }], { why: 't3' }), 'sent')
+}
+
+grp('NON-EVENTS — the hook must ignore what is not a grudge')
+{
+  reset()
+  const v = mkPlayer('Vic', 'wall'), k = mkPlayer('Kil', 'blade'), n = mkPlayer('None', '')
+  ONLINE = [v, k, n]
+  for (let i = 0; i < 6; i++) for (const fn of DEATH_HOOKS) fn({ entity: v, source: {} })
+  ok('a mob kill is not a grudge (nemesis_tally owns that)', G.count(v, 'Kil'), 0)
+  for (let i = 0; i < 6; i++) kill(v, v)
+  ok('suicide is not a grudge', G.count(v, 'Vic'), 0)
+  for (let i = 0; i < 6; i++) kill(n, k)
+  drain()
+  ok('a pathless victim has no god to be aggrieved', [EFFECTS.length, WAVES.length], [0, 0])
+}
+
+speak()
+console.log('\n' + (fail === 0
+  ? '\x1b[32m' + pass + '/' + (pass + fail) + ' passed\x1b[0m'
+  : '\x1b[31m' + fail + ' FAILED\x1b[0m, ' + pass + ' passed'))
+process.exit(fail === 0 ? 0 : 1)
