@@ -35,7 +35,28 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var GATE = true
 
   var TICK = 1200                  // 60s between rolls
-  var CHANCE = 0.06                // per roll; ~1 in 17 minutes of eligibility
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ THE ONCE-PER-WORLD-DAY CAP IS GONE.  Ethan, 2026-08-18:
+  //     "lets remove that per session limiter for dialogue because we don't play
+  //      daily or for long periods"
+  //
+  // He is right, and the cap was worse than it looked. A world day is 20 real
+  // minutes, so "once per world day per god" meant a player logging on for an hour
+  // heard from their patron THREE TIMES. For a game whose entire character lives in
+  // what the gods say, that is close to silence.
+  //
+  // ⚠️ AND REMOVING IT ALONE WOULD HAVE CHANGED ALMOST NOTHING - worth stating,
+  // because it looks like the whole fix. The 6% roll on a 60s tick already averaged
+  // one line per ~17 minutes, so the cap and the roll were pinching at nearly the
+  // same rate. Delete the cap, keep 6%, and the next report is "still quiet". BOTH
+  // numbers had to move.
+  //
+  // Replaced with a REAL-TIME floor instead of a calendar one: a short cooldown
+  // that only stops two lines landing on top of each other, and a roll that
+  // actually fires. ~1 line per 5 minutes of play, per god.
+  // ═══════════════════════════════════════════════════════════════════════════
+  var CHANCE = 0.20                // per 60s roll; ~1 in 5 minutes of eligibility
+  var GAP_TICKS = 1800             // 90s floor - anti-stacking, not a budget
   var LAST_KEY = 'veldora_idle_day_'   // world day, offset by one (0 = never)
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -65,8 +86,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // deliberate, expensive act; being met should not take seventeen minutes of
   // loitering. It is still a roll, so he is never guaranteed on arrival.
   // ═══════════════════════════════════════════════════════════════════════════
-  var DEEP_KEY = 'veldora_deep_day_'   // the Speaker's own ledger
-  var DEEP_CHANCE = 0.25               // ~1 in 4 minutes below the cutoff
+  var DEEP_KEY = 'veldora_deep_at_'    // his own ledger, now in world TICKS
+  var DEEP_CHANCE = 0.30               // ~1 in 3 minutes below the cutoff
+  var DEEP_GAP = 1200                  // 60s floor - he is why you came down
 
   var COMBAT_WINDOW = 300          // ticks since damage that still counts as fighting
   var NEAR_RANGE = 16              // another champion this close is "with you"
@@ -205,6 +227,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (!VELDORA.voice) return null
 
     var now = dayNow(server)
+    // World ticks, not world days. The cap used to be a calendar entry; it is a
+    // stopwatch now, so the resolution has to match.
+    var nowT = null
+    try { var d = server.overworld().dayTime(); if (typeof d === 'number' && isFinite(d)) nowT = Math.floor(d) } catch (e) { }
 
     // 🚨 ORDER MATTERS, AND I HAD IT WRONG. The Speaker block used to sit ABOVE
     // both of these guards, which meant she ignored the once-per-world-day cooldown
@@ -225,15 +251,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var dayKey = (deep ? DEEP_KEY : LAST_KEY) + god
 
     if (!force) {
-      if (now === null) return null            // no clock, no cooldown, no speech
+      if (nowT === null) return null           // no clock, no cooldown, no speech
       var stored = 0
-      try { stored = p.persistentData.getInt(dayKey) } catch (e) { }
+      try { stored = p.persistentData.getDouble(dayKey) } catch (e) { }
       if (stored) {
         var last = stored - 1
-        // A stamp from the future means the clock moved (admins run /time set) -
-        // re-stamp rather than going silent for ten thousand days.
-        if (last > now) { try { p.persistentData.putInt(dayKey, now + 1) } catch (e) { } return null }
-        if (last >= now) return null           // already spoke today
+        // ⚠️ A stamp from the FUTURE means the clock moved (admins run /time set).
+        // Re-anchor rather than going silent for ten thousand days - finding K9,
+        // which this project has now paid for in seven places.
+        if (last > nowT) { try { p.persistentData.putDouble(dayKey, nowT + 1) } catch (e) { } return null }
+        if ((nowT - last) < (deep ? DEEP_GAP : GAP_TICKS)) return null
       }
     }
 
@@ -247,7 +274,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     try {
       if (VELDORA.speaker && VELDORA.speaker.active(p)) {
         if (VELDORA.speaker.say(p, 'common')) {
-          if (now !== null) { try { p.persistentData.putInt(dayKey, now + 1) } catch (e) { } }
+          if (nowT !== null) { try { p.persistentData.putDouble(dayKey, nowT + 1) } catch (e) { } }
           var who = 'a speaker'
           try {
             var sp = VELDORA.speaker.forPath ? VELDORA.speaker.forPath(p) : null
@@ -283,12 +310,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // is a prisoner here too, he feels attachment to the spider he claims to
       // despise - and none of that should ever be common enough to become wallpaper.
       if (Math.random() < RARE_CHANCE && VELDORA.voice.say(p, god, 'rare_' + tag)) {
-        if (now !== null) { try { p.persistentData.putInt(dayKey, now + 1) } catch (e) { } }
+        if (nowT !== null) { try { p.persistentData.putDouble(dayKey, nowT + 1) } catch (e) { } }
         console.info(TAG + p.username + ' <- ' + god + '/rare_' + tag)
         return 'rare_' + tag
       }
       if (VELDORA.voice.say(p, god, tag)) {
-        if (now !== null) { try { p.persistentData.putInt(dayKey, now + 1) } catch (e) { } }
+        if (nowT !== null) { try { p.persistentData.putDouble(dayKey, nowT + 1) } catch (e) { } }
         console.info(TAG + p.username + ' <- ' + god + '/' + tag)
         return tag
       }

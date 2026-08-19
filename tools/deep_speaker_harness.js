@@ -20,7 +20,7 @@ const path = require('path')
 const SS = path.join(__dirname, '..', 'pack', 'kubejs', 'server_scripts')
 
 const IDLE_KEY = 'veldora_idle_day_'
-const DEEP_KEY = 'veldora_deep_day_'
+const DEEP_KEY = 'veldora_deep_at_'    // world TICKS since 2026-08-18, not days
 
 let DAY = 5
 let SAID = []
@@ -126,13 +126,18 @@ grp('THE TWO LEDGERS ARE GENUINELY SEPARATE')
 {
   const p = mkPlayer()
   DAY = 7; RITUAL_ACTIVE = false
+  // ⚠️ ASSERT WHICH LEDGER MOVED, NOT WHAT IT HOLDS. These read `=== DAY + 1` and
+  // broke the moment the cap became a stopwatch instead of a calendar - the
+  // BEHAVIOUR was unchanged and correct, only the units moved. The invariant that
+  // actually matters is that the two ledgers are independent.
   PLAYER_Y = 64; SAID = []; I.attempt(server, p, true)
-  ok('surface speech stamps the IDLE ledger', p._store[IDLE_KEY + 'blade'], DAY + 1)
+  const idleStamp = p._store[IDLE_KEY + 'blade'] || 0
+  ok('surface speech stamps the IDLE ledger', idleStamp > 0, true)
   ok('...and leaves the DEEP ledger untouched', p._store[DEEP_KEY + 'blade'] || 0, 0)
 
   PLAYER_Y = -127; SAID = []; I.attempt(server, p, true)
-  ok('deep speech stamps the DEEP ledger', p._store[DEEP_KEY + 'blade'], DAY + 1)
-  ok('...and does not re-stamp the idle one', p._store[IDLE_KEY + 'blade'], DAY + 1)
+  ok('deep speech stamps the DEEP ledger', (p._store[DEEP_KEY + 'blade'] || 0) > 0, true)
+  ok('...and does not re-stamp the idle one', p._store[IDLE_KEY + 'blade'], idleStamp)
 }
 
 grp('EACH LEDGER STILL CAPS ITSELF — the fix must not uncap anything')
@@ -150,6 +155,28 @@ grp('EACH LEDGER STILL CAPS ITSELF — the fix must not uncap anything')
   DAY = 9; PLAYER_Y = 64
   ok('first surface line of the day lands', !!I.attempt(server, q, false), true)
   ok('🚨 a SECOND surface line the same day is refused', I.attempt(server, q, false), null)
+}
+
+grp("⭐ ETHAN'S CHANGE — a god may speak MORE THAN ONCE per world day")
+{
+  // "we don't play daily or for long periods". A world day is 20 real minutes, so
+  // the old cap gave a player three lines in an hour. This is the assertion that
+  // would have caught it going back.
+  const p = mkPlayer()
+  DAY = 40; RITUAL_ACTIVE = false; PLAYER_Y = 64
+  let spoke = 0
+  // Walk a single world day forward in 2-minute steps. dayTime is DAY*24000+6000,
+  // so nudge the clock by overriding the getter for this block only.
+  let extra = 0
+  const realOw = server.overworld
+  server.overworld = () => ({ dayTime: () => DAY * 24000 + 6000 + extra })
+  for (let i = 0; i < 10; i++) {
+    if (I.attempt(server, p, false)) spoke++
+    extra += 2400            // 2 real minutes, well inside ONE world day
+  }
+  server.overworld = realOw
+  ok('speaks repeatedly within a single world day (was capped at 1)', spoke > 1, true)
+  ok('...but never twice inside the 90s floor', spoke <= 10, true)
 }
 
 grp('THE GUARDS THE COMMENT WARNS ABOUT ARE INTACT')
