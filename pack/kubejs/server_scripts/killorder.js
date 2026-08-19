@@ -69,6 +69,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { return false }
     console.info(TAG + p.username + ' holds ' + god + "'s order on " + targetName +
       ', due day ' + (today + REG[god].days))
+
+    // ⭐ THE WARNING (docs/49 §2). The target's OWN god decides whether to tell them.
+    // Deliberately after the order is committed, so a warning can never be sent for
+    // an order that then failed to write. Best-effort: this file's job is the order,
+    // and a silent warn layer must never take an order down with it.
+    try {
+      if (VELDORA.warn) VELDORA.warn.incoming(server, god, targetName)
+    } catch (e) { console.warn(TAG + 'warn layer threw :: ' + e) }
+
     return true
   }
 

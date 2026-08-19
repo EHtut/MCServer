@@ -304,6 +304,24 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "It won't happen again.",
       "Come. We have things to do.",
     ],
+    // ⭐ THE WARNING (docs/49 §2). ETHAN'S WRITING, 2026-08-16.
+    //
+    // She says RUN, and offers to stand in front of you. Blade's equivalent says
+    // win and offers nothing; Salvage's says you are allowed to leave. Three gods,
+    // three relationships - never edit this pool toward either of theirs.
+    //
+    // ⚠️ {rival} WAS HARDCODED. He wrote "The champion of the blade comes for you",
+    // which is right until Salvage sends somebody and the Spider names the wrong
+    // god. Substituted through sayAbout, the same mechanism the Mark already uses
+    // for {target}. No other word changed.
+    //
+    // 🔑 That she names the rival at all is characterisation: she has been watching
+    // them. Blade's pool has no substitution because he does not care who it is.
+    warn_incoming: [
+      'The champion of {rival} comes for you. Run!',
+      'I will hold them off, you get to safety.',
+      'They will regret what they have sown.',
+    ],
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -500,6 +518,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         "I will be quiet now. I will try.",
       ],
     },
+
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

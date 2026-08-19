@@ -262,6 +262,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "I am done watching.",
       "That will do. For now.",
     ],
+    // ⭐ THE WARNING (docs/49 §2). ETHAN'S WRITING, 2026-08-16 - fixed a typo
+    // ("challege") and a comma splice, no words changed.
+    //
+    // He says WIN, and offers NOTHING. Wall's equivalent says run and offers to
+    // stand in front of you; Salvage's says you are allowed to leave. Three gods,
+    // three relationships, and the contrast IS the system - so this pool must never
+    // be edited toward either of theirs.
+    //
+    // ⭐ NO {rival} SUBSTITUTION, deliberately. Wall names who is coming because she
+    // has been watching them; he does not, because to him a challenger is a
+    // challenger. The absence of the substitution is the characterisation.
+    warn_incoming: [
+      'A champion comes for you. Ensure you win.',
+      'Seems a challenger approaches...',
+      'A challenge, one you are fit for. Win.',
+    ],
+
     // THE MARK. {target} is substituted with the rival champion's name.
     mark_declare: [
       '{target} fights with borrowed strength. Kill them within two days.',

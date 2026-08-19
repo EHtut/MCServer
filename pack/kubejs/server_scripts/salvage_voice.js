@@ -70,6 +70,32 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // except to take the piss out of them.
     // ═══════════════════════════════════════════════════════════════════════
 
+    // ⭐ THE WARNING (docs/49 §2). DRAFT, 2026-08-18 - Ethan: "we will draft them
+    // the same way i did for wall", the loop being that he plays and anything that
+    // does not fit comes back as "here's a better line". Reasoning in docs/44 §0c.
+    //
+    // She INFORMS, and PERMITS YOU TO LEAVE. Wall shields you, Blade demands you
+    // win, and she is the only one who treats walking away as a legitimate outcome.
+    // Never edit this pool toward either of theirs - the contrast is the system.
+    //
+    // 🔑 HER OWN BRIEF SAYS THIS IS THE POOL THAT MATTERS MOST FOR HER: "because she
+    // has never once oversold you anything, this is the only warning in the game
+    // that lands." So it is flat and practical, never dramatic.
+    //
+    // Her rules: <=3 sentences EVERY line (she is the one god who stops talking) ·
+    // contractions · the threat carried in trade vocabulary · never chosen/destiny/
+    // fate. ⭐ Line 3 is the one no other god can say. ⭐ Line 6 is the one that does
+    // not deflect - "jokes are deflection, always; when she is not joking, pay
+    // attention" - so exactly one in six drops it, or the tell means nothing.
+    warn_incoming: [
+      "Someone's coming for you. {rival}'s champion, and they're not here to talk.",
+      "Heads up - {rival} put money on your name. I'd take that seriously.",
+      "You've got someone incoming. You can leave. Nobody else is going to tell you that's allowed.",
+      "{rival}'s sent someone. Fight or go - the margin's yours to work out.",
+      "Bad buy, this one. I'd walk.",
+      "Someone's on their way. I'm not going to tell you you'll be fine.",
+    ],
+
     // DUELS - a job, never a test. She has a buyer; that is the only reason.
     bounty_offer: [
       "Got a buyer for something with a pulse. You interested, or are we just talking?",

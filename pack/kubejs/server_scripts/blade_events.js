@@ -142,6 +142,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { return false }
 
     if (VELDORA.voice) VELDORA.voice.sayAbout(p, GOD, 'mark_declare', { target: tname })
+
+    // ⭐ THE WARNING (docs/49 §2). The Mark is Blade NAMING another god's champion,
+    // so it is an assassination declaration and the target's god hears about it.
+    // 🔑 This is the ONLY live trigger today: his `contract` event is held on an
+    // empty pool and killorder reports him deliberately absent, so the Mark is how
+    // the whole retaliation family can actually be exercised right now.
+    try {
+      if (VELDORA.warn) VELDORA.warn.incoming(server, GOD, tname)
+    } catch (e) { console.warn(TAG + 'warn layer threw :: ' + e) }
+
     console.info(TAG + 'Mark on ' + p.username + ' -> ' + tname + ', due day ' + (today + MARK_DAYS))
     return true
   }
