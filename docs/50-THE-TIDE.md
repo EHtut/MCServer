@@ -220,6 +220,56 @@ so no "the gods are arguing somewhere" teaser.
 
 ---
 
+## 5b. ⭐ The cadence and the herald — RULED 2026-08-18
+
+> Ethan: *"For the waves lets do every 5-10 minutes or, announced by god dialogue if
+> they can hear you and speaker dialogue if too deep."*
+
+**Every 5–10 minutes**, and the announcement source is decided by DEPTH — which means
+the herald is not one voice, it is whichever voice can still reach you:
+
+| where | who announces the wave | already exists |
+|---|---|---|
+| above y−64 | **your own god**, in their own register | `voice.say(p, god, tag)` |
+| below y−64 | **the Speaker** — your god cannot reach you | `deep_speaker.js`, gated to exactly this depth |
+
+⭐ **This is better than "the Speaker is the scream" from §2.** The wave becomes a
+thing the whole pantheon does, and the DEPTH decides who tells you — so descending
+changes not just the danger but *who is watching you meet it*. The gods keep their
+character down to the cutoff and then something else takes over the job, which is
+`deep_speaker.js`'s entire premise made mechanical.
+
+⚠️ **Both need a new pool, and both must be separable from ordinary chatter.** A line
+that heralds a wave and a line that does not cannot come from the same pool, or the
+tell is worthless. `warn_wave` / `deep_warn_wave`.
+
+⚠️ 5–10 minutes is a *lot* on the low end. Sustained over an hour that is 6–12 waves,
+and the fatigue Ethan already reported once ("every 10-20 minutes") was for something
+far cheaper than a 20-second assault. **Recommend the interval only runs while a run
+is active (§3)** — inside a descent it is 5–10 min; on the surface it is not running
+at all.
+
+## 5c. The Deep Speaker needs an INTRODUCTION — ruled 2026-08-18
+
+> Ethan: *"they should have at least an introduction cutscene for the deep speaker
+> since this is your antagonist essentially."*
+
+**He is right and this is a gap, not a nicety.** The Speaker is currently met by a
+chat line arriving from nowhere the first time a player is below y−64 and the roll
+lands. The first meeting with the antagonist is indistinguishable from his hundredth.
+
+`ritual.js` already does exactly this job — it takes control, speaks, and gives it
+back — and `introductions.js` (I1/I2) already uses it for a once-per-player scene.
+So the machinery is built; what is missing is **a once-ever scene keyed to first
+descent below the cutoff**, in place of a line.
+
+⚠️ **ONCE EVER, and it must survive.** `introductions.js` already solved the same
+problem — persistent flag, checked on login, because a scene that re-fires is worse
+than one that never did. Reuse that pattern rather than re-deriving it.
+
+⚠️ And it is the ONE place the ritual is safe at depth: a player who has just arrived
+below −64 is not yet in a fight. Every later Speaker line must stay chat-only (§5).
+
 ## 6. Open rulings
 
 1. **§1's fork** — fix worldgen, or build the arena? Worldgen will not repair the

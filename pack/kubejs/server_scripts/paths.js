@@ -185,34 +185,67 @@
     forge: {
       name: 'The Forge',
       blurb: 'Throughput. Power that works while you sleep - and stays at home.',
+      // ⭐ ETHAN'S LIST, 2026-08-18. Every id read from create-1.21.1-6.0.10.jar's
+      // lang file, not guessed - `shaft`, `cogwheel` and `large_cogwheel` are BLOCKS
+      // and are invisible to `mcq item`, which is why they resolve here and not there.
+      //
+      // 🍫 "except forge he gets chocolate" - the one path whose food is not Farmer's
+      // Delight, because his is manufactured rather than cooked. It sits in the two
+      // shallow tiers so it is actually reachable while building.
       drops: [
-        ['minecraft:iron_ingot', 'create:andesite_alloy', 'minecraft:copper_ingot'],
-        ['create:andesite_alloy', 'create:zinc_ingot', 'create:iron_sheet'],
-        ['create:brass_ingot', 'create:electron_tube', 'create:precision_mechanism'],
+        ['create:shaft', 'create:cogwheel', 'create:andesite_alloy', 'create:bar_of_chocolate'],
+        ['create:large_cogwheel', 'create:belt_connector', 'create:zinc_ingot',
+         'create:andesite_alloy', 'create:bar_of_chocolate'],
+        ['create:brass_ingot', 'create:rose_quartz', 'create:zinc_ingot'],
       ],
     },
     art: {
       name: 'The Art',
       blurb: 'Verbs nothing else has. Light you carry into the dark.',
+      // ⭐ ETHAN'S LIST, 2026-08-18. The four archwood fruits are `*_pod` in the
+      // registry, not `*_fruit`, and Sourceberry has NO bare item - the bush block IS
+      // the berry, the way minecraft:sweet_berries is not sweet_berry_bush. Both read
+      // from ars_nouveau's lang, not assumed.
+      //
+      // ⚠️ ART IS STILL CLOSED in paths.js and cannot be claimed, so none of this can
+      // fire yet. Written now because he wrote the list now.
       drops: [
-        ['minecraft:lapis_lazuli', 'ars_nouveau:magic_clay', 'minecraft:amethyst_shard'],
-        ['ars_nouveau:source_gem', 'ars_nouveau:magic_clay', 'ars_nouveau:experience_gem'],
-        ['ars_nouveau:source_gem', 'ars_nouveau:manipulation_essence', 'ars_nouveau:conjuration_essence'],
+        ['ars_nouveau:sourceberry_bush', 'ars_nouveau:magebloom_fiber',
+         'ars_nouveau:air_essence', 'ars_nouveau:earth_essence'],
+        ['ars_nouveau:mendosteen_pod', 'ars_nouveau:bastion_pod', 'ars_nouveau:frostaya_pod',
+         'ars_nouveau:bombegranate_pod', 'ars_nouveau:water_essence', 'ars_nouveau:fire_essence'],
+        ['ars_nouveau:abjuration_essence', 'ars_nouveau:conjuration_essence',
+         'ars_nouveau:manipulation_essence', 'ars_nouveau:magebloom_fiber'],
       ],
     },
     salvage: {
       name: 'The Salvage',
       blurb: 'You cannot make a gun. You find it, then you feed it forever.',
       drops: [
-        ['minecraft:gunpowder', 'minecraft:iron_ingot', 'minecraft:copper_ingot'],
-        ['minecraft:gunpowder', 'gunpowderore:gun_powder_ore', 'minecraft:iron_ingot'],
+        // ⭐ AMMO MADE MORE LIKELY, not just more numerous.  Ethan, 2026-08-18:
+        // "boost the ammo drop chance because they're dependent". The x2 quantity
+        // bonus (THE LIFELINE BONUS, at the payout) covers HOW MUCH; this covers HOW
+        // OFTEN, by giving the feedstock more seats at the table. Two different knobs
+        // and he asked for both.
+        //
+        // 🍞 Recovery is Farmer's Delight per his ruling - bread shallow, smoked ham
+        // deeper. She is the path that runs out of things mid-fight.
+        ['minecraft:gunpowder', 'minecraft:gunpowder', 'minecraft:iron_ingot',
+         'minecraft:copper_ingot', 'minecraft:bread'],
+        ['minecraft:gunpowder', 'gunpowderore:gun_powder_ore', 'minecraft:gunpowder',
+         'minecraft:iron_ingot', 'farmersdelight:smoked_ham'],
         // ⚠️ `gun_powder_ore` used to sit here TWICE, so two thirds of her sealed
         // floor paid the same thing her middle tier already pays - her deepest tier
         // was her flattest. Diamond is not a generic prize here: it is consumed by
         // 23 TACZ recipes (the good guns, every scope), so it still reads as
         // feeding the gun. Measured 2026-08-16: TACZ's real tax is iron 150 / gold
         // 58 / redstone 38 / lapis 33, and diamond 23 at the top.
-        ['gunpowderore:gun_powder_ore', 'minecraft:diamond', 'minecraft:netherite_scrap'],
+        // ⭐ IRON IS BACK IN THE DEEP. Flagged 2026-08-18 and it was a real hole:
+        // iron is TACZ's #1 tax at 150 recipes and it vanished from exactly the tier
+        // she risks most for, so her deepest run paid the least toward keeping the
+        // gun fed. Gunpowder joins it for the same reason.
+        ['gunpowderore:gun_powder_ore', 'minecraft:diamond', 'minecraft:netherite_scrap',
+         'minecraft:iron_ingot', 'minecraft:gunpowder'],
       ],
     },
     blade: {
@@ -221,14 +254,29 @@
       drops: [
         // iron_ingot twice is DELIBERATE weighting, not a copy-paste slip: the
         // fighter needs iron most and Blade's drop coefficient goes DOWN later.
-        ['minecraft:iron_ingot', 'minecraft:leather', 'minecraft:iron_ingot'],
-        ['minecraft:iron_ingot', 'magistuarmory:bronze_ingot', 'minecraft:gold_ingot'],
+        // ⭐ ARROWS AND RECOVERY, Ethan 2026-08-18: "these are probably good, lets
+        // push towards recovery items like health potion and Food but mostly arrows
+        // and ingots. They are mostly driven through god buffs anyways."
+        //
+        // So the ladder is unchanged and arrows/food are LAYERED ON - he was explicit
+        // that the existing metals were already right.
+        ['minecraft:iron_ingot', 'minecraft:leather', 'minecraft:iron_ingot',
+         'minecraft:arrow', 'farmersdelight:smoked_ham'],
+        ['minecraft:iron_ingot', 'magistuarmory:bronze_ingot', 'minecraft:gold_ingot',
+         'minecraft:arrow', 'farmersdelight:cooked_mutton_chops'],
         // ⚠️ bronze was in tiers 1 AND 2, which made a third of every sealed-floor
         // kill pay the SAME ingot as the tier above it - a dud pull next to diamond
         // and netherite scrap. Steel is magistuarmory's high metal (every steel
         // weapon, shield and mail comes off it), so the ladder is now bronze deep,
         // steel deeper, which is his idiom rather than a generic upgrade.
-        ['minecraft:diamond', 'magistuarmory:steel_ingot', 'minecraft:netherite_scrap'],
+        // 🚨 THE ONE ENTRY THAT NEEDS A LIVE CHECK. Every other id in this file is a
+        // plain registry name; a potion carries its effect in COMPONENTS, and the
+        // payout runs `give <player> <item> <n>`. Component syntax is valid in `give`
+        // on 1.20.5+, but this repo has never sent one through that path. The boot
+        // validator below will say so out loud if it does not resolve, and the payout
+        // already fails soft - but treat it as unproven until the log says otherwise.
+        ['minecraft:diamond', 'magistuarmory:steel_ingot', 'minecraft:netherite_scrap',
+         'minecraft:potion[minecraft:potion_contents={potion:"minecraft:healing"}]'],
       ],
     },
     crown: {
@@ -288,23 +336,41 @@
       drops: [
         // surface - "Chalk first, love." The bootstrap for both mods, plus one
         // vanilla anchor so a daylight kill is not always esoteric.
-        ['occultism:datura_seeds', 'occultism:chalk_white_impure',
-         'occultism:raw_silver', 'goety:ectoplasm', 'goety:savage_tooth',
-         'minecraft:iron_ingot'],
+        // ⭐ ETHAN'S LIST, 2026-08-18. All Goety, all verified against goety-3.1.0.
+        // Display names differ from ids in four places and none of them were guessed:
+        //   Essence of Shadow  -> goety:shadow_essence
+        //   Dark Alloy         -> goety:dark_ingot          (Dark Alloy INGOT)
+        //   Cursed Metal       -> goety:cursed_ingot        (Cursed Metal INGOT)
+        //   Pale Steel         -> goety:pale_steel_ingot
+        //
+        // ⚠️ "Dark Fragment" HAS NO MATCH ANYWHERE IN THE PACK. The nearest thing in
+        // Goety is `forbidden_fragment` ("Forbidden Fragment") and that is what is
+        // used here - flagged rather than silently substituted, because it is the one
+        // id in this batch that is a guess about INTENT rather than a lookup.
+        //
+        // 🚨 THIS DROPS THE OCCULTISM HALF, AND HER GUIDANCE LINES STILL TEACH IT.
+        // The ladder above is not decoration: "Chalk first, love" -> occultism chalk,
+        // "Small ones first" -> foliot before djinni, "Bind one into a book" -> book
+        // of binding. Those lines now describe a progression her drops no longer pay
+        // for. Either the chalk/binding entries come back into the shallow tier, or
+        // three of her eleven guidance lines want rewriting. HIS CALL - the list was
+        // explicit, so it is implemented as given.
+        ['goety:ectoplasm', 'goety:shadow_essence', 'goety:empty_focus'],
         // below - "That power is the currency down here." No vanilla at all: this
         // is the depth where she stops topping you up and starts teaching.
-        ['occultism:chalk_white', 'occultism:otherworld_essence',
-         'occultism:book_of_binding_empty', 'goety:ectoplasm',
-         'goety:cursed_ingot', 'goety:occult_fabric'],
+        ['goety:ectoplasm', 'goety:cursed_ingot', 'goety:dark_ingot',
+         'goety:forbidden_fragment', 'goety:spider_servant_spawn_egg'],
         // sealed - "The ones worth having will not come for a beginner's chalk."
         // Every one of these is otherwise a dimension, a boss or a vault:
         //   raw_iesnium    the Other Place, and the gate to mid-game Occultism
         //   dark_ingot     NO recipe at all - treasure pouch / vault_unique only
         //   soul_emerald   sorcerer drop / vault_unique
         //   afrit_essence  a wild Afrit, or a high-tier ritual
-        ['occultism:raw_iesnium', 'occultism:spirit_attuned_gem',
-         'occultism:afrit_essence', 'goety:dark_ingot', 'goety:soul_emerald',
-         'goety:animation_core'],
+        // 🕷️ The Brood Mother egg is his "(rare)" - it appears in the DEEPEST tier
+        // only, so it cannot be farmed on the shallow floor, and it is the grown form
+        // of the servant she already gifts. One seat among five.
+        ['goety:pale_steel_ingot', 'goety:dark_ingot', 'goety:forbidden_fragment',
+         'goety:spider_servant_spawn_egg', 'goety:brood_mother_servant_spawn_egg'],
       ],
     },
   }
@@ -1166,6 +1232,48 @@
     }
     event.server.scheduleInTicks(6000, function () { report(event.server) })
   })
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ EVERY DROP ID IS CHECKED AT BOOT.  Added 2026-08-18 with Ethan's new tables.
+  //
+  // ~35 ids landed in one change, across create / goety / ars_nouveau /
+  // farmersdelight / magistuarmory. A wrong one does NOT throw: the payout runs
+  // `give <player> <bad:id> 3`, the command fails, runCommandSilent returns
+  // undefined for valid and invalid alike (E0 P12), and the catch logs a line
+  // nobody reads. The player just... never gets that drop. One dud entry in a
+  // five-item tier is a fifth of a path's economy quietly missing.
+  //
+  // spawner.js already validates its ENTITY ids at boot for exactly this reason.
+  // This is the same guard for items, and it runs once rather than per kill.
+  //
+  // ⚠️ Item.of() is the probe because it is the one that can FAIL LOUDLY here.
+  // A bad id yields air or throws; either way it is caught and named, with the
+  // path and tier it came from, so a typo is a boot line and not a mystery.
+  // ═══════════════════════════════════════════════════════════════════════════
+  var badIds = [], checkedIds = 0
+  for (var vk in PATHS) {
+    if (!PATHS.hasOwnProperty(vk)) continue
+    var tiers = PATHS[vk].drops || []
+    for (var ti = 0; ti < tiers.length; ti++) {
+      for (var ii = 0; ii < tiers[ti].length; ii++) {
+        var vid = tiers[ti][ii]
+        checkedIds++
+        var okItem = false
+        try {
+          var st = Item.of(vid)
+          okItem = !!(st && !st.isEmpty())
+        } catch (e) { okItem = false }
+        if (!okItem) badIds.push(vk + ' t' + ti + ' :: ' + vid)
+      }
+    }
+  }
+  if (badIds.length) {
+    console.error('[paths] !! ' + badIds.length + ' of ' + checkedIds +
+      ' drop ids DO NOT RESOLVE - those payouts will silently give nothing:')
+    for (var bi = 0; bi < badIds.length; bi++) console.error('[paths]      ' + badIds[bi])
+  } else {
+    console.info('[paths] all ' + checkedIds + ' drop ids resolve')
+  }
 
   var closedList = []
   for (var ck in CLOSED) if (CLOSED.hasOwnProperty(ck)) closedList.push(ck)
