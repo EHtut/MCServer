@@ -35,7 +35,7 @@ them exposes a gap:
 |---|---|---|
 | **Blade** | 🚫 never — *"he will never stop them"* | ✅ yes |
 | **Wall** | 🔴 **always**, and *"rarely asking for a choice"* | ✅ yes |
-| **Salvage** | 🤝 offers a deal | ⚠️ **UNSTATED** — ruling needed |
+| **Salvage** | 🤝 offers a deal | ✅ yes — *ruled 2026-08-18* |
 | **Forge** | 🤝 offers a deal | ✅ yes |
 | **Art** | 🚫 nothing | 🚫 nothing |
 
@@ -111,7 +111,19 @@ for `{target}` — or the line is wrong the first time Salvage sends someone. Bl
 pool is written generically already and needs no substitution, which is itself
 characterisation: he does not care who it is.
 
-**Still owed:** `warn_incoming` for **Salvage** and **Forge**. Art gets none, by design.
+**Salvage — `warn_incoming`.** ✅ **DRAFTED 2026-08-18**, full text and reasoning in
+`docs/44` §0c. She **informs, and permits you to leave** — the third relationship, and
+the only patron who treats quitting as legitimate:
+
+```
+You've got someone incoming. You can leave. Nobody else is going to tell you
+that's allowed.
+```
+
+**Forge — `warn_incoming`.** 🅿️ **BACKBURNER**, Ethan 2026-08-18. Costs nothing: his
+path is CLOSED in `paths.js`, so his posture could not fire either way.
+
+**Art** gets none, by design.
 
 ---
 
@@ -364,7 +376,10 @@ Go home.
 
 ## 8. Open rulings
 
-1. **Salvage's warning** — does she warn her champion? (§1)
+1. ~~**Salvage's warning** — does she warn her champion?~~ ✅ **ANSWERED 2026-08-18**
+   — she warns. Ethan commissioned the pool, and a warning is information rather than
+   something done *to* her champion, so it clears her consent rule. Drafted in
+   `docs/44` §0c.
 2. **Grudge decay** — does a grudge expire, or is it `release.js`-style never-forgives? (§3)
 3. **Mining fatigue duration** — and is Forge's reprisal too harsh for a build server? (§3)
 4. **What "Wall attempts to stop them" MEANS** mechanically when she is not offering a

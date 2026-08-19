@@ -130,6 +130,77 @@ only one rated to.**
 
 ---
 
+## 0c. ⭐ `warn_incoming` — DRAFT, 2026-08-18
+
+Ethan: *"we will draft them the same way i did for wall"* — I write, he corrects in
+play with "here's a better line". Forge's equivalent is **on the backburner** at his
+call, which costs nothing: `paths.js` reports forge CLOSED, so it could not fire
+anyway.
+
+**Drafting this pool answers open ruling #1 in `docs/49`: she warns.** A warning is
+information, not something done *to* her champion, so it clears her consent rule —
+and she is the last god who would let someone walk into it uninformed.
+
+### Why this pool matters more for her than for anyone else
+
+Her own brief, §0 arc stage 3:
+
+> *"Tries to get you out. Not dramatically — practically, the way you'd talk a friend
+> out of a bad investment. And because **she has never once oversold you anything**,
+> this is the only warning in the game that lands."*
+
+The three gods who warn are three different relationships, and the contrast is the
+whole argument that these lines are right:
+
+| god | the warning IS |
+|---|---|
+| **Wall** | *"Run! I will hold them off"* — she **shields** you |
+| **Blade** | *"Ensure you win."* — he **demands**, and offers nothing |
+| **Salvage** | she **informs, and permits you to leave** |
+
+### The draft
+
+```
+Someone's coming for you. {rival}'s champion, and they're not here to talk.
+
+Heads up - {rival} put money on your name. I'd take that seriously.
+
+You've got someone incoming. You can leave. Nobody else is going to tell you
+that's allowed.
+
+{rival}'s sent someone. Fight or go - the margin's yours to work out.
+
+Bad buy, this one. I'd walk.
+
+Someone's on their way. I'm not going to tell you you'll be fine.
+```
+
+**Her rules, applied:** every line ≤3 sentences (⭐ her hard cap — she is the one god
+who stops talking) · contractions throughout · the threat carried in trade vocabulary
+(*put money on your name*, *margin*, *bad buy*) · no *chosen* / *destiny* / *fate*.
+
+⭐ **Line 3 is the one no other god can say.** She is the only patron who treats
+quitting as a legitimate outcome, and this is that trait doing mechanical work.
+
+⭐ **Line 6 is the one that does not deflect.** Her brief: *jokes are deflection,
+always — when she is not joking, pay attention.* Exactly one line in six drops it, so
+the tell still means something.
+
+### ⚠️ `{rival}` needs to exist first
+
+`{rival}` renders the rival god's title (*the blade*, *the spider*) through `sayAbout`,
+the same substitution the Mark already uses for `{target}`. **Wall's warn line
+currently hardcodes "the champion of the blade"** and is wrong the first time Salvage
+sends someone — it needs the same treatment when The Warning is built.
+
+### 🚫 NOT written into `salvage_voice.js` yet, deliberately
+
+The Warning is not built, so registering the pool now would ship a gate with no live
+consumer — the exact "built in shadow" antipattern this project keeps paying for.
+The lines land in code and become testable in the same chunk that builds A.
+
+---
+
 ## 1. The fill-in sheet
 
 Write in the blanks, hand it back, I build it. Skip anything you like — blank pools
