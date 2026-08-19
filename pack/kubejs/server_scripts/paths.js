@@ -135,6 +135,17 @@
   // E3. The path's `drops` coefficient multiplies the finished chance. Neutral is
   // 1.0, so a pathless player and a coefficient-less build are the same arithmetic
   // this function always did. Blade's is 0.6 ON PURPOSE - see coefficients.js.
+  // What the gun eats. Anything in here pays Salvage extra - see THE LIFELINE
+  // BONUS at the payout. Counted from TACZ's own recipes on 2026-08-16, so this is
+  // the real tax rather than a guess at one.
+  var AMMO_BONUS = 2.0
+  var AMMO_FEED = {
+    'minecraft:gunpowder': true,              // the feedstock
+    'gunpowderore:gun_powder_ore': true,      // ...and its ore
+    'minecraft:iron_ingot': true,             // 150 recipes - the real bottleneck
+    'minecraft:copper_ingot': true,           // casings
+  }
+
   function dropCoeff(server, player) {
     try {
       if (typeof VELDORA !== 'undefined' && VELDORA.coeff &&
@@ -1063,6 +1074,28 @@
     // ═══════════════════════════════════════════════════════════════════════
     var dc = dropCoeff(server, killer)
     if (dc > 1.0) n = Math.max(1, Math.round(n * dc))
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // ⭐ THE LIFELINE BONUS.  Ethan, 2026-08-18: "we should boost salvage ammo's
+    // drops too since their gun is their lifeline."
+    //
+    // She is the only path whose weapon CONSUMES a resource to keep working -
+    // "You cannot make a gun. You find it, then you feed it forever." Every other
+    // path's power is permanent once earned; hers runs out mid-fight. So the
+    // materials that feed the gun pay her extra, ON TOP of her drops coefficient.
+    //
+    // 🔑 SCOPED TO THE MATERIALS, NOT TO HER. Raising her whole coefficient would
+    // have paid her more diamonds too, which is a reward and not a lifeline. This
+    // pays only what the gun actually eats, so the boost cannot drift into being a
+    // general buff nobody meant to give.
+    //
+    // ⚠️ The list is MEASURED, not guessed - the TACZ recipe tax counted 2026-08-16:
+    // iron 150 · gold 58 · redstone 38 · lapis 33 · diamond 23. Gunpowder and the
+    // gunpowder ore are the ammo feedstock itself.
+    // ═══════════════════════════════════════════════════════════════════════
+    if (key === 'salvage' && AMMO_FEED[item]) {
+      n = Math.max(1, Math.round(n * AMMO_BONUS))
+    }
     try {
       // NOTE: runCommandSilent's return is USELESS - E0 probe P12 measured it
       // returning undefined for valid AND invalid commands alike. Do not test it.

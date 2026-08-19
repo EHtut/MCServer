@@ -142,6 +142,85 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   //        Hollow Victory tags its wave so EntityEvents.drops can recognise it -
   //        a mob you cannot tell apart from a natural one cannot be given special
   //        rules later.
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ THE GROUND FINDER.  Ethan, live 2026-08-18:
+  //     [spawner] wave for Lehykt: asked 1, measured 0 (fallen_chaos_knight)
+  //     !! asked for 1 and NOTHING arrived. Valid ids, so this is placement.
+  //
+  // The summon was `execute at <player> run summon <id> ~dx ~ ~dz` - horizontally
+  // offset, and AT THE PLAYER'S EXACT Y, with no check that anything was there.
+  // Underground that is a coin flip against solid rock, and the coin was flipped
+  // ONCE per mob. Same session, same cave, two players a block apart:
+  //
+  //     goety:spider_servant     x2  -> measured 2
+  //     fallen_chaos_knight      x1  -> measured 0
+  //
+  // A knight needs more clearance than a spider and got a single blind try. So this
+  // does not "fix big mobs" - it stops guessing.
+  //
+  // 🚨 cave_air IS NOT air. Underground the block is `minecraft:cave_air`; testing
+  // for `minecraft:air` alone would make the finder fail EVERYWHERE IT IS NEEDED
+  // and silently fall back to the blind path, looking like no change at all.
+  //
+  // ⚠️ PROBED, NOT ASSUMED - godevents' canSeeSky rule. If this KubeJS build does
+  // not expose block reads, the finder reports so once and every wave takes the old
+  // path, which is exactly what shipped before.
+  // ═══════════════════════════════════════════════════════════════════════════
+  var FIND_TRIES = 12             // candidate columns per mob
+  var Y_LADDER = [0, 1, -1, 2, -2, 3, -3, 4, -4]
+  var readsWarned = false
+
+  function openAt(level, x, y, z) {
+    var b = null
+    try {
+      if (typeof level.getBlock !== 'function') return null
+      b = level.getBlock(x, y, z)
+    } catch (e) { return null }
+    if (!b) return null
+    try {
+      var id = String(b.id || '')
+      return id === 'minecraft:air' || id === 'minecraft:cave_air' || id === 'minecraft:void_air'
+    } catch (e) { return null }
+  }
+
+  // A mob needs two open blocks and something to stand on. Returns absolute coords
+  // or null - null means "did not find one", never "could not look", because the
+  // caller treats those the same way (fall back) but the LOG must not.
+  function findSpot(player, lo, hi) {
+    var level = null, px = 0, py = 0, pz = 0
+    try {
+      level = player.level
+      var bp = player.blockPosition()
+      px = bp.x; py = bp.y; pz = bp.z
+    } catch (e) { return null }
+    if (!level) return null
+
+    if (openAt(level, px, py + 40, pz) === null) {
+      if (!readsWarned) {
+        readsWarned = true
+        console.warn(TAG + 'block reads unavailable in this KubeJS build - the ground ' +
+          'finder is INERT and every wave takes the old blind path. Not fatal, but ' +
+          'placement failures underground will continue.')
+      }
+      return null
+    }
+
+    for (var i = 0; i < FIND_TRIES; i++) {
+      var angle = Math.random() * Math.PI * 2
+      var dist = lo + Math.random() * (hi - lo)
+      var x = px + Math.round(Math.cos(angle) * dist)
+      var z = pz + Math.round(Math.sin(angle) * dist)
+      for (var j = 0; j < Y_LADDER.length; j++) {
+        var y = py + Y_LADDER[j]
+        if (openAt(level, x, y, z) !== true) continue
+        if (openAt(level, x, y + 1, z) !== true) continue    // headroom
+        if (openAt(level, x, y - 1, z) !== false) continue   // a floor to stand on
+        return { x: x + 0.5, y: y, z: z + 0.5 }
+      }
+    }
+    return null
+  }
+
   // Returns { asked, placed, valid } - `placed` is MEASURED, and is null if the
   // count could not be taken. null and 0 are different answers.
   function wave(player, opts, onMeasured) {
@@ -188,22 +267,36 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     }
     var before = countNear(player, ids, hi + SCAN_PAD)
 
+    var blind = 0
     for (var k = 0; k < count; k++) {
       var id = ids[Math.floor(Math.random() * ids.length)]
-      var angle = Math.random() * Math.PI * 2
-      var dist = lo + Math.random() * (hi - lo)
-      var dx = Math.round(Math.cos(angle) * dist)
-      var dz = Math.round(Math.sin(angle) * dist)
+      var spot = findSpot(player, lo, hi)
       try {
         // ⚠️ NOT createEntity().spawn() - see the header. And the return value is
         // deliberately ignored: E0 P12 proved it is undefined either way, so the
         // scan below is the only honest evidence.
-        server.runCommandSilent(
-          'execute at ' + name + ' run summon ' + id + ' ~' + dx + ' ~ ~' + dz +
-          (opts.nbt ? ' ' + opts.nbt : ''))
+        if (spot) {
+          server.runCommandSilent('summon ' + id + ' ' +
+            spot.x + ' ' + spot.y + ' ' + spot.z + (opts.nbt ? ' ' + opts.nbt : ''))
+        } else {
+          // Fall back to the original blind shot rather than sending nothing. It is
+          // what shipped, so this can only ever be as bad as before, never worse.
+          blind++
+          var angle = Math.random() * Math.PI * 2
+          var dist = lo + Math.random() * (hi - lo)
+          var dx = Math.round(Math.cos(angle) * dist)
+          var dz = Math.round(Math.sin(angle) * dist)
+          server.runCommandSilent(
+            'execute at ' + name + ' run summon ' + id + ' ~' + dx + ' ~ ~' + dz +
+            (opts.nbt ? ' ' + opts.nbt : ''))
+        }
       } catch (e) {
         console.warn(TAG + 'summon threw for ' + id + ' :: ' + e)
       }
+    }
+    if (blind) {
+      say('no open spot found for ' + blind + ' of ' + count + ' - fell back to a ' +
+        'blind summon for those. Tight quarters, or block reads are unavailable.')
     }
 
     // ⚠️ MEASURE ON A LATER TICK. A /summon does not make the entity queryable in
