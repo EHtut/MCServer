@@ -38,6 +38,36 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var CHANCE = 0.06                // per roll; ~1 in 17 minutes of eligibility
   var LAST_KEY = 'veldora_idle_day_'   // world day, offset by one (0 = never)
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ THE DEEP SPEAKER GETS HIS OWN BUDGET AND HIS OWN ODDS.
+  //
+  // Ethan, live 2026-08-18: "i am on level -127 and we got no deepspeaker."
+  //
+  // 🔴 THE BUG: the Speaker was billed to `LAST_KEY + god` - THE SAME once-per-
+  // world-day allowance as ordinary idle chatter. So every "wall/combat" and
+  // "wall/guidance" a player collected on the surface SPENT the deep voice before
+  // they ever descended. The session log is full of them and contains not one
+  // [speaker] line.
+  //
+  // That does not just make him rare, it INVERTS the mechanic. The design is "your
+  // god cannot reach you down here, and something else speaks instead"; what
+  // shipped was "your god chats at you all day up top, and then nothing speaks at
+  // all". The silence read as the feature working.
+  //
+  // ⚠️ The guards themselves were right and stay exactly as they are - he must not
+  // talk over a ritual, and he must obey a daily cap. He was moved BELOW those
+  // guards deliberately (see the note in attempt()) after ignoring the cooldown and
+  // nearly landing a line inside the Harvest. This changes WHICH LEDGER he is
+  // billed to, not whether he is billed.
+  //
+  // And the odds: 6%/minute is right for a god muttering while you walk around, and
+  // wrong for the one voice at the bottom of the world. Descending past y-64 is a
+  // deliberate, expensive act; being met should not take seventeen minutes of
+  // loitering. It is still a roll, so he is never guaranteed on arrival.
+  // ═══════════════════════════════════════════════════════════════════════════
+  var DEEP_KEY = 'veldora_deep_day_'   // the Speaker's own ledger
+  var DEEP_CHANCE = 0.25               // ~1 in 4 minutes below the cutoff
+
   var COMBAT_WINDOW = 300          // ticks since damage that still counts as fighting
   var NEAR_RANGE = 16              // another champion this close is "with you"
 
@@ -188,15 +218,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // Never over a scene.
     try { if (VELDORA.ritual && VELDORA.ritual.active(p)) return null } catch (e) { }
 
+    // Which voice is on duty decides which ledger is charged. Read it BEFORE the
+    // daily check, because that check is the thing that was billing him wrongly.
+    var deep = false
+    try { deep = !!(VELDORA.speaker && VELDORA.speaker.active(p)) } catch (e) { }
+    var dayKey = (deep ? DEEP_KEY : LAST_KEY) + god
+
     if (!force) {
       if (now === null) return null            // no clock, no cooldown, no speech
       var stored = 0
-      try { stored = p.persistentData.getInt(LAST_KEY + god) } catch (e) { }
+      try { stored = p.persistentData.getInt(dayKey) } catch (e) { }
       if (stored) {
         var last = stored - 1
         // A stamp from the future means the clock moved (admins run /time set) -
         // re-stamp rather than going silent for ten thousand days.
-        if (last > now) { try { p.persistentData.putInt(LAST_KEY + god, now + 1) } catch (e) { } return null }
+        if (last > now) { try { p.persistentData.putInt(dayKey, now + 1) } catch (e) { } return null }
         if (last >= now) return null           // already spoke today
       }
     }
@@ -211,7 +247,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     try {
       if (VELDORA.speaker && VELDORA.speaker.active(p)) {
         if (VELDORA.speaker.say(p, 'common')) {
-          if (now !== null) { try { p.persistentData.putInt(LAST_KEY + god, now + 1) } catch (e) { } }
+          if (now !== null) { try { p.persistentData.putInt(dayKey, now + 1) } catch (e) { } }
           var who = 'a speaker'
           try {
             var sp = VELDORA.speaker.forPath ? VELDORA.speaker.forPath(p) : null
@@ -247,12 +283,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // is a prisoner here too, he feels attachment to the spider he claims to
       // despise - and none of that should ever be common enough to become wallpaper.
       if (Math.random() < RARE_CHANCE && VELDORA.voice.say(p, god, 'rare_' + tag)) {
-        if (now !== null) { try { p.persistentData.putInt(LAST_KEY + god, now + 1) } catch (e) { } }
+        if (now !== null) { try { p.persistentData.putInt(dayKey, now + 1) } catch (e) { } }
         console.info(TAG + p.username + ' <- ' + god + '/rare_' + tag)
         return 'rare_' + tag
       }
       if (VELDORA.voice.say(p, god, tag)) {
-        if (now !== null) { try { p.persistentData.putInt(LAST_KEY + god, now + 1) } catch (e) { } }
+        if (now !== null) { try { p.persistentData.putInt(dayKey, now + 1) } catch (e) { } }
         console.info(TAG + p.username + ' <- ' + god + '/' + tag)
         return tag
       }
@@ -265,7 +301,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (!GATE) { schedule(server); return }
       var players = server.players
       for (var i = 0; i < players.length; i++) {
-        if (Math.random() > CHANCE) continue
+        // ⭐ The deep voice rolls four times as often. Above the cutoff nothing
+        // changes - this is not a global chattiness increase.
+        var odds = CHANCE
+        try {
+          if (VELDORA.speaker && VELDORA.speaker.active(players[i])) odds = DEEP_CHANCE
+        } catch (e) { }
+        if (Math.random() > odds) continue
         attempt(server, players[i], false)
       }
     } catch (e) { console.warn(TAG + 'sweep threw :: ' + e) }
