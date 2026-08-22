@@ -300,6 +300,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // him everywhere or letting him speak in daylight.
   // ═══════════════════════════════════════════════════════════════════════════
   var DEPTH_Y = 0                 // "in negative y"
+  // The rule, in one place, so no banner can restate it wrongly. See the note at
+  // the boot report.
+  var DESCRIBE = 'the depths (below y' + DEPTH_Y + ' with no sky above; falls back ' +
+    'to a flat y' + CUTOFF_Y + ' if this build cannot read sky)'
 
   function seesSky(p) {
     try {
@@ -585,11 +589,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       names.push(path + ':' + s.name)
     }
     confessionSweep(event.server)
-    console.info(TAG + 'below y' + CUTOFF_Y + ' your god cannot reach you. ' +
+    // ⚠️ THE FIFTH STALE BANNER IN FOUR DAYS. This announced "below y-64" for hours
+    // after the rule became "below y0 AND no sky" - and it is the ONE line that
+    // tells anyone what the rule is. The others were wall_events crediting minions
+    // for rage, salvage advertising the wrong interval, killorder denying its own
+    // registry, idle claiming a cap that had been deleted.
+    //
+    // 🔑 THE PATTERN IS NOT CARELESSNESS, IT IS DUPLICATION. Every one of them
+    // restated a rule that lived somewhere else, so editing the rule left the
+    // sentence behind. DESCRIBE() is derived from the same values belowCutoff()
+    // actually reads, so the two cannot disagree.
+    console.info(TAG + DESCRIBE + ' - your god cannot reach you there. ' +
       names.length + ' speaker(s): ' + names.join(', ') + '.')
     console.info(TAG + 'confessions are PHASE-PACED (' + CONFESSION_PHASES.join(' -> ') +
       '), ' + Math.round(CONFESSION_CHANCE * 100) + '% per ' + CONFESSION_SWEEP +
-      't once due. You must have MET them below y' + CUTOFF_Y + ' first.')
+      't once due. You must have MET them there first.')
     console.info(TAG + 'a path with no speaker gets SILENCE down there, not a stand-in.')
   })
 })();
