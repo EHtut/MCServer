@@ -18,7 +18,7 @@ in this repo has died before.
 
 ---
 
-## blade — 5 pool(s)
+## blade — 6 pool(s)
 
 | tag | to rewrite | ⭐ yours, keep | file |
 |---|---:|---:|---|
@@ -27,8 +27,9 @@ in this repo has died before.
 | `argue_threat` | 3 | — | [`blade_voice.js:270`](../pack/kubejs/server_scripts/blade_voice.js) |
 | `argue_refuse` | 2 | 1 | [`blade_voice.js:270`](../pack/kubejs/server_scripts/blade_voice.js) |
 | `argue_unanswered` | 3 | — | [`blade_voice.js:271`](../pack/kubejs/server_scripts/blade_voice.js) |
+| `warn_wave` | 4 | — | [`blade_voice.js:277`](../pack/kubejs/server_scripts/blade_voice.js) |
 
-## salvage — 12 pool(s)
+## salvage — 13 pool(s)
 
 | tag | to rewrite | ⭐ yours, keep | file |
 |---|---:|---:|---|
@@ -43,9 +44,10 @@ in this repo has died before.
 | `argue_threat` | 3 | — | [`salvage_voice.js:80`](../pack/kubejs/server_scripts/salvage_voice.js) |
 | `argue_refuse` | 3 | — | [`salvage_voice.js:80`](../pack/kubejs/server_scripts/salvage_voice.js) |
 | `argue_unanswered` | 3 | — | [`salvage_voice.js:81`](../pack/kubejs/server_scripts/salvage_voice.js) |
-| `warn_incoming` | 6 | — | [`salvage_voice.js:114`](../pack/kubejs/server_scripts/salvage_voice.js) |
+| `warn_wave` | 4 | — | [`salvage_voice.js:88`](../pack/kubejs/server_scripts/salvage_voice.js) |
+| `warn_incoming` | 6 | — | [`salvage_voice.js:124`](../pack/kubejs/server_scripts/salvage_voice.js) |
 
-## wall — 9 pool(s)
+## wall — 10 pool(s)
 
 | tag | to rewrite | ⭐ yours, keep | file |
 |---|---:|---:|---|
@@ -58,10 +60,11 @@ in this repo has died before.
 | `argue_threat` | 2 | 1 | [`wall_voice.js:315`](../pack/kubejs/server_scripts/wall_voice.js) |
 | `argue_refuse` | 3 | — | [`wall_voice.js:315`](../pack/kubejs/server_scripts/wall_voice.js) |
 | `argue_unanswered` | 3 | — | [`wall_voice.js:316`](../pack/kubejs/server_scripts/wall_voice.js) |
+| `warn_wave` | 4 | — | [`wall_voice.js:322`](../pack/kubejs/server_scripts/wall_voice.js) |
 
 ---
 
-**95 drafted lines across 26 pools.**
+**107 drafted lines across 29 pools.**
 
 Ethan's own writing is NOT listed here — his lines carry no marker, which is
 the whole point of the convention. Where a pool is mixed (his first line, drafts

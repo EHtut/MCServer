@@ -319,6 +319,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // "look what you did to it". A champion is a possession that has been damaged,
     // and the horror is that she means it kindly.
     // ═══════════════════════════════════════════════════════════════════════
+    // [CLAUDE-DRAFT] wall/warn_wave
+    // ⭐ THE TELL (docs/50). She is not pleased - she is frightened FOR you, which is
+    // the same information delivered as dread instead of appetite.
+    warn_wave: [
+      'Something is awake down there and it has noticed you.',
+      'Get your back to a wall. Please. Now.',
+      'They are coming. I cannot stop this one.',
+      'Do not run deeper. Whatever you do, not deeper.',
+    ],
+
     argue_accuse: [
       'Your champion keeps hurting mine, they keep murdering mine!',
       'Do you know what they look like when they come back? Do you ever look?',

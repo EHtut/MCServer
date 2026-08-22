@@ -274,6 +274,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // annoy her, he genuinely believes a champion who can be killed repeatedly has
     // told you what it is. He never raises his voice and never apologises.
     // ═══════════════════════════════════════════════════════════════════════
+    // [CLAUDE-DRAFT] blade/warn_wave
+    // ⭐ THE TELL (docs/50). Must NEVER share a pool with ordinary lines - the whole
+    // value is that hearing it means something is coming. He is pleased about it.
+    warn_wave: [
+      'Something is coming up behind you. Good.',
+      'Do you hear that? Stand where you are.',
+      'Company. Earn the ground you are standing on.',
+      'Here. Now we find out.',
+    ],
+
     argue_accuse: [
       'Your champion has put mine in the dirt three times. I am beginning to take it personally.',
       'Call it off, or admit you enjoy this.',

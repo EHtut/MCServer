@@ -85,6 +85,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // that contrast is most of the joke, and she should read as the only adult in
     // a room full of gods. Her threat is the shortest thing she ever says.
     // ═══════════════════════════════════════════════════════════════════════
+    // [CLAUDE-DRAFT] salvage/warn_wave
+    // ⭐ THE TELL (docs/50). Flat, practical, <=3 sentences - and she is the only one
+    // who mentions the exit, because she is the only one who thinks leaving counts.
+    warn_wave: [
+      "Something's coming. Count your ammo.",
+      "That's a lot of feet. I'd find a corner.",
+      "Incoming. You can still walk out of this one.",
+      "Heads up. This is the part you paid me for.",
+    ],
+
     argue_accuse: [
       "Your one keeps killing mine. I'd like that to stop being a habit.",
       "We're going to have a problem, and I hate problems. They cost.",
