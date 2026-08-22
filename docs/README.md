@@ -89,6 +89,10 @@ original chunk plan; **the live state lives in 34**) · `34-THE-REMAINING-BUILD`
 `35-WALL-REFRESH` · **`47-THE-RELEASE-SYSTEM`** (how each god puts you down —
 never / 4 buff-deaths / 3 refusals)
 
+**The patrons, per-god** — `40-BLADE-THE-WARRIOR` · `43-WALL-THE-SPIDER` ·
+`44-SALVAGE-LINES` · **`53-MATRIARCH-KAYER`** (2026-08-22 — replaces "The Nightmare"
+wholesale; her release condition is CAPABILITY, not failure)
+
 **Next direction** *(captured 2026-08-18, unscoped)* —
 **`52-EARNING-THE-PATH`** (the item makes you NOTICED not chosen · Forge + Art +
 Undeath · villagers as player models)
