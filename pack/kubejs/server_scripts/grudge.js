@@ -74,6 +74,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     wall: { spiders: true },
     art: null,                    // "Art - Nothing again because art doesn't care"
   }
+  // 🚨 AUDIT 2026-08-18: `crown` was MISSING from LASH, so a Crown champion's god
+  // did nothing and the log announced "crown does not retaliate - that is the
+  // posture", which was a lie: there was no posture, there was a gap. This is the
+  // SAME defect found in warn.js this morning and reintroduced here hours later -
+  // crown aliases wall in coefficients.js, in warn.js and in paths.js, and it has to
+  // be resolved everywhere or it silently falls through every table it is missing
+  // from. Resolved rather than duplicated, so the two can never drift.
+  var ALIAS = { crown: 'wall' }
+  function resolveGod(g) { return ALIAS[g] || g }
+
   var WALL_SPIDERS = ['goety:spider_servant', 'minecraft:cave_spider']
   var WALL_COUNT = 5
 
@@ -88,11 +98,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   function pathOf(p) {
     try { if (VELDORA.paths) return VELDORA.paths.pathOf(p) || '' } catch (e) { }
     return ''
-  }
-
-  function titleOf(god) {
-    try { if (VELDORA.warn && VELDORA.warn.titleOf) return VELDORA.warn.titleOf(god) } catch (e) { }
-    return god
   }
 
   // ── the ticker ─────────────────────────────────────────────────────────────
@@ -133,8 +138,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   // ── D: the argument, which IS this event's narration ───────────────────────
-  function argue(server, wronged, rival) {
+  function argue(server, wronged, rival, onDone) {
     if (!VELDORA.broadcast) return 'no-broadcast'
+    wronged = resolveGod(wronged); rival = resolveGod(rival)
+    if (wronged === rival) return 'same-god'
     // ⭐ Art has no argue pools by design. The other god still gets to notice, which
     // is the loudest possible way to render "art doesn't care" - the absence becomes
     // content instead of an exchange that silently never happens.
@@ -143,18 +150,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       return VELDORA.broadcast.exchange(server, [
         { god: wronged, tag: 'argue_accuse' },
         { god: wronged, tag: 'argue_unanswered' },
-      ], { why: wronged + ' accuses ' + rival + ' (no answer)' })
+      ], { why: wronged + ' accuses ' + rival + ' (no answer)', onDone: onDone })
     }
     return VELDORA.broadcast.exchange(server, [
       { god: wronged, tag: 'argue_accuse' },
       { god: rival, tag: 'argue_answer' },
       { god: wronged, tag: 'argue_threat' },
       { god: rival, tag: 'argue_refuse' },
-    ], { why: wronged + ' vs ' + rival })
+    ], { why: wronged + ' vs ' + rival, onDone: onDone })
   }
 
   // ── C: the reprisal ────────────────────────────────────────────────────────
   function lash(server, god, killer) {
+    god = resolveGod(god)
     var spec = LASH[god]
     if (spec === null || spec === undefined) {
       // Logged, so "art is indifferent" and "the hook is dead" are never the same
@@ -165,6 +173,24 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     }
     var name = '?'
     try { name = String(killer.username) } catch (e) { return 'no-name' }
+
+    // ⚠️ THE REPRISAL IS DEFERRED ~8s BEHIND THE ARGUMENT, so by the time it lands
+    // the killer may have logged out and this handle is stale. `effect give` on a
+    // missing name fails harmlessly, but spawner.wave() reads player.server and
+    // scans entities around them - on a stale object that throws. Both call sites
+    // catch, so it was never fatal, but it would have logged a confusing stack
+    // instead of the plain fact that somebody left.
+    var here = false
+    try {
+      var ps = server.players
+      for (var i = 0; i < ps.length; i++) {
+        try { if (String(ps[i].username) === name) { killer = ps[i]; here = true; break } } catch (e) { }
+      }
+    } catch (e) { }
+    if (!here) {
+      console.info(TAG + name + ' logged out before ' + god + ' could answer - reprisal dropped')
+      return 'gone'
+    }
 
     if (spec.spiders) {
       // She sends something rather than taking something - the only physical answer
@@ -223,8 +249,33 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
       clear(victim, kName)                      // reset on fire, never a ratchet
 
-      if (!sameGod && rival) argue(server, god, rival)
-      lash(server, god, killer)
+      // ═══════════════════════════════════════════════════════════════════════
+      // 🚨 THE REPRISAL LANDS AFTER THE WORDS.  Audit 2026-08-18.
+      //
+      // This called argue() and lash() on the same tick. The exchange paces its
+      // four lines over ~160 ticks, so the debuff or the spiders arrived EIGHT
+      // SECONDS BEFORE the threat that explains them - which is precisely
+      // backwards from what docs/49 §4 says this design is for: "the argument
+      // stops being two gods bickering and becomes the moment before something
+      // lands". It was landing first and being narrated afterwards.
+      //
+      // ⚠️ AND A VOICE FAILURE MUST NEVER DISARM THE MECHANIC. onDone only fires
+      // if the exchange actually went out; every other outcome - no pools, no
+      // broadcast seam, same god, an exchange already running - means nobody is
+      // going to say anything, and the reprisal must still land immediately.
+      // That invariant is asserted in the harness and it is the one that makes
+      // this safe to defer at all.
+      // ═══════════════════════════════════════════════════════════════════════
+      var fired = false
+      function reprisal() {
+        if (fired) return                       // belt and braces: exactly once
+        fired = true
+        lash(server, god, killer)
+      }
+
+      var narrated = 'none'
+      if (!sameGod && rival) narrated = argue(server, god, rival, reprisal)
+      if (narrated !== 'sent') reprisal()
     } catch (e) { console.warn(TAG + 'death hook threw :: ' + e) }
   })
 

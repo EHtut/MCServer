@@ -122,18 +122,28 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
     busy = true
     var sent = 0
-    for (var j = 0; j < out.length; j++) {
-      (function (row, delay) {
-        server.scheduleInTicks(delay, function () {
-          try {
-            var ps = audience(server)
-            for (var k = 0; k < ps.length; k++) {
-              try { ps[k].tell(Text.of(colourOf(row.god) + row.text)) } catch (e) { }
-            }
-            sent++
-          } catch (e) { console.warn(TAG + 'line threw :: ' + e) }
-        })
-      })(out[j], LEAD + j * GAP)
+    // 🚨 AUDIT 2026-08-18: `busy` was set BEFORE this loop and released only by a
+    // scheduled callback. If scheduleInTicks itself threw, the flag latched true and
+    // the pantheon went permanently mute with nothing in the log saying why - a total
+    // failure behind a one-line window. Low odds, unbounded consequence.
+    try {
+      for (var j = 0; j < out.length; j++) {
+        (function (row, delay) {
+          server.scheduleInTicks(delay, function () {
+            try {
+              var ps = audience(server)
+              for (var k = 0; k < ps.length; k++) {
+                try { ps[k].tell(Text.of(colourOf(row.god) + row.text)) } catch (e) { }
+              }
+              sent++
+            } catch (e) { console.warn(TAG + 'line threw :: ' + e) }
+          })
+        })(out[j], LEAD + j * GAP)
+      }
+    } catch (e) {
+      busy = false
+      console.error(TAG + 'could not schedule "' + (opts.why || '?') + '" :: ' + e)
+      return 'threw'
     }
 
     // ⚠️ Release on a timer, not in the last line's callback. If a line throws, the
@@ -143,6 +153,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       busy = false
       console.info(TAG + '"' + (opts.why || 'exchange') + '" delivered ' + sent + '/' +
         out.length + ' lines to ' + who.length + ' player(s)')
+      // ⭐ onDone exists so a caller can land something AFTER the words. The Grudge
+      // needs it: its reprisal was firing on the same tick the argument STARTED, so
+      // the punishment beat its own explanation by eight seconds.
+      if (typeof opts.onDone === 'function') {
+        try { opts.onDone() } catch (e) { console.warn(TAG + 'onDone threw :: ' + e) }
+      }
     })
 
     return 'sent'

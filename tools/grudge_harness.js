@@ -27,11 +27,17 @@ let POOLS = {}
 let PATHS = {}
 let DEATH_HOOKS = []
 let TIMERS = []        // [delay, fn] - drained manually so pacing is testable
+// ⚠️ TOLD / EFFECTS / WAVES are separate arrays, so nothing in this file could
+// answer "did the punishment land before or after the words". It could not, and a
+// real ordering bug sat green through 35 assertions. ORDER is the shared timeline.
+let ORDER = []
 
 const server = {
   overworld: () => ({ dayTime: () => TICKS }),
   scheduleInTicks: (d, fn) => { TIMERS.push([d, fn]) },
-  runCommandSilent: (c) => { if (c.indexOf('effect give') === 0) EFFECTS.push(c) },
+  runCommandSilent: (c) => {
+    if (c.indexOf('effect give') === 0) { EFFECTS.push(c); ORDER.push('LASH') }
+  },
   runCommand: () => '',
 }
 Object.defineProperty(server, 'players', { get: () => ONLINE })
@@ -56,7 +62,10 @@ function mkPlayer(name, path) {
   PATHS[name] = path
   return {
     username: name, uuid: 'u-' + name, player: true, server,
-    tell: (s) => TOLD.push({ to: name, text: String(s) }),
+    tell: (s) => {
+      TOLD.push({ to: name, text: String(s) })
+      if (name === 'Vic') ORDER.push('SAY')      // one player's view, so lines count once
+    },
     persistentData: {
       getInt: (k) => store[k] || 0, putInt: (k, v) => { store[k] = v },
       getDouble: (k) => store[k] || 0, putDouble: (k, v) => { store[k] = v },
@@ -76,7 +85,9 @@ global.VELDORA = {
       return (pool && pool.length) ? pool[0] : null
     },
   },
-  spawner: { wave: (p, o) => { WAVES.push({ to: p.username, count: o.count, ids: o.ids }) } },
+  spawner: {
+    wave: (p, o) => { WAVES.push({ to: p.username, count: o.count, ids: o.ids }); ORDER.push('LASH') },
+  },
   warn: { titleOf: (g) => 'the ' + g },
 }
 
@@ -110,7 +121,7 @@ function fullPools() {
   }
 }
 function reset() {
-  TOLD = []; EFFECTS = []; WAVES = []; TIMERS = []; PATHS = {}
+  TOLD = []; EFFECTS = []; WAVES = []; TIMERS = []; PATHS = {}; ORDER = []
   POOLS = fullPools(); TICKS = 100000
 }
 function kill(victim, killer) {
@@ -224,6 +235,56 @@ grp('SAME GOD ON BOTH SIDES — grief, but no argument')
   drain()
   ok('a god never accuses ITSELF', TOLD.length, 0)
   ok('...but the reprisal is real, because the grief is', WAVES.length, 1)
+}
+
+grp('🚨 THE AUDIT — the reprisal must land AFTER the words')
+{
+  // Found by reading the code, NOT by this harness, which stayed green through it:
+  // argue() and lash() were called on the same tick, so the debuff arrived ~8s
+  // before the threat explaining it - backwards from docs/49 §4's whole thesis.
+  reset()
+  const v = mkPlayer('Vic', 'wall'), k = mkPlayer('Kil', 'blade')
+  ONLINE = [v, k]
+  for (let i = 0; i < 4; i++) kill(v, k)
+  drain()
+  ok('nothing is punished before the argument even starts', ORDER[0], 'SAY')
+  ok('🔑 the reprisal is the LAST thing that happens', ORDER[ORDER.length - 1], 'LASH')
+  ok('...all four lines land first', ORDER.join(','), 'SAY,SAY,SAY,SAY,LASH')
+}
+
+grp('...but a silent pantheon must NOT disarm it')
+{
+  // onDone only fires when an exchange actually goes out. Every other outcome means
+  // nobody will say anything, and the reprisal has to land anyway - the pools are
+  // EMPTY in the live game right now, so this is the common path, not the edge one.
+  reset()
+  POOLS = {}                                    // nobody has a line
+  const v = mkPlayer('Vic', 'wall'), k = mkPlayer('Kil', 'blade')
+  ONLINE = [v, k]
+  for (let i = 0; i < 4; i++) kill(v, k)
+  ok('🚨 with no pools at all the reprisal STILL lands, immediately', WAVES.length, 1)
+  ok('...and nothing was said', TOLD.length, 0)
+  drain()
+  ok('🚨 and it does not fire a SECOND time once timers drain', WAVES.length, 1)
+}
+
+grp('CROWN — the alias this audit caught, twice in one day')
+{
+  // crown was missing from LASH entirely, so a Crown champion's god did nothing and
+  // the log called it a posture. Same defect as warn.js this morning, reintroduced.
+  reset()
+  const k = mkPlayer('Kil', 'blade'); ONLINE = [mkPlayer('X', 'crown'), k]
+  ok('crown retaliates as the Spider does', G.lash(server, 'crown', k), 'spiders')
+  ok('...and is NOT reported as indifferent', G.lash(server, 'crown', k) === 'no-posture', false)
+
+  reset()
+  const v2 = mkPlayer('Vic', 'crown'), k2 = mkPlayer('Kil', 'wall')
+  ONLINE = [v2, k2]
+  for (let i = 0; i < 4; i++) kill(v2, k2)
+  drain()
+  // crown IS wall, so this is the same god on both sides however it is spelled.
+  ok('a crown victim and a wall killer share a god - no argument', TOLD.length, 0)
+  ok('...but the reprisal is still real', WAVES.length, 1)
 }
 
 grp('BROADCAST — the guards')
