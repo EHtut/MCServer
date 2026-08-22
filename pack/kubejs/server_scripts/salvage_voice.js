@@ -61,6 +61,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // writes. TODO(ethan).
     // ═══════════════════════════════════════════════════════════════════════
     // ⭐ THE FOUR ROWS HER CHART RATED AND SHE HAD NOTHING IN (docs/23 §VI.0).
+    // [CLAUDE-DRAFT] salvage/bounty_offer · salvage/bounty_paid
+    // [CLAUDE-DRAFT] salvage/sabotage_offer · salvage/favour_offer
+    // [CLAUDE-DRAFT] salvage/favour_done · salvage/favour_told
     // Drafts, 2026-08-16 - Ethan authorised these, the loop being: he plays, and
     // anything that does not fit comes back as "here's a better line".
     //
@@ -70,6 +73,45 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // except to take the piss out of them.
     // ═══════════════════════════════════════════════════════════════════════
 
+    // ═══════════════════════════════════════════════════════════════════════
+    // THE ARGUMENT (docs/49 §4).
+    //
+    // [CLAUDE-DRAFT] salvage/argue_accuse · salvage/argue_answer
+    // [CLAUDE-DRAFT] salvage/argue_threat · salvage/argue_refuse
+    // [CLAUDE-DRAFT] salvage/argue_unanswered
+    //
+    // Her rules hold even here: <=3 sentences, contractions, trade vocabulary, and
+    // she is the one who stops talking. The other four SERMONISE at each other -
+    // that contrast is most of the joke, and she should read as the only adult in
+    // a room full of gods. Her threat is the shortest thing she ever says.
+    // ═══════════════════════════════════════════════════════════════════════
+    argue_accuse: [
+      "Your one keeps killing mine. I'd like that to stop being a habit.",
+      "We're going to have a problem, and I hate problems. They cost.",
+      "Mine's died to yours four times now. I counted. I always count.",
+    ],
+    argue_answer: [
+      "Mine did what it was paid to. Take it up with the buyer.",
+      "That's a fight, not a crime. You've met fights before.",
+      "You want an apology? I don't stock them.",
+    ],
+    argue_threat: [
+      "Fix it, or I will.",
+      "I'm not going to shout about this. I'm just going to make it expensive.",
+      "Last time I asked nicely. Note the tense.",
+    ],
+    argue_refuse: [
+      "No.",
+      "You've mistaken me for someone who bargains from behind.",
+      "Try it. I'll be interested to see what it costs you.",
+    ],
+    argue_unanswered: [
+      "Nothing. Right. That's an answer too, and I'll price it as one.",
+      "Not even a word. Gods, the lot of you.",
+      "Fine. I'll assume that's a yes and act accordingly.",
+    ],
+
+    // [CLAUDE-DRAFT] salvage/warn_incoming
     // ⭐ THE WARNING (docs/49 §2). DRAFT, 2026-08-18 - Ethan: "we will draft them
     // the same way i did for wall", the loop being that he plays and anything that
     // does not fit comes back as "here's a better line". Reasoning in docs/44 §0c.

@@ -108,6 +108,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // fit comes back as "here's a better line". Every line here is a FIRST DRAFT
     // awaiting that.
     //
+    // [CLAUDE-DRAFT] wall/snare_hit · wall/dark_hit
+    // [CLAUDE-DRAFT] wall/web_hit · wall/swarm_hit
+    //
     // Until now snare, dark, web and swarm ALL said `high_hostile`. Blindness,
     // slowness, five spiders and nine spiders are mechanically distinct and were
     // audibly identical - and it is her most distinctive content in the game.
@@ -304,6 +307,45 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "It won't happen again.",
       "Come. We have things to do.",
     ],
+    // ═══════════════════════════════════════════════════════════════════════
+    // THE ARGUMENT (docs/49 §4). Spoken ALOUD, to every player, when a grudge
+    // fires. Line 1 of accuse and line 1 of threat are ETHAN'S, verbatim.
+    //
+    // [CLAUDE-DRAFT] wall/argue_accuse[keep1] · wall/argue_answer
+    // [CLAUDE-DRAFT] wall/argue_threat[keep1] · wall/argue_refuse
+    // [CLAUDE-DRAFT] wall/argue_unanswered
+    //
+    // Her register: grief, never rage. She does not say "how dare you", she says
+    // "look what you did to it". A champion is a possession that has been damaged,
+    // and the horror is that she means it kindly.
+    // ═══════════════════════════════════════════════════════════════════════
+    argue_accuse: [
+      'Your champion keeps hurting mine, they keep murdering mine!',
+      'Do you know what they look like when they come back? Do you ever look?',
+      'I put that one back together four times. Four.',
+      'You let yours do this. You could have called them off and you did not.',
+    ],
+    argue_answer: [
+      'Mine has never touched yours. Mine stays home.',
+      'You say that as though I started it.',
+      'I do not send them anywhere. That is the difference between us.',
+    ],
+    argue_threat: [
+      'You will regret your words, warrior.',
+      'Then I will stop asking, and you will not enjoy what comes after.',
+      'I have been very patient. Ask anyone who is left.',
+    ],
+    argue_refuse: [
+      'No. Not this time.',
+      'You may have that opinion. You may not have my champion.',
+      'I am not going to argue with you. I am going to do something about it.',
+    ],
+    argue_unanswered: [
+      'Nothing. It never answers. It just watches them bleed and calls it weather.',
+      'Say something. Say anything. ...No. Of course not.',
+      'It does not even look up. That is what you are all like, underneath.',
+    ],
+
     // ⭐ THE WARNING (docs/49 §2). ETHAN'S WRITING, 2026-08-16.
     //
     // She says RUN, and offers to stand in front of you. Blade's equivalent says

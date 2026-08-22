@@ -89,6 +89,10 @@ original chunk plan; **the live state lives in 34**) · `34-THE-REMAINING-BUILD`
 `35-WALL-REFRESH` · **`47-THE-RELEASE-SYSTEM`** (how each god puts you down —
 never / 4 buff-deaths / 3 refusals)
 
+**Writing** — **`51-LINES-TO-REFRESH`** (GENERATED: every pool Claude drafted and
+Ethan has not yet swept, from `[CLAUDE-DRAFT]` markers in the source — regenerate with
+`python tools/gen_lines.py`) · `27-THE-SIX-VOICES` · `28-THE-SCENES`
+
 **The gods against each other** *(new axis, 2026-08-16)* —
 **`49-RETALIATION-AND-DEFECTION`** (the Warning · the Interception · the Grudge · the
 Argument; **A is built**, the rest design) · **`50-THE-TIDE`** (the Darktide loop for

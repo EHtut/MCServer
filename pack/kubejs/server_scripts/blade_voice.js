@@ -262,6 +262,44 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "I am done watching.",
       "That will do. For now.",
     ],
+    // ═══════════════════════════════════════════════════════════════════════
+    // THE ARGUMENT (docs/49 §4). Line 1 of answer and line 1 of refuse are
+    // ETHAN'S, verbatim - and "Then let me." is the best line in the exchange.
+    //
+    // [CLAUDE-DRAFT] blade/argue_accuse · blade/argue_answer[keep1]
+    // [CLAUDE-DRAFT] blade/argue_threat · blade/argue_refuse[keep1]
+    // [CLAUDE-DRAFT] blade/argue_unanswered
+    //
+    // His register: contempt as DOCTRINE, not as insult. He is not being cruel to
+    // annoy her, he genuinely believes a champion who can be killed repeatedly has
+    // told you what it is. He never raises his voice and never apologises.
+    // ═══════════════════════════════════════════════════════════════════════
+    argue_accuse: [
+      'Your champion has put mine in the dirt three times. I am beginning to take it personally.',
+      'Call it off, or admit you enjoy this.',
+      'You are wasting a good fighter on ambushes. That is what offends me.',
+    ],
+    argue_answer: [
+      'So? That means they were weak.',
+      'Then it should not have died. I fail to see the complaint.',
+      'You are describing a fight. I do not know what you want from me.',
+    ],
+    argue_threat: [
+      'Do it again and I stop being polite about it.',
+      'I will take it out of yours. Slowly, and where it can be seen.',
+      'You have one more. Spend it carefully.',
+    ],
+    argue_refuse: [
+      'Then let me.',
+      'I have been threatened by better and buried them.',
+      'Do what you like. I will not pretend to be frightened.',
+    ],
+    argue_unanswered: [
+      'Silence. From a god. What a waste of a throne.',
+      'It says nothing, so it agrees with me. That is how I will take it.',
+      'Answer me. ...No? Then I was right, and we are done.',
+    ],
+
     // ⭐ THE WARNING (docs/49 §2). ETHAN'S WRITING, 2026-08-16 - fixed a typo
     // ("challege") and a comma splice, no words changed.
     //
