@@ -89,6 +89,10 @@ original chunk plan; **the live state lives in 34**) · `34-THE-REMAINING-BUILD`
 `35-WALL-REFRESH` · **`47-THE-RELEASE-SYSTEM`** (how each god puts you down —
 never / 4 buff-deaths / 3 refusals)
 
+**Next direction** *(captured 2026-08-18, unscoped)* —
+**`52-EARNING-THE-PATH`** (the item makes you NOTICED not chosen · Forge + Art +
+Undeath · villagers as player models)
+
 **Writing** — **`51-LINES-TO-REFRESH`** (GENERATED: every pool Claude drafted and
 Ethan has not yet swept, from `[CLAUDE-DRAFT]` markers in the source — regenerate with
 `python tools/gen_lines.py`) · `27-THE-SIX-VOICES` · `28-THE-SCENES`
