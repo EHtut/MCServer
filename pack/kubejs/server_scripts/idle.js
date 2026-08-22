@@ -377,8 +377,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   ServerEvents.loaded(function (event) {
     if (!GATE) { console.info(TAG + 'idle speech GATED OFF'); return }
     schedule(event.server)
-    console.info(TAG + 'contextual idle LIVE - once per world day per god, ' +
-      Math.round(CHANCE * 100) + '% per ' + TICK + 't roll. Contexts: hold, ' +
-      'location, combat, nearby champion.')
+    // ⚠️ THE FOURTH LYING BANNER THIS SESSION. It still read "once per world day
+    // per god" after that cap was replaced by a real-time floor - so the one line
+    // that reports this file's behaviour described the exact thing Ethan asked to
+    // have removed. Banners are strings; no harness reads strings; and this repo
+    // uses them as its primary liveness instrument. Derived from the constants now,
+    // so it cannot drift again.
+    console.info(TAG + 'contextual idle LIVE - no daily cap (removed 2026-08-18), ' +
+      Math.round(CHANCE * 100) + '% per ' + TICK + 't roll with a ' +
+      Math.round(GAP_TICKS / 20) + 's floor; the deep Speaker rolls ' +
+      Math.round(DEEP_CHANCE * 100) + '% on his own ledger with a ' +
+      Math.round(DEEP_GAP / 20) + 's floor. Contexts: hold, location, combat, ' +
+      'nearby champion.')
   })
 })();

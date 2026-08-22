@@ -277,7 +277,19 @@
         // that the existing metals were already right.
         ['minecraft:iron_ingot', 'minecraft:leather', 'minecraft:iron_ingot',
          'minecraft:arrow', 'farmersdelight:smoked_ham'],
-        ['minecraft:iron_ingot', 'magistuarmory:bronze_ingot', 'minecraft:gold_ingot',
+        // 🚨 `magistuarmory:bronze_ingot` WAS NOT A REAL ITEM. Live boot 2026-08-22:
+        // "Item with ID magistuarmory:bronze_ingot does not exist!" - Magistuarmory
+        // registers steel but config-gates bronze, so a third of Blade's shallow
+        // tier had been paying NOTHING, silently, since long before today.
+        //
+        // ⚠️ AND IT IS IN THE JAR'S LANG FILE. Every id in this batch was resolved by
+        // reading display names out of the mod jars, and this proves that method has
+        // a hole: A LANG ENTRY IS NOT PROOF OF REGISTRATION. Only the running server
+        // knows. The validator below now asks it.
+        //
+        // createbigcannons:bronze_ingot is real (probed), and keeps his bronze-deep /
+        // steel-deeper ladder intact rather than flattening it to a vanilla metal.
+        ['minecraft:iron_ingot', 'createbigcannons:bronze_ingot', 'minecraft:gold_ingot',
          'minecraft:arrow', 'farmersdelight:cooked_mutton_chops'],
         // ⚠️ bronze was in tiers 1 AND 2, which made a third of every sealed-floor
         // kill pay the SAME ingot as the tier above it - a dud pull next to diamond
@@ -1291,6 +1303,34 @@
   // A bad id yields air or throws; either way it is caught and named, with the
   // path and tier it came from, so a typo is a boot line and not a mystery.
   // ═══════════════════════════════════════════════════════════════════════════
+  // 🚨 IT KILLED THE FILE IT WAS PROTECTING.  Live boot, 2026-08-22:
+  //
+  //   paths.js#1304: Failed to read item stack from magistuarmory:bronze_ingot:
+  //   Item with ID magistuarmory:bronze_ingot does not exist!
+  //   Loaded 45/46 KubeJS server scripts with 1 errors
+  //
+  // paths.js DID NOT LOAD. The whole path system - claims, payouts, the nudge, the
+  // seams every other file reads - was gone, because the guard I added to catch a
+  // bad id could not survive finding one. Item.of() on an unknown id raises through
+  // KubeJS's own reader in a way a JS try/catch around it does not contain.
+  //
+  // ⚠️ TWO SEPARATE MISTAKES, and the second is the bad one:
+  //   1. Item.of() is the wrong probe - it is a CONSTRUCTOR, not a test.
+  //   2. The validation ran in the script BODY, so anything it did could take the
+  //      file with it. A check whose failure is worse than the thing it checks for
+  //      is not a check.
+  //
+  // Deferred a tick, exactly like the boot reports in godevents / killorder / warn.
+  // By then paths.js has finished loading and published everything; the worst a
+  // broken validator can now do is fail to report.
+  ServerEvents.loaded(function (ev) {
+    ev.server.scheduleInTicks(1, function () {
+      try { validateDrops(ev.server) }
+      catch (e) { console.warn('[paths] drop validation threw, skipped :: ' + e) }
+    })
+  })
+
+  function validateDrops(server) {
   var badIds = [], checkedIds = 0
   for (var vk in PATHS) {
     if (!PATHS.hasOwnProperty(vk)) continue
@@ -1299,11 +1339,23 @@
       for (var ii = 0; ii < tiers[ti].length; ii++) {
         var vid = tiers[ti][ii]
         checkedIds++
-        var okItem = false
+        // ⚠️ ASK THE SERVER, DO NOT BUILD THE ITEM. `give` against a selector that
+        // matches nobody performs the registry lookup and returns feedback text
+        // without ever constructing a stack or touching a player - the same trick
+        // spawner.js uses to validate entity ids with `execute if entity`.
+        var out = ''
         try {
-          var st = Item.of(vid)
-          okItem = !!(st && !st.isEmpty())
-        } catch (e) { okItem = false }
+          // ⚠️ THE SELECTOR MATTERS. `@e[type=player,limit=0]` does not PARSE for
+          // give, and plain `@a` would hand the item to everyone online. A tag
+          // nobody holds parses cleanly and matches nobody, so this can never
+          // gift anything. Verified live: a real id answers "No player was
+          // found", a fake one answers with a parse caret.
+          out = String(server.runCommand('give @a[tag=veldora_no_such_tag] ' + vid + ' 1'))
+        } catch (e) { out = 'THREW ' + e }
+        var okItem = out.indexOf('<--[HERE]') < 0 &&
+                     out.indexOf('does not exist') < 0 &&
+                     out.indexOf('Unknown item') < 0 &&
+                     out.indexOf('THREW') < 0
         if (!okItem) badIds.push(vk + ' t' + ti + ' :: ' + vid)
       }
     }
@@ -1314,6 +1366,7 @@
     for (var bi = 0; bi < badIds.length; bi++) console.error('[paths]      ' + badIds[bi])
   } else {
     console.info('[paths] all ' + checkedIds + ' drop ids resolve')
+  }
   }
 
   var closedList = []
