@@ -73,23 +73,61 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var GROWTH = 0.5                // extra mobs per wave index
   var MAX_PER_BATCH = 5
 
-  // Rosters. Every id here is already validated live by spawner.js's boot check, and
-  // came from spawner.json's tiers rather than being invented for this file.
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ THE TIDE IS THE GODDESS OF DEATH'S ARMY. UNDEAD ONLY.
+  //
+  // Ethan, 2026-08-22: "i want only undead mobs to be apart of the tide. Creepers
+  // and spiders, etc are not apart of the goddess of death's army or control."
+  //
+  // 🚨 THE FIRST ROSTER WAS 6/21 UNDEAD. It was lifted from spawner.json's depth
+  // tiers, which exist to make caves dangerous and have no opinion about whose army
+  // anything belongs to. Creepers, spiders, the Knocker and most of grim_and_bleak
+  // were in a wave that is supposed to be HERS.
+  //
+  // ⚠️ AND THE NAMES LIE. Checked against `#minecraft:undead` read straight out of
+  // the mod jars, not guessed:
+  //     grim_and_bleak:flesh_eater      NOT undead
+  //     grim_and_bleak:night_abomination NOT undead
+  //     born_in_chaos_v1:restless_spirit NOT undead
+  // Three things that read as undead from the name and are not tagged as it. This is
+  // the only reason the audit was worth doing rather than eyeballing the list.
+  //
+  // 🔑 ONE DELIBERATE EXCEPTION, NAMED RATHER THAN HIDDEN: Rotten Creatures tags
+  // NOTHING into #minecraft:undead, but the mod IS an undead roster - its own
+  // modlist entry reads "A serious roster of new undead", and undead_miner /
+  // zombie_lackey / skeleton_lackey / burned / immortal are undead in every sense
+  // except the one the author forgot. They are allowlisted; smite will not work on
+  // them, which is a real cost, and it is the mod's bug rather than ours.
+  //
+  // Every id below was probed against the LIVE registry, so none of them is a
+  // magistuarmory:bronze_ingot waiting to happen.
+  // ═══════════════════════════════════════════════════════════════════════════
   var SHALLOW = [
-    'minecraft:zombie', 'minecraft:skeleton', 'minecraft:spider',
-    'minecraft:cave_spider', 'minecraft:creeper',
+    'minecraft:zombie', 'minecraft:skeleton', 'minecraft:husk', 'minecraft:drowned',
+    'born_in_chaos_v1:decaying_zombie', 'born_in_chaos_v1:decrepit_skeleton',
   ]
   var DEEP = [
-    'grim_and_bleak:ghoul', 'grim_and_bleak:flesh_eater', 'the_knocker:knocker',
-    'rottencreatures:undead_miner', 'rottencreatures:skeleton_lackey',
-    'rottencreatures:zombie_lackey', 'born_in_chaos_v1:decaying_zombie',
-    'born_in_chaos_v1:decrepit_skeleton',
+    'born_in_chaos_v1:decaying_zombie', 'born_in_chaos_v1:decrepit_skeleton',
+    'born_in_chaos_v1:barrel_zombie', 'grim_and_bleak:ghoul',
+    'galosphere:preserved', 'goety:rattled', 'goety:wight',
+    'rottencreatures:undead_miner', 'rottencreatures:zombie_lackey',
+    'rottencreatures:skeleton_lackey',
   ]
   var DEEPER = [
-    'grim_and_bleak:howler', 'grim_and_bleak:night_abomination',
-    'grim_and_bleak:damned_templar', 'rottencreatures:burned',
-    'rottencreatures:immortal', 'born_in_chaos_v1:restless_spirit',
-    'born_in_chaos_v1:nightmare_stalker', 'born_in_chaos_v1:bone_imp',
+    'grim_and_bleak:damned_templar', 'grim_and_bleak:banshee',
+    'born_in_chaos_v1:bone_imp', 'born_in_chaos_v1:skeleton_thrasher',
+    'born_in_chaos_v1:zombie_bruiser', 'goety:haunt', 'goety:wight',
+    'iceandfire:dread_thrall', 'iceandfire:dread_ghoul',
+    'rottencreatures:burned', 'rottencreatures:immortal',
+  ]
+
+  // Named here so the harness can assert the exception is exactly this and has not
+  // quietly grown. If a mob is added to the rosters above and is neither tagged
+  // undead nor listed here, the test fails.
+  var UNTAGGED_UNDEAD = [
+    'rottencreatures:undead_miner', 'rottencreatures:zombie_lackey',
+    'rottencreatures:skeleton_lackey', 'rottencreatures:burned',
+    'rottencreatures:immortal',
   ]
 
   var SOUND_TELL = 'minecraft:entity.warden.nearby_closest'
@@ -287,6 +325,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       try { return runs[String(p.uuid)] || null } catch (e) { return null }
     },
     enclosed: enclosed,
+    rosters: { shallow: SHALLOW, deep: DEEP, deeper: DEEPER, allowlist: UNTAGGED_UNDEAD },
     force: function (p) {
       var st = runs[String(p.uuid)]
       if (!st || !st.active) return false
