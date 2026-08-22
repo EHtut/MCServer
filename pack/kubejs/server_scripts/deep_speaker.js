@@ -277,9 +277,61 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { return null }
   }
 
-  function belowCutoff(p) {
-    try { return p.y <= CUTOFF_Y } catch (e) { return false }
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ THE CUTOFF IS "IN THE DEPTHS", NOT A NUMBER.  Ethan, 2026-08-22:
+  //     "when you go into the depths at all, you get the speaker. anything that's
+  //      no ceilling and in negative y"
+  //
+  // Two conditions, and BOTH must hold: **below y 0** and **no sky above you**.
+  //
+  // ⚠️ Y ALONE WAS NEVER ENOUGH, and this repo has already paid for that once. The
+  // In Control README records the same mistake twice: `minheight: 40` treated an
+  // absolute height as a measure of being underground, so a cave inside a mountain
+  // was "the surface" and a mountain valley was not. The sky test is what actually
+  // means "enclosed"; the y test is what means "deep". Neither is the other.
+  //
+  // 🔑 IT ALSO REPAIRS A DEAD BAND. Below y-64 is 100% air across the whole world
+  // (measured, docs/50 §1) - the old cutoff put the Speaker exclusively in a void
+  // nobody can stand in, which is a large part of why he had never once been heard.
+  // y 0 with a roof is where players actually mine.
+  //
+  // ⚠️ Sky-readability is PROBED, not assumed - godevents' rule. If this build has
+  // no canSeeSky, fall back to the old absolute cutoff rather than either silencing
+  // him everywhere or letting him speak in daylight.
+  // ═══════════════════════════════════════════════════════════════════════════
+  var DEPTH_Y = 0                 // "in negative y"
+
+  function seesSky(p) {
+    try {
+      var lvl = p.level
+      if (lvl && typeof lvl.canSeeSky === 'function') return !!lvl.canSeeSky(p.blockPosition())
+      var b = p.block
+      if (b && typeof b.canSeeSky === 'boolean') return !!b.canSeeSky
+      if (b && typeof b.canSeeSky === 'function') return !!b.canSeeSky()
+    } catch (e) { }
+    return null                   // unreadable - the caller decides, see below
   }
+
+  function belowCutoff(p) {
+    var y = null
+    try { y = p.y } catch (e) { return false }
+    if (typeof y !== 'number' || !isFinite(y)) return false
+
+    var sky = seesSky(p)
+    if (sky === null) {
+      // No sky test available. Fall back to the old absolute floor, which is
+      // conservative in the right direction: he stays rare rather than becoming
+      // wrong. Warned once so a silent regression is not mistaken for tuning.
+      if (!skyWarned) {
+        skyWarned = true
+        console.warn(TAG + 'canSeeSky unavailable - falling back to the flat y' +
+          CUTOFF_Y + ' cutoff. The Speaker will be much rarer than intended.')
+      }
+      return y <= CUTOFF_Y
+    }
+    return y < DEPTH_Y && !sky
+  }
+  var skyWarned = false
 
   // Both must be true: deep enough, AND their patron has somebody waiting.
   function speakerActive(p) {

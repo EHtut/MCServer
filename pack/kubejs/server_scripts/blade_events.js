@@ -526,11 +526,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // why it costs a day of comment rather than anything mechanical.
   var DUEL_ELITE = 'born_in_chaos_v1:fallen_chaos_knight'
   var DUEL_CHECK = 200                       // 10s
-  var DUEL_FLEE_DIST = 64
+  var DUEL_FLEE_DIST = 64                    // player-to-CHALLENGER, not to origin
+  var DUEL_LEASH = 40                        // past this the challenger is pulled back
+  var DUEL_RETURN = 12                       // ...to this many blocks in front of you
   var DUEL_TIMEOUT = 6000                    // 5 minutes
 
   function runDuel(server, p, tier) {
     if (!VELDORA.spawner) return false
+    // ⚠️ Needed by the watcher's selectors below. Read ONCE here rather than inside
+    // the loop - a stale player handle can throw on .username, and this must not be
+    // the thing that kills a duel already in progress.
+    var name = ''
+    try { name = String(p.username) } catch (e) { return false }
     if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'duel')
 
     var r = VELDORA.spawner.wave(p, {
@@ -538,22 +545,82 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       nbt: '{Tags:["veldora_duel"],CustomNameVisible:1b,CustomName:\'{"text":"The Challenger\\u0027s Champion","color":"dark_red","bold":true}\'}',
     })
 
-    var ox = p.x, oy = p.y, oz = p.z
+    // ═══════════════════════════════════════════════════════════════════════
+    // 🚨 THE DUEL ACCUSED PEOPLE OF FLEEING A MOB THAT HAD WANDERED OFF.
+    //
+    // Liam, live 2026-08-22: "blade gives me one opponent to fight it wanders off
+    // and he gives me shit for it. tf is his deal" ... "HE WASNT ANYWHERE NEAR ME"
+    //
+    // He is completely right, and there were THREE causes stacked:
+    //
+    //  1. FLEEING WAS MEASURED FROM WHERE THE PLAYER STOOD, not from the
+    //     challenger. Walk 64 blocks in ANY direction and he taunts you - including
+    //     walking straight TOWARDS the thing you were told to kill.
+    //  2. NOTHING KEPT THE CHALLENGER NEAR YOU. It is an ordinary mob; it
+    //     pathfinds, wanders, falls in a hole. Its behaviour became your cowardice.
+    //  3. IT MAY NEVER HAVE ARRIVED AT ALL. DUEL_ELITE is fallen_chaos_knight -
+    //     the exact mob from Ethan's "asked 1, measured 0" placement failure. The
+    //     ground-finder landed 2026-08-18, but before it, a duel could taunt you
+    //     for running from something that was never spawned.
+    //
+    // Now: distance is measured to the CHALLENGER, he is LEASHED so he keeps
+    // coming, and if he is gone the duel is simply void. Blade does not get to
+    // call you a coward for his own champion's pathfinding.
+    // ═══════════════════════════════════════════════════════════════════════
     var elapsed = 0
+
+    // Present anywhere in the loaded world? `execute if entity` is the same probe
+    // spawner.js validates ids with, and it cannot throw the way a JS entity scan
+    // can on a stale handle.
+    function challengerLives(srv) {
+      try {
+        return String(srv.runCommand('execute if entity @e[tag=veldora_duel,limit=1]'))
+          .indexOf('passed') >= 0
+      } catch (e) { return false }
+    }
+    // Within `dist` of the player specifically.
+    function challengerNear(srv, name, dist) {
+      try {
+        return String(srv.runCommand('execute as ' + name + ' at @s if entity ' +
+          '@e[tag=veldora_duel,distance=..' + dist + ',limit=1]')).indexOf('passed') >= 0
+      } catch (e) { return false }
+    }
+
     function watch() {
       try {
         if (!p.isAlive()) return
+        var srv = p.server
         elapsed += DUEL_CHECK
-        var dx = p.x - ox, dy = p.y - oy, dz = p.z - oz
-        var far = (dx * dx + dy * dy + dz * dz) > (DUEL_FLEE_DIST * DUEL_FLEE_DIST)
-        if (far) {
-          // Fled. He taunts - and the taunt is the whole penalty.
-          if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'duel_fled')
-          console.info(TAG + 'Duel: ' + p.username + ' left the ground')
+
+        if (!challengerLives(srv)) {
+          // Killed, despawned, or never arrived. NOT fleeing, and he says nothing -
+          // a taunt here is the bug Liam reported.
+          console.info(TAG + 'Duel: the challenger is gone - ' + p.username +
+            ' is not taunted for it')
           return
         }
+
+        if (!challengerNear(srv, name, DUEL_LEASH)) {
+          // ⭐ HIS CHAMPION, HIS PROBLEM. Drag it back in front of the player
+          // rather than blaming them for the distance. ^ ^ ^N is local space, so
+          // this puts it in FRONT of where they are looking - which reads as the
+          // thing stalking them, not teleport jank behind their head.
+          try {
+            srv.runCommandSilent('execute as ' + name + ' at @s run tp ' +
+              '@e[tag=veldora_duel,limit=1] ^ ^ ^' + DUEL_RETURN)
+            console.info(TAG + 'Duel: challenger strayed past ' + DUEL_LEASH +
+              ' - pulled back to ' + p.username)
+          } catch (e) { }
+        } else if (!challengerNear(srv, name, DUEL_FLEE_DIST)) {
+          // It is near enough to matter and they are still outside the flee
+          // radius FROM IT. That is a real refusal, and only now does he speak.
+          if (VELDORA.voice) VELDORA.voice.say(p, GOD, 'duel_fled')
+          console.info(TAG + 'Duel: ' + p.username + ' stayed away from the challenger')
+          return
+        }
+
         if (elapsed >= DUEL_TIMEOUT) return
-        p.server.scheduleInTicks(DUEL_CHECK, watch)
+        srv.scheduleInTicks(DUEL_CHECK, watch)
       } catch (e) { }
     }
     p.server.scheduleInTicks(DUEL_CHECK, watch)
