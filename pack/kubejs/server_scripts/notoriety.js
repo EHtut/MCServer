@@ -65,8 +65,37 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // step means a single fall's penalty is gone in under a fortnight while serial
   // falling still compounds faster than it forgives, which is the behaviour the
   // original design wanted from a Harvest loss.
-  var RATES = [1.0, 1.5, 2.0, 2.5, 3.0]   // by EFFECTIVE harvestCount
-  var FORGIVE_DAYS = 12                   // in-game days to forgive one step
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔴 THE SIGN IS FLIPPED. Ethan ruled B, 2026-08-24 (docs/63 §4).
+  //
+  // This curve used to ASCEND - [1.0, 1.5, 2.0, 2.5, 3.0] - because "it comes back
+  // sooner each time" was a THREAT: the thing coming back was a Harvest that could
+  // cost you your path.
+  //
+  // 🚨 The Trial reframe inverted that overnight. Losing a Trial is FREE (docs/63
+  // ruling 3: notoriety resets either way, trust simply does not move), so a sooner
+  // Trial is a sooner free chance at +1 rank. Under the old numbers:
+  //
+  //       fall repeatedly -> rate 3.0 -> Trials 3x as often -> level 3x faster
+  //
+  // Falling was the optimal strategy. No amount of tuning fixes a wrong sign.
+  //
+  // ⭐ DESCENDING NOW, and the machinery below needed NO other change. Index 0 is
+  // still "clean", forgiveness still walks you toward index 0, effectiveHarvestCount
+  // is untouched - only what the numbers MEAN flipped. Four falls make the next Trial
+  // take 3.3x longer, and 12 in-game days of not falling forgives one step of that.
+  //
+  // ⚠️ The stored key is still `harvestCount` so existing saves keep working. It has
+  // always counted FALLS - fall.js is the only thing that writes it now.
+  var RATES = [1.0, 0.75, 0.55, 0.4, 0.3]   // by EFFECTIVE fall count. LOWER = slower.
+  var FORGIVE_DAYS = 12                     // in-game days to forgive one step
+
+  // ⭐ THE RANK. docs/63: trust replaces notoriety as the thing that buys buffs and
+  // drops. Stored per PATH (`trust_blade`, `trust_wall`, ...) so switching paths does
+  // not spend a rank you earned somewhere else, and re-claiming a path you fell from
+  // returns you to where you were.
+  var TRUST_MAX = 5
+  var TRUST_KEY = 'trust_'
   var CAP = 100
 
   // ---------------------------------------------------------------- helpers
@@ -179,6 +208,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var last = rec.getInt('lastHarvestDay')
     var hc = rec.getInt('harvestCount')
     var since = day - last
+    // ⭐ THE OFFSET, docs/63 §3. Ethan ruled that notoriety "resets to 0" on a Trial,
+    // but notoriety is DERIVED - there is no number to zero. Zeroing it directly would
+    // mean wiping the player's XP level, and 🚨 that is taking something from the
+    // player, against his own standing rule.
+    //
+    // 🔑 So both terms are RELATIVE now. `xpAtLastTrial` is the level they stood at
+    // when their last Trial resolved; resetting is re-anchoring, and it costs nothing.
+    // The player keeps every level they earned - notoriety just starts counting again
+    // from where they are standing.
+    //
+    // And it makes the number honest: notoriety always claimed to be "how far you have
+    // come" while actually meaning "how far since you first logged in".
+    var xpBase = rec.getInt('xpAtLastTrial')
     if (since < 0) since = 0                       // clock ran backwards; do not go negative
     // 🚨 ORDER MATTERS AND IT WAS WRONG THE OTHER WAY. `since` is now computed BEFORE
     // the rate, because the rate depends on it. Reading the rate first - as this did
@@ -192,7 +234,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       console.error('[notoriety] !! Notoriety is running on the day-floor ALONE. Power,')
       console.error('[notoriety] !! drops and phases are all wrong. That is a BUG.')
     }
-    var value = Math.max(xp === null ? 0 : xp, floor)
+    var earned = (xp === null) ? 0 : (xp - xpBase)
+    if (earned < 0) earned = 0        // they lost levels since the anchor; not negative
+    var value = Math.max(earned, floor)
     return {
       value: value > CAP ? CAP : value,
       raw: value,
@@ -225,6 +269,79 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // silently read `undefined` here would compute every drop off notoriety 0 and
   // look completely healthy doing it.
   VELDORA.notoriety = function (server, player) { return breakdown(server, player) }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ TRUST — the rank. docs/63.
+  //
+  // Per PATH, because a rank is a relationship with one god. Reading a path this file
+  // does not know about returns 0 rather than throwing: an unclaimed player has no
+  // rank with anybody, which is true rather than an error.
+  // ═══════════════════════════════════════════════════════════════════════════
+  function pathOf(player) {
+    try { return (VELDORA.paths && VELDORA.paths.pathOf(player)) || '' } catch (e) { return '' }
+  }
+
+  VELDORA.trust = function (server, player, god) {
+    var key = god || pathOf(player)
+    if (!key) return 0
+    var rec = ensure(server, player)
+    if (!rec) return 0
+    var t = rec.getInt(TRUST_KEY + key)
+    if (!(t > 0)) return 0
+    return t > TRUST_MAX ? TRUST_MAX : t
+  }
+
+  VELDORA.trustMax = function () { return TRUST_MAX }
+
+  // 🔑 SCALE, 0..1. This is what power.js and the drop curve consume, so neither has
+  // to know how many ranks there are or where they are stored.
+  VELDORA.trustScale = function (server, player, god) {
+    return VELDORA.trust(server, player, god) / TRUST_MAX
+  }
+
+  VELDORA.awardTrust = function (server, player, n, why) {
+    var key = pathOf(player)
+    if (!key) {
+      console.warn('[notoriety] awardTrust with no path for ' +
+        (player.username || '?') + ' - nothing to rank. Not an error, but not a rank.')
+      return null
+    }
+    var rec = ensure(server, player)
+    if (!rec) return null
+    var cur = rec.getInt(TRUST_KEY + key)
+    if (!(cur > 0)) cur = 0
+    var next = cur + (typeof n === 'number' ? n : 1)
+    if (next < 0) next = 0
+    if (next > TRUST_MAX) next = TRUST_MAX
+    rec.putInt(TRUST_KEY + key, next)
+    writeRecord(server, String(player.uuid), rec)
+    console.info('[notoriety] TRUST ' + player.username + ' ' + key + ' ' +
+      cur + ' -> ' + next + '/' + TRUST_MAX + ' (' + (why || 'unspecified') + ')')
+    return next
+  }
+
+  // ⭐ RE-ANCHOR. This is Ethan's "notoriety resets to 0", and it is the ONLY way it
+  // happens. Both terms move together or the reset is half-done: the day anchor stops
+  // the floor, the xp anchor stops the level term. Missing either leaves a player who
+  // re-triggers a Trial instantly.
+  VELDORA.resetTrialClock = function (server, player, why) {
+    var rec = ensure(server, player)
+    if (!rec) return false
+    var day = dayNow(server)
+    if (day === null) {
+      console.error('[notoriety] !! TRIAL CLOCK NOT RESET for ' + player.username +
+        ' - world clock unreadable. They will re-trigger immediately.')
+      return false
+    }
+    var xp = xpLevelOf(player)
+    rec.putInt('lastHarvestDay', day)
+    rec.putInt('xpAtLastTrial', xp === null ? 0 : xp)
+    writeRecord(server, String(player.uuid), rec)
+    console.info('[notoriety] trial clock reset for ' + player.username +
+      ' - day ' + day + ', xp anchor ' + (xp === null ? '?' : xp) +
+      ' (' + (why || 'unspecified') + ')')
+    return true
+  }
   VELDORA.phaseLabel = phaseLabel
 
   // C7 writes here, and ONLY C7. lastHarvestDay is the anchor the whole floor is
@@ -267,10 +384,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       ? 'VELDORA.notoriety published OK'
       : '!! PUBLISH FAILED - C2/C3 must not be built until this is fixed'))
     console.info('[notoriety] world day is ' + dayNow(event.server) +
-      '; rates by harvest count = [' + RATES.join(', ') + '], forgiving one step ' +
-      'per ' + FORGIVE_DAYS + ' in-game days. Only the FALL raises it now - the ' +
-      'Harvest is cut (docs/62), so nothing resets it to zero and the forgiveness ' +
-      'is what stops it being a one-way ratchet.')
+      '; TRUST is the rank (0-' + TRUST_MAX + ', per path) and it buys the buffs. ' +
+      'Notoriety is the countdown to the next Trial and buys nothing - measured ' +
+      'since the LAST Trial, not since first login. Fall rates ' +
+      RATES.join('/') + ' (docs/63 ruling B: falling makes the next Trial arrive ' +
+      'LATER), forgiving one step per ' + FORGIVE_DAYS + ' in-game days.')
   })
 
   PlayerEvents.loggedIn(function (event) { ensure(event.server, event.player) })

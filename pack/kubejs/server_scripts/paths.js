@@ -172,10 +172,22 @@
     return 1.0
   }
 
+  // 🔴 DROPS RIDE TRUST NOW, NOT NOTORIETY. docs/63 ruling 1 ("Replacing").
+  //
+  // Same swap as power.js and for the same reason: notoriety climbs on a clock, so
+  // drop chance was paying for elapsed time. trustScale() is 0..1 and is multiplied
+  // back up to CHANCE_CAP, so CHANCE_BASE and CHANCE_PER keep their tuned meanings -
+  // only the input changed.
+  //
+  // ⚠️ CHANCE_FLAT REMAINS THE FALLBACK and it still means "could not read", never
+  // "rank 0". Rank 0 is a real answer and gives CHANCE_BASE; an unreadable seam gives
+  // the flat pre-C2 rate and warns. Those two must never collapse into each other.
   function dropChanceFor(server, player) {
     try {
-      if (typeof VELDORA !== 'undefined' && typeof VELDORA.notoriety === 'function') {
-        var b = VELDORA.notoriety(server, player)
+      if (typeof VELDORA !== 'undefined' && typeof VELDORA.trustScale === 'function') {
+        var sc = VELDORA.trustScale(server, player)
+        var b = (typeof sc === 'number' && isFinite(sc))
+          ? { value: Math.max(0, Math.min(1, sc)) * CHANCE_CAP } : null
         if (b && typeof b.value === 'number' && isFinite(b.value)) {
           var raw = CHANCE_BASE + CHANCE_PER * Math.min(b.value, CHANCE_CAP)
           // ⭐ THE COEFFICIENT IS NO LONGER HERE. It moved to the COUNT - see the
@@ -184,11 +196,11 @@
           // and Wall's 3.0 were the same number in play.
           return Math.max(0, Math.min(1, raw))
         }
-        warnOnce('VELDORA.notoriety returned no usable value')
+        warnOnce('VELDORA.trustScale returned no usable value')
         return CHANCE_FLAT
       }
     } catch (e) {
-      warnOnce('VELDORA.notoriety threw :: ' + e)
+      warnOnce('VELDORA.trustScale threw :: ' + e)
       return CHANCE_FLAT
     }
     warnOnce('VELDORA is not visible from paths.js (load order, or C1 failed to load)')

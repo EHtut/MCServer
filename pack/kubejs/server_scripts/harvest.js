@@ -34,17 +34,41 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // SENT NOTHING. The Harvest was designed when every god was a demanding patron;
   // once they became a family, three of the five endings stopped being a fight.
   //
-  // ⭐ DISABLED, NOT DELETED — deliberately, and this is step 1 of 3 (docs/62 §4).
-  // A 300-reference rip in one pass is the opposite of this project's method. The
-  // gate answers "what actually depended on this?" by MEASUREMENT rather than by
-  // reading, and it is one character to undo if the ruling is revisited.
+  // ⭐⭐ AND IT WAS REVISITED WITHIN THE HOUR. docs/63, Ethan 2026-08-24:
   //
-  // What this flag already covers, cleanly, with no other edit:
-  //     begin()                 returns false immediately (line ~74)
-  //     ServerEvents.loaded     the retry sweep never registers, banner says GATED
-  //     resolve() / active()    still callable, and vacuous - active() is false
-  //                             for everyone, so every guard reading it is a no-op
-  var GATE = false
+  //     "well at least maybe we can reframe the harvest then? instead it's a challenge
+  //      that runs to increase or decrease trust? like a level up system with higher
+  //      trust, higher buffs and drops."
+  //
+  // 🔑 THIS FILE IS NOW **THE TRIAL**. Not one line of its machinery changed - the
+  // register/begin/resolve shape, the above-ground rule, the hold-and-retry when you
+  // are underground, the actor cleanup - all of it was already exactly a challenge
+  // system. Only the MEANING moved:
+  //
+  //     was    you graduate, or your god releases you
+  //     now    you gain a rank, or you gain nothing. Losing costs only time.
+  //
+  // ⚠️ Deleting this yesterday was argued against (docs/62 §7) on the grounds that
+  // rulings in this project get revisited. That turned out to be worth more than the
+  // tidiness would have been.
+  //
+  // ⚠️ THE FILENAME STAYS `harvest.js` for now. Renaming it touches the sync tool, the
+  // load order and every log grep anyone has written; it is a chunk of its own and it
+  // is cosmetic. The WORDS in here say Trial.
+  var GATE = true
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ COMBATANT PATHS ONLY. Ethan, 2026-08-24:
+  //
+  //     "forge and wall play differently as non-combatant classes... we give the
+  //      harvest only to combatant classes then to raise trust. Wall's trust raises on
+  //      days survived, and forge can be items crafted."
+  //
+  // 🚨 SO A NON-COMBATANT WITH NO TRIAL IS CORRECT, NOT BROKEN - and the two must
+  // never log the same way. begin() used to shout "that is a bug, not a quiet
+  // Harvest" at a missing handler, which is exactly right for blade and exactly wrong
+  // for Milantros. This list is what tells them apart.
+  var COMBATANT = { blade: true, salvage: true, art: true }
 
   var K_ACTIVE = 'veldora_harvest_active'   // the id of what was sent, '' if none
   var K_WON = 'veldora_harvest_won'         // how many times they have won one
@@ -60,6 +84,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // turns a graduation into a death loop. The god made its point; the actor leaves.
   function register(god, h) {
     if (!god || !h || typeof h.arrive !== 'function') return false
+    // ⭐ REFUSED HERE RATHER THAN EDITED OUT OF EACH EVENTS FILE. wall_events.js still
+    // registers a handler from when she was a combatant; refusing it in one place
+    // means her file stays untouched until its own pass, and the refusal is VISIBLE
+    // instead of being a quiet deletion nobody can find later.
+    if (!COMBATANT[god]) {
+      console.info(TAG + god + ' offered a Trial handler and it was REFUSED - ' +
+        god + ' is a non-combatant path (docs/63 §6). Its trust comes from its own ' +
+        'metric, not from a fight. This is correct, not a failure.')
+      return false
+    }
     HANDLERS[god] = h
     return true
   }
@@ -96,7 +130,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (!GATE) return false
     var h = HANDLERS[god]
     if (!h) {
-      console.error(TAG + 'no handler for ' + god + ' - the Harvest fired and ' +
+      // ⭐ A NON-COMBATANT REACHING 100 IS NOT A BUG. It should not even get here -
+      // phase.js only calls begin() for paths with a Trial - but if it does, this
+      // must not shout. "Correct silence" and "a missing handler" are different
+      // answers and this repo has paid for conflating them before.
+      if (!COMBATANT[god]) {
+        console.info(TAG + god + ' reached the threshold and has no Trial - it is a ' +
+          'non-combatant path and ranks on its own metric (docs/63 §6). Nothing sent, ' +
+          'and nothing wrong.')
+        return false
+      }
+      console.error(TAG + 'no handler for ' + god + ' - the Trial fired and ' +
         'nothing was sent. That is a bug, not a quiet Harvest.')
       return false
     }
@@ -144,9 +188,40 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     console.info(TAG + 'cleared ' + cleared + ' ' + god + ' actor(s) tagged ' +
       (h.tag || 'NOTHING - handler declared no tag'))
 
+    // ═══════════════════════════════════════════════════════════════════════
+    // ⭐⭐ THE PAYOUT. docs/63 ruling 3, verbatim:
+    //
+    //     "you don't progress and notoriety resets to 0, or you win and notoriety
+    //      progresses to 0 and you get your buffs"
+    //
+    // 🔑 SO THE CLOCK RESETS EITHER WAY AND ONLY THE RANK IS AT STAKE. Losing costs
+    // time and nothing else - no items, no rank, no path. That is the gentlest
+    // currency available and it is deliberate: Ethan has designed against punishment
+    // spirals consistently ("we don't take items from players, that is how you cause
+    // them to quit").
+    //
+    // 🚨 THE RESET RUNS BEFORE THE HANDLER AND OUTSIDE ITS TRY. A handler that throws
+    // must not leave a player sitting at notoriety 100 with the Trial marked resolved
+    // - they would be stuck at the threshold with nothing coming. The rank is the
+    // thing that can safely fail; the clock is not.
+    var reset = false
+    try {
+      if (VELDORA.resetTrialClock) reset = VELDORA.resetTrialClock(server, p, 'trial ' + (won ? 'won' : 'lost'))
+    } catch (e) { console.error(TAG + 'resetTrialClock threw :: ' + e) }
+    if (!reset) {
+      console.error(TAG + '!! CLOCK NOT RESET for ' + p.username + ' - they are still ' +
+        'at their old notoriety and may re-trigger. K_DONE below is the only thing ' +
+        'holding them, and it clears when the phase drops.')
+    }
+
     try {
       if (won) {
         try { p.persistentData.putInt(K_WON, (p.persistentData.getInt(K_WON) || 0) + 1) } catch (e) { }
+        // ⭐ THE RANK. This is the entire reward, and it is what buys the buffs and
+        // the drop chance now (power.js / paths.js both read trustScale).
+        try {
+          if (VELDORA.awardTrust) VELDORA.awardTrust(server, p, 1, 'trial won')
+        } catch (e) { console.error(TAG + 'awardTrust threw :: ' + e) }
         if (typeof h.onWin === 'function') h.onWin(server, p)
       } else if (typeof h.onLose === 'function') {
         h.onLose(server, p)

@@ -63,7 +63,12 @@ global.ServerEvents = { loaded: () => { }, commandRegistry: () => { }, tick: () 
 global.EntityEvents = { death: () => { }, beforeHurt: () => { } }
 global.PlayerEvents = { loggedIn: () => { }, tick: () => { }, respawned: () => { } }
 global.Text = { of: (s) => s }
-global.VELDORA = {}
+// notoriety.js asks paths.js who this player follows, because a rank is a
+// relationship with ONE god. Without this stub awardTrust correctly refuses to rank
+// an unclaimed player - which is right, and which made four assertions fail until the
+// stub existed. The refusal is the feature; the missing stub was the bug.
+let PATH = 'blade'
+global.VELDORA = { paths: { pathOf: () => PATH } }
 
 const ri = console.info, rw = console.warn, re = console.error
 const hush = () => { console.info = console.warn = console.error = () => { } }
@@ -88,51 +93,98 @@ grp('THE SEAM')
   ok('a fresh player anchors at rate 1.0', rateNow(), 1)
 }
 
-grp('🚨 THE RATCHET — the Harvest cut removed the only reset')
+grp('🚨 RULING B — falling must make the next Trial arrive LATER')
 {
-  // fall.js still calls recordHarvest(won=false) on every fall. Nothing calls it with
-  // won=true any more, because only harvest.js ever did.
+  // 🔴 THE SIGN OF THIS CURVE IS THE WHOLE TEST. It used to ASCEND, because a sooner
+  // Harvest was a threat. Under the Trial reframe losing is FREE, so a sooner Trial is
+  // a free chance at +1 rank — and ascending made falling the optimal strategy. Ethan
+  // ruled B on 2026-08-24: falling delays you.
+  //
+  // ⭐ ASSERTED AS A DIRECTION, NOT A TABLE. If somebody restores the old numbers this
+  // fails on the invariant rather than on a value that could be "re-tuned" past it.
+  const clean = rateNow()
+  ok('a clean player runs at full speed', clean, 1)
+
   fall()
-  ok('one fall escalates the rate', rateNow(), 1.5)
+  const one = rateNow()
+  ok('🚨 one fall makes notoriety SLOWER, never faster', one < clean, true)
+
   fall(); fall(); fall()
-  ok('four falls reach the ceiling', rateNow(), 3)
+  const four = rateNow()
+  ok('...and four falls are slower still', four < one, true)
+
   fall(); fall(); fall()
-  ok('...and it CAPS rather than growing forever', rateNow(), 3)
+  ok('...but it FLOORS rather than stalling forever', rateNow(), four)
+  ok('...and the floor is still forward progress, not zero', four > 0, true)
 }
 
-grp('⭐ FORGIVENESS — what stops it being one-way')
+grp('⭐ FORGIVENESS — the delay is a debt, not a brand')
 {
-  // Each fall re-anchors lastHarvestDay to today, so time only starts running after
-  // the last one. Seven falls are stored; forgiveness is one step per FORGIVE_DAYS.
-  DAY += 12
-  ok('12 days on, still pinned (7 stored falls, 1 forgiven)', rateNow(), 3)
-  DAY += 36                                    // 48 days since the last fall
-  // 48/12 = 4 steps forgiven, 7 stored -> effective 3 -> RATES[3] = 2.5.
-  // ⚠️ MY FIRST EXPECTATION HERE WAS 3 AND THE CODE WAS RIGHT. Writing the arithmetic
-  // into the label so the next person checks it rather than trusting the number.
-  ok('48 days on: 7 falls - 4 forgiven = 3 -> rate 2.5', rateNow(), 2.5)
-  DAY += 48                                    // 96 days
-  ok('🚨 96 days on it is FULLY forgiven - not a ratchet', rateNow(), 1)
+  // Each fall re-anchors lastHarvestDay, so time only runs from the last one.
+  const worst = rateNow()
+  DAY += 48
+  ok('48 days of not falling walks it back', rateNow() > worst, true)
+  DAY += 48                                    // 96 days since the last fall
+  ok('🚨 96 days on it is FULLY forgiven', rateNow(), 1)
 }
 
 grp('⚠️ THE GUARDS — a clock that misbehaves must not corrupt the rate')
 {
   const before = rateNow()
   DAY -= 500                                   // admin ran /time set; clock goes backwards
-  // ⚠️ THIS ASSERTS THE HARSH DIRECTION ON PURPOSE, AND IT IS WORTH KNOWING.
-  // breakdown() clamps a negative `since` to 0 ("do not go negative" — its own
-  // comment, guarding finding K9). Zero elapsed days means zero forgiveness, so a
-  // backwards clock momentarily restores the FULL stored escalation rather than
-  // softening it.
+  // breakdown() clamps a negative `since` to 0 (its own comment, guarding finding K9).
+  // Zero elapsed days means zero forgiveness, so a backwards clock momentarily restores
+  // the full stored penalty rather than softening it.
   //
-  // 🚨 KNOWN LIMITATION, NOT A BUG TODAY: if a clock were set backwards PERMANENTLY,
-  // `since` would sit at 0 forever, forgiveness would never accrue, and the ratchet
-  // this whole fix removes would come back. The next fall re-anchors lastHarvestDay
-  // and repairs it, and a permanently-rewound world clock means notoriety is moot
-  // anyway — but if that ever stops being true, re-anchor on read instead of clamping.
-  ok('a backwards clock suspends forgiveness (harsh, and deliberate)', rateNow(), 3)
+  // 🚨 KNOWN LIMITATION: a PERMANENTLY rewound clock would sit at since=0 forever and
+  // never forgive. The next fall re-anchors and repairs it, and a permanently rewound
+  // world clock means notoriety is moot anyway — but if that stops being true,
+  // re-anchor on read instead of clamping.
+  ok('a backwards clock suspends forgiveness (harsh, and deliberate)', rateNow() < before, true)
   DAY += 500
   ok('...and it recovers the moment the clock does', rateNow(), before)
+}
+
+grp('⭐ TRUST — the rank that actually buys the buffs')
+{
+  ok('the seam is published', typeof N.trust, 'function')
+  ok('an unranked player is rank 0', N.trust(server, player), 0)
+  ok('...and scales to 0.0 for power.js', N.trustScale(server, player), 0)
+
+  hush(); N.awardTrust(server, player, 1, 'test'); speak()
+  ok('a Trial win raises the rank', N.trust(server, player), 1)
+  ok('...and the scale moves with it', N.trustScale(server, player), 1 / N.trustMax())
+
+  hush(); for (let i = 0; i < 20; i++) N.awardTrust(server, player, 1, 'test'); speak()
+  ok('🚨 it CAPS at trustMax - no runaway power', N.trust(server, player), N.trustMax())
+  ok('...and the scale caps at exactly 1.0', N.trustScale(server, player), 1)
+
+  // ⭐ PER PATH. A rank is a relationship with one god; switching paths must not spend
+  // or inherit a rank earned somewhere else.
+  ok('a DIFFERENT path has its own rank', N.trust(server, player, 'salvage'), 0)
+  // ⭐ And the refusal path is worth pinning: an unclaimed player cannot be ranked,
+  // because a rank is a relationship and they are not in one.
+  PATH = ''
+  hush(); const orphan = N.awardTrust(server, player, 1, 'test'); speak()
+  ok('a pathless player CANNOT be ranked', orphan, null)
+  PATH = 'blade'
+}
+
+grp('⭐ THE RESET — "notoriety resets to 0" without taking anything')
+{
+  // docs/63 §3: notoriety is derived, so the reset is an OFFSET, not a wipe. The player
+  // keeps every XP level they earned.
+  // ⚠️ Re-anchor FIRST. Earlier groups advanced the clock ~100 days, so the day-floor
+  // term dominates and the xp term is invisible. Testing the offset means starting
+  // from a clean anchor, or the assertion measures the wrong half of the max().
+  hush(); N.resetTrialClock(server, player, 'setup'); speak()
+  XP = 40
+  ok('40 levels earned SINCE the anchor reads as 40', N.notoriety(server, player).value, 40)
+  hush(); N.resetTrialClock(server, player, 'test'); speak()
+  ok('🚨 after a Trial it reads 0', N.notoriety(server, player).value, 0)
+  ok('...and the player still HAS their 40 levels', XP, 40)
+  XP = 55
+  ok('...and only progress SINCE the Trial counts', N.notoriety(server, player).value, 15)
 }
 
 console.log('\n' + (fail === 0

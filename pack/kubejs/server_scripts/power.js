@@ -124,13 +124,30 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return c
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔴🔴 POWER COMES FROM TRUST NOW, NOT NOTORIETY. docs/63, ruling 1 ("Replacing").
+  //
+  // ⭐ WHY THIS IS THE WHOLE POINT OF THE CHANGE. Notoriety is max(xp, days x rate) -
+  // it climbs on a CLOCK whether you play well or not, and it was what bought these
+  // four attributes. So the game paid for elapsed time. Trust only moves when a god
+  // decides it has: a Trial won, days survived, things made.
+  //
+  // 🔑 THE CURVE BELOW IS UNTOUCHED ON PURPOSE. trustScale() returns 0..1 and it is
+  // multiplied back up to CAP, so CURVE, the ceilings and every tuned number still
+  // mean exactly what they meant - only the INPUT changed. Blade still reaches his
+  // ceilings around "35 points", which is now rank 2 of 5 rather than notoriety 35.
+  // That is "strongest champion" as a rank instead of as a stopwatch.
   function apply(server, player, force) {
-    if (typeof VELDORA === 'undefined' || typeof VELDORA.notoriety !== 'function') {
-      return null      // C1 missing — say nothing here, the sweep reports it once
+    if (typeof VELDORA === 'undefined' || typeof VELDORA.trustScale !== 'function') {
+      return null      // the seam is missing — say nothing here, the sweep reports once
     }
-    var b
-    try { b = VELDORA.notoriety(server, player) } catch (e) { return null }
-    if (!b || typeof b.value !== 'number' || !isFinite(b.value)) return null
+    var scale
+    try { scale = VELDORA.trustScale(server, player) } catch (e) { return null }
+    if (typeof scale !== 'number' || !isFinite(scale)) return null
+    if (scale < 0) scale = 0
+    if (scale > 1) scale = 1
+    // Re-expressed in the old units so nothing downstream has to be re-tuned.
+    var b = { value: scale * CAP }
 
     var uuid = String(player.uuid)
 
@@ -178,8 +195,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         var r = apply(server, players[i], false)
         if (r === null && !warnedMissing) {
           warnedMissing = true
-          console.warn('[power] C1 unreadable - NO power is being applied to anyone.')
-          console.warn('[power] That is a BUG, not a mode. Check [notoriety] on boot.')
+          console.warn('[power] TRUST unreadable - NO power is being applied to anyone.')
+          console.warn('[power] That is a BUG, not a mode. VELDORA.trustScale is the')
+          console.warn('[power] seam now (docs/63), not VELDORA.notoriety. Check')
+          console.warn('[power] [notoriety] on boot - it publishes both.')
         }
       }
     } catch (e) { console.warn('[power] sweep threw :: ' + e) }
@@ -188,8 +207,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   ServerEvents.loaded(function (event) {
     console.info('[power] C3 active - ' + CURVE.length + ' attributes, sweep every ' +
-      EVERY + 't, cap at notoriety ' + CAP)
-    console.info('[power] at 100: +6 health, +4 armour, +2 damage, +0.2 knockback resist')
+      EVERY + 't. Driven by TRUST (docs/63), not notoriety: rank 0 gives nothing, ' +
+      'max rank gives the full curve.')
+    console.info('[power] at max rank: +6 health, +4 armour, +2 damage, +0.2 ' +
+      'knockback resist, before the path coefficient and under the per-attribute cap.')
     event.server.scheduleInTicks(EVERY, function () { sweep(event.server) })
   })
 
