@@ -259,3 +259,72 @@ finished.
 3. **The `harvest_*` pools are still named for the old system**, and Blade's and
    Salvage's Trial dialogue still talks about graduation and release rather than rank.
    That is a writing pass, not a build.
+
+---
+
+## 9. ⭐ THE NEXT CHUNK, STATED BEFORE BUILDING — Ethan, 2026-08-24
+
+> *"Trust for Wall and forge, well wall starts at their strongest and loses strength as
+> they keep dying and their gods focus shifts to others. We can do the inverse for forge,
+> they have to keep placing blocks and crafting otherwise their god's focus will shift
+> away and bother other players (like a child). So each start at full strength and each
+> have a way to lose it."*
+>
+> *"Art — Her main way of touching the world is through drops, she buffs but lightly. but
+> instead we can do it so her champion's presence increases the spawn rates of things that
+> are technically not in the domain of the gods above but instead in the underground.
+> Tides, waves, enemies, etc."*
+
+### 🔴 THIS INVERTS WHAT §8 BUILT YESTERDAY
+
+`ranks.js` currently has both non-combatants **climbing from rank 0**. Ethan's model is the
+opposite: **they start at TRUST_MAX and decay.** Not a tuning change — the sign again.
+
+| | built yesterday | this chunk |
+|---|---|---|
+| **wall** | climbs on best-ever survival streak | ⭐ **starts at max**, decays per death |
+| **forge** | climbs on cumulative things made | ⭐ **starts at max**, decays while idle |
+| **art** | buffs like everyone else | ⭐ rank drives **underground spawn rates** |
+
+### ⭐ WHY IT IS BETTER, WHICH IS WORTH SAYING BEFORE THE OBJECTIONS
+
+**A god's attention is a thing you already have and can lose.** Climbing implies you must
+earn their notice; these two already noticed you — Wall smothers from day one and
+Milantros never stopped talking. **Decay is the correct shape for both**, and it makes
+them play unlike the combatants rather than like them with different inputs.
+
+🔑 **And Forge's is the best mechanical read of her yet.** *"like a child"* — stop
+building and she wanders off to bother someone else. That is her whole character
+(`docs/56`: fascinated by constructs, rambles at whoever is nearest) as a decay timer.
+
+### ⚠️ THREE THINGS THAT COULD FALSIFY IT, NAMED NOW
+
+**1. A brand-new Wall or Forge walker is instantly at full power.** Starting at
+TRUST_MAX means claiming the path IS the progression. A day-one Wall champion would have
+the buffs a Blade champion needs several Trials for.
+⭐ *Defensible* — she is obsessed from the moment she sees you — but it is a real
+inversion, and if it plays badly the symptom will be "the non-combatants are strictly
+better early".
+
+**2. 🚨 Decay must not spiral.** Wall's is per-death: die → weaker → die more → weaker.
+That is precisely the loop Ethan has designed against everywhere else. **It needs a floor
+and a way back up**, or a bad night permanently ruins a character. Default plan: decay one
+rank per death, **recover one rank per N days survived** — the same high-water machinery
+built yesterday, pointed downward from the top instead of upward from zero.
+
+**3. Art breaks the uniformity `docs/63` just established.** Trust replaced notoriety for
+*everyone*; if hers drives spawn rates instead of buffs, `power.js` needs a per-god
+exception or she needs a second axis.
+⭐ Cleanest read: **hers still buys drops** (his words: *"her main way of touching the
+world is through drops"*) and **buffs lightly** — so she keeps the shared curve at a
+reduced coefficient, and spawn-rate scaling is added on top. That is one new consumer, not
+a fork.
+
+### What would prove this chunk wrong
+
+- A Wall walker who dies twice in a session and stops playing because they are weaker than
+  when they started. **That is the spiral, and it is the thing to watch for.**
+- A Forge walker who logs in after a week away with rank 0 and no way to tell why.
+  **Decay must be legible** — she should say she got bored, not silently reduce a number.
+- Art's champion making the depths unplayable for everyone else in the same world, since
+  spawn rate is not a personal stat.

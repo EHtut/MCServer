@@ -1223,7 +1223,22 @@
     // That is what mercantile should feel like - not a steadier trickle, a
     // genuinely different scale of payout.
     // ═══════════════════════════════════════════════════════════════════════
-    var dc = dropCoeff(server, killer)
+    // 🔴🔴 `server` WAS BARE HERE AND IT IS NOT IN SCOPE. Introduced 2026-08-16 in
+    // ef0e42e, found 2026-08-24 by reading Liam's session log. Every other line in
+    // this handler uses `event.server`; this one did not.
+    //
+    // 🚨 IT WAS NOT COSMETIC. The throw aborts EntityEvents.death, and the `give` is
+    // BELOW it - so for eight days every path drop that PASSED its roll threw instead
+    // of paying out. The rarer the drop, the more certainly it was lost. Liam played a
+    // full session and earned nothing from his path; the log carries 21 of these.
+    //
+    // ⚠️ AND NOTHING CAUGHT IT. It only fires when the drop roll succeeds, so it is
+    // invisible on a quiet server; the harnesses call dropChanceFor directly and never
+    // enter this handler; and a KubeJS ReferenceError logs without a level, so it does
+    // not read as an error unless you go looking. tools/logq.py errors was what
+    // surfaced it - which is the argument for reading the log after a play session and
+    // not only after a boot.
+    var dc = dropCoeff(event.server, killer)
     if (dc > 1.0) n = Math.max(1, Math.round(n * dc))
 
     // ═══════════════════════════════════════════════════════════════════════
