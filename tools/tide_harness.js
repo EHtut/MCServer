@@ -19,6 +19,12 @@ const fs = require('fs')
 const path = require('path')
 const SS = path.join(__dirname, '..', 'pack', 'kubejs', 'server_scripts')
 
+// ⭐ READ THE CEILING FROM THE SOURCE. Copying it here is how this file broke.
+const MAX_PER_BATCH = Number(
+  (fs.readFileSync(path.join(SS, 'tide.js'), 'utf8').match(/var MAX_PER_BATCH = (\d+)/) || [])[1])
+if (!MAX_PER_BATCH) { console.error('FAIL: could not read MAX_PER_BATCH from tide.js'); process.exit(1) }
+
+
 let SKY = false            // true = open sky, false = enclosed, null = unreadable
 let Y = -20
 let ALIVE = true
@@ -32,7 +38,11 @@ let SPEAKER_HAS = true
 
 const server = {
   scheduleInTicks: (d, fn) => { TIMERS.push([d, fn]) },
-  runCommandSilent: (c) => { if (c.indexOf('playsound') >= 0) SOUNDS.push(c) },
+  runCommandSilent: (c) => {
+    CMDS.push(c)
+    if (c.indexOf('playsound') >= 0) SOUNDS.push(c)
+    return 1
+  },
   runCommand: () => '',
   overworld: () => ({ dayTime: () => 1000 }),
 }
@@ -40,6 +50,8 @@ Object.defineProperty(server, 'players', { get: () => ONLINE })
 
 // Fire scheduled callbacks ONCE, in delay order. The sweep re-schedules itself, so
 // draining recursively would spin forever - this is one tick of the world.
+let CMDS = []
+
 function drain() {
   const t = TIMERS.slice().sort((a, b) => a[0] - b[0])
   TIMERS = []
@@ -85,7 +97,11 @@ global.VELDORA = {
     active: () => Y < 0,
     say: (p, tag) => { if (!SPEAKER_HAS) return false; SAID.push('speaker/' + tag); return true },
   },
-  spawner: { wave: (p, o) => { WAVES.push({ count: o.count, ids: o.ids }) } },
+  // 🔴 THIS STUB USED TO DROP EVERY FIELD IT WAS NOT ALREADY ASSERTING ON, so the
+  // first test of the new `nbt` tag failed against CORRECT code - the harness threw
+  // away the thing under test. Record the whole opts object; a stub that filters is a
+  // stub that decides what can be tested.
+  spawner: { wave: (p, o) => { WAVES.push(Object.assign({}, o)) } },
 }
 
 const rw = console.warn, ri = console.info, re = console.error
@@ -199,7 +215,8 @@ grp('⭐ THE WAVE IS AN ARRIVAL — 30s of pulses, never a drop')
   const p = fresh(); Y = -20; SKY = false; ticks(3); WAVES = []
   T.force(p); drain()
   ok('six separate pulses, not one dump', WAVES.length, 6)
-  ok('...each a handful', WAVES.every(w => w.count >= 1 && w.count <= 5), true)
+  ok('...each within the configured per-pulse ceiling',
+    WAVES.every(w => w.count >= 1 && w.count <= MAX_PER_BATCH), true)
 }
 
 grp('ESCALATION — wave five is bigger than wave one, and it caps')
@@ -209,7 +226,21 @@ grp('ESCALATION — wave five is bigger than wave one, and it caps')
   for (let i = 0; i < 8; i++) { T.force(p); TIMERS = [] }
   WAVES = []; T.force(p); drain(); const later = WAVES[0].count
   ok('it grows', later > first, true)
-  ok('🚨 ...and is capped, so a long run cannot become unfightable', later <= 5, true)
+  // 🔴 THIS ASSERTION USED TO HARDCODE `<= 5` — the value of MAX_PER_BATCH at the time
+  // it was written. That is a test restating a constant the SOURCE owns, which is the
+  // same defect as a boot banner restating another file's rule, and it broke the
+  // moment the tide was rescaled on 2026-08-23. Two fixes, both applied:
+  //
+  //   1. the NUMBER is read from tide.js rather than copied (see MAX_PER_BATCH above)
+  //   2. the PROPERTY is tested directly - run it far past the cap and assert it
+  //      PLATEAUS. That survives any future tuning, because "there is a ceiling" is
+  //      the thing that actually matters, not what the ceiling happens to be.
+  ok('🚨 ...and is capped, so a long run cannot become unfightable', later <= MAX_PER_BATCH, true)
+  for (let i = 0; i < 20; i++) { T.force(p); TIMERS = [] }
+  WAVES = []; T.force(p); drain(); const late1 = WAVES[0].count
+  for (let i = 0; i < 5; i++) { T.force(p); TIMERS = [] }
+  WAVES = []; T.force(p); drain(); const late2 = WAVES[0].count
+  ok('...and it PLATEAUS — 20 more waves add nothing', [late1, late2], [MAX_PER_BATCH, MAX_PER_BATCH])
 }
 
 grp('THE HERALD IS CHOSEN BY DEPTH')
@@ -258,6 +289,46 @@ grp('THE DEEPER YOU ARE, THE WORSE IT IS')
 }
 
 speak()
+
+// ═══════════════════════════════════════════════════════════════════════════
+grp('🔴 HARD MODE — the three changes of 2026-08-23')
+{
+  // ⭐ Each of these tests a behaviour that did not exist this morning. The suite was
+  // 27/27 green with all three unwritten, which is the whole reason they are here.
+
+  // 1. MORE UNDEAD, NOT TANKIER (Ethan's ruling). The old wave one was SIX mobs
+  //    across thirty seconds; anything in that region is ambient spawning with a
+  //    sound cue, not a tide.
+  const p = fresh(); Y = -20; SKY = false; ticks(3)
+  WAVES = []; T.force(p); drain()
+  const total = WAVES.reduce((a, w) => a + w.count, 0)
+  ok('wave one is a CROWD, not a trickle (>= 18)', total >= 18, true)
+  ok('...and it is tagged, so it can be counted later',
+    WAVES.every(w => String(w.nbt || '').indexOf('veldora_tide') >= 0), true)
+
+  // 2. THE TIDE DOES NOT STOP AT THE DOOR. Surfacing mid-wave used to end the run in
+  //    10s, which made the scariest sound in the game an instruction to leave.
+  const q = fresh(); Y = -20; SKY = false; ticks(3)
+  ok('in a run', T.inRun(q), true)
+  T.force(q)                                  // a wave is now arriving
+  Y = 80; SKY = true                          // ...and they run for the surface
+  ticks(4)                                    // 20s of sky - twice LEAVE_TICKS
+  ok('🚨 surfacing MID-WAVE does not end the run', T.inRun(q), true)
+
+  // 3. ...but it is a hold, not a trap. Once the arrivals stop, leaving works again.
+  drain()                                     // let the spawn window elapse
+  ticks(40)
+  ok('...and once the wave is over, surfacing DOES end it', T.inRun(q), false)
+
+  // 4. SURVIVING A WAVE RE-OPENS THE LOOT.
+  const r = fresh(); Y = -20; SKY = false; ticks(3)
+  CMDS = []; T.force(r); drain()
+  const loot = CMDS.filter(c => c.indexOf('lootr') >= 0)
+  ok('a survived wave issues a Lootr refresh', loot.length >= 1, true)
+  ok('...for that player by name, not globally',
+    loot.length > 0 && loot[0].indexOf(r.username) > 0, true)
+}
+
 console.log('\n' + (fail === 0
   ? '\x1b[32m' + pass + '/' + (pass + fail) + ' passed\x1b[0m'
   : '\x1b[31m' + fail + ' FAILED\x1b[0m, ' + pass + ' passed'))

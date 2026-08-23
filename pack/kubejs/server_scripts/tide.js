@@ -67,11 +67,42 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var SPAWN_WINDOW = 600          // 30s of arrivals, per Ethan
   var SPAWN_BATCHES = 6           // ...delivered in this many pulses, 5s apart
 
-  // Escalation. Wave 1 is a nudge; the fifth is a problem. Capped so a very long run
-  // cannot compound into something unfightable.
-  var BASE_PER_BATCH = 1
-  var GROWTH = 0.5                // extra mobs per wave index
-  var MAX_PER_BATCH = 5
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔴 SCALE — REBUILT 2026-08-23. Ethan: "Make tides actually hard", and when
+  // offered tankier-vs-more: "for tankier, no, the answer is more undead."
+  //
+  // ⚠️ THE OLD NUMBERS WERE NOT A TIDE. BASE 1 / GROWTH 0.5 / MAX 5 across six
+  // pulses produced:
+  //
+  //     wave 1 -> 6 mobs      wave 2 -> 12      wave 5 -> 18      wave 9+ -> 30
+  //
+  // Six mobs spread over thirty seconds is one mob every five seconds. That is
+  // ambient cave spawning with a sound cue in front of it, and it is nowhere near
+  // his original spec: "a massive wave of enemy batters you for like 20 seconds."
+  //
+  // ⭐ WHY MORE AND NOT TOUGHER IS THE RIGHT CALL (and it is his, not mine): tanky
+  // undead just extend the same fight. A CROWD changes what the fight IS - you get
+  // pushed, surrounded, cut off from the way you came. That is the Darktide feeling
+  // he described, and it is also the only version that makes a corridor matter.
+  //
+  //     wave 1 -> 24 mobs     wave 2 -> 36      wave 5 -> 60      wave 8+ -> 72
+  var BASE_PER_BATCH = 4
+  var GROWTH = 1.5                // extra mobs per wave index
+  var MAX_PER_BATCH = 12
+
+  // 🚨 AND THEREFORE A CEILING, because the tide is PER PLAYER. Four champions in
+  // the depths at once means four independent runs, and at 72 apiece that is 288
+  // undead pathfinding at the same time on a machine that also runs Create.
+  //
+  // Counted LIVE from the world rather than tracked in a variable - a counter that
+  // drifts would either strangle the tide or fail to stop it, and neither failure
+  // announces itself. Tagged mobs, measured at the point of use.
+  // Loot refresh after a survived wave. One flag to disable if it misbehaves in play.
+  var LOOT_REFRESH = true
+
+  var TIDE_TAG = 'veldora_tide'
+  var MAX_ALIVE_NEAR = 45         // per player, within CENSUS_RANGE
+  var CENSUS_RANGE = 48
 
   // ═══════════════════════════════════════════════════════════════════════════
   // ⭐ THE TIDE IS THE GODDESS OF DEATH'S ARMY. UNDEAD ONLY.
@@ -211,14 +242,60 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var per = Math.min(MAX_PER_BATCH,
       Math.max(1, Math.round(BASE_PER_BATCH + GROWTH * (st.waves - 1))))
 
+    // 🔑 STAMP THE WINDOW BEFORE ANY PULSE FIRES. This is what the leave-check
+    // reads, so it has to be true from the instant the herald sounds - otherwise
+    // there is a gap between the scream and the lock, and the gap is exactly when a
+    // player would run.
+    st.waveEnds = st.age + SPAWN_WINDOW
+    st.toldEscape = false
+
     herald(p, y)
     console.info(TAG + p.username + ' - wave ' + st.waves + ' at y' + Math.round(y) +
       ', ' + per + ' per pulse x ' + SPAWN_BATCHES + ' over ' +
-      Math.round(SPAWN_WINDOW / 20) + 's')
+      Math.round(SPAWN_WINDOW / 20) + 's (up to ' + (per * SPAWN_BATCHES) + ' total)')
 
     var srv = null
     try { srv = p.server } catch (e) { return }
     if (!srv) return
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // ⭐⭐ SURVIVING A WAVE RE-OPENS THE LOOT. Ethan, 2026-08-23:
+    // "if possible after a tide reset the lootr containers."
+    //
+    // Lootr gives every player their own roll from a container, once. Clearing that
+    // record makes every chest down there lootable again - so the loop becomes the
+    // one he described back on 2026-08-22: "go down, fight enemies, get loot,
+    // escape." Staying deeper means more waves AND more loot, which is the whole
+    // risk/reward the depths were missing.
+    //
+    // 🔑 FIRED AT THE END OF THE SPAWN WINDOW, NOT THE START. The reward lands when
+    // the arrivals stop, so it reads as payment for the wave rather than a reason to
+    // run past it.
+    //
+    // 🚨 FAIL LOUD. runCommandSilent returns the command's success count; Lootr's
+    // exact subcommand has NOT been probed on a live server yet (it was off when this
+    // was written). If the syntax is wrong this prints the command verbatim on the
+    // first real wave instead of silently doing nothing - "I failed" and "I found
+    // nothing" must never share a return value.
+    srv.scheduleInTicks(SPAWN_WINDOW + 20, function () {
+      if (!LOOT_REFRESH) return
+      var who = '?'
+      try { who = String(p.username) } catch (e) { return }
+      var cmd = 'lootr clear ' + who
+      var r = -1
+      try { r = srv.runCommandSilent(cmd) } catch (e) {
+        console.error(TAG + '!! loot refresh THREW - `' + cmd + '` :: ' + e)
+        return
+      }
+      if (r > 0) {
+        console.info(TAG + who + ' survived wave ' + st.waves + ' - loot refreshed')
+      } else {
+        console.warn(TAG + '!! LOOT REFRESH DID NOTHING for ' + who + '. Ran: `' +
+          cmd + '` and got ' + r + '. The Lootr subcommand has never been verified ' +
+          'against a running server - check `/help lootr` and fix LOOT_CMD. The tide ' +
+          'still works; the reward does not.')
+      }
+    })
 
     // ⭐ THIRTY SECONDS OF ARRIVALS. Batched rather than dumped, so they come in a
     // stream you can hear approaching - and so a single unlucky pulse cannot bury
@@ -239,7 +316,27 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
               srv.runCommandSilent('execute as ' + p.username + ' at @s run playsound ' +
                 SOUND_WAVE + ' hostile @s ~ ~ ~ 0.8 0.5')
             }
-            if (VELDORA.spawner) VELDORA.spawner.wave(p, { ids: ids, count: per })
+            // 🚨 CENSUS BEFORE SPAWN. Counted from the world, not from a tally we
+            // keep - see MAX_ALIVE_NEAR. A pulse that would push past the ceiling is
+            // SKIPPED and says so; it is never silently reduced, because "the tide
+            // felt thin" and "the tide was capped" must not look the same in a log.
+            var alive = -1
+            try {
+              alive = p.level.getEntitiesWithin(p.boundingBox.inflate(CENSUS_RANGE))
+                .filter(function (e) { try { return e.tags.contains(TIDE_TAG) } catch (x) { return false } })
+                .length
+            } catch (e) { alive = -1 }
+            if (alive >= 0 && alive >= MAX_ALIVE_NEAR) {
+              console.info(TAG + p.username + ' pulse SKIPPED - ' + alive +
+                ' tide undead already within ' + CENSUS_RANGE + ' blocks (ceiling ' +
+                MAX_ALIVE_NEAR + '). Not thinned, held.')
+            } else if (VELDORA.spawner) {
+              // Tagged so the census above can find them, and so anything later can
+              // tell a tide corpse from an ordinary one.
+              VELDORA.spawner.wave(p, {
+                ids: ids, count: per, nbt: '{Tags:["' + TIDE_TAG + '"]}',
+              })
+            }
           } catch (e) { console.warn(TAG + 'pulse threw :: ' + e) }
         })
       })(b * step, b === 0)
@@ -276,12 +373,37 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // active
         st.in = 0
         st.age += SWEEP
+
+        // ⭐⭐ THE TIDE DOES NOT STOP AT THE DOOR (Ethan, 2026-08-23 - both knobs).
+        //
+        // Until now, ten seconds of sky ended a run outright, so the correct play on
+        // hearing the scream was to walk upstairs. That made the scariest sound in the
+        // game an instruction to leave, which is the opposite of what a wave is for.
+        //
+        // 🔑 A run can no longer END while a wave is still arriving. The spawn window
+        // keeps firing and the spawner places around your CURRENT position - so
+        // running for the surface does not cancel the wave, it relocates it. You take
+        // the fight outside, which is a real choice (more room, no ceiling) rather
+        // than an escape hatch.
+        //
+        // ⚠️ ENTERING is untouched. It still takes 15s of deliberate enclosure to
+        // start a run - the tide must never be something that happens TO you.
+        var mid = (st.waveEnds || 0) > st.age
+        if (!enc && mid) {
+          // Surfaced, but they are still coming. The leave timer does not run.
+          if (!st.toldEscape) {
+            st.toldEscape = true
+            console.info(TAG + p.username + ' surfaced MID-WAVE - the run holds, ' +
+              Math.round(((st.waveEnds || 0) - st.age) / 20) + 's of arrivals left')
+          }
+          continue
+        }
         if (!enc) {
           st.out += SWEEP
           if (st.out >= LEAVE_TICKS) {
             console.info(TAG + p.username + ' surfaced - tide ends after ' +
               st.waves + ' wave(s), ' + Math.round(st.age / 1200) + ' min')
-            runs[uuid] = { active: false, in: 0, out: 0, waves: 0, next: 0, age: 0 }
+            runs[uuid] = { active: false, in: 0, out: 0, waves: 0, next: 0, age: 0, waveEnds: 0, toldEscape: false }
           }
           continue
         }
