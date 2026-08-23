@@ -56,6 +56,11 @@ and it is not an instrument, it is the closest form the mod has **to what Caebri
 Kayer's own casting is the Lifestealer's true form. `docs/57 §2`.
 
 ⚠️ **The gods are not a pantheon that agrees.** They hold stances on each other, and
+🔴 **AND ONE OF THOSE STANCES IS NOT A TEMPERAMENT CLASH** (`docs/59 §1`, 2026-08-23):
+Blade is **Gregor** and Wall is **Mera**, who is his **daughter** — brainwashed as an
+infant to forget him after he was murdered. His contempt for the spider is a father
+describing his own child, and **neither of them can know it.**
+
 those stances judge a god's *champions* separately from the god. Blade despises the
 spider but respects the dog's champion; he demands cooperation with the engineer
 because *glory cannot be attained alone.* That disagreement is content — `28` §4's

@@ -97,7 +97,11 @@ wholesale; her release condition is CAPABILITY, not failure) ·
 her pools) · **`55-MATRIARCH-EVERY-LINE`** (DRAFT lines to edit and hand back —
 ⚠️ not generated from source, none of it is in the game yet)
 
-**The book canon** — **`58-KAYER-CANON`** (2026-08-22 — Ethan's series notes for Kayer,
+**The book canon** — **`59-MERA-CANON`** (2026-08-23 — Ethan's series notes for Mera =
+**WALL**, verbatim + an honest usability triage. 🔴 **Wall is Blade's daughter and
+neither of them knows** · her clinging is PURPOSE-LOSS, not motherhood · ⚠️ OPEN: her
+anti-undead golden light vs. her necromancy path — blocks the voice rewrite) ·
+**`58-KAYER-CANON`** (2026-08-22 — Ethan's series notes for Kayer,
 verbatim + reconciled. ⭐ **Forge is Milantros and Wall is MERA, and Kayer cannot forgive
 either of them for being Alice's daughter** · she MADE Blade (*Gregor **Kayer** Court*) ·
 her silence is foresight, not surveillance · ⚠️ the Homelander trap, which is a review

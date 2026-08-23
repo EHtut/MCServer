@@ -401,6 +401,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
               "I have outlasted every one of them."
           ]
       },
+      // 🔴🔴 HE IS DESCRIBING HIS DAUGHTER. docs/59 §1.
+      //
+      // Blade is GREGOR (docs/40 §0). Wall is MERA - and per Ethan's book canon she is
+      // Gregor and Marlynn's daughter, raised by him until Alison killed him and
+      // BRAINWASHED her, erasing her father and installing himself as her maker.
+      //
+      // So this pool - written months before either of us knew - is a father calling
+      // his own child's love an obsession and her devotion a weakness. Neither of them
+      // can know: she was one or two years old and the memory was deleted.
+      //
+      // 🚨 DO NOT SOFTEN THESE LINES AND DO NOT ADD A HINT. The contempt has to be
+      // total and unknowing or the whole thing collapses into foreshadowing. If it ever
+      // surfaces it surfaces to the PLAYER, through a third party - never through
+      // either of them noticing.
+      //
+      // ⭐ And docs/15 calls his contempt a temperament clash between a warrior and a
+      // smotherer. It is not a temperament clash.
       "wall": {
           "opens": [
               "The spider spins her nests and calls it love.",

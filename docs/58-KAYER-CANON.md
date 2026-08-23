@@ -19,6 +19,12 @@ Two of the six gods are people **Kayer cannot forgive for being Alice's daughter
 she loved most" — and she still does not get the title.** One wound, two gods, and it is
 the same wound. Until now the pantheon's grudges were about *method*. This is a family.
 
+⭐ **AND SHE IS RIGHT — WHICH IS WORSE** (`docs/59 §3`, 2026-08-23). Mera is not a
+clone. She is *genetically Alice's daughter and the true heir to Arkh*, and she does
+not know it either. **Kayer believes Mera is a pretender who stole a title; Mera
+believes she is a manufactured copy. Both are wrong, and the fact that would settle it
+would devastate exactly one of them.**
+
 ⭐ **AND THE RHYME UNDERNEATH IT:** Kayer is **Alice's failed attempt to resurrect
 Kayalar** — *"meant to be her half; came out entirely different."* Milantros is Alice's
 **collapsed resurrection** that woke up anyway. **The two strongest gods in Veldora are
