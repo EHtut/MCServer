@@ -97,7 +97,11 @@ wholesale; her release condition is CAPABILITY, not failure) ·
 her pools) · **`55-MATRIARCH-EVERY-LINE`** (DRAFT lines to edit and hand back —
 ⚠️ not generated from source, none of it is in the game yet)
 
-**Rulings** — **`62-THE-HARVEST-IS-CUT`** (2026-08-23 — Ethan: *"no reason for an
+**Rulings** — **`63-THE-TRIAL`** (2026-08-24 — the Harvest REFRAMED, not gone: a
+challenge that moves TRUST, and trust replaces notoriety as what buys buffs and drops.
+⭐ The machinery was gated not deleted, so this is a gate flip. 🔴 TWO PROBLEMS NEED A
+RULING: notoriety cannot "reset to 0" without an offset, and the rate curve now REWARDS
+falling) · **Rulings** — **`62-THE-HARVEST-IS-CUT`** (2026-08-23 — Ethan: *"no reason for an
 ending anymore since it is essentially an act-based story"*. ⭐ It was already half-dead —
 only 3 of 5 gods had a handler and it FIRED FOR HIM ON ART AND DID NOTHING. ⚠️ RULED, not
 executed: 20 files / ~300 refs, gate before deleting)
