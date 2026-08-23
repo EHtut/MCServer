@@ -323,3 +323,70 @@ below −64 is not yet in a fight. Every later Speaker line must stay chat-only 
 
 ⭐ **1 and 2 are worth doing even if the tide never happens.** They are cheap, they
 need no world changes, and they directly answer the complaint that started all of this.
+
+---
+
+## ⭐ THE LOOT LOOP — Lootr config, applied 2026-08-24
+
+> Ethan, 2026-08-23: *"if possible after a tide reset the lootr containers."*
+
+**⚠️ THIS IS NOT IN KUBEJS AND MUST NOT BE.** It was, for one day, and it was the wrong
+mechanism — `tide.js` fired `lootr clear <player>` at the end of each spawn window.
+Probing the live server showed **`/lootr clear` does not exist**, and Lootr has **no
+per-player clear in any spelling**. The real subcommands are `refresh`, `decay`,
+`openers`, `cclear`, `cull`, `custom-*`, `force_*`.
+
+🔑 **Lootr already does this properly, on a timer, scoped by loot table.** Which is
+better than the per-wave hook, because the depths and the surface separate themselves.
+
+### What was set — `instance/config/lootr-common.toml`, `[refresh]`
+
+```toml
+refresh_value       = 6000        # was 24000. 5 real minutes.
+refresh_loot_tables = [ ...12 tables, below ]
+```
+
+Everything else left alone: `refresh_all = false`, `refresh_modids = []`,
+`refresh_dimensions = []`, and both `*_while_ticking` already `true`.
+
+⭐ **THE TWELVE TABLES ARE NOT A GUESS — they are exactly the set `mcserver_buried_tech`
+already treats as "the depths"**, read out of its four TACZ loot injectors. Using the
+depth pack's own boundary means the loot economy and the refresh economy cannot drift
+apart:
+
+| source | tables |
+|---|---|
+| `abyssal_ancient_city_armoury` | `ancient_city`, `ancient_city_ice_box` |
+| `deep_mineshaft_salvage` | `abandoned_mineshaft` |
+| `deep_stronghold_cache` | `stronghold_corridor`, `stronghold_crossing` |
+| `deep_dungeon_salvage` | 5× `betterdungeons:*`, 2× `galosphere:archaeology/forgotten_ruins_*` |
+
+**Every one is genuinely underground, so surface structures stay one-shot with no
+dimension filtering** — village, shipwreck, desert pyramid and buried treasure use
+different tables and were never listed.
+
+⚠️ **DELIBERATELY OMITTED, so it reads as a decision rather than an oversight:**
+`minecraft:chests/stronghold_library` (deep, but it is where enchanted books live) and
+`minecraft:chests/simple_dungeon` (betterdungeons replaces vanilla dungeons). Add either
+if the depths feel thin.
+
+### Why 6000 ticks
+
+**It matches `WAVE_MIN`.** Waves land every 5–10 real minutes, so a container you emptied
+is live again roughly one wave later — *"go down, fight enemies, get loot, escape"* with
+the loot arriving on the same clock as the danger.
+
+⭐ **And it self-regulates rather than needing a camping guard.** Waiting out the timer in
+a safe hole means staying enclosed, and staying enclosed is precisely what summons the
+next wave. The exploit and the punishment are the same action.
+
+### 🚨 Drift risk, stated plainly
+
+`instance/config/` is **NOT tracked by this repo** — only `client/config/` and
+`server/config/` are, and nothing syncs mod configs into the instance. So this change
+exists in exactly one place, on one machine, and **a fresh instance will not have it.**
+
+A copy under `server/config/` was considered and rejected: nothing would keep the two in
+step, and a second source of truth that silently drifts is worse than a documented one.
+**This section is the record.** Backup of the pre-change file:
+`instance/config/lootr-common.toml.bak-2026-08-24`.
