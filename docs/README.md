@@ -97,6 +97,11 @@ wholesale; her release condition is CAPABILITY, not failure) ·
 her pools) · **`55-MATRIARCH-EVERY-LINE`** (DRAFT lines to edit and hand back —
 ⚠️ not generated from source, none of it is in the game yet)
 
+**Not a patron — the thing in the dark** — **`57-CAEBRIM`** (2026-08-22 — she is
+FEMALE; the shadow stalker is taken off Art and reserved as **her** form, Art recast to
+the Lifestealer's TRUE form and why the base one would have turned on its own champion;
+🔴 **Kayer hates Milantros**; 🔴 OPEN: should Caebrim replace every depth speaker?)
+
 **Next direction** *(captured 2026-08-18, unscoped)* —
 **`52-EARNING-THE-PATH`** (the item makes you NOTICED not chosen · Forge + Art +
 Undeath · villagers as player models)

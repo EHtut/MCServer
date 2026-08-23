@@ -67,15 +67,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // every existing line in the game already says, so nothing contradicts on screen
   // - but it is one word to change if the brief wins, which it probably should.
   //
-  // ⚠️ ART HAS THREE NAMES IN USE (Nightmare / Matriarch / Dreamwalker) and is an
-  // open ruling. She never warns, but she can still be the RIVAL somebody is warned
-  // about, so she needs a string regardless. `the nightmare` leads the count.
+  // ⭐ ART'S NAME IS SETTLED. It was an open three-way (Nightmare / Matriarch /
+  // Dreamwalker); docs/53 ruled it 2026-08-22 - she is KAYER, THE MATRIARCH, and the
+  // Nightmare is a character who no longer exists. This string is player-facing (it
+  // is what a rival's champion is told is coming), so it moved with the ruling
+  // rather than waiting on the wider docs sweep.
   var TITLE = {
     blade: 'the blade',
     wall: 'the spider',
     salvage: 'the hound',
     forge: 'the forge',
-    art: 'the nightmare',
+    art: 'the matriarch',
     crown: 'the spider',
   }
 

@@ -236,14 +236,14 @@ in while reading a single line of text.
 | path | stalker | entity | HP / dmg | reasoning |
 |---|---|---|---|---|
 | **Forge** | Krampus | `krampus` | 250 / 14 | the thief of Christmas. The Forge builds; Krampus takes. |
-| **Art** | Nightmare Stalker | `nightmare_stalker` | 70 / 7 | the realm of nightmare against the realm of dreams. They cannot coexist. |
+| **Art** | Lifestealer (true form) | `lifestealer_true_form` | 70 / 7 | 🔴 **recast 2026-08-22.** `nightmare_stalker` is reserved for **Caebrim** — see `docs/57 §2`, including why it must be the TRUE form and not the base Lifestealer. |
 | **Blade** | Fallen Chaos Knight | `fallen_chaos_knight` | **600** | a dead duelist for the path about mastering one weapon. **Swapped from `lord_pumpkinhead` 2026-08-11 — see THE BLADE RECAST below.** |
 | **Salvage** | Dire Hound Leader | `dire_hound_leader` | 100 / 10 | the wolf hunts its prey. |
 | **Crown** | Missioner | `missioner` | 150 / 9 | the false king, lord of the dead. The Crown's hero is an intruder. |
 | **Wall** | Mother Spider | `mother_spider` | 90 / 6 | **there's a spider on your wall.** |
 
 ⚠️ **These are not yet hard enough to fail 4–5 times.** Only Lord Pumpkinhead is
-built like a real boss. Nightmare Stalker at 70 HP is a speed bump for a player
+built like a real boss. Art's casting at 70 HP is a speed bump for a player
 carrying +6 health and +4 armour. The Harvest instance needs its own stat block —
 health, damage and armour multiplied at summon time — so the *species* stays
 itself while *your* stalker is the version that has been eating for a hundred

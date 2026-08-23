@@ -245,7 +245,45 @@
 
   var CAST = {
     forge:   ['born_in_chaos_v1:krampus', 'The Thief'],
-    art:     ['born_in_chaos_v1:nightmare_stalker', 'The Nightmare'],
+    // ⭐ THE SHADOW STALKER IS NOT HERS ANY MORE - Ethan, 2026-08-22:
+    //
+    //     "i want to take the shadow stalker away from art and give that only to
+    //      caebrim. She is the one who hunts you in the depth, and the stalker is
+    //      the closest form to her... We can use the lifestealer for art"
+    //
+    // `nightmare_stalker` is RESERVED. It is Caebrim's form and must not be cast by
+    // any path. docs/57.
+    //
+    // 🔴 AND IT IS THE **TRUE FORM**, NOT THE BASE LIFESTEALER. That is not a
+    // preference, it is forced. Decompiling the mod:
+    // `LifestealerPriObnovlieniiTikaSushchnostiProcedure` (its per-tick handler)
+    // compares getHealth()/getMaxHealth() and, past the threshold, calls
+    //     LIFESTEALER_TRUE_FORM.spawn(level, pos, MOB_SUMMONED)  then  discard()
+    // on itself. That is a BRAND NEW ENTITY, so the replacement carries none of the
+    // persistentData we stamp on a stalker - and everything here is keyed on it:
+    //
+    //     isStalker()  reads veldora_stalker_owner   -> false after the swap
+    //     the owner-damage hard stop                 -> stops applying: it mauls its owner
+    //     the Harvest death handler                  -> no credit, Art's release breaks
+    //     flee / keepDistance / the Helper / logout   -> all silently stop
+    //     the STATS block below                      -> discarded with the entity
+    //
+    // ⭐ MEASURED, NOT INFERRED (2026-08-22, live rcon, no players online). Summoned a
+    // base lifestealer named PROBE carrying Tags:["veldora_probe"], then set its
+    // Health to 20/100. Result:
+    //     @e[type=...lifestealer]        -> No entity was found   (discarded)
+    //     @e[tag=veldora_probe]          -> No entity was found   (tag did NOT carry)
+    //     @e[type=...lifestealer_true_form] -> Health 100.0f      (and named "Lifestealer")
+    // So the swap destroys the custom name and every NBT tag - AND FULLY HEALS IT.
+    // A base-form cast would have been a 200 HP stalker that forgets who owns it at
+    // the halfway mark. None of the 291 harness assertions could have seen this.
+    //
+    // Casting the true form directly means one entity for the whole fight and every
+    // invariant above holds. The cost is the reveal theatre and its dark-ice trail;
+    // a stalker already wears a name tag and a scale bump, so the disguise was blown
+    // before it mattered. Base form is only viable behind a rebind hook we do not
+    // have, and could not test deterministically if we built it.
+    art:     ['born_in_chaos_v1:lifestealer_true_form', 'The Taker'],
     // Was lord_pumpkinhead until 2026-08-11. He is the ONLY one of the six with a
     // ServerBossEvent - a boss health bar across the top of the screen - and the
     // only one besides sir_pumpkinhead with a "WithoutaHorse" variant in the jar,

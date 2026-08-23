@@ -135,6 +135,16 @@ own pools (`deep_intro` / `deep_common` / `deep_abandoned` / `deep_rare`).
 changes: the moment Caebrim or Ank speaks, "unwilling to speak to her" stops being
 true. If they ever do, it should be an event, not a pool.
 
+🔴 **AND ETHAN IS ALREADY CONSIDERING EXACTLY THAT** (2026-08-22): *"the depth speaker I
+might change to all of them might just be Caebrim."* It is a `might`, it is NOT built, and
+the argument on both sides — including whether *"unwilling to speak to **her**"* means
+Kayer specifically — is written up in **`docs/57 §3`**. Caebrim is also now female, and
+the shadow stalker (`nightmare_stalker`) has been taken off Art and reserved as **her**
+form; Kayer's stalker is the Lifestealer's true form instead. `docs/57 §2`.
+
+🔴 **She also hates Milantros** (`docs/57 §4`) — which makes the two strongest gods
+personal enemies, and gives `broadcast.js` its first real reason to fire.
+
 ---
 
 ## 4. ⭐ Her "nothing" was apathy. It is now surveillance.

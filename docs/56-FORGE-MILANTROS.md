@@ -69,6 +69,13 @@ opposites on **every** axis:
 same question: *what does a god do with a mortal?* Kayer uses one. Milantros makes
 friends with one.
 
+🔴 **AND THE OPPOSITION IS PERSONAL, NOT JUST THEMATIC** — Ethan, 2026-08-22: *"oh yea and
+**kayer hates milantros** btw."* The coldest god in the game hates the warmest one, and
+the warmest one almost certainly does not know. It is the first hostility in the pantheon
+that is about **attention** rather than power, and it is the missing trigger `broadcast.js`
+has been waiting for. Full triangle — Caebrim asked, Alice paid, Kayer resents, Milantros
+is oblivious — in **`docs/57 §4`**.
+
 ⭐ **And that is what makes the accident matter.** Kayer was *made* — chosen, funded,
 poured into. Milantros was an afterthought whose soul went up because a spell broke.
 **The most benevolent god in the pantheon is the one nobody meant to create.**
@@ -138,10 +145,11 @@ asking because it did not occur to her to ask. Same mechanic, opposite meaning.
   My read: *quietest* means she **intrudes least** — fewest events, no demands, never
   a summons — not that she uses few words. When she does appear she talks a lot.
   **Confirm.**
-- 🔑 **CAEBRIM IS THE LINK BETWEEN TWO GODS.** He begged Alice for this, and he is one
-  of the two siblings banished to the depths who will not speak to Kayer (`docs/53`).
-  **Did the collapsed ritual cause his banishment?** That is the obvious inference and
-  I am not making it.
+- 🔑 **CAEBRIM IS THE LINK BETWEEN TWO GODS.** **She** begged Alice for this, and she is
+  one of the two siblings banished to the depths who will not speak to Kayer (`docs/53`).
+  **Did the collapsed ritual cause her banishment?** That is the obvious inference and I
+  am not making it. *(Her pronoun was `he` here until Ethan corrected it 2026-08-22 —
+  it was my inference, not his. `docs/57`.)*
 - **Does she know what she is?** She *watched* the ritual fail and her soul leave. So
   she knows something went wrong — but whether she understands she is dead, or a god,
   or an accident, changes her voice completely.
@@ -160,7 +168,7 @@ asking because it did not occur to her to ask. Same mechanic, opposite meaning.
 | ❌ `forge_events.js` | does not exist |
 | ❌ her **one voice rule** | the thing that makes a line hers before you read it |
 | ❌ the **wild idea** shape | §3 — how wrong is she allowed to be? |
-| ❌ the retcon sweep | "The Thief" · `krampus` · he/him across 6+ docs |
+| ❌ the retcon sweep | "The Thief" · `krampus` · he/him across 6+ docs — and her `stalker.js` CAST still reads `['born_in_chaos_v1:krampus', 'The Thief']` |
 | ✅ drops | done, live-validated (Create, plus her chocolate) |
 | ✅ coefficients | done — mercantile, `drops` 5.0, the highest in the table |
 | ✅ the name | Milantros, the Goat, **she** |

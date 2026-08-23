@@ -180,7 +180,7 @@ grp('THE REAL POOLS, loaded from the shipped *_voice.js files')
   for (let i = 0; i < 40; i++) { const s = V.line('wall', 'warn_incoming', null); if (s) wallPool.push(s) }
   ok('wall\'s pool references {rival} somewhere', wallPool.some(s => s.indexOf('{rival}') >= 0), true)
   ok('🚨 wall never hardcodes a rival god\'s name',
-    wallPool.some(s => /the blade|the hound|the spider|the nightmare/i.test(s)), false)
+    wallPool.some(s => /the blade|the hound|the spider|the matriarch|the nightmare/i.test(s)), false)
 
   const bladePool = []
   for (let i = 0; i < 40; i++) { const s = V.line('blade', 'warn_incoming', null); if (s) bladePool.push(s) }

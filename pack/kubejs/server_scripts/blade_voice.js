@@ -469,11 +469,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       },
       "art": {
           "opens": [
-              "The Nightmare speaks little and rules the most.",
+              "The Matriarch speaks little and rules the most.",
               "Her realm is magic. Her opinions are few.",
-              "The shadow moves. The Nightmare rarely does.",
+              "Her hand moves. She rarely does.",
               "She leads five gods and argues with none of them.",
-              "The Nightmare's silence says more than her voice.",
+              "The Matriarch's silence says more than her voice.",
               "Magic answers to her. Little else does."
           ],
           "closes": [

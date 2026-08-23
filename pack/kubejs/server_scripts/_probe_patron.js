@@ -29,7 +29,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     forge: ['born_in_chaos_v1:krampus', 'The Thief'],
     wall: ['born_in_chaos_v1:mother_spider', 'The Mother'],
     crown: ['born_in_chaos_v1:missioner', 'The False King'],
-    art: ['born_in_chaos_v1:nightmare_stalker', 'The Nightmare'],
+    // Mirrors stalker.js. nightmare_stalker is RESERVED for Caebrim (docs/57) and
+    // the true form is cast directly - see the long note on stalker.js's CAST.
+    art: ['born_in_chaos_v1:lifestealer_true_form', 'The Taker'],
   }
   var ORDER = ['blade', 'salvage', 'forge', 'wall', 'crown', 'art']
 

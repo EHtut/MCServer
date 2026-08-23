@@ -549,11 +549,11 @@ These join with a space, and each half is picked independently — so `opens` ×
 
 **opens**
 ```
-1. The Nightmare speaks little and rules the most.
+1. The Matriarch speaks little and rules the most.
 2. Her realm is magic. Her opinions are few.
-3. The shadow moves. The Nightmare rarely does.
+3. Her hand moves. She rarely does.
 4. She leads five gods and argues with none of them.
-5. The Nightmare's silence says more than her voice.
+5. The Matriarch's silence says more than her voice.
 6. Magic answers to her. Little else does.
 ```
 **closes**
