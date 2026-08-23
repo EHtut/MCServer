@@ -419,8 +419,15 @@
   //
   // TO OPEN: delete the key from CLOSED. Do it when the god has a written voice and
   // registered events, not before - `[voice] N god(s)` at boot is the check.
+  // ⭐ ART IS OPEN, 2026-08-22. She has a voice (art_voice.js), an event set
+  // (art_events.js), a deep-speaker entry of her OWN (deep_speaker.js - she is the
+  // only god who does not send a stand-in), a validated drop table and a full
+  // coefficient row. That is the bar this file set for opening a path: "do it when
+  // the god has a written voice and a live event set."
+  //
+  // ⚠️ AND THE CLOSED MESSAGE CALLED HER THE DREAMWALKER, which is one of the three
+  // names docs/53 retired. She is the MATRIARCH, and she is Kayer.
   var CLOSED = {
-    art: 'The Dreamwalker is not listening yet.',
     forge: 'The Goat does not answer.',
   }
 

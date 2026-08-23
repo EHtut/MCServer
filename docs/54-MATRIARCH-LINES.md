@@ -147,18 +147,37 @@ gathering economy are the same economy.
 `+` … `++++`, or **`0`** for *she will never do this*. Blank = undecided, and the boot
 log treats those differently on purpose.
 
-| kind | blade | wall | salvage | **matriarch** |
-|---|:--:|:--:|:--:|:--:|
-| **Challenges** *(wave / forced)* | ++++ | 0 | 0 | |
-| **Duels** *(wave / choice)* | +++ | 0 | ++ | |
-| **Buffs** *(status / forced)* | ++++ | ++++ 📉 | 0 | |
-| **Boons** *(status / choice)* | ++++ | 0 🔒 | ++++ | |
-| **Invade** *(hurt others / forced)* | ++ | ++++ 📈 | 0 | |
-| **Attacks** *(hurt others / choice)* | + | ++ ⛰️ | +++ | |
-| **Aids** *(help others / forced)* | + | 0 | 0 | |
-| **Support** *(help others / choice)* | + | 0 | + | |
-| **Assassinations** *(kill order / forced)* | ++ | 0 🔒 | 0 | |
-| **Contracts** *(kill order / choice)* | +++ | +++ 📈 | +++ | |
+### ✏️ PROPOSED BY ME, 2026-08-22 — correct the numbers, the SHAPE is derived
+
+Ethan: *"go ahead and propose the chart, build her functional."* So this is mine, not
+his. **Every `0` is a ruling I am making on his behalf and he should check them** —
+but they are not arbitrary: they fall directly out of *"she cannot physically touch
+the world."*
+
+| kind | blade | wall | salvage | **matriarch** | why |
+|---|:--:|:--:|:--:|:--:|---|
+| **Challenges** *(wave / forced)* | ++++ | 0 | 0 | **0** | she cannot spawn anything |
+| **Duels** *(wave / choice)* | +++ | 0 | ++ | **0** | nor offer to |
+| **Buffs** *(status / forced)* | ++++ | ++++ 📉 | 0 | **0** | acting ON you without asking is the one thing she cannot do |
+| **Boons** *(status / choice)* | ++++ | 0 🔒 | ++++ | **++++** | ⭐ her whole gift economy, and every gift is an appraisal |
+| **Invade** *(hurt others / forced)* | ++ | ++++ 📈 | 0 | **0** | she cannot reach them either |
+| **Attacks** *(hurt others / choice)* | + | ++ ⛰️ | +++ | **+++** | she asks YOU to do the hurting |
+| **Aids** *(help others / forced)* | + | 0 | 0 | **0** | — |
+| **Support** *(help others / choice)* | + | 0 | + | **++** | she asks you to help someone, for her own reasons |
+| **Assassinations** *(kill order / forced)* | ++ | 0 🔒 | 0 | **0** | 🔑 she cannot compel. This is the sharpest contrast with Blade in the table |
+| **Contracts** *(kill order / choice)* | +++ | +++ 📈 | +++ | **++++** | ⭐ her signature — the errand, and `killorder.js` already does it |
+
+🔑 **FIVE ZEROES, AND THEY ARE ALL THE FORCED COLUMN.** She is the only god who cannot
+act, so she is the only god with an empty left half. That is not a dial set low; it is
+the character expressed as a table.
+
+⭐ **She has four event kinds where the others have eight or nine.** Fewer, heavier,
+all of them asked. Her events file will be smaller than Blade's and that is correct —
+she does one thing.
+
+⚠️ **The obvious risk: four kinds may not be enough variety.** If she feels thin in
+play, the fix is *more Contracts with different errands*, not opening a forced kind —
+opening one would cost the thing that makes her distinct.
 
 **A band may be a FUNCTION**, not just a number — Wall's read her own rage, which is
 why her attacks peak in the middle and her boons fade as she rises. ⭐ **Kayer probably

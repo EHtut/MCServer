@@ -75,6 +75,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     name: 'the Speaker',
     colour: '§7',                        // grey. She is not a god.
     lines: {
+      // [CLAUDE-DRAFT] the Speaker's tide herald
+      // 🚨 tide.js CALLS speaker.say(p, 'warn_wave') AND NO SPEAKER HAD THE POOL. The
+      // deep herald silently fell through to the god's own voice - which is the exact
+      // thing the design says cannot happen down here. Found by diffing the tags
+      // speakers DEFINE against the tags anything CONSUMES.
+      warn_wave: [
+        'They have noticed you. That is not a thing I can undo.',
+        'Something is coming up the corridor. He cannot help you with it.',
+        'Be still. They are already moving.',
+      ],
       intro: [
         'The champion of the Blade. Another one. Come deeper, your end shall be swift.',
       ],
@@ -139,6 +149,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     name: 'the Doctor',
     colour: '§b',                        // light blue. She IS the goddess.
     lines: {
+      // [CLAUDE-DRAFT] the Doctor's tide herald
+      warn_wave: [
+        'Oh. Oh dear. They are awake, and they are coming.',
+        'You should not be here for this. Neither should I.',
+        'Hold on to something. Please.',
+      ],
       intro: [
         'You. You\'re like me.',
         'Interesting. Fascinating. You seem almost... determined?',
@@ -229,6 +245,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     name: 'the Keeper',
     colour: '§e',                        // yellow
     lines: {
+      // [CLAUDE-DRAFT] the Keeper's tide herald
+      warn_wave: [
+        "That sound? That's them. I'd get ready.",
+        "Something's coming. I'm sorry, I can't stop it.",
+        "Brace yourself. It gets loud down here.",
+      ],
       intro: [
         "You aren't supposed to be down here. It's dangerous.",
         "Oh... you're a champion of the wolf.",
@@ -266,6 +288,74 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         "Maybe I'm just weak. I've known that for a long time.",
       ],
     ],
+  })
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐ THE MATRIARCH IS HER OWN SPEAKER. Ethan, 2026-08-22: "she is her own depth
+  // speaker, those lines should switch from cold to irritated and impatient."
+  //
+  // Every other entry in this file is a STAND-IN - a third party who meets you where
+  // your god cannot reach. Kayer has no stand-in and needs none: she comes down
+  // herself, and she is furious about having to.
+  //
+  // 🔑 SO SHE IS THE ONLY GOD IN THE PANTHEON WHOSE VOICE CHANGES WITH LOCATION.
+  // Composed and clinical on the surface (art_voice.js); openly impatient and
+  // insulting down here. Descending her path reveals CHARACTER, not just danger -
+  // and that is the whole reason this file was worth extending rather than leaving
+  // her silent, which is what I had originally written as canon and got wrong.
+  //
+  // ⚠️ AND SHE STILL GIVES NOTHING. Her `rare` lines are the one place another god
+  // would slip; hers are where she notices you fishing and shuts it down. The truth
+  // about her devotion is not learnable from her mouth, here or anywhere.
+  //
+  // ⚠️ NO `confession` ARRAY, DELIBERATELY. The three cutscenes are the moment a
+  // speaker opens up over three descents. She does not open up. Registering an empty
+  // one would be a lie about her; omitting it is the character.
+  //
+  // [CLAUDE-DRAFT] art/deep_intro · art/deep_common · art/deep_abandoned · art/deep_rare
+  register('art', {
+    id: 'death_matriarch',
+    name: 'the Matriarch',
+    colour: '§b',                        // pale blue - hers, and colder than the rest
+    lines: {
+      // [CLAUDE-DRAFT] her tide herald - the only one who is ANNOYED by it
+      warn_wave: [
+        'Something is coming. Deal with it.',
+        'Company. Try not to embarrass either of us.',
+        'They are moving. I am not going to say it twice.',
+      ],
+      intro: [
+        'You have gone deep enough that I had to come myself. Do not make a habit of it.',
+        'I do not usually come this far down. Consider that a mark against the depth, not a favour to you.',
+        'This is what it costs to make me leave the surface. Try to be worth it.',
+      ],
+      common: [
+        'Move faster. I have patience. It is thinner than yours.',
+        'You are doing that wrong. I would fix it myself if I could. I cannot. That is the whole problem.',
+        'Every step down here costs me something to watch. Make it worth the cost.',
+        'I do not like it down here. I like waiting for you to finish even less.',
+        'You hesitate more in the dark. Noted. Not admired.',
+        'This is the part where you usually make a mistake. Go on, then.',
+        'I would do this myself if I had hands. I do not. That is why you are here, and why I am irritated about it.',
+        'Slower than last time. Explain that to yourself, not to me.',
+        'The dark does not frighten me. Watching you fumble in it does something close to it.',
+        'Finish. Elsewhere is waiting.',
+      ],
+      // ⭐ Said to ANOTHER god's champion, whose patron cannot reach them down here.
+      // She is contemptuous of the absent god and makes sure they notice.
+      abandoned: [
+        'Your god is not coming. I am here, and I am not even yours.',
+        'Alone down here, are you. Whoever sent you did not think that far ahead.',
+        'I notice who follows their champion into the dark and who does not. Yours does not.',
+        'No one is watching you but me. Make of that what you will. I already have.',
+      ],
+      rare: [
+        'Caebrim and Ank are down here somewhere. That is the whole of what you are getting.',
+        'You are hoping I keep talking. Everyone does, down here. It works on nobody.',
+        'I have two names I do not use and reasons I do not explain. Enjoy the arithmetic.',
+        'Whatever you think you have worked out about me, you have not. Dig.',
+      ],
+    },
   })
 
   // ═══════════════════════════════════════════════════════════════════════════

@@ -273,7 +273,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // put it ~10 in-game days out of reach.
     try {
       if (VELDORA.speaker && VELDORA.speaker.active(p)) {
-        if (VELDORA.speaker.say(p, 'common')) {
+        // ⭐ A SPEAKER GETS A RARE POOL TOO, the way every god does. Without this a
+        // `rare` pool registered by a speaker is dead weight - which is what the
+        // Matriarch's was the moment it was written, and what `abandoned` still is
+        // across all four speakers (defined by every one, consumed by nothing).
+        var spoke = false
+        if (Math.random() < RARE_CHANCE) spoke = !!VELDORA.speaker.say(p, 'rare')
+        if (spoke || VELDORA.speaker.say(p, 'common')) {
           if (nowT !== null) { try { p.persistentData.putDouble(dayKey, nowT + 1) } catch (e) { } }
           var who = 'a speaker'
           try {

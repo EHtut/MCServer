@@ -18,6 +18,35 @@ in this repo has died before.
 
 ---
 
+## art — 24 pool(s)
+
+| tag | to rewrite | ⭐ yours, keep | file |
+|---|---:|---:|---|
+| `guidance` | 8 | — | [`art_voice.js:56`](../pack/kubejs/server_scripts/art_voice.js) |
+| `low_silence` | 4 | — | [`art_voice.js:56`](../pack/kubejs/server_scripts/art_voice.js) |
+| `high_silence` | 4 | — | [`art_voice.js:56`](../pack/kubejs/server_scripts/art_voice.js) |
+| `combat` | 5 | — | [`art_voice.js:57`](../pack/kubejs/server_scripts/art_voice.js) |
+| `returned` | 4 | — | [`art_voice.js:57`](../pack/kubejs/server_scripts/art_voice.js) |
+| `low_gift` | 5 | — | [`art_voice.js:98`](../pack/kubejs/server_scripts/art_voice.js) |
+| `medium_gift` | 5 | — | [`art_voice.js:98`](../pack/kubejs/server_scripts/art_voice.js) |
+| `high_gift` | 5 | — | [`art_voice.js:98`](../pack/kubejs/server_scripts/art_voice.js) |
+| `harvest_won` | 3 | — | [`art_voice.js:125`](../pack/kubejs/server_scripts/art_voice.js) |
+| `harvest_lost` | 3 | — | [`art_voice.js:125`](../pack/kubejs/server_scripts/art_voice.js) |
+| `cut_down` | 5 | — | [`art_voice.js:125`](../pack/kubejs/server_scripts/art_voice.js) |
+| `contract_offer` | 4 | — | [`art_voice.js:147`](../pack/kubejs/server_scripts/art_voice.js) |
+| `demand_blade` | 4 | — | [`art_voice.js:160`](../pack/kubejs/server_scripts/art_voice.js) |
+| `demand_wall` | 4 | — | [`art_voice.js:160`](../pack/kubejs/server_scripts/art_voice.js) |
+| `demand_salvage` | 4 | — | [`art_voice.js:160`](../pack/kubejs/server_scripts/art_voice.js) |
+| `loc_above` | 5 | — | [`art_voice.js:186`](../pack/kubejs/server_scripts/art_voice.js) |
+| `rare_loc_above` | 4 | — | [`art_voice.js:186`](../pack/kubejs/server_scripts/art_voice.js) |
+| `near_blade` | 3 | — | [`art_voice.js:209`](../pack/kubejs/server_scripts/art_voice.js) |
+| `near_wall` | 3 | — | [`art_voice.js:209`](../pack/kubejs/server_scripts/art_voice.js) |
+| `near_salvage` | 3 | — | [`art_voice.js:209`](../pack/kubejs/server_scripts/art_voice.js) |
+| `deep_intro` | ? | — | [`deep_speaker.js:315`](../pack/kubejs/server_scripts/deep_speaker.js) |
+| `deep_common` | ? | — | [`deep_speaker.js:315`](../pack/kubejs/server_scripts/deep_speaker.js) |
+| `deep_abandoned` | ? | — | [`deep_speaker.js:315`](../pack/kubejs/server_scripts/deep_speaker.js) |
+| `deep_rare` | ? | — | [`deep_speaker.js:315`](../pack/kubejs/server_scripts/deep_speaker.js) |
+
 ## blade — 6 pool(s)
 
 | tag | to rewrite | ⭐ yours, keep | file |
@@ -64,7 +93,7 @@ in this repo has died before.
 
 ---
 
-**107 drafted lines across 29 pools.**
+**192 drafted lines across 53 pools.**
 
 Ethan's own writing is NOT listed here — his lines carry no marker, which is
 the whole point of the convention. Where a pool is mixed (his first line, drafts
