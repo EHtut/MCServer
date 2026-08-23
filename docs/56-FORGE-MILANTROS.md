@@ -306,10 +306,26 @@ asking because it did not occur to her to ask. Same mechanic, opposite meaning.
   before the brief.** Milantros is not a retcon of these lines; the brief is what they
   were always describing. One word changes: `his` → `her`.
 
-  🔑 **And that third line settles the writing question.** It *tells* the player about the
-  accent instead of performing it. So: **rhythm and word choice, no phonetic spelling** —
-  no dropped g's, no eye-dialect. His own line already established that the game states
-  what she sounds like, which is also the option that keeps her pools readable.
+  🔴 **AND THE WRITING QUESTION IS RULED THE OTHER WAY.** Ethan, 2026-08-22: *"can we
+  actually alter all the dialogue so the accent is written?"*
+
+  I had argued for rhythm and word choice only, on the strength of that whisper line.
+  **He overruled it and he is right:** the whisper is a NARRATOR describing her from
+  outside, and these pools are her actually talking. A narrator can say *she has an
+  accent*. A character has to have one. All 42 pools rewritten.
+
+  ⭐ **THE ONE RULE THAT KEEPS IT READABLE — consonants yes, vowels no:**
+
+  | | |
+  |---|---|
+  | ✅ drop the g | buildin', somethin', nothin', fixin' |
+  | ✅ contract freely | y'all, ain't, gonna, oughta, 'em, 'bout, 'cause, s'pose |
+  | ✅ regional vocabulary | reckon, yonder, a mess of, right quick, well now, shoot, mighty |
+  | 🚨 **never respell a vowel** | no "Ah", no "yew", no "mah", no "thang" |
+
+  **Eye-dialect on vowels is where a written accent stops being a voice and becomes a
+  costume**, and it makes a pool unscannable. Consonants and contractions carry the
+  entire sound for free. Enforced by a check in the build notes; zero violations.
 
 ---
 

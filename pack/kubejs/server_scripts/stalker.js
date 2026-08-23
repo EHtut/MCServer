@@ -212,7 +212,7 @@
   var RARE_NAUSEA_AMP = 2   // was 3
   var WHISPERS = {
     forge: [
-      "*The goat accidentally spills his entire bag, you try not to look*",
+      "*The goat accidentally spills her entire bag, you try not to look*",
       "*The goat makes a goat noise*",
       "*The goat whispers in a distinctly southern accent. You don't get the reference*",
     ],

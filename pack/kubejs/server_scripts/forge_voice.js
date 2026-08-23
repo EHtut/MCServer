@@ -12,18 +12,37 @@
 // Curly blonde hair. Large outward-curling goat horns under a WIDE-BRIMMED COWBOY HAT.
 // Pale blue eyes, buck teeth, tan skin. Cheerful, energetic, LOVES MEAT AND GUNS.
 //
-// 🔑 The hat and the rifle are why the accent exists. It is not a flavour note bolted
-// onto a goat - it is the whole silhouette, and it has been sitting in Ethan's own
-// whisper line since 2026-08-05.
+// ── 🔴 THE ACCENT IS WRITTEN. Ethan, 2026-08-22 ────────────────────────────
+// "can we actually alter all the dialogue so the accent is written?"
+//
+// ⚠️ THIS REVERSES MY OWN RULING, AND HE IS RIGHT TO REVERSE IT. I argued for word
+// choice and rhythm only, on the grounds that his whisper line TELLS you she sounds
+// southern rather than performing it. But that line is a NARRATOR describing her from
+// outside; these pools are her actually talking. A narrator can say "she has an
+// accent". A character has to have one.
+//
+// ── ⭐ THE ONE RULE THAT KEEPS IT READABLE: CONSONANTS YES, VOWELS NO ──────
+// This is the whole style guide and it is not negotiable, because the failure mode of
+// written dialect is a pool nobody can scan:
+//
+//     ✅ DROP THE G           buildin', somethin', nothin', fixin', reckonin'
+//     ✅ CONTRACT FREELY      y'all, ain't, gonna, oughta, 'em, 'bout, 'cause, s'pose
+//     ✅ REGIONAL VOCABULARY  reckon, yonder, a mess of, right quick, fixin' to,
+//                             well now, shoot, lord, mighty, bless
+//     🚨 NEVER RESPELL A VOWEL     no "Ah", no "yew", no "mah", no "thang"
+//
+// Eye-dialect on vowels is where written accent stops being a voice and becomes a
+// costume. Consonants and contractions carry the whole sound and cost nothing to read.
+//
+// 🔑 SHE IS ALSO A CHILD, so the accent rides on top of a kid's grammar: run-ons,
+// repeated words for emphasis, sentences that change their mind halfway.
 //
 // ── ⭐ THE ONE VOICE RULE ───────────────────────────────────────────────────
 // **EVERY LINE ARRIVES MID-CONVERSATION.** She is not starting a sentence, she is
-// continuing one you were not part of. No greetings, no preamble, no landing. That is
-// what Ethan's "just her rambling in your ear" is, mechanically, and it is the thing
-// that should make a line hers before you read the name.
+// continuing one you were not part of. No greetings, no preamble, no landing.
 //
-//     her:   "- and that's before you even get to the water wheel, which I would
-//             not have put there, but you did, so."
+//     her:   "- an' that's before y'all even get to the water wheel, which I wouldn't
+//             have put there, but you did, so."
 //     NOT:   "Hello. I have been thinking about your water wheel."
 //
 // ── ⭐ "WILD IDEAS" ARE THIS FILE, NOT forge_events.js ──────────────────────
@@ -47,13 +66,6 @@
 // 🔑 She is the only god who talks to you while you are doing nothing at all. Keep it
 // that way - if a later editor trims these pools "for noise", they are deleting the
 // character, not the noise.
-//
-// ── THE ACCENT: WORD CHOICE AND RHYTHM. NEVER SPELLING. ────────────────────
-// Ethan's own whisper line, live since 2026-08-05:
-//     "*The goat whispers in a distinctly southern accent. You don't get the reference*"
-// The game TELLS you what she sounds like. So: "reckon", "a mess of", "right quick",
-// "well now", "bless", "yonder", "I swear". NEVER "fixin'", "somethin'", "y'all's".
-// Eye-dialect makes a pool unreadable at a glance and he did not ask for it.
 //
 // ── ⭐ SHE KNOWS SHE IS DEAD AND IT IS NOT A WOUND ─────────────────────────
 // Ethan: "She knows, she's been dead for a very long time."
@@ -90,37 +102,37 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var LINES = {
     // [CLAUDE-DRAFT] forge/guidance
     // ⭐ NOT GUIDANCE. Every other god's guidance pool tells you what to go and do.
-    // Hers is her thinking out loud at you and occasionally landing on something
+    // Hers is her thinkin' out loud at you and occasionally landing on something
     // useful by accident. The player is welcome to ignore all of it.
     guidance: [
-      '- and if you put the second one underneath the first one, it goes twice as fast. Probably. I have not done the arithmetic.',
-      'You could build it out of stone. You could also build it out of something else. I am not going to tell you what to do.',
-      'I reckon that would work better upside down. Most things do.',
-      'Somebody made one of these once that could lift a horse. I never found out why they wanted to.',
-      "- anyway that's the third time you've walked past that spot, so either you're thinking about it or you're lost.",
-      'Build the ugly one first. The pretty one never gets finished, that is just a rule.',
-      'I have a mess of ideas about what you should do next and most of them are bad, so I will just say: more of it.',
-      "You don't need my permission. That's not what I'm for.",
-      'A thing that works and looks stupid is still a thing that works. Write that down.',
-      "- which is when I realised nobody had ever asked me. So. Build whatever you want.",
+      "- an' that's before you even get to the water wheel, which I wouldn't have put there, but you did, so.",
+      'You could build it outta stone. You could build it outta somethin else too. I ain\'t gonna tell you what to do.',
+      'I reckon that\'d work better upside down. Most things do.',
+      'Somebody made one of these once that could lift a whole horse. Never did find out why they wanted to.',
+      "- anyway that's the third time you walked past that spot, so either you're thinkin' about it or you're lost.",
+      "Build the ugly one first. The pretty one don't never get finished, that's just a rule.",
+      "I got a mess of ideas 'bout what you oughta do next an' most of 'em are bad, so I'll just say: more of it.",
+      "You don't need my say-so. That ain't what I'm for.",
+      "A thing that works an' looks stupid is still a thing that works. Write that down.",
+      "- which is when I figured out nobody'd ever asked me. So. Build whatever you want.",
     ],
 
     // ⭐ SILENCE POOLS FOR THE CHATTIEST GOD ARE A JOKE, AND THEY SHOULD BE. She does
     // not go quiet. She announces that she has nothing, at length.
     // [CLAUDE-DRAFT] forge/low_silence · forge/medium_silence · forge/high_silence
     low_silence: [
-      'Nothing from me. I am still working out who you are.',
-      "I've got nothing. That happens about once a century, enjoy it.",
-      'Hm. No. Lost it.',
+      "Nothin' from me. Still workin' out who you are.",
+      "I got nothin'. Happens 'bout once a century, enjoy it.",
+      'Hm. Nope. Lost it.',
     ],
     medium_silence: [
-      "I had something and it's gone. It'll come back around, they always do.",
-      'Nothing worth saying. I will say something anyway later, do not worry.',
-      "Quiet for a bit. I'm watching what you're doing with that.",
+      "I had somethin' an' it's gone. It'll come back 'round, they always do.",
+      "Nothin' worth sayin'. I'll say somethin' anyway later, don't you worry.",
+      "Quiet a spell. I'm watchin' what you're doin' with that.",
     ],
     high_silence: [
-      "I'm not going to fill this one. You're busy and you know what you're doing.",
-      'Nothing. And that is me choosing, which you should feel flattered by.',
+      "I ain't gonna fill this one. You're busy an' you know what you're doin'.",
+      "Nothin'. An' that's me choosin', which you oughta feel real flattered by.",
       "- no. Never mind. You'd have thought of it.",
     ],
 
@@ -129,20 +141,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // she is the only god who never made the world harder for you, so she has no
     // standing to coach you through it. She worries out loud instead.
     combat: [
-      "- oh. Oh, that's a lot of them. Right. You know what you're doing.",
-      'I would run. I am saying that as somebody who cannot.',
+      "- oh. Oh, that's a lot of 'em. Right. You know what you're doin'.",
+      "I'd run. An' I'm sayin' that as somebody who can't.",
       "Hit it again! That's my whole contribution. Hit it again.",
-      'I do not like this part. I never like this part.',
-      "You're doing better than the last one. He was very brave and it did not help him.",
-      "Is it supposed to do that? Is it? I don't know what any of these are.",
+      "I don't like this part. I never like this part.",
+      "You're doin' better'n the last one. He was real brave an' it didn't help him none.",
+      "Is it s'posed to do that? Is it? I don't know what any of these are.",
     ],
 
     // [CLAUDE-DRAFT] forge/returned
     returned: [
-      "- and then you were gone for a while, so I just kept going without you. You didn't miss much.",
-      "You're back. I've had four ideas and I've forgotten three.",
-      'I did wonder. Not for long, I do not have the attention for it, but I did wonder.',
-      "Good. Now: the thing you left half-built is still half-built, in case that was on your mind.",
+      "- an' then you were gone a while, so I just kept goin' without you. You didn't miss much.",
+      "You're back. I've had four ideas an' I forgot three.",
+      "I did wonder. Not for long, I ain't got the attention for it, but I did wonder.",
+      "Good. Now: that thing you left half-built is still half-built, case that was on your mind.",
     ],
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -152,25 +164,25 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // [CLAUDE-DRAFT] forge/low_gift · forge/medium_gift · forge/high_gift
     // ═══════════════════════════════════════════════════════════════════════
     low_gift: [
-      'Here. I do not need it and you might.',
-      "Take that. No, there's nothing attached to it, why does everyone ask that.",
-      "I found it. Well - I made it, but I found the idea, so it's about the same.",
-      'A small one to start. I have a lot of these.',
-      "That's yours now. I've already forgotten I had it.",
+      "Here. I don't need it an' you might.",
+      "Take that. No, there ain't nothin' attached to it, why's everybody always ask that.",
+      "I found it. Well - I made it, but I found the idea, so it's 'bout the same.",
+      "A little one to start. I got a whole mess of these.",
+      "That's yours now. I already forgot I had it.",
     ],
     medium_gift: [
-      "You've built enough that I've started paying proper attention, which is worse for you than it sounds.",
-      'Better one. I made it thinking about the thing you built by the water, actually.',
-      "Here. And before you ask - no. Still nothing attached. I'm not like the others.",
-      "This one took me a while, which for me means I liked doing it.",
-      "You've earned it, except you haven't, because that's not how I do this. Take it anyway.",
+      "You've built enough that I started payin' proper attention, which is worse for you than it sounds.",
+      "Better one. Made it thinkin' 'bout that thing you put up by the water, matter of fact.",
+      "Here. An' 'fore you ask - no. Still nothin' attached. I ain't like the others.",
+      "This one took me a while, which for me means I liked doin' it.",
+      "You earned it, 'cept you didn't, 'cause that ain't how I do this. Take it anyhow.",
     ],
     high_gift: [
-      "I've been saving this one. Not for you specifically. But now it's for you specifically.",
-      "There's nobody else I'd hand this to, and I've had a very long time to find somebody.",
-      "Take it. And keep building, because watching you do it is the only thing down here that's new.",
-      "That's the best thing I have ever made and I am giving it to a person who will probably drop it in lava.",
-      "- so I thought, well, she'd have liked this. And then I thought, she's not here, and you are.",
+      "Been savin' this one. Not for you specifically. But now it's for you specifically.",
+      "Ain't nobody else I'd hand this to, an' I've had a real long time to go lookin'.",
+      "Take it. An' keep buildin', 'cause watchin' you do it's the only thing down here that's new.",
+      "That's the finest thing I ever made an' I'm givin' it to a fella who'll drop it in lava inside a week.",
+      "- so I thought, well, she'd have liked this. An' then I thought, she ain't here, an' you are.",
     ],
 
     // [CLAUDE-DRAFT] forge/harvest_won · forge/harvest_lost
@@ -178,14 +190,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // not be one - docs/56 §4 gives her zeroes on every harmful row, and the Harvest
     // is the one place a god's cruelty usually shows. Hers shows as relief.
     harvest_won: [
-      "You're alive. I'm going to be honest, I did not have a plan for if you weren't.",
-      "That's done, then. I did not enjoy a second of it and I am very proud of you.",
-      "- and it's over, and you're standing, and I'm going to talk about something else now.",
+      "You're alive. I'll be honest, I didn't have a plan for if you weren't.",
+      "That's done, then. Didn't enjoy a second of it an' I'm real proud of you.",
+      "- an' it's over, an' you're standin', an' I'm gonna talk about somethin' else now.",
     ],
     harvest_lost: [
-      "Oh. Oh no. Well - that's alright. That's alright, you can do it again.",
-      "You lost. Nothing happens. Nobody takes anything from you. That's how I do it.",
-      "I would say I told you so, except I didn't, and I wouldn't.",
+      "Oh. Oh no. Well - that's alright. That's alright, you can go do it again.",
+      "You lost. Nothin' happens. Don't nobody take nothin' from you. That's how I do it.",
+      "I'd say I told you so, 'cept I didn't, an' I wouldn't.",
     ],
 
     // [CLAUDE-DRAFT] forge/warn_incoming
@@ -193,17 +205,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // relayed with relish. Hers is a friend shouting across a yard. {rival} is
     // substituted by warn.js - do NOT hardcode a god's title here.
     warn_incoming: [
-      "- someone's coming. {rival} sent them. I don't know what you did and I don't care, but move.",
-      "{rival} has put somebody on you. That's not a thing I would ever do and I want that on the record. Go.",
-      "Trouble. {rival}'s. Coming your way right now, I'm not going to be any use, RUN.",
+      "- somebody's comin'. {rival} sent 'em. I don't know what you did an' I don't care, but move.",
+      "{rival}'s put somebody on you. That ain't a thing I'd ever do an' I want that on the record. Go.",
+      "Trouble. {rival}'s. Headed your way right this second, I ain't gonna be any use, RUN.",
     ],
 
     // [CLAUDE-DRAFT] forge/warn_wave
     // The tide herald above the cutoff. Below it Caebrim takes over (docs/57 §3).
     warn_wave: [
-      "- something's coming up out of the ground and there is a great deal of it.",
-      'Oh, I know that sound. I have not heard that sound in a very long time. Get somewhere with a roof.',
-      "That's the dead moving all at once. Not mine. I don't have any.",
+      "- somethin's comin' up outta the ground an' there is a great deal of it.",
+      "Oh, I know that sound. Ain't heard that sound in a real long time. Get somewhere with a roof.",
+      "That's the dead movin' all at once. Not mine. I don't got any.",
     ],
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -219,28 +231,28 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // ═══════════════════════════════════════════════════════════════════════
     argue_accuse: [
       'That was mine. You knew that was mine.',
-      "- and I'd only just got them to build the roof properly, so thank you for that.",
-      'You did not have to. That is the whole of what I have to say. You did not have to.',
+      "- an' I'd only just got 'em buildin' the roof proper, so thank you kindly for that.",
+      "You didn't have to. That's the whole of what I got to say. You didn't have to.",
     ],
     argue_answer: [
-      "I'm not going to pretend I understood a word of that.",
-      'Fine. Fine! I have heard you.',
-      "You always have a reason. Everyone down here always has a reason.",
+      "I ain't gonna pretend I understood a word of that.",
+      'Fine. Fine! I heard you.',
+      "Y'all always got a reason. Everybody down here's always got a reason.",
     ],
     argue_threat: [
-      "And I'd threaten you, except we both know I'm not going to, so let's skip it.",
-      "I've got nothing to hurt you with. I never built one of those.",
+      "An' I'd threaten you, 'cept we both know I ain't gonna, so let's skip it.",
+      "I got nothin' to hurt you with. Never did build one of those.",
       'Consider yourself glared at.',
     ],
     argue_refuse: [
-      "No. I'm not doing this bit.",
-      "I'd rather go back to what I was doing, honestly.",
-      'You can have the last word. You always take it anyway.',
+      "Nope. I ain't doin' this bit.",
+      "I'd sooner go back to what I was doin', honestly.",
+      'You can have the last word. You take it anyhow.',
     ],
     argue_unanswered: [
-      "- and nobody says anything. They never do. That's fine. I'll talk.",
-      'Silence. From all of you. Wonderful.',
-      "Right. Well. I said it, and it's said.",
+      "- an' don't nobody say nothin'. They never do. That's fine. I'll talk.",
+      'Quiet. From all of y\'all. Wonderful.',
+      "Right. Well. I said it, an' it's said.",
     ],
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -256,45 +268,45 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // [CLAUDE-DRAFT] forge/lend_ask · forge/lend_done · forge/lend_no
     // ═══════════════════════════════════════════════════════════════════════
     notion: [
-      '- oh! Hold still. Hold still, I want to try something.',
+      "- oh! Hold still. Hold still, I wanna try somethin'.",
       "I had a notion. It's on you now. You'll be fine.",
-      "Right, so I've done a thing and I should probably have asked first, but I didn't.",
-      "Don't worry about what that is. It's good. It's mostly good.",
+      "Right, so I done a thing an' I probably oughta have asked first, but I didn't.",
+      "Don't worry 'bout what that is. It's good. It's mostly good.",
     ],
     notion_aid: [
-      "- and I've done the same for your friend over there, because it seemed rude not to.",
+      "- an' I done the same for your friend over yonder, 'cause it seemed rude not to.",
       "Your neighbour's got one too. I don't play favourites, I just play.",
-      "I gave one to the other one as well. Don't tell them it was an afterthought.",
+      "Gave one to the other fella as well. Don't tell 'em it was an afterthought.",
     ],
     gift_open: [
-      "I made you something. You have to take it, though. I'm not going to put it on you twice in one day.",
-      "There's a thing here for you. It's yours if you want it and it's mine if you don't, and either way I'm fine.",
-      "- so I built it, and then I remembered you existed. Do you want it?",
+      "I made you somethin'. You gotta take it, though. I ain't puttin' somethin' on you twice in one day.",
+      "There's a thing here for you. Yours if you want it, mine if you don't, an' either way I'm fine.",
+      "- so I built it, an' then I remembered you existed. You want it?",
     ],
     gift_taken: [
-      "Good! Good. Right. Now go and break it on something.",
-      "That's the correct answer. There was no incorrect answer, but that's still the correct one.",
+      "Good! Good. Right. Now go break it on somethin'.",
+      "That's the right answer. Weren't a wrong answer, but that's still the right one.",
       'Ha! Yours.',
     ],
     gift_left: [
-      "Suit yourself. It'll be here. I don't throw things away.",
-      "No? Alright. That's allowed, you know. Not everyone tells you that.",
+      "Suit yourself. It'll keep. I don't throw nothin' away.",
+      "No? Alright. That's allowed, y'know. Ain't everybody tells you that.",
       "Fine. More for- well. Nobody. More for nobody.",
     ],
     lend_ask: [
-      "The one who follows {rival} is having a bad time of it. Would you go and help? For me, not for them.",
-      "- and somebody out there is stuck, and you're the only one I can ask, and I am asking.",
-      "I want you to go and help {rival}'s. I know. I KNOW. Do it anyway.",
+      "The one that follows {rival}'s havin' a bad time of it. Would you go help? For me, not for them.",
+      "- an' somebody out there's stuck, an' you're the only one I got to ask, an' I'm askin'.",
+      "I want you to go help {rival}'s. I know. I KNOW. Do it anyhow.",
     ],
     lend_done: [
-      "You went. You actually went. I'm going to think about that for a while.",
-      "That's the nicest thing anyone's done because I asked. Admittedly I don't ask much.",
-      "Good. Now nobody owes anybody anything, which is how I like it.",
+      "You went. You actually went. I'm gonna be thinkin' on that a while.",
+      "That's the nicest thing anybody's done 'cause I asked. Grant you I don't ask much.",
+      "Good. Now don't nobody owe nobody nothin', which is how I like it.",
     ],
     lend_no: [
-      "That's fair. They're not your problem. I just thought I'd ask.",
-      "No, I understand. It was a lot to ask and I asked it anyway.",
-      "Alright. Forget I said anything. I will bring it up again in a week.",
+      "That's fair. They ain't your problem. I just figured I'd ask.",
+      "No, I understand. Was a lot to ask an' I asked it anyhow.",
+      "Alright. Forget I said anything. I'll bring it up again in a week.",
     ],
   }
 
@@ -306,31 +318,31 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var CONTEXT = {
     // [CLAUDE-DRAFT] forge/loc_above · forge/rare_loc_above
     loc_above: [
-      "- and the sky's still up there, which I check, because one day it might not be.",
-      'Good weather for building. All weather is good weather for building.',
-      "You've got a lot of room out here. Use more of it than you need to.",
-      "I like it up here. I'm not up here, but I like it.",
+      "- an' the sky's still up there, which I check, 'cause one day it might not be.",
+      "Good weather for buildin'. All weather's good weather for buildin'.",
+      "You got a lot of room out here. Use more of it than you need to.",
+      "I like it up here. I ain't up here, but I like it.",
     ],
     rare_loc_above: [
-      "I remember weather. Not the cold or the wet, just - that it happened, and that I was in it. That's most of what's left.",
-      "There was a castle. There was a siege. I was very small and then I was not anything. Anyway - what are you making?",
+      "I remember weather. Not the cold or the wet, just - that it happened, an' that I was out in it. That's 'bout all that's left.",
+      "There was a castle. There was a siege. I was real small an' then I wasn't anything. Anyway - what're you makin'?",
     ],
     // ⚠️ Below the cutoff Caebrim speaks, not her (docs/57 §3). These are for the
     // shallow enclosed spaces that are still ABOVE it, which is most caving.
     // [CLAUDE-DRAFT] forge/loc_below · forge/rare_loc_below
     loc_below: [
       "- indoors. Fine. I can talk indoors.",
-      'Everything worth having is under something. That is not wisdom, it is just true.',
-      'Mind the ceiling. I have seen more people killed by a ceiling than by anything with teeth.',
-      "It's very close in here. I don't mind. I don't breathe.",
+      "Everything worth havin' is under somethin'. That ain't wisdom, it's just true.",
+      "Mind that ceilin'. I seen more folks killed by a ceilin' than by anything with teeth.",
+      "It's awful close in here. I don't mind. I don't breathe.",
     ],
-    // 🔴 SECOND LINE REWRITTEN. The draft had "she asked for me" - true but thin.
-    // docs/56 §0d: **Caebrim RAISED her**, with Momma Pille, in Alice's undead camp,
-    // and the first thing Milantros ever said to her was "Uggo" while falling over.
-    // That beat is Ethan's canon and it is the best thing either of them has.
+    // 🔴 SECOND LINE IS ETHAN'S CANON. docs/56 §0d: **Caebrim RAISED her**, with Momma
+    // Pille, in Alice's undead camp, and the first thing Milantros ever said to her
+    // was "Uggo" while falling over. That beat is his and it is the best thing either
+    // of them has.
     rare_loc_below: [
-      "Do not go all the way down. There's somebody down there who'd want to see you, and I would rather she didn't.",
-      "She raised me. Her and Momma Pille. I called her Uggo the day we met and she has never once let me forget it.",
+      "Don't go all the way down. There's somebody down there'd want to see you, an' I'd rather she didn't.",
+      "She raised me. Her an' Momma Pille. I called her Uggo the day we met an' she ain't never once let me forget it.",
     ],
 
     // ⭐⭐ THE TWO CONTEXTS NO OTHER GOD IN THE GAME HAS EVER FILLED. This is the
@@ -338,87 +350,84 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // [CLAUDE-DRAFT] forge/hold_none · forge/rare_hold_none
     hold_none: [
       "Empty hands. That's a waste of two perfectly good hands.",
-      "- nothing? You're carrying nothing? What do you DO all day.",
-      "You're not holding anything, which means you're thinking, which means I should be quiet. I won't be.",
-      'Idle hands. I would love idle hands. I would love hands.',
-      "Pick something up. Anything. I'm not going to talk about the weather again.",
+      "- nothin'? You're carryin' nothin'? What do you DO all day.",
+      "You ain't holdin' anything, which means you're thinkin', which means I oughta be quiet. I won't be.",
+      "Idle hands. I'd love idle hands. I'd love hands.",
+      "Pick somethin' up. Anything. I ain't gonna talk about the weather again.",
     ],
     rare_hold_none: [
-      "I had hands like that. Small ones. I remember being annoyed about how small they were, and now that's the only thing I remember about them.",
+      "I had hands like that. Little ones. I remember bein' put out about how little they were, an' now that's the only thing I remember about 'em at all.",
     ],
     // [CLAUDE-DRAFT] forge/hold_item · forge/rare_hold_item
     hold_item: [
       "What's that for? No, genuinely, what is that for.",
-      "- and you could make about four things out of that, and you're going to make none of them, I can tell.",
+      "- an' you could make about four things outta that, an' you're gonna make none of 'em, I can tell.",
       "Oh, I like that one. Turn it over. TURN IT OVER.",
-      "Hold onto that. Not for a reason. I just like knowing you have it.",
-      "That's the third one of those. You're collecting them. You don't know you're collecting them.",
+      "Hold onto that. Not for a reason. I just like knowin' you got it.",
+      "That's the third one of those. You're collectin' 'em. You don't know you're collectin' 'em.",
     ],
     rare_hold_item: [
-      "Somebody made that. Some person, with a name, who is not around any more. Everything's like that if you look at it long enough. Anyway.",
+      "Somebody made that. Some person, with a name, who ain't around no more. Everything's like that if you look at it long enough. Anyway.",
     ],
-    // 🔴 REWRITTEN 2026-08-22 AFTER THE BOOK DUMP. The first draft had her
-    // weapon-averse - "I never understood these", "one of those went through me" -
-    // which is the exact opposite of the character. docs/56 §0b: **she loves meat and
-    // guns**, and Caebrim gave her a silver rifle. Enthusiasm, not squeamishness.
+    // 🔴 SHE LOVES GUNS (docs/56 §0b) - Caebrim gave her a silver rifle. An earlier
+    // draft had her weapon-averse, which is the exact opposite of the character.
     // [CLAUDE-DRAFT] forge/hold_weapon · forge/rare_hold_weapon
     hold_weapon: [
-      'Oh, let me see it. Let me SEE it.',
-      "- and if you put a longer barrel on that it'd carry twice as far, which is about the only advice I'm any good at.",
-      "Swords are fine. Swords are FINE. I'm only saying there are quicker ways to be right about something.",
-      'Good weight on that. You can tell by how you are standing.',
-      "Point it at something. Not at me, obviously. Not that it'd do anything.",
+      "Oh, lemme see it. Lemme SEE it.",
+      "- an' if you put a longer barrel on that it'd carry twice as far, which is 'bout the only advice I'm any good at.",
+      "Swords are fine. Swords are FINE. I'm only sayin' there's quicker ways to be right about somethin'.",
+      "Good weight on that. You can tell by how you're standin'.",
+      "Point it at somethin'. Not at me, obviously. Not that it'd do anything.",
     ],
     rare_hold_weapon: [
-      "Mine was silver. Somebody wrapped it up like it was a secret and it absolutely was not, everybody knew. I still had it at the end. I have no idea where it went.",
+      "Mine was silver. Somebody wrapped it up like it was a secret an' it purely was not, everybody knew. Still had it at the end. Got no idea where it went.",
     ],
     // ⭐ MEAT FIRST (docs/56 §0b), chocolate second - his own item ruling gave Forge
     // the chocolate, and the dump gave her the appetite.
     // [CLAUDE-DRAFT] forge/hold_food · forge/rare_hold_food
     hold_food: [
-      'Meat. Good. Eat it before it turns - that is not a suggestion.',
-      "- and I would give a great deal to know what that tastes like, so do me a favour and pay attention while you do it.",
-      "That is a vegetable. Why is that a vegetable. Go and find something that used to run.",
-      "Chocolate! Get chocolate. I don't remember why that's the right answer but it is.",
-      "You've been carrying that for two days. It is not a pet.",
+      "Meat. Good. Eat it 'fore it turns - that ain't a suggestion.",
+      "- an' I'd give a great deal to know what that tastes like, so do me a kindness an' pay attention while you're doin' it.",
+      "That's a vegetable. Why is that a vegetable. Go find somethin' that used to run.",
+      "Chocolate! Get chocolate. Don't remember why that's the right answer but it is.",
+      "You been carryin' that two days. It ain't a pet.",
     ],
     rare_hold_food: [
-      "I can't remember any of it. Not one taste. That's the only part I ever actually mind, and I only mind it when you're eating.",
+      "I can't remember any of it. Not one taste. That's the only part I ever do mind, an' I only mind it when you're eatin'.",
     ],
 
     // ⭐ ALL FOUR near_ POOLS. Nobody else has all four - and near_art is where the
-    // one-sided grudge pays off: Kayer hates her (docs/57 §4) and she is DELIGHTED
-    // to see Kayer's champion. She has no idea.
+    // one-sided grudge pays off.
     // [CLAUDE-DRAFT] forge/near_blade · forge/near_wall · forge/near_salvage · forge/near_art
     near_blade: [
-      "- that one's his. He's very serious about it. He was serious about everything, even before.",
-      'Say hello. He will not say it back, that is not a slight, that is just him.',
-      "The war god's. All that armour and he still gets hit.",
+      "- that one's his. He's real serious about it. He was serious about everything, even before.",
+      "Say hello. He won't say it back, that ain't a slight, that's just him.",
+      "War god's. All that armour an' he still gets hit.",
     ],
     near_wall: [
-      "Hers. Don't let her hear you say I said this, but I think she means well. Mostly.",
-      "- and that one hasn't been allowed to go anywhere on their own in weeks, poor thing.",
-      "The spider's. Wave. Do not get closer than waving.",
+      "Hers. Don't let her hear I said this, but I reckon she means well. Mostly.",
+      "- an' that one ain't been allowed to go anywhere on their own in weeks, poor thing.",
+      "The spider's. Wave. Don't get no closer than wavin'.",
     ],
     near_salvage: [
-      "Oh, that one owes somebody something. They all do. That's the whole arrangement over there.",
-      "- careful, that one will trade you something you needed for something you wanted.",
-      "The hound's. I like her, actually. She's loud and she never pretends she isn't.",
+      "Oh, that one owes somebody somethin'. They all do. That's the whole arrangement over there.",
+      "- careful, that one'll trade you somethin' you needed for somethin' you wanted.",
+      "The hound's. I like her, matter of fact. She's loud an' she don't never pretend she ain't.",
     ],
-    // ⭐⭐ THE PAYOFF POOL. Kayer hates her (docs/57 §4) and the cause is now canon
-    // rather than my guess: a small goat girl called her **"Short, Ugly, Weird,
-    // Smelly"** the day they met, and was then adopted by Kayer's own mother.
+    // ⭐⭐ THE PAYOFF POOL. Kayer hates her (docs/57 §4) and the cause is canon rather
+    // than my guess: a small goat girl called her **"Short, Ugly, Weird, Smelly"** the
+    // day they met, and was then adopted by Kayer's own mother.
     //
     // 🔑 THE EXACT CALIBRATION: she knows about the NICKNAME. She does not know it is
-    // a GRUDGE. She thinks it is a running family joke - "it's our little thing" -
-    // and Kayer has been carrying it for four centuries. That gap is the whole gag,
-    // and a later editor must not close it by having her notice.
+    // a GRUDGE. She thinks it is a running family joke - "it's our little thing" - and
+    // Kayer has been carrying it for four centuries. That gap is the whole gag, and a
+    // later editor must not close it by having her notice.
     near_art: [
-      "That one's Kayer's! Oh, tell her I said hello. Tell her I said hello TWICE.",
-      "Kayer's. Tell Short I said hello. She pretends to hate that. It's our little thing.",
-      "- and that's the Matriarch's, which means they're clever and cold and they didn't pick either of those, she did.",
-      "She's never once written back. I keep sending things anyway, it isn't a chore.",
-      "Be kind to that one. She isn't. Somebody ought to be.",
+      "That one's Kayer's! Oh, tell her I said hey. Tell her I said hey TWICE.",
+      "Kayer's. Tell Short I said hey. She lets on she hates that. It's our little thing.",
+      "- an' that's the Matriarch's, which means they're clever an' cold an' they didn't pick either of those, she did.",
+      "She ain't never once written back. I keep sendin' things anyhow, it ain't a chore.",
+      "Be kind to that one. She ain't. Somebody oughta be.",
     ],
   }
 
@@ -447,8 +456,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var holds = 0, hl = ['hold_none', 'hold_item', 'hold_weapon', 'hold_food']
     for (var i = 0; i < hl.length; i++) if (CONTEXT[hl[i]] && CONTEXT[hl[i]].length) holds++
     console.info(TAG + 'The Goat speaks - ' + n + ' fixed + ' + ctxn + ' contextual, ' +
-      'across ' + (tags + ctxtags) + ' tags. Trust at ' + MEDIUM_AT + '/' + HIGH_AT +
-      ' things built. ' + holds + '/4 hold contexts answered (no other god fills more ' +
-      'than 2). Below the deep cutoff she does NOT speak - Caebrim does.')
+      'across ' + (tags + ctxtags) + ' tags, accent written. Trust at ' + MEDIUM_AT +
+      '/' + HIGH_AT + ' things built. ' + holds + '/4 hold contexts answered (no other ' +
+      'god fills more than 2). Below the deep cutoff she does NOT speak - Caebrim does.')
   })
 })();
