@@ -90,7 +90,8 @@ original chunk plan; **the live state lives in 34**) · `34-THE-REMAINING-BUILD`
 never / 4 buff-deaths / 3 refusals)
 
 **The patrons, per-god** — `40-BLADE-THE-WARRIOR` · `43-WALL-THE-SPIDER` ·
-`44-SALVAGE-LINES` · **`53-MATRIARCH-KAYER`** (2026-08-22 — replaces "The Nightmare"
+`44-SALVAGE-LINES` · **`56-FORGE-MILANTROS`** (2026-08-22 — retcon to female; the Goat is a CHILD who
+gives, and the anti-Kayer) · **`53-MATRIARCH-KAYER`** (2026-08-22 — replaces "The Nightmare"
 wholesale; her release condition is CAPABILITY, not failure) ·
 **`54-MATRIARCH-LINES`** (the chart + sheet: the god/champion matrix, her voice rule,
 her pools) · **`55-MATRIARCH-EVERY-LINE`** (DRAFT lines to edit and hand back —
