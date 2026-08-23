@@ -97,7 +97,7 @@ wholesale; her release condition is CAPABILITY, not failure) ·
 her pools) · **`55-MATRIARCH-EVERY-LINE`** (DRAFT lines to edit and hand back —
 ⚠️ not generated from source, none of it is in the game yet)
 
-**Rulings** — **`64-THE-DEPTH`** (2026-08-24 — the bottom 64 blocks are an EMPTY
+**Rulings** — **`65-THERE-IS-NO-END`** (2026-08-24 — 🔴 **THE RULING THAT RETIRED `47`.** All six gods `mode: 'never'`; `fall.js` died via the registry without being edited; regard saturates instead of executing. Deleted two open problems rather than solving them, and caught the sixth lying banner **live in the boot log**) · **Rulings** — **`64-THE-DEPTH`** (2026-08-24 — the bottom 64 blocks are an EMPTY
 BOX. ⭐ TECTONIC owns the terrain and its own min_y is still -64 while the dimension goes
 to -128. Fix is one config value, STAGED — worldgen is baked into level.dat at creation so
 it only applies to a regenerated world) · **Rulings** — **`63-THE-TRIAL`** (2026-08-24 — the Harvest REFRAMED, not gone: a

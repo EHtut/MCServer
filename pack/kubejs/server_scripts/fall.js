@@ -213,12 +213,26 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       return false
     }
 
+    // 🔴🔴 THIS RETURNS FALSE FOR EVERY GOD AS OF 2026-08-24, AND THAT IS THE
+    // POINT. Ethan: "there should be no ending anymore, this is story now, not just a
+    // game. there is no end." release.js put all six on `mode: 'never'`, and refuses()
+    // reads that registry - so THE FALL IS NOW UNREACHABLE. No xp wipe, no revoked
+    // path, no three-day lockout, for anybody.
+    //
+    // 🔑 NOTHING BELOW THIS LINE WAS DELETED, and it was reached by the registry rather
+    // than by editing this file, which is why it stayed correct without being touched.
+    // Put one god back on a real mode and its fall works again, unchanged.
+    //
+    // ⚠️ SO REGARD SATURATES INSTEAD OF EXECUTING. Maxing it now only means the loudest
+    // beat and a log line; regard.js has COOLING, so it comes back down on its own. A
+    // pressure gauge that pins is not a bug here - it is the gauge doing its job in a
+    // story where the needle no longer breaks anything.
     if (refuses(key)) {
       // Not silent - an admin reading the log must be able to tell "she refused" from
       // "the fall is broken".
       console.info('[fall] ' + player.username + ' MAXED regard on ' + key +
-        ' - and ' + key + ' does not let go. No fall. Winning the Harvest is the ' +
-        'only way out.')
+        ' - and ' + key + ' does not let go. No fall, and there is no way out to earn: ' +
+        'nobody is ever released now.')
       return false
     }
     var day = dayNow(server)
@@ -309,8 +323,40 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   })
 
   ServerEvents.loaded(function () {
-    console.info('[fall] E2d active - the fall revokes the path, wipes xp, ' +
-      'records a LOST harvest, and locks path selection for ' + COOLDOWN_DAYS + ' in-game days')
-    console.info('[fall] the lost path is left OPEN - anyone may take it before the cooldown ends')
+    // 🔴 THIS BANNER DESCRIBED A FALL THAT CANNOT HAPPEN. It was caught by READING THE
+    // BOOT LOG after the no-endings restart - it announced "the fall revokes the path,
+    // wipes xp, records a LOST harvest, and locks path selection", live, on a build
+    // where refuses() returns true for every god. That is the sixth lying banner found
+    // in this project, and the sixth found the same way.
+    //
+    // 🔑 SO IT REPORTS WHAT THE REGISTRY SAYS, rather than what this file can do. It
+    // asks release.js at boot and prints the real answer, so if a god is ever put back
+    // on a real mode this line becomes true again on its own instead of needing to be
+    // remembered. A banner derived from state cannot rot; a banner that restates an
+    // intention always does.
+    var live = []
+    try {
+      var rules = (VELDORA.release && VELDORA.release.rules) || {}
+      for (var k in rules) {
+        if (rules[k] && rules[k].mode !== 'never') live.push(k)
+      }
+    } catch (e) {
+      console.warn('[fall] could not read the release registry at boot - ' +
+        'the line below is what this file WOULD do, not what it will :: ' + e)
+      live = null
+    }
+
+    if (live && live.length === 0) {
+      console.info('[fall] E2d loaded but UNREACHABLE - every god is mode:never, so the ' +
+        'fall never runs: no revoked path, no xp wipe, no ' + COOLDOWN_DAYS +
+        '-day lockout, for anybody. This is the 2026-08-24 no-endings ruling, not a bug.')
+      console.info('[fall] the machinery is intact - put one god back on a real mode and ' +
+        'it works again, unchanged.')
+    } else {
+      console.info('[fall] E2d active for ' + (live ? live.join(', ') : 'UNKNOWN') +
+        ' - the fall revokes the path, wipes xp, records a LOST harvest, and locks ' +
+        'path selection for ' + COOLDOWN_DAYS + ' in-game days')
+      console.info('[fall] the lost path is left OPEN - anyone may take it before the cooldown ends')
+    }
   })
 })()

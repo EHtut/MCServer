@@ -109,7 +109,54 @@ ok('wall KEEPS her beat-5 line (it is a promise, not a threat)', R.speaksAtMax('
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-grp('BLADE — 4 buff-deaths in a row')
+// 🔴🔴 THE RULING ITSELF, ASSERTED BEFORE ANY TEST RE-ARMS ANYTHING. Ethan,
+// 2026-08-24: "there should be no ending anymore, this is story now, not just a game.
+// there is no end."
+//
+// 🔑 THIS GROUP IS THE ONE THAT MATTERS. Everything below it tests machinery that is
+// deliberately RETAINED AND UNREACHABLE - and machinery that cannot fire will happily
+// stay green while the shipped registry says something else entirely. So the shipped
+// modes are asserted here, from the real file, before a single test mutates them.
+grp('🔴 NOBODY IS EVER RELEASED — the 2026-08-24 ruling')
+{
+  const gods = ['wall', 'blade', 'salvage', 'forge', 'art', 'crown']
+  gods.forEach(function (g) {
+    ok(g + ' ships as mode:never', R.rules[g].mode, 'never')
+  })
+  ok('...and that is ALL of them - no god has a release condition',
+    gods.filter(function (g) { return R.rules[g].mode !== 'never' }).length, 0)
+  // 🚨 THE REGISTRY IS WHAT fall.js READS. It refuses on `mode === 'never'`, so this
+  // is also the assertion that THE FALL IS DEAD - no xp wipe, no revoked path, no
+  // three-day lockout, for anybody. That behaviour was never edited into fall.js; it
+  // followed from the registry, which is why it stayed correct on its own.
+  ok('nobody falls on regard either',
+    gods.filter(function (g) { return R.fallsOnRegard(g) }).length, 0)
+  // ⚠️ AN UNKNOWN KEY MUST STILL FALL. "No endings" is a decision about the six gods
+  // that exist, not a default for one that does not - a god added tomorrow with no
+  // rule must not be silently unloseable.
+  ok('...but an UNREGISTERED god still falls (no silent default)',
+    R.fallsOnRegard('nobody_by_that_name'), true)
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ⚠️⚠️ EVERYTHING FROM HERE DOWN TESTS RETIRED MACHINERY, ON PURPOSE. The streak
+// engine is kept because this project reverses rulings and a mode string is cheaper
+// to restore than a system - but kept code that is never exercised is how a system
+// rots into something that cannot actually be restored.
+//
+// 🔑 SO THE HARNESS PUTS THE RETIRED RULES BACK, IN MEMORY ONLY, from the `_retired`
+// block each rule carries. The shipped state was asserted above; what follows proves
+// the engine behind it still works if it is ever switched back on.
+function rearm(key) {
+  const r = R.rules[key]
+  if (!r._retired) throw new Error('release.js: ' + key + ' has no _retired config to test against')
+  r.mode = r._retired.mode
+  r.kind = r._retired.kind
+  r.need = r._retired.need
+}
+
+grp('BLADE — 4 buff-deaths in a row (RETIRED engine, re-armed for the test)')
+rearm('blade')
 ok('blade does not fall on regard', R.fallsOnRegard('blade'), false)
 ok('blade beat-5 line is SUPPRESSED (it threatens a fall that cannot happen)', R.speaksAtMax('blade'), false)
 {
@@ -181,7 +228,8 @@ grp('BLADE — the restart gotcha (K9 wearing a different hat)')
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-grp('SALVAGE — 3 refusals in a row')
+grp('SALVAGE — 3 refusals in a row (RETIRED engine, re-armed for the test)')
+rearm('salvage')
 ok('salvage does not fall on regard', R.fallsOnRegard('salvage'), false)
 ok('salvage beat-5 line is SUPPRESSED', R.speaksAtMax('salvage'), false)
 {
@@ -239,8 +287,20 @@ ok('an UNKNOWN god still falls on regard (never silently unloseable)', R.fallsOn
 ok('forge is OFF the legacy door - she was opened, so it was decided', R.fallsOnRegard('forge'), false)
 ok('...and the decision is NEVER: she does not put champions down', R.read(server, mkPlayer('Built', 'forge')).mode, 'never')
 ok('...the same mode as wall, meaning the opposite thing (possession vs kindness)', R.read(server, mkPlayer('Held', 'wall')).mode, 'never')
-ok('art keeps the legacy door', R.fallsOnRegard('art'), true)
-ok('crown keeps the legacy door', R.fallsOnRegard('crown'), true)
+// 🔴 THESE TWO USED TO ASSERT "art keeps the legacy door" / "crown keeps the legacy
+// door" - true while both were inherited-and-undecided, and wrong from the moment the
+// no-endings ruling landed. Same failure shape as forge above: an assertion that
+// encodes a god's CURRENT door will go false the day that god is decided, and that is
+// the assertion working, not breaking.
+//
+// ⭐ ART'S WAS NEVER ACTUALLY DECIDED - it was DISSOLVED. Her release condition was
+// capability (docs/53 §2: she executes a champion who gets too good to control), it
+// was the last one still open, and the ruling removed the question instead of
+// answering it. Her `cut_down` pool survives in art_voice.js, unreachable by design.
+ok('art is OFF the legacy door - the ruling decided it for her', R.fallsOnRegard('art'), false)
+ok('...and her answer is never: the cut_down she never gets to do',
+  R.read(server, mkPlayer('Sharp', 'art')).mode, 'never')
+ok('crown is off it too', R.fallsOnRegard('crown'), false)
 ok('a pathless player has no mode', R.read(server, mkPlayer('Nobody', '')).mode, 'none')
 {
   // "I failed" and "I found nothing" must never share a return value.

@@ -378,13 +378,35 @@ grp('🔴 THE PERSISTENT CLOCK — what the force() tests cannot see')
   //   · the countdown lived in the run and was wiped on surfacing, which at the new
   //     1-2 hour cadence would have meant nobody ever saw a tide again
   // These run the REAL clock.
+  // 🔴 THIS BLOCK USED TO FLAKE, AND THE FLAKE WAS THE TEST, NOT THE SOURCE. It
+  // read `veldora_tide_due` several sweeps AFTER the value was written - and every
+  // sweep decrements it by 100. A roll near the bottom of its range had already been
+  // decremented below that range by the time it was asserted, so the suite failed
+  // roughly two runs in five while the code under test was entirely correct.
+  //
+  // 🔑 SO THE CLOCK IS OBSERVED AT THE MOMENT IT IS SET. One sweep at a time, reading
+  // the value on the exact sweep the event fires. A countdown cannot be asserted from
+  // a distance, because the distance is subtracted from it.
+  //
+  // ⚠️ AND A FLAKY TEST IS WORSE THAN A MISSING ONE - it trains you to re-run until
+  // green, which is how a real failure gets waved through. Guarded loops rather than
+  // fixed tick counts, so the assertion does not depend on which window was rolled.
   const p = fresh(); Y = -20; SKY = false
-  ticks(3)                                     // 15s enclosed -> the run begins
-  ok('the run started', T.inRun(p), true)
-  ok('a first-time player was SEEDED, not fired at instantly',
-    p.persistentData.getBoolean('veldora_tide_seed'), true)
 
-  const seeded = p.persistentData.getInt('veldora_tide_due')
+  // ⚠️ STILL THREE SWEEPS - the run needs them. Seeding happens on the FIRST sweep
+  // but enclosure is only confirmed by the third, so a loop that stopped at the seed
+  // left the run un-started and broke the very next assertion. Capture on the way past
+  // instead of stopping early: the value is taken on the sweep it is written, and the
+  // clock still advances to where the rest of the block expects it.
+  let seeded = -1
+  for (let i = 0; i < 3; i++) {
+    ticks(1)
+    if (seeded < 0 && p.persistentData.getBoolean('veldora_tide_seed')) {
+      seeded = p.persistentData.getInt('veldora_tide_due')
+    }
+  }
+  ok('the run started', T.inRun(p), true)
+  ok('a first-time player was SEEDED, not fired at instantly', seeded >= 0, true)
   ok('...with a window inside the opening range (2-8 min)',
     seeded >= 2400 && seeded <= 9600, true)
 
@@ -392,13 +414,17 @@ grp('🔴 THE PERSISTENT CLOCK — what the force() tests cannot see')
   ticks(5)                                     // 25s - inside GRACE and inside the window
   ok('🚨 nothing lands while the countdown is still running', WAVES.length, 0)
 
-  // FIRST_DUE_MAX is 9600 ticks; sweeps are 100. 100 sweeps clears any roll, so this
-  // is deterministic rather than depending on which window was rolled.
-  ticks(100); drain()
+  // 🚨 STEP UNTIL IT LANDS, and read the NEXT countdown on that same sweep. The
+  // guard is 200 sweeps against a worst-case first window of 96, so a genuine failure
+  // to fire still fails rather than hanging.
+  let next = -1, guard = 0
+  while (next < 0 && guard++ < 200) {
+    ticks(1); drain()
+    if (WAVES.length > 0) next = p.persistentData.getInt('veldora_tide_due')
+  }
   ok('🚨 once the countdown elapses, the tide LANDS', WAVES.length > 0, true)
 
   // ⭐ AND THE NEXT ONE IS AN HOUR OUT, not five minutes. This is the whole ruling.
-  const next = p.persistentData.getInt('veldora_tide_due')
   ok('...and the next is 1-2 hours of play away', next >= 72000 && next <= 144000, true)
 }
 

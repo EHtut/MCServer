@@ -300,6 +300,37 @@ def section_d(src):
         for tag in re.findall(r'^    ([a-z_0-9]+): \[', vo, re.M):
             if tag not in spoken and not dynamic.match(tag):
                 dead.append((g, tag))
+    # 🔴 RETIRED-BY-DESIGN POOLS ARE NOT GAPS, AND THIS TOOL MUST SAY SO. A pool
+    # that a RULING made unreachable will look identical to one that was never wired
+    # up - and the whole point of this section is to distinguish those. Listing a
+    # deliberate decision as a finding trains a reader to ignore the findings.
+    #
+    # 🔑 art/cut_down is the case that forced this. Ethan, 2026-08-24: "there should
+    # be no ending anymore, this is story now, not just a game. there is no end."
+    # release.js put all six gods on `mode: 'never'`, so her execution beat can never
+    # fire. The lines are KEPT on purpose - they are the sharpest writing she has and
+    # they still say what she is - and art_voice.js carries the same note.
+    #
+    # ⚠️ ADD TO THIS ONLY FOR A RULING, never to quiet a pool you have not explained.
+    # The reason string is mandatory because it is the thing a future audit reads.
+    RETIRED = {
+        'art/cut_down': 'no-endings ruling 2026-08-24 - release.js has every god on '
+                        'mode:never, so she never cuts anyone down. Kept deliberately.',
+    }
+    retired_hits = [(g, t) for g, t in dead if ('%s/%s' % (g, t)) in RETIRED]
+    dead = [(g, t) for g, t in dead if ('%s/%s' % (g, t)) not in RETIRED]
+    for g, t in retired_hits:
+        print('  ' + (G + 'retired ' + X) + ' %s/%s' % (g, t))
+        print(DIM + '    ' + RETIRED['%s/%s' % (g, t)] + X)
+    # 🚨 AND IF A "RETIRED" POOL STARTS BEING SPOKEN AGAIN, SAY SO. The exception
+    # is only valid while the ruling holds; a pool that came back to life without this
+    # list being updated means the two have silently diverged.
+    for key, why in RETIRED.items():
+        g, t = key.split('/', 1)
+        if (g, t) not in retired_hits and g in pools and t in pools.get(g, ()):
+            problems.append('%s is listed as RETIRED (%s) but is being spoken again - '
+                            'the exception list and the code disagree' % (key, why))
+
     if dead:
         for g, t in dead:
             print('  ' + Y + 'unspoken' + X + '  %s/%s' % (g, t))

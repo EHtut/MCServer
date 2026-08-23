@@ -1,5 +1,21 @@
 # THE RELEASE SYSTEM — how each god puts you down
 
+> # 🔴 RETIRED 2026-08-24 — NOTHING IN THIS DOC IS LIVE
+>
+> **Ethan:** *"there should be no ending anymore, this is story now, not just a game.
+> there is no end."*
+>
+> Every god is `mode: 'never'`. No release condition can be reached, and `fall.js`
+> refuses for all six as a consequence. **Read `65-THERE-IS-NO-END` for what is
+> actually running.**
+>
+> This doc is kept because the *argument* — that six gods should not share one door —
+> is still the best statement of why, and if release conditions ever return, they
+> return to this design. The code is retained and unreachable; each rule carries its
+> old config in a `_retired` block, and `release_harness.js` re-arms them to keep the
+> engine tested.
+
+
 > 🆕 **BUILT 2026-08-16**, from Ethan's spec:
 > *"Wall will never release you, Blade will release you only if you die too many
 > times after he gave you a buff 4x in a row. Salvage will release you if you keep

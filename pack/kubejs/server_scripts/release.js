@@ -19,6 +19,11 @@
 //   salvage  3 denials       you kept saying no
 //   others   regard          unchanged legacy - forge/art/crown are closed anyway
 //
+// 🔴🔴 THE TABLE ABOVE IS HISTORY. Every entry in it is now `never` - see the
+// ruling on the RULES table below. It is kept because the ARGUMENT is still the best
+// statement of why six gods should not share one door, and if release conditions ever
+// return, they return to this design and not to regard-for-everyone.
+//
 // ── THE RESET RULE IS THE WHOLE MECHANIC ─────────────────────────────────────
 // "In a row" is not decoration. Both streaks are CONSECUTIVE and both have a
 // specific, earnable reset:
@@ -66,6 +71,31 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   //   Hers is a PROMISE, not a threat, and nothing happening is the promise being
   //   kept. She keeps beat 5.
   // ═══════════════════════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔴🔴 THERE IS NO ENDING ANY MORE. Ethan, 2026-08-24:
+  //
+  //     "there should be no ending anymore, this is story now, not just a game.
+  //      there is no end."
+  //
+  // 🔑 THIS FILE WAS THE ENDING SYSTEM, so the ruling lands here hardest. A release
+  // is a god deciding you are finished - six wasted gifts, three refusals, a filled
+  // regard bar - and every one of those is a last chapter. In a story that continues,
+  // your patron does not fire you.
+  //
+  // ⭐ AND IT DELETED TWO OPEN PROBLEMS RATHER THAN SOLVING THEM. The audit an hour
+  // earlier had two findings here:
+  //     · art's `cut_down` was written and never fired - her signature mechanic,
+  //       "she kills you for getting too good", unreachable
+  //     · art and crown were still on the LEGACY `regard` door, inherited not chosen
+  // Both were "build the ending" problems. Neither exists now.
+  //
+  // ⚠️ EVERY MODE IS `never`. The machinery below - streaks, armed windows, denial
+  // counters - is LEFT INTACT and simply unreachable, exactly as harvest.js was: this
+  // project reverses rulings, and a mode string is cheaper to restore than a system.
+  //
+  // 🚨 A FUTURE EDITOR ADDING A NEW GOD SHOULD ADD `never`. If a release condition ever
+  // looks tempting again, read the ruling above first - the answer was that endings are
+  // a game's idea, not a story's.
   var RULES = {
     wall: { mode: 'never', speaksAtMax: true },
 
@@ -79,7 +109,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // Ethan's ruling was to move THIS rather than bend his weights: the vector is
       // the character, and distorting a god's shape to protect a mechanic is
       // backwards. If Buffs ever drop a band for him, this comes back down.
-      mode: 'streak', kind: 'buff_death', need: 6, speaksAtMax: false,
+      //
+      // 🔴 AND NONE OF THAT MATTERS ANY MORE - `never` as of 2026-08-24. The
+      // argument above is preserved because it is the record of a ruling, and because
+      // if streaks ever return this is the number they return to.
+      mode: 'never', speaksAtMax: false,
+      _retired: { mode: 'streak', kind: 'buff_death', need: 6 },
       // What the player sees. Grey system text, never dialogue - Ethan writes the
       // lines, and there is no voice tag for this beat yet. If he wants Blade to
       // speak here, the hook is speakOnStrike() below and it needs one tag name.
@@ -88,7 +123,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     },
 
     salvage: {
-      mode: 'streak', kind: 'denial', need: 3, speaksAtMax: false,
+      // ⚠️ WAS `streak` / denial / need 3 until 2026-08-24 - three refusals and she was
+      // done with you. Retired with the rest; her refusals now cost nothing but her
+      // patience, which is the version of her that survives a story.
+      mode: 'never', speaksAtMax: false,
+      _retired: { mode: 'streak', kind: 'denial', need: 3 },
       noun: 'refusal',
       blurb: 'You said no to her.',
     },
@@ -112,10 +151,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // release.refused() on one of her refusals, `never` has no counter to strike.
     forge: { mode: 'never', speaksAtMax: true },
 
-    // Closed or retired. Left on the legacy door rather than deleted, so anyone
-    // still carrying one of these keys behaves exactly as they did yesterday.
-    art: { mode: 'regard', speaksAtMax: true },
-    crown: { mode: 'regard', speaksAtMax: true },
+    // ⭐ ART'S WAS THE LAST UNDECIDED ONE AND IT NEVER HAD TO BE DECIDED. docs/53 gave
+    // her release condition as CAPABILITY - she executes a champion who becomes too
+    // good to control - and `art_voice.js` still carries the five `cut_down` lines
+    // written for it. They are the sharpest thing she has and they will never fire.
+    //
+    // 🚨 THE POOL STAYS, MARKED UNREACHABLE. Deleting it would be tidying away the one
+    // piece of writing that says plainly what she is, and this project has twice been
+    // glad it kept something a ruling retired. See the note in art_voice.js.
+    art: { mode: 'never', speaksAtMax: true },
+    crown: { mode: 'never', speaksAtMax: true },
   }
 
   // ⚠️ THE ARMED WINDOW IS STORED IN TICKS, AND server.tickCount RESETS TO ZERO ON
@@ -467,8 +512,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
       var nm = nameOf(r.path)
       if (r.mode === 'never') {
+        // 🔴 THIS SECOND LINE WAS A LIE TWICE OVER. It promised "winning the Harvest is
+        // the only way out" - and the Harvest was cut on 2026-08-23 (docs/62), so the
+        // way out did not exist; then 2026-08-24 removed endings entirely, so there is
+        // no way out to describe. It now says the true thing, which is also worse.
         p.tell(Text.of('§5§l' + nm + '§7 will never let you go.'))
-        p.tell(Text.of('§8Winning the Harvest is the only way out.'))
+        p.tell(Text.of('§8Nor will any of them. That is not a threat - it is the arrangement.'))
         return 1
       }
       if (r.mode === 'regard') {

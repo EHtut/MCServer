@@ -18,10 +18,11 @@ in this repo has died before.
 
 ---
 
-## art — 31 pool(s)
+## art — 32 pool(s)
 
 | tag | to rewrite | ⭐ yours, keep | file |
 |---|---:|---:|---|
+| `trial_scene` | ? | — | [`art_events.js:282`](../pack/kubejs/server_scripts/art_events.js) |
 | `guidance` | 9 | — | [`art_voice.js:56`](../pack/kubejs/server_scripts/art_voice.js) |
 | `low_silence` | 4 | — | [`art_voice.js:56`](../pack/kubejs/server_scripts/art_voice.js) |
 | `high_silence` | 5 | — | [`art_voice.js:56`](../pack/kubejs/server_scripts/art_voice.js) |
@@ -33,18 +34,18 @@ in this repo has died before.
 | `harvest_won` | 3 | — | [`art_voice.js:154`](../pack/kubejs/server_scripts/art_voice.js) |
 | `harvest_lost` | 3 | — | [`art_voice.js:154`](../pack/kubejs/server_scripts/art_voice.js) |
 | `cut_down` | 6 | — | [`art_voice.js:154`](../pack/kubejs/server_scripts/art_voice.js) |
-| `contract_offer` | 4 | — | [`art_voice.js:177`](../pack/kubejs/server_scripts/art_voice.js) |
-| `demand_blade` | 5 | — | [`art_voice.js:190`](../pack/kubejs/server_scripts/art_voice.js) |
-| `demand_wall` | 5 | — | [`art_voice.js:190`](../pack/kubejs/server_scripts/art_voice.js) |
-| `demand_salvage` | 4 | — | [`art_voice.js:190`](../pack/kubejs/server_scripts/art_voice.js) |
-| `demand_forge` | 4 | — | [`art_voice.js:222`](../pack/kubejs/server_scripts/art_voice.js) |
-| `demand_art` | 3 | — | [`art_voice.js:222`](../pack/kubejs/server_scripts/art_voice.js) |
-| `loc_above` | 5 | — | [`art_voice.js:246`](../pack/kubejs/server_scripts/art_voice.js) |
-| `rare_loc_above` | 4 | — | [`art_voice.js:246`](../pack/kubejs/server_scripts/art_voice.js) |
-| `near_blade` | 4 | — | [`art_voice.js:269`](../pack/kubejs/server_scripts/art_voice.js) |
-| `near_wall` | 6 | — | [`art_voice.js:269`](../pack/kubejs/server_scripts/art_voice.js) |
-| `near_salvage` | 4 | — | [`art_voice.js:269`](../pack/kubejs/server_scripts/art_voice.js) |
-| `near_forge` | 5 | — | [`art_voice.js:320`](../pack/kubejs/server_scripts/art_voice.js) |
+| `contract_offer` | 4 | — | [`art_voice.js:194`](../pack/kubejs/server_scripts/art_voice.js) |
+| `demand_blade` | 5 | — | [`art_voice.js:207`](../pack/kubejs/server_scripts/art_voice.js) |
+| `demand_wall` | 5 | — | [`art_voice.js:207`](../pack/kubejs/server_scripts/art_voice.js) |
+| `demand_salvage` | 4 | — | [`art_voice.js:207`](../pack/kubejs/server_scripts/art_voice.js) |
+| `demand_forge` | 4 | — | [`art_voice.js:239`](../pack/kubejs/server_scripts/art_voice.js) |
+| `demand_art` | 3 | — | [`art_voice.js:239`](../pack/kubejs/server_scripts/art_voice.js) |
+| `loc_above` | 5 | — | [`art_voice.js:263`](../pack/kubejs/server_scripts/art_voice.js) |
+| `rare_loc_above` | 4 | — | [`art_voice.js:263`](../pack/kubejs/server_scripts/art_voice.js) |
+| `near_blade` | 4 | — | [`art_voice.js:286`](../pack/kubejs/server_scripts/art_voice.js) |
+| `near_wall` | 6 | — | [`art_voice.js:286`](../pack/kubejs/server_scripts/art_voice.js) |
+| `near_salvage` | 4 | — | [`art_voice.js:286`](../pack/kubejs/server_scripts/art_voice.js) |
+| `near_forge` | 5 | — | [`art_voice.js:337`](../pack/kubejs/server_scripts/art_voice.js) |
 | `deep_intro` | ? | — | [`deep_speaker.js:396`](../pack/kubejs/server_scripts/deep_speaker.js) |
 | `deep_common` | ? | — | [`deep_speaker.js:396`](../pack/kubejs/server_scripts/deep_speaker.js) |
 | `deep_abandoned` | ? | — | [`deep_speaker.js:396`](../pack/kubejs/server_scripts/deep_speaker.js) |
@@ -66,7 +67,7 @@ in this repo has died before.
 | `warn_wave` | 4 | — | [`blade_voice.js:286`](../pack/kubejs/server_scripts/blade_voice.js) |
 | `idling` | 5 | — | [`blade_voice.js:304`](../pack/kubejs/server_scripts/blade_voice.js) |
 
-## forge — 46 pool(s)
+## forge — 47 pool(s)
 
 | tag | to rewrite | ⭐ yours, keep | file |
 |---|---:|---:|---|
@@ -82,36 +83,37 @@ in this repo has died before.
 | `harvest_won` | 3 | — | [`forge_voice.js:188`](../pack/kubejs/server_scripts/forge_voice.js) |
 | `harvest_lost` | 3 | — | [`forge_voice.js:188`](../pack/kubejs/server_scripts/forge_voice.js) |
 | `warn_incoming` | 3 | — | [`forge_voice.js:203`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `warn_wave` | 3 | — | [`forge_voice.js:213`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `argue_accuse` | 3 | — | [`forge_voice.js:229`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `argue_answer` | 3 | — | [`forge_voice.js:229`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `argue_threat` | 3 | — | [`forge_voice.js:229`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `argue_refuse` | 3 | — | [`forge_voice.js:230`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `argue_unanswered` | 3 | — | [`forge_voice.js:230`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `notion` | 4 | — | [`forge_voice.js:266`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `notion_aid` | 3 | — | [`forge_voice.js:266`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `gift_open` | 3 | — | [`forge_voice.js:267`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `gift_taken` | 3 | — | [`forge_voice.js:267`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `gift_left` | 3 | — | [`forge_voice.js:267`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `lend_ask` | 3 | — | [`forge_voice.js:268`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `lend_done` | 3 | — | [`forge_voice.js:268`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `lend_no` | 3 | — | [`forge_voice.js:268`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `loc_above` | 4 | — | [`forge_voice.js:319`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `rare_loc_above` | 2 | — | [`forge_voice.js:319`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `loc_below` | 4 | — | [`forge_voice.js:332`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `rare_loc_below` | 2 | — | [`forge_voice.js:332`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `hold_none` | 5 | — | [`forge_voice.js:350`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `rare_hold_none` | 1 | — | [`forge_voice.js:350`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `hold_item` | 5 | — | [`forge_voice.js:361`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `rare_hold_item` | 2 | — | [`forge_voice.js:361`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `hold_weapon` | 5 | — | [`forge_voice.js:375`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `rare_hold_weapon` | 1 | — | [`forge_voice.js:375`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `hold_food` | 5 | — | [`forge_voice.js:388`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `rare_hold_food` | 1 | — | [`forge_voice.js:388`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `near_blade` | 5 | — | [`forge_voice.js:402`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `near_wall` | 5 | — | [`forge_voice.js:402`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `near_salvage` | 3 | — | [`forge_voice.js:402`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `near_art` | 5 | — | [`forge_voice.js:402`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `bored` | 5 | — | [`forge_voice.js:213`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `warn_wave` | 3 | — | [`forge_voice.js:231`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `argue_accuse` | 3 | — | [`forge_voice.js:247`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `argue_answer` | 3 | — | [`forge_voice.js:247`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `argue_threat` | 3 | — | [`forge_voice.js:247`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `argue_refuse` | 3 | — | [`forge_voice.js:248`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `argue_unanswered` | 3 | — | [`forge_voice.js:248`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `notion` | 4 | — | [`forge_voice.js:284`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `notion_aid` | 3 | — | [`forge_voice.js:284`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `gift_open` | 3 | — | [`forge_voice.js:285`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `gift_taken` | 3 | — | [`forge_voice.js:285`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `gift_left` | 3 | — | [`forge_voice.js:285`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `lend_ask` | 3 | — | [`forge_voice.js:286`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `lend_done` | 3 | — | [`forge_voice.js:286`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `lend_no` | 3 | — | [`forge_voice.js:286`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `loc_above` | 4 | — | [`forge_voice.js:337`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `rare_loc_above` | 2 | — | [`forge_voice.js:337`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `loc_below` | 4 | — | [`forge_voice.js:350`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `rare_loc_below` | 2 | — | [`forge_voice.js:350`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `hold_none` | 5 | — | [`forge_voice.js:368`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `rare_hold_none` | 1 | — | [`forge_voice.js:368`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `hold_item` | 5 | — | [`forge_voice.js:379`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `rare_hold_item` | 2 | — | [`forge_voice.js:379`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `hold_weapon` | 5 | — | [`forge_voice.js:393`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `rare_hold_weapon` | 1 | — | [`forge_voice.js:393`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `hold_food` | 5 | — | [`forge_voice.js:406`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `rare_hold_food` | 1 | — | [`forge_voice.js:406`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `near_blade` | 5 | — | [`forge_voice.js:420`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `near_wall` | 5 | — | [`forge_voice.js:420`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `near_salvage` | 3 | — | [`forge_voice.js:420`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `near_art` | 5 | — | [`forge_voice.js:420`](../pack/kubejs/server_scripts/forge_voice.js) |
 | `intro_arrival` | ? | — | [`introductions.js:129`](../pack/kubejs/server_scripts/introductions.js) |
 | `intro_demand` | ? | — | [`introductions.js:129`](../pack/kubejs/server_scripts/introductions.js) |
 | `intro_accept` | ? | — | [`introductions.js:130`](../pack/kubejs/server_scripts/introductions.js) |
@@ -165,7 +167,7 @@ in this repo has died before.
 
 ---
 
-**401 drafted lines across 115 pools.**
+**406 drafted lines across 117 pools.**
 
 Ethan's own writing is NOT listed here — his lines carry no marker, which is
 the whole point of the convention. Where a pool is mixed (his first line, drafts

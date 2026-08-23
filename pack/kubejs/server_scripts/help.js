@@ -101,7 +101,11 @@
       'In between, she asks your permission first. That window closes as rage climbs.',
       'Your own death enrages her most. Quiet days settle her.',
       'Your kills pay in chalk, soul braziers and binding books.',
-      'She will never let you go. Winning her Harvest is the only way out.',
+      // 🔴 WAS "Winning her Harvest is the only way out." Player-facing, and false
+      // twice over: the Harvest was cut 2026-08-23, and endings went entirely on
+      // 2026-08-24. This is the only place a PLAYER was still being told there is an
+      // exit, which makes it the one that actually mattered.
+      'She will never let you go. None of them will. There is no way out to earn.',
     ],
   }
 

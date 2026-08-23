@@ -159,12 +159,29 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     ],
     harvest_lost: [
       "You failed. I'm not surprised, and I'm not disappointed. Disappointment requires expectation.",
-      "That's the end of it, then. I'll find another hand.",
+      // 🔴 WAS "That's the end of it, then. I'll find another hand." - the only line in
+      // the pantheon that still promised a REPLACEMENT, which the 2026-08-24 no-endings
+      // ruling made impossible. She cannot find another hand; she is stuck with this one.
+      "That's that, then. I'm not replacing you. I'd have to explain everything again.",
       "Some fail quietly. You didn't even manage that.",
     ],
     // ⭐ THE POOL NOTHING ELSE IN THE PANTHEON HAS. Every other god RELEASES a champion
     // for failing; she comes and kills one for SUCCEEDING. docs/53 §2 - her release
     // condition is capability, and it is the only cap that can keep up with Ars.
+    //
+    // 🔴🔴 AND IT WILL NEVER FIRE. Ethan, 2026-08-24: "there should be no ending
+    // anymore, this is story now, not just a game. there is no end." release.js now has
+    // every god on `never`, so nobody is cut down, released, or collected.
+    //
+    // ⚠️ AN AUDIT FOUND THIS POOL UNREACHABLE AND FILED IT AS A GAP. It was not a gap -
+    // it was a mechanic waiting to be built, and then the ruling removed the mechanic.
+    // `tools/completeness.py` will keep listing cut_down as never-spoken; that listing
+    // is now CORRECT AND EXPECTED, not a finding. Do not "fix" it by wiring it up.
+    //
+    // 🚨 KEPT ON PURPOSE, NOT FORGOTTEN. It is the sharpest writing she has and it says
+    // plainly what she is - a god who ends a champion for becoming too good to control.
+    // That stays TRUE of her even though it will never happen on screen, and this
+    // project has twice been glad it kept something a ruling retired.
     cut_down: [
       "You got too good at this. I don't reward that. I end it.",
       'This was never going to end with you retiring somewhere warm. You knew that. I know you knew that.',

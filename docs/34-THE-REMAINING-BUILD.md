@@ -35,42 +35,62 @@ It had been mathematically unreachable for weeks.
 
 ---
 
-## 📍 STATE AT 2026-08-23 (end of session)
+## 📍 STATE AT 2026-08-24 (end of session)
 
-**Server is OFF.** Everything below is committed; the last few files are **deployed but
-NOT loaded** — they land on the next restart.
+**Server is UP, 0 errors, Liam online.** Everything below is committed. One file
+(`fall.js`, a console-only banner) is **deployed but NOT loaded** — it lands on the
+next natural restart.
 
 **Done this session:**
 
 | | |
 |---|---|
-| ✅ **Forge is OPEN** | the `CLOSED` table is empty. Live server said *"CLOSED (unbuilt, cannot be claimed): none"*. Every path is claimable |
-| ✅ `forge_voice.js` | 42 pools, accent written (consonants yes, vowels no) |
-| ✅ `forge_events.js` | notion / gift / kindness / lend, and **six explicit zeroes** |
-| ✅ the deep-speaker map | final — Caebrim on blade+forge, **the Doctor was ALICE all along**, Kayer for herself, Salvage exempt |
-| ✅ four book-canon docs | `58` Kayer · `59` Mera · `60` Gregor · `61` Caebrim |
-| ✅ the dialogue pass | every pool I own, against all four dumps |
-| ✅ **Art + Forge intros** | both were whole rewrites — Forge's asked for the player's inventory |
-| ✅ **the tide is hard** | w1 6→24 mobs, no escape mid-wave, Lootr refresh on survival |
-| ✅ `tools/completeness.py` | the standing audit — path readiness · tag audit · live boot · dead pools |
+| ✅ **THERE IS NO END** | `docs/65`. All six gods `mode: 'never'`. `release.js` retired, `fall.js` dead *via the registry, unedited*, regard now saturates instead of executing |
+| ✅ **two open problems deleted, not solved** | art's unwired `cut_down`, and art/crown still on the legacy `regard` door. Neither exists now |
+| ✅ **six lying banners** | five fixed by code-read, **the sixth caught live in the boot log** — `fall.js` was announcing a fall it can no longer perform. It is now *derived from the registry* rather than restating an intention |
+| ✅ **`Notice n/100` was wrong for 4 of 6 paths** | Blade's real bar is 50, Art's is 34. `/path` now divides the cap by the same coefficient the sweep multiplies by |
+| ✅ **the tide harness flake** | failed ~2 runs in 5 — it read a countdown several sweeps *after* it was written, and every sweep decrements it. It now observes the clock at the moment it is set. **The source was correct the whole time** |
+| ✅ **`completeness.py` knows retired-by-design pools** | `art/cut_down` reports as `retired`, with the ruling as its reason — *and it warns if such a pool starts being spoken again* |
+| ✅ **`release_harness.js` 41 → 66** | asserts the shipped ruling FIRST, then re-arms each rule's `_retired` config so the retained engine stays covered and cannot rot |
 
-**🔴 RULED, NOT EXECUTED — the next real chunk:**
+**364 assertions across 11 harnesses, all green. `completeness.py`: no gaps.**
 
-**The Harvest is cut** (`docs/62`). 20 files, ~300 refs. The order that survives a
-mistake is in that doc: gate `harvest.js` off first and measure what breaks, re-home
-notoriety's rate curve and fall's verb, *then* delete. ⚠️ Do **not** polish the
-`harvest_*` pools first.
+---
 
-**⚠️ Carried, unfixed, and it outlives the Harvest:** the **phase coefficient multiplies
-before banding**, so raw notoriety 57 became 114 for Blade (×2) and 171 for Art (×3)
-against a threshold of 100. **The real bar is n=50 and n=34, not 100** — the number that
-was tuned is not the number that fires, and this drives *every* phase transition.
+### 🔴 THE ONE THING THAT NEEDS ETHAN
 
-**Open, needs Ethan:**
+**The Trial fires far earlier than 100 for most paths.** `phase.js` multiplies
+notoriety by the `phase` coefficient *before* banding — deliberate, and it is how Blade
+"escalates twice as fast" — so the real thresholds are:
+
+| path | coefficient | Trial at raw notoriety |
+|---|---|---|
+| Blade | ×2 | **50** |
+| Art | ×3 | **34** |
+| others | ×1 | 100 |
+
+The display now tells the truth about this. **The pacing was left alone on purpose** —
+whether a Trial at 34 is too soon is a tuning call, not something to quietly re-balance
+behind an honesty fix.
+
+---
+
+### Carried, unfixed
+
 - **Wall's playstyle redo** — mod stays Goety (`docs/43 §0b`); the redo itself is unscoped
-- the **world refresh** he raised before any of this
-- **`Lootr clear` has never been probed live** — tide.js fails loud on the first real wave
-- 81 commits ahead of `origin/main`, unpushed
+- **the world refresh.** Diagnosed (`docs/64`): Tectonic owns terrain, and the fixed
+  config generates solid ground to −127 with real caves. **Staged in
+  `instance/config/tectonic.json`, applies only to a regenerated world.**
+  ⚠️ Side effect measured: the band −40 to −63 becomes nearly solid
+- **`Lootr clear` has never been probed live** — `tide.js` fails loud on the first real wave
+- **~370 `[CLAUDE-DRAFT]` lines** await Ethan's own pass (`docs/51`, generated)
+- **`[events] !! salvage has UNTAGGED events: collect, sample, tipoff`** — flagged by the
+  server at every boot. They fall into `misc` at the lowest band. ⚠️ **Not fixed
+  here on purpose:** assigning a `kind:` changes weighting, and `docs/23 §VI.0` ruled
+  that a god's weight vector *is* the character. Ethan's call, not a guess
+- **naming rot accepted** — a `harvest` band and `harvest_*` pools in a game with no
+  Harvest. Cosmetic; deliberately not ridden along with a behavioural change
+- 90+ commits ahead of `origin/main`, unpushed
 
 ---
 

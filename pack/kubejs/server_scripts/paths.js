@@ -746,7 +746,27 @@
         try {
           var b = VELDORA.notoriety(srv, p)
           if (!b) throw 'unavailable'
-          p.tell('§7Notice §f§l' + b.value + '§7/100 §8- how close they are to testing you')
+          // 🔴 THIS SAID "/100" FOR EVERYONE, AND FOR MOST PATHS THAT IS NOT THE NUMBER.
+          // phase.js scales notoriety by E3's `phase` coefficient BEFORE banding - which
+          // is deliberate and is how Blade "escalates twice as fast" - so Blade enters
+          // the top band at a raw 50 and Art at a raw 34. A player watching this bar
+          // crawl toward 100 was reading a threshold their god does not use.
+          //
+          // 🔑 SO SHOW THE THRESHOLD THAT ACTUALLY FIRES, by dividing the cap by the same
+          // coefficient the sweep multiplies by. Same arithmetic, read from the player's
+          // side: `Notice 20/50` instead of `Notice 20/100`.
+          //
+          // ⚠️ THE PACING ITSELF IS UNCHANGED - this only stops the display lying about
+          // it. Whether a Trial at a raw 50 is too soon is a TUNING question and it is
+          // Ethan's, not something to quietly re-balance behind an honesty fix.
+          var cap = 100
+          try {
+            if (VELDORA.coeff && typeof VELDORA.coeff.of === 'function') {
+              var pc = VELDORA.coeff.of(srv, p, 'phase')
+              if (typeof pc === 'number' && isFinite(pc) && pc > 0) cap = Math.ceil(100 / pc)
+            }
+          } catch (e) { }
+          p.tell('§7Notice §f§l' + b.value + '§7/' + cap + ' §8- how close they are to testing you')
           p.tell('§8It rises with the levels you gain, and on its own with the days.')
           p.tell('§8It returns to nothing every time they do.')
         } catch (e) { }
