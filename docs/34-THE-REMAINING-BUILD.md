@@ -35,6 +35,45 @@ It had been mathematically unreachable for weeks.
 
 ---
 
+## 📍 STATE AT 2026-08-23 (end of session)
+
+**Server is OFF.** Everything below is committed; the last few files are **deployed but
+NOT loaded** — they land on the next restart.
+
+**Done this session:**
+
+| | |
+|---|---|
+| ✅ **Forge is OPEN** | the `CLOSED` table is empty. Live server said *"CLOSED (unbuilt, cannot be claimed): none"*. Every path is claimable |
+| ✅ `forge_voice.js` | 42 pools, accent written (consonants yes, vowels no) |
+| ✅ `forge_events.js` | notion / gift / kindness / lend, and **six explicit zeroes** |
+| ✅ the deep-speaker map | final — Caebrim on blade+forge, **the Doctor was ALICE all along**, Kayer for herself, Salvage exempt |
+| ✅ four book-canon docs | `58` Kayer · `59` Mera · `60` Gregor · `61` Caebrim |
+| ✅ the dialogue pass | every pool I own, against all four dumps |
+| ✅ **Art + Forge intros** | both were whole rewrites — Forge's asked for the player's inventory |
+| ✅ **the tide is hard** | w1 6→24 mobs, no escape mid-wave, Lootr refresh on survival |
+| ✅ `tools/completeness.py` | the standing audit — path readiness · tag audit · live boot · dead pools |
+
+**🔴 RULED, NOT EXECUTED — the next real chunk:**
+
+**The Harvest is cut** (`docs/62`). 20 files, ~300 refs. The order that survives a
+mistake is in that doc: gate `harvest.js` off first and measure what breaks, re-home
+notoriety's rate curve and fall's verb, *then* delete. ⚠️ Do **not** polish the
+`harvest_*` pools first.
+
+**⚠️ Carried, unfixed, and it outlives the Harvest:** the **phase coefficient multiplies
+before banding**, so raw notoriety 57 became 114 for Blade (×2) and 171 for Art (×3)
+against a threshold of 100. **The real bar is n=50 and n=34, not 100** — the number that
+was tuned is not the number that fires, and this drives *every* phase transition.
+
+**Open, needs Ethan:**
+- **Wall's playstyle redo** — mod stays Goety (`docs/43 §0b`); the redo itself is unscoped
+- the **world refresh** he raised before any of this
+- **`Lootr clear` has never been probed live** — tide.js fails loud on the first real wave
+- 81 commits ahead of `origin/main`, unpushed
+
+---
+
 ## THE QUEUE
 
 ### 0a. THE STAGED MODPACK AUDIT ✅ **CLOSED 2026-08-15**

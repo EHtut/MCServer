@@ -156,6 +156,43 @@ others."*
 
 ---
 
+## 0b. ✅ SHE STAYS ON GOETY — ruled 2026-08-23
+
+> Ethan, having floated Iron's Spells 'n Spellbooks as a main-pack direction with
+> *"Wall being finding strength in others"*:
+> **"no i think we may be too deep into goety to switch."**
+
+**Measured before the ruling, which is why it was quick:** Goety is **29 references
+across 5 files** — `grudge.js` (her lash spawns `goety:spider_servant`), `paths.js`
+(her entire drop table), `spawner.js`, `tide.js`, `wall_events.js`.
+
+⭐ **AND THE REAL BLOCKER WAS NOT THE COUNT.** Ars Nouveau — **Art's** mod — already
+ships a complete summoning kit: `Summon Undead`, `Summon Vex`, `Summon Wolves`,
+`Summon Decoy`, `Animate Block`, with `Split` (more skeletons), `Amplify` (better
+weapons) and `Pierce` (archers) as augments. So *"finding strength in others"* as a
+**mechanic** collides head-on with the god who already owns the best summoning in the
+pack. Moving Wall there would have cost Art her identity to solve Wall's.
+
+🔑 **THE THEME SURVIVES THE RULING AND IS ALREADY IN THE GAME.** `blade_voice.js`,
+written months before any of this:
+
+> *"Her champions fight with **someone else's hands**."*
+> *"The spider's champions borrow their strength from her silk."*
+
+And it lands exactly on the Mera canon (`docs/59 §2`) — a hero whose purpose was taken
+from her, holding on to the one thing that still needs her. **"Finding strength in
+others" and "she calls her obsession devotion" are the same sentence.** Nothing needs a
+new mod to say it.
+
+⚠️ **Two facts found on the way, both still true:**
+- `spell_engine` + `spell_power` are installed and carry **zero spell content** — dead
+  weight from a dependency, and free to remove.
+- Iron's Spells is **not installed**, so nothing about its summon school has been
+  verified. If it ever comes back up, install it *first* — characterising a mod from
+  memory is the error class that produced the `magistuarmory:bronze_ingot` lesson.
+
+---
+
 ## 1. Who she is *(⚠️ SUPERSEDED by §0 — kept for the reasoning, not the ruling)*
 
 **The Spider. Mera Arkhdottir.** Obsessive. She wants nothing except to stand closer
