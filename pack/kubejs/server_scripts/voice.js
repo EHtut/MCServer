@@ -108,10 +108,33 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   // Speak it, in the patron register: bold red, the pack's one delivery channel
   // (23 §5 - "all the events need to be bolded in red over chat").
+  // ⭐ THE ONE PLACE A GOD IS AUDIBLE. Every patron utterance in the game funnels
+  // through say/sayAbout, so hanging the sound here means no call site had to change
+  // and none can be forgotten - which is the whole reason it goes here rather than at
+  // the ~100 places that speak.
+  //
+  // 🔑 LATE-BOUND, DELIBERATELY. KubeJS loads server_scripts alphabetically, so
+  // patron_sound.js is already in memory by the time voice.js loads - but reading it
+  // at CALL time rather than load time means the order stops mattering at all, and a
+  // missing or failed patron_sound.js costs exactly the sound and nothing else.
+  //
+  // ⚠️ AND IT NEVER AFFECTS THE RETURN VALUE. say() answers "did the god speak",
+  // not "did the god make a noise". A caller that keys off this - and hasVoice()/mute()
+  // in blade_events.js does - must not start behaving differently because a sound id
+  // was wrong.
+  function chime(player, god, tag) {
+    try {
+      if (VELDORA.patronSound && typeof VELDORA.patronSound.play === 'function') {
+        VELDORA.patronSound.play(player, god, tag)
+      }
+    } catch (e) { }
+  }
+
   function say(player, god, tag) {
     var s = line(god, tag, player)
     if (!s) return false
     try { player.tell(Text.of((COLOUR[god] || DEFAULT_COLOUR) + s)) } catch (e) { return false }
+    chime(player, god, tag)
     return true
   }
 
@@ -123,6 +146,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (subs.hasOwnProperty(k)) s = s.split('{' + k + '}').join(String(subs[k]))
     }
     try { player.tell(Text.of((COLOUR[god] || DEFAULT_COLOUR) + s)) } catch (e) { return false }
+    chime(player, god, tag)
     return true
   }
 

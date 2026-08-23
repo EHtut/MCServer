@@ -82,7 +82,15 @@ behind an honesty fix.
   config generates solid ground to −127 with real caves. **Staged in
   `instance/config/tectonic.json`, applies only to a regenerated world.**
   ⚠️ Side effect measured: the band −40 to −63 becomes nearly solid
-- **`Lootr clear` has never been probed live** — `tide.js` fails loud on the first real wave
+- ~~**`Lootr clear` has never been probed live**~~ ✅ **RESOLVED 2026-08-24.**
+  `/lootr clear` **does not exist** — the real subcommands are refresh, decay, openers,
+  cclear, cull, custom-*, force_*, and there is no per-player clear in any spelling. It
+  moved into config instead (`lootr-common.toml`: `refresh_value` + the 12 deep loot
+  tables), which is exact for us because the depths inject into deep structure tables
+  while the surface uses different ones. ⚠️ **The config has never been observed
+  working in play** — that check is available in the current world, no reset needed.
+  🔑 The lesson is recorded in `tide.js`: *a guarded call to a command nobody has run
+  is still a guess wearing a seatbelt.*
 - **~370 `[CLAUDE-DRAFT]` lines** await Ethan's own pass (`docs/51`, generated)
 - **`[events] !! salvage has UNTAGGED events: collect, sample, tipoff`** — flagged by the
   server at every boot. They fall into `misc` at the lowest band. ⚠️ **Not fixed
@@ -388,20 +396,36 @@ fails to fire does NOT settle**, so pressure is never forgiven for free.
 The debt comes due; raid size scales with trades since the last one.
 **Verify a raid at zero debt spawns nothing**, rather than a default wave.
 
-### 4. E8 — Blade
+### 4-6. E8 / E9 / E10 — the per-patron content ✅ **BUILT — measured 2026-08-24**
 
-Waves, the taunt ladder escalating to **`"Run."` immediately before the Harvest**
-(fires exactly once, ever). Blade's drop coefficient stays **below** 1.
+🔴 **This block described three pending projects. All five gods have events.** The
+live server reports:
 
-### 5. E9 — Forge
+```
+[events] framework LIVE - 45 event(s) across 5 god(s), 8% per 600t, one at a time.
+         19 of them are CUTSCENES (4 world days apart, vs 1 for any event).
+```
 
-Quotas with world-day deadlines, Appraisal paying by what you have **built**,
-compounding on a miss.
+| god | events |
+|---|---|
+| blade | 19 |
+| salvage | 19 |
+| wall | 13 |
+| art | 13 |
+| forge | 8 |
+| crown | 0 — merging into Wall (§0c), world-reset gated |
 
-### 6. E10 — Art, Crown (Wall now leaves this group)
+⚠️ **Four of Blade's nineteen cannot fire.** `harden`, `burden`, `wager` and
+`contract` each open with `if (!hasVoice(...)) return mute(...)`, and their pools are
+empty arrays marked `TODO(ethan)`. **The mechanics are finished; the lines are the
+only missing thing.** Writing sheets are in `45-BLADE-LINES.md` (Buffs / Duels /
+Contracts). Salvage has four more empty pools — those do not block an event, they make
+seven call sites go silent, because `voice.say()` returns false on an empty pool.
 
-Built when walked. *Note: `24` said Wall folds into Forge if unwalked — the refresh
-supersedes that.*
+⭐ **Art's Trial handler exists** — `trialArrive` / `trialWin` / `trialLose`,
+`art_events.js:378`. `63` §6 still says she "has never had a handler"; that is stale.
+All three combatant handlers (art, blade, salvage) are registered, and Wall's
+registration is correctly REFUSED because she is a non-combatant.
 
 ---
 
@@ -506,11 +530,23 @@ polish wants finished material to polish.
 datapack JSONs). `category.json` exposes `unlocked_by_default` (the path unlocks its
 tree) and `exclusive_root` (the subclass choice). **Authoring job.**
 
-### 9. Being chosen — `33`
+### 9. Being chosen — `33` ✅ **BUILT AND LIVE — measured 2026-08-24**
 
-Patrons pick you by watching what you do. Fixes the flaw that the player typing
-`/path blade` makes every "you already reached for it" line literally true.
-**Do it at the world reset** — a fresh world means no retrofit.
+🔴 **This said "do it at the world reset". It was already running.** `chosen.js` and
+`arrival.js` both banner at boot:
+
+```
+[chosen] YOU ARE CHOSEN - blade:iron_sword, salvage:crossbow, forge:create:wrench,
+         art:lapis_lazuli. WALL has no item and no timer: somebody kills you while you
+         walk no path, and she makes her offer ON YOUR RESPAWN (100t later).
+[arrival] THE ARRIVAL armed - 13 lines, five voices, once per player on first join.
+```
+
+Carrying the item unlocks the path forever; the offer fires ONCE, out of combat only.
+
+⚠️ **The one part the reset still owns:** The Arrival is *once per player on first
+join*, and everyone who plays here has already spent theirs. It has never been seen by
+a player and will not be until a fresh world (or a deliberate flag reset).
 
 ### 10. Smaller, captured
 

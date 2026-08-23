@@ -55,24 +55,84 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ── the lines ──────────────────────────────────────────────────────────────
   var LINES = {
     // ═══════════════════════════════════════════════════════════════════════
-    // 🔴 THE THREE ROWS THE TAXONOMY FOUND EMPTY (docs/23 §VI.0, built 2026-08-16)
+    // ⭐ THE THREE ROWS THE TAXONOMY FOUND EMPTY (docs/23 §VI.0, built 2026-08-16)
     //
-    // The MECHANICS are finished and registered. These pools are the only thing
-    // missing, and every one of those events REFUSES TO FIRE while its pool is
-    // empty - see hasVoice()/mute() in blade_events.js. That is deliberate: an
-    // event that runs mute is worse than one that waits, and voice.js's own rule is
-    // that a caller must never substitute its own text.
+    // 🔴 THESE SAT EMPTY FOR EIGHT DAYS AND KEPT FOUR REGISTERED EVENTS OFF THE
+    // SERVER. harden, burden, wager and contract each open with
+    // `if (!hasVoice(...)) return mute(...)`, so an unwritten pool here is not a
+    // cosmetic gap - it is four of Blade's nineteen events silently declining to
+    // happen. The gate is still the right design (an event that runs mute is worse
+    // than one that waits); the pools were simply never filled.
     //
-    // Writing sheets - what each line has to DO - in docs/45-BLADE-LINES.md §12.
-    // TODO(ethan).
+    // ⭐ FILLED 2026-08-24 AS DRAFTS, against the writing sheets in
+    // `docs/45-BLADE-LINES.md` - line counts and voice constraints taken from there
+    // rather than invented. Every one is marked [CLAUDE-DRAFT] and appears in
+    // `docs/51` for Ethan's pass.
     // ═══════════════════════════════════════════════════════════════════════
-    harden: [],           // forced: resistance + weakness. "Last. Do not win yet."
-    burden: [],           // forced: slowness. A handicap, and he is not sorry for it
-    wager_offer: [],      // he OFFERS one strong opponent. The ask itself
-    wager_won: [],        // you killed it. He pays - and paying is not praising
-    wager_declined: [],   // you said no to a fight. NOT fleeing; he asked
-    contract_offer: [],   // a kill order he ASKS for. {target} is substituted
-    contract_paid: [],    // you collected. The only time he settles a debt
+    // [CLAUDE-DRAFT] blade/harden
+    // Resistance II AND Weakness together, 3 min, forced. Hard to kill and slow to
+    // kill, so the fight has to LAST - his thesis as a status effect.
+    harden: [
+      'Harder to kill. Slower to kill. Now it lasts.',
+      'I have made this take a while. Do not thank me.',
+      'You will not win quickly. That is the point of it.',
+      'Endure. Winning fast teaches you nothing worth keeping.',
+      'Stand up longer than you want to.',
+    ],
+    // [CLAUDE-DRAFT] blade/burden
+    // Slowness II, 90s, forced. A handicap, not a gift. 🚨 He does NOT explain
+    // himself here - the sheet is explicit that explaining is stage two.
+    burden: [
+      'Slow. Deal with it.',
+      'Carry it.',
+      'You do not get to leave this one.',
+      'No. Stay where you are.',
+    ],
+    // [CLAUDE-DRAFT] blade/wager_offer
+    // He OFFERS one strong opponent - iron/steel/diamond by tier, because a choice
+    // always pays. He is not selling it and he will not repeat it.
+    wager_offer: [
+      'One opponent. Strong. Yes or no.',
+      'I have something worth fighting. Say the word or do not.',
+      'There is a fight here if you want it. I will not offer twice.',
+      'Something better than what you have been killing. Your call.',
+    ],
+    // [CLAUDE-DRAFT] blade/wager_won
+    // 🚨 PAYING IS NOT PRAISING - `high_silence` already owns approval. This is a
+    // debt settled, which is a colder thing.
+    wager_won: [
+      'You killed it. Take the payment.',
+      'Settled. That is all this is.',
+      'Yours. I said it would pay, and it pays.',
+      'Debt closed. Do not read anything into it.',
+    ],
+    // [CLAUDE-DRAFT] blade/wager_declined
+    // 🚨 NOT FLEEING. `duel_fled` is contempt for running; HE ASKED this time, and
+    // refusing an offer is allowed. Whatever this is, it is not that.
+    wager_declined: [
+      'Then no.',
+      'Fair. I asked.',
+      'Another time, or not.',
+    ],
+    // [CLAUDE-DRAFT] blade/contract_offer
+    // A kill order he ASKS for. {target} is substituted by runContract. The
+    // difference from `mark_declare` is the whole point: that pool COMMANDS, this
+    // one asks, and asking is the generous branch.
+    contract_offer: [
+      '{target} is still walking around. I would take it as a favour.',
+      'Would you kill {target} for me. You may say no.',
+      '{target}. I am asking, not ordering. The difference is yours to spend.',
+      'I want {target} dead, and I am willing to ask for it.',
+      'If you have the time: {target}. If not, say so and I will stop.',
+    ],
+    // [CLAUDE-DRAFT] blade/contract_paid
+    // The only time in the game he settles a debt. `mark_success` covers the kill
+    // itself; this is the PAYMENT, and he should like it less than you do.
+    contract_paid: [
+      'Paid. I do not enjoy owing anyone.',
+      'Take it. The asking cost me more than the coin did.',
+      'Settled. We are even, which I prefer to grateful.',
+    ],
 
     // ⭐ REBUILT 2026-08-15 FROM THE ACTUAL MOD GUIDES, and deliberately naming
     // no mod, no menu and no item id. A god does not know what a thing is called

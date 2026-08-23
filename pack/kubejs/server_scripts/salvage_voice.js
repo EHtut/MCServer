@@ -208,10 +208,41 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "Gone cold. Don't apologise, I hate that.",
     ],
 
-    need_gun: [],       // you asked for ammo with nothing in your hand
-    unreadable: [],     // she cannot read your hunger/levels. Something is wrong with you
-    no_stock: [],       // the ammo mint failed. Her supplier let her down
-    kept_it: [],        // you paid a price and it did not take. She is surprised
+    // 🔴 THESE FOUR WERE EMPTY, AND AN EMPTY POOL IS SILENT, NOT SAFE. voice.say()
+    // returns false on an empty pool, so seven call sites across salvage.js and
+    // gun_ammo.js produced NOTHING - ask her for ammo bare-handed and she simply did
+    // not answer. Unlike Blade's, these gate no event: they are the FAILURE paths,
+    // which is exactly where a trader who says nothing reads as broken rather than
+    // terse.
+    //
+    // ⭐ WRITTEN TOWARD THE REGISTER 7b ASKS FOR - the coaxing has to already contain
+    // the appetite, so even her refusals sound like someone keeping a customer.
+    // Each pool below carries its own marker, so all four land in docs/51.
+    //
+    // [CLAUDE-DRAFT] salvage/need_gun
+    need_gun: [
+      'Ammo for what? Your hands are empty.',
+      'Bring me the gun and I will fill it. That is the order of operations.',
+      'Hold something first. Then we can start owing each other.',
+    ],
+    // [CLAUDE-DRAFT] salvage/unreadable
+    unreadable: [
+      'I cannot read you. That is new, and I do not like new.',
+      'Nothing is coming back off you. No hunger, no levels, no handle.',
+      'Something is wrong with you, and I mean that professionally.',
+    ],
+    // [CLAUDE-DRAFT] salvage/no_stock
+    no_stock: [
+      'Nothing on the shelf. My supplier and I are going to have words.',
+      'Empty. Not your fault, and not mine either, which is the annoying part.',
+      'I have got nothing for you today. Do not tell anyone, it is bad for business.',
+    ],
+    // [CLAUDE-DRAFT] salvage/kept_it
+    kept_it: [
+      'Huh. You paid and it stayed with you. That is not supposed to happen.',
+      'It did not take. You keep it. I will be thinking about that one.',
+      'Well. That is yours, and so is the price. Let us both pretend that is normal.',
+    ],
     low_gift: [
       "It's ok to reach out. I don't bite.",
       "I have things for you. Things you need.",

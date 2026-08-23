@@ -139,7 +139,7 @@ forgiveness curve built this morning without a rewrite — it only needs its sig
 | 3 | `power.js` | scale off **trust/TRUST_MAX** instead of notoriety/100 |
 | 4 | `paths.js` | drop chance off trust instead of notoriety |
 | 5 | `paths.js` | `/path` shows the rank — ruling 4 says the loop is the display, but a rank you cannot name is hard to feel |
-| 6 | the five gods | a Trial payload each. ⚠️ Only 3 of 5 ever had a handler (`docs/62 §1`) |
+| 6 | the five gods | ✅ **DONE.** All three COMBATANTS have a Trial payload — live boot: `handlers: art, blade, salvage`. Forge and Wall are non-combatants and level by their own metric (§6); Wall's registration is correctly REFUSED |
 
 **TRUST_MAX = 5** proposed: each win is 20% of your power, which makes a Trial worth
 wanting. Blade's ×5 power coefficient already caps his attributes around 35% of the curve,
@@ -163,7 +163,7 @@ and levels on something else.
 |---|---|---|
 | **blade** | combatant | ⚔️ **the Trial** |
 | **salvage** | combatant | ⚔️ **the Trial** |
-| **art** | combatant | ⚔️ **the Trial** — ⚠️ has never had a handler, needs one built |
+| **art** | combatant | ⚔️ **the Trial** — ✅ **BUILT** (`art_events.js:378` — `trialArrive`/`trialWin`/`trialLose`). Measured 2026-08-24; this row said "never had a handler" |
 | **wall** | non-combatant | 🛡️ **days survived** |
 | **forge** | non-combatant | 🔨 **items crafted** |
 

@@ -55,17 +55,24 @@ in this repo has died before.
 | `intro_accept` | ? | — | [`introductions.js:232`](../pack/kubejs/server_scripts/introductions.js) |
 | `intro_refuse` | ? | — | [`introductions.js:232`](../pack/kubejs/server_scripts/introductions.js) |
 
-## blade — 7 pool(s)
+## blade — 14 pool(s)
 
 | tag | to rewrite | ⭐ yours, keep | file |
 |---|---:|---:|---|
-| `argue_accuse` | 3 | — | [`blade_voice.js:269`](../pack/kubejs/server_scripts/blade_voice.js) |
-| `argue_answer` | 2 | 1 | [`blade_voice.js:269`](../pack/kubejs/server_scripts/blade_voice.js) |
-| `argue_threat` | 3 | — | [`blade_voice.js:270`](../pack/kubejs/server_scripts/blade_voice.js) |
-| `argue_refuse` | 2 | 1 | [`blade_voice.js:270`](../pack/kubejs/server_scripts/blade_voice.js) |
-| `argue_unanswered` | 3 | — | [`blade_voice.js:271`](../pack/kubejs/server_scripts/blade_voice.js) |
-| `warn_wave` | 4 | — | [`blade_voice.js:286`](../pack/kubejs/server_scripts/blade_voice.js) |
-| `idling` | 5 | — | [`blade_voice.js:304`](../pack/kubejs/server_scripts/blade_voice.js) |
+| `harden` | 5 | — | [`blade_voice.js:72`](../pack/kubejs/server_scripts/blade_voice.js) |
+| `burden` | 4 | — | [`blade_voice.js:82`](../pack/kubejs/server_scripts/blade_voice.js) |
+| `wager_offer` | 4 | — | [`blade_voice.js:91`](../pack/kubejs/server_scripts/blade_voice.js) |
+| `wager_won` | 4 | — | [`blade_voice.js:100`](../pack/kubejs/server_scripts/blade_voice.js) |
+| `wager_declined` | 3 | — | [`blade_voice.js:109`](../pack/kubejs/server_scripts/blade_voice.js) |
+| `contract_offer` | 5 | — | [`blade_voice.js:117`](../pack/kubejs/server_scripts/blade_voice.js) |
+| `contract_paid` | 3 | — | [`blade_voice.js:128`](../pack/kubejs/server_scripts/blade_voice.js) |
+| `argue_accuse` | 3 | — | [`blade_voice.js:329`](../pack/kubejs/server_scripts/blade_voice.js) |
+| `argue_answer` | 2 | 1 | [`blade_voice.js:329`](../pack/kubejs/server_scripts/blade_voice.js) |
+| `argue_threat` | 3 | — | [`blade_voice.js:330`](../pack/kubejs/server_scripts/blade_voice.js) |
+| `argue_refuse` | 2 | 1 | [`blade_voice.js:330`](../pack/kubejs/server_scripts/blade_voice.js) |
+| `argue_unanswered` | 3 | — | [`blade_voice.js:331`](../pack/kubejs/server_scripts/blade_voice.js) |
+| `warn_wave` | 4 | — | [`blade_voice.js:346`](../pack/kubejs/server_scripts/blade_voice.js) |
+| `idling` | 5 | — | [`blade_voice.js:364`](../pack/kubejs/server_scripts/blade_voice.js) |
 
 ## forge — 47 pool(s)
 
@@ -119,7 +126,7 @@ in this repo has died before.
 | `intro_accept` | ? | — | [`introductions.js:130`](../pack/kubejs/server_scripts/introductions.js) |
 | `intro_refuse` | ? | — | [`introductions.js:130`](../pack/kubejs/server_scripts/introductions.js) |
 
-## salvage — 15 pool(s)
+## salvage — 19 pool(s)
 
 | tag | to rewrite | ⭐ yours, keep | file |
 |---|---:|---:|---|
@@ -136,8 +143,12 @@ in this repo has died before.
 | `argue_unanswered` | 3 | — | [`salvage_voice.js:81`](../pack/kubejs/server_scripts/salvage_voice.js) |
 | `warn_wave` | 4 | — | [`salvage_voice.js:88`](../pack/kubejs/server_scripts/salvage_voice.js) |
 | `warn_incoming` | 6 | — | [`salvage_voice.js:124`](../pack/kubejs/server_scripts/salvage_voice.js) |
-| `near_art` | 3 | — | [`salvage_voice.js:582`](../pack/kubejs/server_scripts/salvage_voice.js) |
-| `near_forge` | 3 | — | [`salvage_voice.js:582`](../pack/kubejs/server_scripts/salvage_voice.js) |
+| `need_gun` | 3 | — | [`salvage_voice.js:222`](../pack/kubejs/server_scripts/salvage_voice.js) |
+| `unreadable` | 3 | — | [`salvage_voice.js:228`](../pack/kubejs/server_scripts/salvage_voice.js) |
+| `no_stock` | 3 | — | [`salvage_voice.js:234`](../pack/kubejs/server_scripts/salvage_voice.js) |
+| `kept_it` | 3 | — | [`salvage_voice.js:240`](../pack/kubejs/server_scripts/salvage_voice.js) |
+| `near_art` | 3 | — | [`salvage_voice.js:613`](../pack/kubejs/server_scripts/salvage_voice.js) |
+| `near_forge` | 3 | — | [`salvage_voice.js:613`](../pack/kubejs/server_scripts/salvage_voice.js) |
 
 ## shadow — 6 pool(s)
 
@@ -167,7 +178,7 @@ in this repo has died before.
 
 ---
 
-**406 drafted lines across 117 pools.**
+**446 drafted lines across 128 pools.**
 
 Ethan's own writing is NOT listed here — his lines carry no marker, which is
 the whole point of the convention. Where a pool is mixed (his first line, drafts

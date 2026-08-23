@@ -1369,27 +1369,27 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       tiers: ['low', 'medium', 'high'],
       does: 'BUFF (forced) - resistance II AND weakness together, 3 min. He makes ' +
         'you hard to kill and slow to kill, so the fight lasts. ARMS the release ' +
-        'window. HELD until the `harden` pool is written',
+        'window.',
     })
     VELDORA.events.register(GOD, {
       id: 'burden', kind: 'buff', run: runBurden, hostile: false, cooldown: 3, weight: 3,
       tiers: ['medium', 'high'],
       does: 'BUFF (forced) - slowness II for 90s, a handicap not a gift. Does NOT ' +
         'arm the release window: punishing a death under a penalty he imposed would ' +
-        'be a trap. HELD until the `burden` pool is written',
+        'be a trap.',
     })
     VELDORA.events.register(GOD, {
       id: 'wager', kind: 'duel', scene: true, run: runWager, hostile: true, cooldown: 3, weight: 3,
       tiers: ['low', 'medium', 'high'],
       does: 'DUEL (choice) - he OFFERS one strong opponent. Say yes and it arrives ' +
         'tagged; kill it and it pays iron/steel/diamond by tier. A choice always ' +
-        'pays. HELD until the `wager_offer` pool is written',
+        'pays.',
     })
     VELDORA.events.register(GOD, {
       id: 'contract', kind: 'contract', scene: true, run: runContract, hostile: false, cooldown: 4, weight: 3,
       tiers: ['medium', 'high'],
       does: 'CONTRACT (choice) - a kill order he ASKS for, on the same machinery as ' +
-        'the Mark, and it pays on success. HELD until `contract_offer` is written',
+        'the Mark, and it pays on success.',
     })
 
     VELDORA.events.register(GOD, {
