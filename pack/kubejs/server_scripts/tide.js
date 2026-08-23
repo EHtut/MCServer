@@ -196,8 +196,49 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return DEEPER
   }
 
-  function nextGap() {
-    return WAVE_MIN + Math.floor(Math.random() * (WAVE_MAX - WAVE_MIN + 1))
+  // ⭐⭐ THE MATRIARCH'S CHAMPION DRAWS THE TIDE. Ethan, 2026-08-24:
+  //
+  //     "her champion's presence increases... things that are technically not in the
+  //      domain of the gods above but instead in the underground. Tides, waves,
+  //      enemies, etc." ... "i think the answer is actually not spawn rates and just
+  //      tide chances."
+  //
+  // 🔑 TIDE CHANCES AND NOT SPAWN RATES, AND THAT DISTINCTION SAVED THE DESIGN. Ambient
+  // spawn rate is a property of the WORLD - an Art champion would have made the depths
+  // worse for everyone else in the same save, which is a grief mechanic nobody asked
+  // for. A tide run is per-player state (`runs[uuid]`), so this lands on HER champion
+  // and nobody else's. docs/63 §9 listed the world-wide version as a falsifier; the
+  // narrower ruling removes it outright.
+  //
+  // ⭐ AND IT IS THE ONLY WAY SHE COULD TOUCH THE WORLD AT ALL. Her whole design is
+  // five zeroes on the forced column because she cannot reach it (art_events.js). She
+  // is not spawning anything here either - she is a presence the underground responds
+  // to. Same shape as her Trial: things come because she is near, not because she sent
+  // them.
+  //
+  // ⚠️ RANK 0 CHANGES NOTHING. The multiplier only ever shortens the gap, never
+  // lengthens it, so a low-rank Art walker gets the ordinary tide rather than a
+  // gentler one - "she has not noticed you yet", not "she is protecting you".
+  var ART_PULL = 0.5          // at max rank the gap is this fraction of normal
+
+  function artPull(p) {
+    try {
+      if (!VELDORA.paths || VELDORA.paths.pathOf(p) !== 'art') return 1
+      if (!VELDORA.trustScale) return 1
+      var sc = VELDORA.trustScale(p.server, p)
+      if (typeof sc !== 'number' || !isFinite(sc) || sc <= 0) return 1
+      if (sc > 1) sc = 1
+      return 1 - (1 - ART_PULL) * sc
+    } catch (e) { return 1 }
+  }
+
+  function nextGap(p) {
+    var base = WAVE_MIN + Math.floor(Math.random() * (WAVE_MAX - WAVE_MIN + 1))
+    if (!p) return base
+    var pull = artPull(p)
+    if (pull >= 1) return base
+    var out = Math.max(SWEEP, Math.round(base * pull))
+    return out
   }
 
   // ── the announcement ───────────────────────────────────────────────────────
@@ -348,7 +389,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
             st.active = true
             st.age = 0
             st.waves = 0
-            st.next = GRACE + nextGap()
+            st.next = GRACE + nextGap(p)
             console.info(TAG + p.username + ' has gone under - the tide begins')
           }
           continue
@@ -396,7 +437,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         st.next -= SWEEP
         if (st.next <= 0) {
           sendWave(p, st)
-          st.next = nextGap()
+          st.next = nextGap(p)
         }
       }
     } catch (e) { console.warn(TAG + 'sweep threw :: ' + e) }
@@ -435,7 +476,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     force: function (p) {
       var st = runs[String(p.uuid)]
       if (!st || !st.active) return false
-      sendWave(p, st); st.next = nextGap(); return true
+      sendWave(p, st); st.next = nextGap(p); return true
     },
   }
 

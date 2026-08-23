@@ -210,6 +210,24 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "Trouble. {rival}'s. Headed your way right this second, I ain't gonna be any use, RUN.",
     ],
 
+    // [CLAUDE-DRAFT] forge/bored
+    // ⭐⭐ CONSUMED BY ranks.js WHEN HER ATTENTION SLIPS. docs/63 §9 named an
+    // unexplained rank drop as a falsifier - a player logging back in to a lower
+    // number with no idea why. She is the chattiest god in the game; going quiet
+    // about it is the one thing she would never do.
+    //
+    // 🔑 SHE IS NOT THREATENING YOU AND SHE IS NOT SULKING. She is a child whose
+    // attention has genuinely wandered, and she says so the way a child would -
+    // cheerfully, mid-thought, with no idea it lands as a warning. The mechanic is
+    // punishing; the voice must not be.
+    bored: [
+      "- an' I've kinda run outta things to look at over here.",
+      "You ain't made nothin' in a while. I been countin'. Not on purpose.",
+      "I might go see what the others are up to. I'll come back.",
+      "Build somethin'. Anythin'. I don't even care if it's good.",
+      "My attention's wanderin' an' I ain't got the trick for stoppin' that.",
+    ],
+
     // [CLAUDE-DRAFT] forge/warn_wave
     // The tide herald above the cutoff. Below it Caebrim takes over (docs/57 §3).
     warn_wave: [
