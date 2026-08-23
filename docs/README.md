@@ -92,7 +92,9 @@ never / 4 buff-deaths / 3 refusals)
 **The patrons, per-god** — `40-BLADE-THE-WARRIOR` · `43-WALL-THE-SPIDER` ·
 `44-SALVAGE-LINES` · **`53-MATRIARCH-KAYER`** (2026-08-22 — replaces "The Nightmare"
 wholesale; her release condition is CAPABILITY, not failure) ·
-**`54-MATRIARCH-LINES`** (the fill-in sheet: her chart, her voice rule, her pools)
+**`54-MATRIARCH-LINES`** (the chart + sheet: the god/champion matrix, her voice rule,
+her pools) · **`55-MATRIARCH-EVERY-LINE`** (DRAFT lines to edit and hand back —
+⚠️ not generated from source, none of it is in the game yet)
 
 **Next direction** *(captured 2026-08-18, unscoped)* —
 **`52-EARNING-THE-PATH`** (the item makes you NOTICED not chosen · Forge + Art +
