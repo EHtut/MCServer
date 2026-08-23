@@ -318,6 +318,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // Her register: grief, never rage. She does not say "how dare you", she says
     // "look what you did to it". A champion is a possession that has been damaged,
     // and the horror is that she means it kindly.
+    //
+    // ⭐⭐ AND THE GRIEF HAS A SOURCE NOW (docs/59 §2). Wall is MERA: built and hyped her
+    // whole life for one role, held it eight formative years, then peace took it away.
+    // A person whose entire self WAS a role holds onto the one thing that still needs
+    // her and cannot stop. So "I put that one back together four times" is not
+    // motherhood - it is the last job she has, being taken from her again.
+    //
+    // 🔴 When the rival is BLADE she is arguing with her own father and neither of
+    // them knows (docs/59 §1). Do not hint. See the matching note in blade_voice.js.
     // ═══════════════════════════════════════════════════════════════════════
     // [CLAUDE-DRAFT] wall/warn_wave
     // ⭐ THE TELL (docs/50). She is not pleased - she is frightened FOR you, which is

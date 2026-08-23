@@ -507,25 +507,42 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         'Listen. There - that. Get your back to a wall.',
       ],
       // [CLAUDE-DRAFT] shadow/intro
+      // 🔴 REWRITTEN 2026-08-23. The draft had "Nobody sent me and I came anyway" -
+      // she does not do that. docs/61 §3, her behavioural tell: **she will not reach
+      // out to anyone unless she feels fully welcome.** Feeling false, she refuses to
+      // impose herself where she is not sure she is wanted. **She waits to be invited.**
+      // So she is ALREADY HERE and has been; you are the one who arrived.
       intro: [
         'I know whose you are. I knew before you were down here.',
-        'You came down. Nobody sent me and I came anyway. Do not read anything into that yet.',
-        'The one you follow cannot reach this far. I can. I am always this far.',
+        'You came down to me. I want that noted. I did not come up.',
+        'The one you follow cannot reach this far. I can. I have always been this far.',
       ],
       // [CLAUDE-DRAFT] shadow/common
       // ⭐ THE REGISTER: pleased, patient, and never once threatening. She has nothing
       // to gain from you and she is not going anywhere.
+      // ⭐ REGISTER CORRECTED 2026-08-23 (docs/61 §3). Two changes, both from the dump:
+      //
+      //   1. **DEADPAN AND DRY.** The draft was lyrical. She is not. Flatter, shorter,
+      //      no cadence. Her shadow-form art note generalises straight into dialogue:
+      //      "cryptid = LESS information, not more." **She says less than you want.**
+      //   2. **SHE IS A MOTHER.** She raised Pille (who calls her "Mom"), Gregor ("my
+      //      boy"), and Milantros. I wrote her as a want. The want is maternal - and
+      //      it is the thing she will not impose on you.
+      //
+      // ⭐ "Waiting is most of what I am" was in the first draft and turns out to be her
+      // canon exactly. It stays, and everything else is built around it.
       common: [
         'Keep going. I am not going to stop you and I am not going to leave.',
         'You build the way she does. Badly, and then again, and then it works.',
-        'I have been down here a long time. You are the most interesting thing this year.',
-        'Do not look behind you. It is only me, and looking makes it worse for you, not for me.',
-        'She talks to you constantly. I can hear the shape of it from here. I cannot hear the words.',
+        'Do not look behind you. It is only me. Looking makes it worse for you, not for me.',
+        'She talks to you constantly. I can hear the shape of it from here. Not the words.',
         'Rest if you want. I will wait. Waiting is most of what I am.',
-        'You are not afraid of me yet. That is fine. There is time.',
-        'Everything down here used to be somebody. Try not to think about which ones.',
-        'I am closer than I was. I do not do it on purpose.',
-        'Go on. I like watching you decide things.',
+        'You are not afraid of me yet. That is fine.',
+        'Everything down here used to be somebody.',
+        'I am closer than I was. Not on purpose.',
+        'Eat something. I am aware of how that sounded.',
+        'Mind the ceiling.',
+        'Go on.',
       ],
       // ⚠️ STILL DEAD ACROSS ALL FIVE SPEAKERS - defined, consumed by nothing. Kept
       // for parity so whoever wires it does not have to write five pools first. For
@@ -542,12 +559,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // you fishing and shuts it down (docs/53). Caebrim leaks. She has been alone for
       // centuries and cannot help herself - which is why she gets a confession and her
       // sister deliberately does not.
+      // ⭐ HER rare IS THE OPPOSITE OF KAYER'S. Kayer's is where she CATCHES you fishing
+      // and shuts it down (docs/53). Caebrim leaks - she has been alone a long time and
+      // cannot help it. That is why she gets a confession and her sister does not.
+      //
+      // 🔑 The last two are the load-bearing ones: "family isn't healthy, but it's
+      // family" is her actual position on the sister who burned everything, and
+      // **the kids don't know it was Kayer - and would walk if they did** (docs/61 §5).
       rare: [
         'I asked for something once. I got it. That is not the same as it going well.',
         'She used to call me a name. I am not going to tell you what it was.',
         'There is another one of me up there somewhere, and a third. We do not speak.',
-        'She does not know I am down here. I would rather she did not find out from you.',
         'You are carrying something she made. I can feel it from here. It is very loud.',
+        'Family is not healthy. It is still family. I have had three hundred years to find a way around that sentence.',
+        'There is a thing your god does not know, and I am the one who decided she would not. Do not ask again.',
       ],
     },
     // ═════════════════════════════════════════════════════════════════════════

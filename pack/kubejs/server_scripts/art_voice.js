@@ -57,15 +57,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // [CLAUDE-DRAFT] art/combat · art/returned
     // ⭐ EVERY GUIDANCE LINE POINTS AWAY FROM HERE. She is the errand god - the only
     // patron who moves you across the map, while Wall pulls you home. docs/54 §2.
+    // ⭐ PASS 2026-08-23: half of these were a tutor giving directions - the archetype
+    // writing itself (docs/58 §4). Every line now touches the foresight or the fold.
     guidance: [
       'Source pools do not fill themselves. Go dig some.',
       'You will not find glyphs standing here. Walk.',
-      'Essence is scattered. So is your attention. Fix one of those.',
+      'Go west. I am not going to explain how I know that.',
       'A ritual needs a circle. A circle needs work. Go do it.',
       'There is nothing left to learn from me today. Leave.',
       'Archwood does not grow near me. That should tell you something.',
-      'Every apprentice thinks the answer is closer than it is. It is not.',
+      'Every apprentice thinks the answer is closer than it is. I have watched a great many of them be wrong about it.',
       'Go further out. The easy sources are already spent.',
+      'You will come back here in four days having done none of this. Prove me wrong. You will not.',
     ],
     low_silence: [
       'Nothing.',
@@ -119,26 +122,33 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // closer the champion is to being too capable to control - and high_gift is
     // currently carrying the entire warning for `cut_down`, which docs/55 flags as
     // load-bearing by accident rather than by design.
+    // ⭐⭐ HER GIFTS ARE INDUCTION, NOT GENEROSITY (docs/58 §9 - the dark shepherd).
+    // Her creed is THE FOLD: the undead are "OUR people", belonging is salvation, and
+    // she genuinely believes forced belonging is MERCY - she gave a man who begged for
+    // death eternal undeath and called it a gift.
+    //
+    // 🔑 So the ladder is not "how much do I like you", it is "how far in are you".
+    // And she keeps her word to her flock, which is why none of this reads as a trap.
     low_gift: [
       'Take it. Try not to lose it in the first hour.',
       'A starting tool. Everyone gets one. Few keep it long.',
       'This costs me nothing to give. Remember that.',
       'Small hands need small things. Here.',
-      "I don't expect this to matter. Take it anyway.",
+      "You are not one of mine yet. This is what not-yet gets.",
     ],
     medium_gift: [
       'You did something correct. This is the reward for that, not for you.',
       'Better work earns better tools. Simple arithmetic.',
       "You've stopped being useless. This reflects that, narrowly.",
       'Consider this a raised ceiling, not a compliment.',
-      'Fewer hands could do what you did. Take this and keep doing it.',
+      'You are further in than you were. People do not usually notice that happening.',
     ],
     high_gift: [
       'This is more than I give most. Note the word most.',
       'You are becoming difficult to replace. I am already thinking about that.',
       'Few champions reach this. Fewer enjoy what comes after.',
       "Take it. You've earned the attention, which is worse than earning nothing.",
-      "I'm running out of things to withhold from you. That should concern you more than it does.",
+      'You are mine now. I do not say that warmly and I do not take it back.',
     ],
 
     // [CLAUDE-DRAFT] art/harvest_won · art/harvest_lost · art/cut_down
@@ -161,6 +171,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "You were the closest thing I've had to a hand of my own. That's exactly the problem.",
       'No speech. No last lesson. You already learned the one that mattered: everything I lend, I take back.',
       "Hold still. I've done this before, and it goes faster when you don't fight it.",
+      'I raised something of my own once. It worked. I am the only one who remembers his name.',
     ],
 
     // [CLAUDE-DRAFT] art/contract_offer
@@ -181,8 +192,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // over them and asks anyway, which is exactly what a manipulator with no hands
     // does - and it is the mechanic that unblocks docs/49 §1 B without needing the
     // ruling that has been holding it. docs/54 §4d.
+    // 🔑 SHE MADE HIM (docs/58 §3 - "Gregor KAYER Court"). She will not say it, and
+    // the last line here is as close as she comes.
     demand_blade: [
       "You don't answer to me. Answer anyway. It's faster.",
+      'Your god learned everything he knows about obedience somewhere. Consider where.',
       "Your god isn't here. I am. Draw your own conclusions.",
       "I asked. That was the courtesy. There isn't a second one.",
       "Blade's champion, doing Blade's work, standing in front of me. Interesting choices.",
@@ -264,10 +278,34 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "Don't let her hold on too long. She doesn't know how to stop.",
       "She inherited hers. Every single thing I have, I was given, and giving can be revoked.",
     ],
+    // ⭐ THE ONLY GOD SHE HAS NOTHING AGAINST - which is itself characterising. She
+    // hates the two who got to be daughters (docs/58 §0) and made the third. Salvage
+    // is outside the family entirely, and it is the only place her voice goes level.
+    // ═══════════════════════════════════════════════════════════════════════
+    // 🔴🔴 THIS POOL DID NOT EXIST AND IT IS THE ONE SHE MOST NEEDED. Forge is
+    // MILANTROS, and Kayer hates her (docs/57 §4) - a goat girl called her "Short,
+    // Ugly, Weird, Smelly" the day they met and was then adopted by Kayer's own maker.
+    //
+    // ⭐ THE CALIBRATION IS THE MIRROR OF forge/near_art. Milantros thinks the nickname
+    // is a family joke and has no idea it is a grudge. Kayer has carried it four
+    // centuries and will NOT say why - she gives no secrets. So these are contempt
+    // with the cause sealed inside, and the player only ever gets the temperature.
+    //
+    // 🚨 SHE MUST NOT NAME ALICE, and she must never sound wounded. She sounds bored,
+    // which is what she is (docs/58 §5) - right up until this one subject.
+    // [CLAUDE-DRAFT] art/near_forge
+    near_forge: [
+      "The Goat's. Of course it is.",
+      'That one talks. Constantly. To everyone. It is not warmth, it is a lack of discipline.',
+      "Ask your friend there what she thinks she is. Then ask who told her she could be it.",
+      'I have nothing to say about the Goat. I have had four hundred years of nothing to say about the Goat.',
+      "Whatever she called me, she was a child. That is the entire defence and I have heard it.",
+    ],
     near_salvage: [
       'Salvage will tell you the truth and then let you walk away from it. Unusual, for one of us.',
       "She's the only one who means it when she says you can go.",
       "Trade with her if you must. She won't lie to sweeten it.",
+      'I have no quarrel with that one. Enjoy how rare that is.',
     ],
   }
 

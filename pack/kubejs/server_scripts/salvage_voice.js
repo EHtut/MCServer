@@ -572,6 +572,32 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "I'd honestly recommend you attempt a barter, but how much can you get out of one who stocks their pockets with dead things?",
       "That one is owned, not employed. There is a difference.",
     ],
+    // 🔴 TWO POOLS SHE DID NOT HAVE (added 2026-08-23). idle.js: "a god with no pool
+    // for the chosen context says NOTHING" - so a Salvage champion standing next to
+    // Kayer's or Milantros's heard silence. With forge about to open that is two live
+    // gaps, not one.
+    //
+    // ⚠️ HER OTHER near_ POOLS ARE ETHAN'S. These two are mine and marked as such, so
+    // they land in docs/51 for his pass rather than quietly passing as his voice.
+    // [CLAUDE-DRAFT] salvage/near_art · salvage/near_forge
+    //
+    // ⭐ near_art: Kayer has no quarrel with her - the only god she has none with
+    // (art_voice.js near_salvage). It runs both ways, and it is a professional
+    // courtesy between two people who lie for a living in opposite directions.
+    near_art: [
+      "That one belongs to the cold woman. Be polite. Be brief.",
+      "Her patron and I have an understanding. It is mostly that we stay out of each other's ledgers.",
+      "She never haggles. That should worry you more than haggling.",
+    ],
+    // ⭐⭐ near_forge: MILANTROS GIVES THINGS AWAY FOR NOTHING (docs/56). To the one god
+    // in the pantheon who runs on debt, that is not charity, it is a competitor
+    // destroying the price of everything. The funniest relationship available and it
+    // costs three lines.
+    near_forge: [
+      "That one gets given things. Free. I have opinions about it.",
+      "The Goat is ruining the market and does not know what a market is.",
+      "Ask them what they paid. Watch them not understand the question.",
+    ],
     near_salvage: [
       "Ah. A colleague.",
       "Two of mine in one place. I do well.",

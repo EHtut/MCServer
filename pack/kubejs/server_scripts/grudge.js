@@ -70,7 +70,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var LASH = {
     blade: { effect: 'minecraft:weakness', secs: 90, amp: 0 },
     salvage: { effect: 'minecraft:slowness', secs: 75, amp: 0 },
-    forge: { effect: 'minecraft:mining_fatigue', secs: 45, amp: 0 },
+    // 🔴 WAS mining_fatigue 45s UNTIL 2026-08-23. It cannot stay. Forge is MILANTROS
+    // now, and her whole chart is zeroes on every row that harms anybody (docs/56 §4) -
+    // she is the only god in the pantheon who never orders a death and never touches
+    // another player. A retaliation debuff is the one thing she structurally cannot do.
+    //
+    // ⭐ AND `null` IS NOT A GAP HERE - IT IS THE BEST VERSION OF HER. The grudge still
+    // fires, she still gets her argue pools, so the player watches her be furious in
+    // public and then do absolutely nothing about it. Her argue_threat pool was already
+    // written for exactly this: "An' I'd threaten you, 'cept we both know I ain't
+    // gonna, so let's skip it."
+    //
+    // ⚠️ THIS FOLLOWS FROM A CHART I PROPOSED, NOT FROM ETHAN'S WORDS - one line to
+    // revert. Contrast `art: null` directly below, which IS his ("art doesn't care").
+    // Two nulls, opposite reasons: Kayer does not care, Milantros cannot.
+    forge: null,
     wall: { spiders: true },
     art: null,                    // "Art - Nothing again because art doesn't care"
   }

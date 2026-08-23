@@ -174,7 +174,6 @@ grp('THE REPRISAL TABLE — each god denies you its own domain')
   const cases = [
     ['blade', 'minecraft:weakness'],
     ['salvage', 'minecraft:slowness'],
-    ['forge', 'minecraft:mining_fatigue'],
   ]
   for (const [god, effect] of cases) {
     reset()
@@ -186,6 +185,16 @@ grp('THE REPRISAL TABLE — each god denies you its own domain')
   const k2 = mkPlayer('Kil', 'blade'); ONLINE = [k2]
   ok('wall sends spiders instead of taking anything', G.lash(server, 'wall', k2), 'spiders')
   ok('...five of them', WAVES[0].count, 5)
+  // 🔴 FORGE NO LONGER RETALIATES (2026-08-23). She is Milantros, whose chart is
+  // zeroes on every row that harms anybody - a debuff is the one thing she cannot do.
+  // ⭐ And this must be a POSTURE, not a gap: the grudge fires, she gets her argue
+  // pools, and she does nothing. That is the same distinction art's null already had -
+  // 'I failed' and 'I found nothing' must never share a return value.
+  reset()
+  const kf = mkPlayer('Kil', 'blade'); ONLINE = [mkPlayer('X', 'wall'), kf]
+  ok('forge retaliates with nothing - she CANNOT, not a gap', G.lash(server, 'forge', kf), 'no-posture')
+  ok('...and took absolutely nothing from the killer', [EFFECTS.length, WAVES.length], [0, 0])
+
   reset()
   const k3 = mkPlayer('Kil', 'blade')
   // ⭐ Art's nothing must be a POSTURE, distinguishable from a dead hook.

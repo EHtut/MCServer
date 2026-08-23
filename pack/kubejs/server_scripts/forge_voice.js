@@ -368,6 +368,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     ],
     rare_hold_item: [
       "Somebody made that. Some person, with a name, who ain't around no more. Everything's like that if you look at it long enough. Anyway.",
+      "She gave me a dragon once. A little dead one, all bones. I called it Dragon. I was not a clever child.",
     ],
     // 🔴 SHE LOVES GUNS (docs/56 §0b) - Caebrim gave her a silver rifle. An earlier
     // draft had her weapon-averse, which is the exact opposite of the character.
@@ -399,15 +400,36 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // ⭐ ALL FOUR near_ POOLS. Nobody else has all four - and near_art is where the
     // one-sided grudge pays off.
     // [CLAUDE-DRAFT] forge/near_blade · forge/near_wall · forge/near_salvage · forge/near_art
+    // ⭐⭐ THEY ARE FOSTER-SIBLINGS AND NOBODY HAD NOTICED. Caebrim raised Gregor -
+    // calls him "my boy" - and Caebrim also raised HER (docs/61 §3). Blade and Forge
+    // grew up under the same woman.
+    //
+    // 🔑 And the first line of this pool already said so by accident: "He was serious
+    // about everything, EVEN BEFORE." Before what? She knew him before. Keep it.
+    //
+    // ⚠️ SHE REMEMBERS AND HE DOES NOT SAY. Blade's own pools have no warmth in them
+    // for anyone - that is the severance (docs/60 §1). So this is entirely one-sided,
+    // like everything else she has: she is fond of a man who is a rank now.
     near_blade: [
       "- that one's his. He's real serious about it. He was serious about everything, even before.",
       "Say hello. He won't say it back, that ain't a slight, that's just him.",
       "War god's. All that armour an' he still gets hit.",
+      "Him an' me got raised by the same woman, y'know. He don't bring it up. He don't bring anything up.",
+      "I knew him when he was somebody's boy an' not somebody's general. Long time ago now.",
     ],
+    // ⭐⭐ SHE IS THE ONE WHO IS KIND TO MERA. Wall is Mera (docs/59), and in the books
+    // Milantros is the one who insists to her face: **"you're not a clone to me."**
+    // Everyone else - Kayer especially - treats Mera as a manufactured copy.
+    //
+    // 🔑 SO THE TWO GODS KAYER CANNOT FORGIVE ARE KIND TO EACH OTHER, and neither of
+    // them knows that is why. That is the warmest thing in the pantheon and it costs
+    // nothing to have.
     near_wall: [
       "Hers. Don't let her hear I said this, but I reckon she means well. Mostly.",
       "- an' that one ain't been allowed to go anywhere on their own in weeks, poor thing.",
       "The spider's. Wave. Don't get no closer than wavin'.",
+      "Tell her she ain't a copy of anybody. She'll know what I mean. She won't believe me, she never does.",
+      "I like her. Everybody's got a reason not to an' I ain't never been able to find mine.",
     ],
     near_salvage: [
       "Oh, that one owes somebody somethin'. They all do. That's the whole arrangement over there.",

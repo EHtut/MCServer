@@ -273,6 +273,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // His register: contempt as DOCTRINE, not as insult. He is not being cruel to
     // annoy her, he genuinely believes a champion who can be killed repeatedly has
     // told you what it is. He never raises his voice and never apologises.
+    //
+    // 🔴🔴 AND WHEN THE RIVAL IS WALL, THIS IS A FATHER ARGUING WITH HIS DAUGHTER OVER
+    // A CORPSE. docs/59 §1 - Blade is Gregor, Wall is Mera, she was brainwashed as an
+    // infant to forget him, and neither of them can know. These pools do not name the
+    // rival, so nothing here needs changing and nothing here should HINT.
+    //
+    // ⚠️ IF PER-RIVAL ARGUE POOLS ARE EVER BUILT (argue_accuse_wall etc), that exchange
+    // is the single most loaded thing available in the game - and the rule stays the
+    // same: total contempt, no recognition, the player works it out or nobody does.
     // ═══════════════════════════════════════════════════════════════════════
     // [CLAUDE-DRAFT] blade/warn_wave
     // ⭐ THE TELL (docs/50). Must NEVER share a pool with ordinary lines - the whole
