@@ -97,7 +97,10 @@ wholesale; her release condition is CAPABILITY, not failure) ·
 her pools) · **`55-MATRIARCH-EVERY-LINE`** (DRAFT lines to edit and hand back —
 ⚠️ not generated from source, none of it is in the game yet)
 
-**Rulings** — **`63-THE-TRIAL`** (2026-08-24 — the Harvest REFRAMED, not gone: a
+**Rulings** — **`64-THE-DEPTH`** (2026-08-24 — the bottom 64 blocks are an EMPTY
+BOX. ⭐ TECTONIC owns the terrain and its own min_y is still -64 while the dimension goes
+to -128. Fix is one config value, STAGED — worldgen is baked into level.dat at creation so
+it only applies to a regenerated world) · **Rulings** — **`63-THE-TRIAL`** (2026-08-24 — the Harvest REFRAMED, not gone: a
 challenge that moves TRUST, and trust replaces notoriety as what buys buffs and drops.
 ⭐ The machinery was gated not deleted, so this is a gate flip. 🔴 TWO PROBLEMS NEED A
 RULING: notoriety cannot "reset to 0" without an offset, and the rate curve now REWARDS
