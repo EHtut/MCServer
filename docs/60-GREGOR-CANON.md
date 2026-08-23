@@ -72,7 +72,21 @@ designed it that way.
 
 ---
 
-## 2. 🔴🔴 THE SPEAKER IS PROBABLY KAYER — and `docs/40 §4` left this open on purpose
+## 2. ✅ RESOLVED 2026-08-23 — THE SPEAKER IS **CAEBRIM**, NOT KAYER. **I WAS WRONG.**
+
+> Ethan: *"no speaker for everyone except mera and kayer should be caebrim."*
+
+The line I built the case on — *"I had to rescue my goddess from that church"* — I read as
+Kayer's war. **It is Caebrim's literal Book 5 plot:** Kayer refused the rescue and turned
+to war; Caebrim refused **both** and led a small party to free Alice from the Church.
+
+⭐⭐ And the tell was in `deep_speaker.js` all along — *"grey. **She is not a god.**"*
+**Caebrim is a falsehood, explicitly not a god**, and her core wound is feeling false. I
+read past it while building a case for somebody else. Full reconciliation in `docs/61 §1`.
+
+### The original argument *(kept — it is the reasoning, and it was wrong)*
+
+## 2b. 🔴 THE CASE I MADE FOR KAYER — and `docs/40 §4` left this open on purpose
 
 Blade's deep speaker confession is **your writing**, and the best text in the game. Read
 it against this dump:

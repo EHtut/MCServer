@@ -97,7 +97,10 @@ wholesale; her release condition is CAPABILITY, not failure) ·
 her pools) · **`55-MATRIARCH-EVERY-LINE`** (DRAFT lines to edit and hand back —
 ⚠️ not generated from source, none of it is in the game yet)
 
-**The book canon** — **`60-GREGOR-CANON`** (2026-08-23 — Ethan's notes for Gregor =
+**The book canon** — **`61-CAEBRIM-CANON`** (2026-08-23 — ✅ **the deep-speaker map is FINAL**:
+Caebrim holds blade + forge, **the Doctor was ALICE all along**, Kayer speaks for herself,
+Salvage exempted · ⭐ she is a **MOTHER**, and "waiting is most of what I am" turned out to be
+her canon · the shadow-form art rules double as a voice rule) · **`60-GREGOR-CANON`** (2026-08-23 — Ethan's notes for Gregor =
 **BLADE**. ⭐⭐⭐ **The name rule in `docs/40` turns out to be his canon** — he cannot say
 names because he lost his own · his coldness is the COST of the link severance, not his
 character · 🔴 OPEN: the deep Speaker may be **Kayer**) · **`59-MERA-CANON`** (2026-08-23 — Ethan's series notes for Mera =

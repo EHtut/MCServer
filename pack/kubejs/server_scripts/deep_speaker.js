@@ -70,10 +70,49 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ═══════════════════════════════════════════════════════════════════════════
   // BLADE'S — THE SPEAKER.  Grey. She speaks FOR the goddess of death.
   // ═══════════════════════════════════════════════════════════════════════════
+  // 🔴🔴🔴 THE SPEAKER IS CAEBRIM. Ethan, 2026-08-23:
+  //
+  //     "no speaker for everyone except mera and kayer should be caebrim. (except
+  //      salvage). kayer speaks for herself and alice speaks to mera."
+  //
+  // ⚠️ I GUESSED KAYER YESTERDAY (docs/60 §2) AND I WAS WRONG. The line I leaned on -
+  // "I had to rescue my goddess from that church" - I read as Kayer's war. It is not.
+  // It is CAEBRIM'S LITERAL BOOK-5 PLOT: Kayer refused the rescue and turned to war;
+  // Caebrim refused BOTH and led a small party to free Alice from the Church.
+  //
+  // ⭐⭐ AND THE CLUE WAS IN THIS FILE THE WHOLE TIME. "She is not a god." Caebrim is a
+  // FALSEHOOD - explicitly not a god - and her core wound is that she feels false:
+  // "the false representation of the family Alice lost". Ethan wrote that comment in
+  // August and I read straight past it.
+  //
+  // Every stanza of his confession is hers, and it is worse than it was as Kayer's:
+  //
+  //   "Tell your god I'm sorry. For everything I did."
+  //          she raised him. She calls Gregor MY BOY.
+  //   "He chose the wrong path. He was one of us. OUR FAMILY."
+  //          Gregor COURT. She IS Court - she carries the found-family's name forever.
+  //   "someone I was meant to protect, but I was too weak"
+  //          🔑 the maternal anchor of the found family, saying it out loud
+  //   "I was too focused on the mission."
+  //          the rescue party. The one she led. The one that stalled.
+  //   "I had to rescue my goddess from that church"
+  //          ⭐ not a metaphor. That is the plot of her book.
+  //   "Blinded by faith." / "I was destroying us."
+  //          faith in FAMILY - she stays bound to Kayer knowing what Kayer did,
+  //          because "family isn't healthy, but it's family"
+  //
+  // 🚨 NOT ONE WORD OF ETHAN'S TEXT BELOW IS CHANGED. Only the nameplate and the
+  // colour, so that she matches her other registration (forge, further down). She is
+  // ONE character with TWO entries because she says different things to the boy she
+  // raised than to the girl she raised - that is not a workaround, it is the point.
   register('blade', {
-    id: 'death_speaker',
-    name: 'the Speaker',
-    colour: '§7',                        // grey. She is not a god.
+    id: 'death_speaker',                 // ⚠️ id unchanged on purpose: it keys the met/stage
+                                         // flags and the line pools, so renaming it would
+                                         // reset every player's confession progress.
+    name: 'the Shadow',
+    colour: '§8',                        // was §7 grey. Now matches her forge entry.
+                                         // "She is not a god" was always true and is now
+                                         // the tell: a falsehood, not a god.
     lines: {
       // [CLAUDE-DRAFT] the Speaker's tide herald
       // 🚨 tide.js CALLS speaker.say(p, 'warn_wave') AND NO SPEAKER HAD THE POOL. The
@@ -164,6 +203,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // character. She is the cleverest thing in the world and she is not entirely
   // present in the room.
   register('wall', {
+    // ⭐⭐⭐ THE DOCTOR IS ALICE - AND ETHAN ALREADY WROTE THAT, IN AUGUST.
+    //
+    // His ruling 2026-08-23 was "alice speaks to mera". Wall IS Mera (docs/59). And the
+    // colour comment on the very next line, written 2026-08-15, already says "She IS
+    // the goddess." Nothing needs implementing. It was done before either of us knew
+    // who Wall was.
+    //
+    // 🔑 SO THE MOTHER SPEAKS TO HER DAUGHTER'S CHAMPION. Mera is Alice's daughter
+    // (docs/59 §3), believes she is a manufactured clone, and in the books attacks
+    // Alice on sight. Alice knows. Alice says nothing. And Ethan's existing
+    // characterisation - "the only voice in the world that is CURIOUS about you",
+    // a scientist among the things she has finished looking at - is exactly what a
+    // mother sounds like when she is not allowed to be one.
+    //
+    // 🚨 THE NAME STAYS "the Doctor". docs/40 §0: a name is the most expensive word
+    // in the game and Alice is never printed. Naming her here would spend the most
+    // expensive word in the project on a debug string.
     id: 'death_doctor',
     name: 'the Doctor',
     colour: '§b',                        // light blue. She IS the goddess.
@@ -244,6 +300,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // SALVAGE'S — THE KEEPER.  Yellow.  He knew her before she was a god.
   // ═══════════════════════════════════════════════════════════════════════════
   // Ethan's writing, 2026-08-15.
+  //
+  // ⭐ THE EXPLICIT EXCEPTION. Ethan, 2026-08-23, handing Caebrim every other path:
+  // "(except salvage)". He keeps his Keeper, and the reason is the same reason Salvage
+  // is the freest god in the pantheon: "she isn't a real character in the actual
+  // story", so there is no book character for a speaker to defer to. Nothing here can
+  // contradict canon, so nothing here has to move. docs/61 §2.
   //
   // ⭐ THE ONLY SPEAKER WHO IS NOT TALKING ABOUT YOU. The Speaker apologises to
   // Blade; the Doctor explains herself to the Spider's champion. He is grieving
@@ -421,9 +483,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // Blade's Speaker, whose three stanzas end "Gregor, I am sorry."
   // ⚠️ `the Shadow` is MINE. One string to change.
   //
-  // ⚠️ SCOPED TO FORGE. His earlier "might change all of them" is still OPEN; blade's
-  // Speaker, wall's Doctor, salvage's Keeper and Kayer's own register are untouched.
-  // docs/57 §3.
+  // ✅ NO LONGER SCOPED TO FORGE - RULED 2026-08-23. She also holds BLADE (see the
+  // long note on that entry above, where she was "the Speaker"). The final map:
+  //
+  //     blade    CAEBRIM      she raised Gregor. Her confession is to him.
+  //     forge    CAEBRIM      she raised Milantros. Her confession is about her.
+  //     wall     the Doctor   ⭐ = ALICE, speaking to her own daughter's champion
+  //     art      the Matriarch = Kayer herself, the only god who comes down
+  //     salvage  the Keeper   ⚠️ explicitly exempted by Ethan
+  //
+  // 🔑 TWO ENTRIES, ONE WOMAN. Distinct ids because the pools and the confession
+  // stages key off `id` - and because she has a different history with each of them.
+  // docs/61 §1.
   register('forge', {
     id: 'death_shadow',
     name: 'the Shadow',

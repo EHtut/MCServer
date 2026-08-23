@@ -112,6 +112,11 @@ is the model for the whole tier.
 arc. It just about works, since competence is what makes him relax, but 50/200 were
 never chosen with three named stages in mind.
 
+✅ **CLOSED 2026-08-23. THE SPEAKER IS CAEBRIM** — Ethan ruled the whole map at once, and
+she holds blade AND forge. Alice speaks to Mera (wall), Kayer speaks for herself (art),
+Salvage keeps her Keeper. **Not one word of the confession changed** — only the nameplate.
+`docs/61 §0`. The stale note below is kept for the reasoning.
+
 🔴 **UPDATE 2026-08-23 — THIS QUESTION HAS MOVED, TWICE.** (a) Caebrim is now
 **Forge's** deep speaker (`docs/57 §3`), so she is no longer a candidate to replace
 Blade's. (b) The book canon points hard at a different answer: **the Speaker may be
