@@ -359,6 +359,141 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   })
 
   // ═══════════════════════════════════════════════════════════════════════════
+  // FORGE'S — THE SHADOW.  Dark grey. She is Caebrim, and she is not a stand-in.
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Ethan, 2026-08-22, asked directly whether Milantros gets a speaker in the dark:
+  // "Her deep speaker is caebrim again."
+  //
+  // ⭐ EVERY OTHER GOD SENDS SOMEBODY THEY CHOSE. Forge's is the only speaker with a
+  // claim on the god she is standing in for: Caebrim is the one who BEGGED ALICE TO
+  // RAISE MILANTROS (docs/56 §0). She asked, Alice spent centuries, the ritual
+  // collapsed, and Caebrim has been under the world ever since. So the voice that
+  // meets the Goat's champion in the dark belongs to the reason the Goat exists.
+  //
+  // ── ⭐ SHE IS NOT HUNTING YOU TO KILL YOU ──────────────────────────────────
+  // Ethan: "She is the one who hunts you in the depth, and the stalker is the closest
+  // form to her." `nightmare_stalker` is RESERVED as her body (docs/57 §2) - so the
+  // thing that follows you down here and the thing that talks to you down here are
+  // THE SAME PERSON, which is the whole reason this pairing works.
+  //
+  // 🔑 But she follows you because you are MILANTROS'S, and that is the closest she
+  // has come to her in centuries. Being pursued by something that is pleased to see
+  // you is worse than being pursued by something that is not. Do not write her as
+  // menace; write her as a want. The menace is free.
+  //
+  // ── ⚠️ THE NAME IS HELD BACK, AND THAT IS A RULE ──────────────────────────
+  // docs/40 §0: a name is the most expensive word in the game and Caebrim is a
+  // "title-in-waiting, not a label to print". So she is THE SHADOW everywhere except
+  // the last line of the last confession stage - exactly the shape Ethan used for
+  // Blade's Speaker, whose three stanzas end "Gregor, I am sorry."
+  // ⚠️ `the Shadow` is MINE. One string to change.
+  //
+  // ⚠️ SCOPED TO FORGE. His earlier "might change all of them" is still OPEN; blade's
+  // Speaker, wall's Doctor, salvage's Keeper and Kayer's own register are untouched.
+  // docs/57 §3.
+  register('forge', {
+    id: 'death_shadow',
+    name: 'the Shadow',
+    colour: '§8',                        // dark grey. The form the depths give her.
+    lines: {
+      // [CLAUDE-DRAFT] shadow/warn_wave
+      warn_wave: [
+        'They are moving. Stand near me if you like. It will not help, but you may.',
+        'Something is coming up. Not mine. I do not command anything down here.',
+        'Listen. There - that. Get your back to a wall.',
+      ],
+      // [CLAUDE-DRAFT] shadow/intro
+      intro: [
+        'I know whose you are. I knew before you were down here.',
+        'You came down. Nobody sent me and I came anyway. Do not read anything into that yet.',
+        'The one you follow cannot reach this far. I can. I am always this far.',
+      ],
+      // [CLAUDE-DRAFT] shadow/common
+      // ⭐ THE REGISTER: pleased, patient, and never once threatening. She has nothing
+      // to gain from you and she is not going anywhere.
+      common: [
+        'Keep going. I am not going to stop you and I am not going to leave.',
+        'You build the way she does. Badly, and then again, and then it works.',
+        'I have been down here a long time. You are the most interesting thing this year.',
+        'Do not look behind you. It is only me, and looking makes it worse for you, not for me.',
+        'She talks to you constantly. I can hear the shape of it from here. I cannot hear the words.',
+        'Rest if you want. I will wait. Waiting is most of what I am.',
+        'You are not afraid of me yet. That is fine. There is time.',
+        'Everything down here used to be somebody. Try not to think about which ones.',
+        'I am closer than I was. I do not do it on purpose.',
+        'Go on. I like watching you decide things.',
+      ],
+      // ⚠️ STILL DEAD ACROSS ALL FIVE SPEAKERS - defined, consumed by nothing. Kept
+      // for parity so whoever wires it does not have to write five pools first. For
+      // HER it is the sharpest of the five: she is the reason the god who cannot
+      // follow you down here exists at all.
+      // [CLAUDE-DRAFT] shadow/abandoned
+      abandoned: [
+        'Your god is not coming down here. Mine did not either.',
+        'She would if she could. That is not a comfort, it is just true.',
+        'Alone, then. I have some experience of it. Sit down.',
+      ],
+      // [CLAUDE-DRAFT] shadow/rare
+      // ⭐ HER rare IS THE OPPOSITE OF KAYER'S. Kayer's rare pool is where she CATCHES
+      // you fishing and shuts it down (docs/53). Caebrim leaks. She has been alone for
+      // centuries and cannot help herself - which is why she gets a confession and her
+      // sister deliberately does not.
+      rare: [
+        'I asked for something once. I got it. That is not the same as it going well.',
+        'She used to call me a name. I am not going to tell you what it was.',
+        'There is another one of me up there somewhere, and a third. We do not speak.',
+        'She does not know I am down here. I would rather she did not find out from you.',
+        'You are carrying something she made. I can feel it from here. It is very loud.',
+      ],
+    },
+    // ═════════════════════════════════════════════════════════════════════════
+    // 🚨 THE CONFESSION. Three staged cutscenes, phase-gated, one per descent.
+    //
+    // ⚠️ THIS IS THE MOST REWRITE-WORTHY THING IN THE REPO. The EVENTS are Ethan's,
+    // verbatim from docs/56 §0 - she begged, Alice did not know how, it took
+    // centuries, Alice made a choice the night before, and the ritual collapsed. The
+    // WORDING is mine and it should not survive contact with him. Blade's equivalent
+    // is his own writing and it is the best text in the game; this is a placeholder
+    // holding the mechanic open, nothing more.
+    //
+    // ⭐ THE SHAPE IS DELIBERATELY BLADE'S: three stanzas, and the name lands as the
+    // last words of the last one. "Gregor, I am sorry." / "Milantros. I am sorry."
+    // ═════════════════════════════════════════════════════════════════════════
+    // [CLAUDE-DRAFT] shadow/confession
+    // 🔴 REWRITTEN after the book dump (docs/56 §0b). The first draft had her as the
+    // one who ASKED for Milantros. She is her MOTHER - she found her standing in a
+    // village that had been burned with a letter D left in the tracks, Momma Pille
+    // insisted on keeping her, and Caebrim raised her and put a silver rifle in her
+    // hands. Stanza 2 is now built on Ethan's own beat, which he wrote for the Ank
+    // book and which is the single best thing either character has:
+    //     "you called me ugly and tripped"
+    confession: [
+      [
+        'You are the first one of hers to come this far down.',
+        'I did not expect that to matter to me. It does.',
+        'Go back up. Not because it is dangerous. Because I would like to be able to look forward to it.',
+      ],
+      [
+        'I found her in a village that had been put to the torch. There was a letter carved in the mud and she was the only thing still standing in it.',
+        'Pille said we were keeping her. I did not argue. It is the one thing I have never once regretted not arguing about.',
+        'She called me Uggo. Tripped straight over her own feet doing it, flat on her face, got up and did it again.',
+        'That is the first thing she ever said to me and I have had four hundred years to think about it.',
+      ],
+      [
+        'So when she died I went to the only person I have ever begged for anything, and I begged.',
+        'It took her centuries. She never once told me it could not be done.',
+        'The night before, she made a choice. I do not know what it cost and she would never have said.',
+        'And it worked. That is the part nobody believes - it WORKED. She woke up new and she looked right at me.',
+        'And then the whole of it came apart, and I watched her go straight up through the ceiling.',
+        '',
+        'She does not remember any of it. She is happy. I have decided that is enough.',
+        '',
+        'Milantros. I am sorry.',
+      ],
+    ],
+  })
+
+  // ═══════════════════════════════════════════════════════════════════════════
 
   function speakerFor(p) {
     try {

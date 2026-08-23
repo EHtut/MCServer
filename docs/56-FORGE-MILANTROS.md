@@ -30,6 +30,109 @@
 
 ---
 
+## 0b. ⭐⭐ THE BOOK DUMP — Ethan, 2026-08-22, verbatim
+
+> **Milantros** — protagonist of Book 3 and one of the series' three "rocks." Two
+> layers: the orphan goat-girl and the merged being she becomes.
+>
+> * **The goat-girl:** curly blonde hair, large outward-curling goat horns (crowned by a
+>   wide-brimmed **cowboy hat**), pale blue eyes, buck teeth, tan skin. **Cheerful,
+>   energetic, loves meat and guns.** Orphaned when her village was razed (an ornate
+>   **"D"** — for **Darc** — left in the tracks); **adopted by [[char-alice]]** (Book 4
+>   epilogue) and raised in Alice's undead camp by **[[char-caebrim]]** (who gives her a
+>   **silver rifle**) and **Momma Pille**. ⭐ The adoption DRAMATIZED (Alice Ch 26
+>   epilogue, per Rehykt): [[char-caebrim]] & [[char-pille]] find young Milantros alone
+>   in the D-razed goat village; Pille insists on keeping her (*"we may be of unlife, but
+>   that doesn't mean we can't nurture life"*); Alice sees her (*"Pretty eyes"*), gives a
+>   small smile, doesn't object → she's in. ⭐ This first-meeting = the exact scene
+>   [[char-caebrim]] recalls in the Ank book (*"you called me ugly and tripped"*) — here
+>   Milantros calls Caebrim **"Uggo,"** trips face-first, name-calls everyone
+>   (**"Short/Ugly/Weird/Smelly"** at [[char-kayer]], **"Strong Man"** at [[char-ank]],
+>   **"Pretty eyes"** at Alice). ⭐ Fun family beat: [[char-ank]] & [[char-kayer]]'s
+>   **marriage** is the "worst-kept secret" — everyone knows except Alice, and they
+>   nervously hide it from her (*"what if she doesn't approve?"*).
+
+---
+
+## 0c. 🔴 WHAT THE DUMP CORRECTED — three pools were already wrong
+
+I had written her voice file an hour before this landed. **Three pools contradicted
+canon**, and one of them contradicted it badly.
+
+| pool | what I wrote | ⚠️ what the dump says |
+|---|---|---|
+| `hold_weapon` | *"I never understood these."* · *"One of those went through me."* | 🔴 **SHE LOVES GUNS.** Caebrim gave her a **silver rifle**. Weapon-averse is the opposite of her. |
+| `hold_food` | chocolate only | **"loves meat"** — meat first, chocolate second |
+| `rare_loc_below` | *"She asked for me… nobody's ever asked for me since"* | 🔴 Caebrim did not *ask for* her. **Caebrim RAISED her.** |
+
+⭐ **And it explains the accent I had been treating as an unexplained choice.** A
+**wide-brimmed cowboy hat** over goat horns, a **silver rifle**, meat, and guns. The
+southern voice is not a flavour note bolted on — it is the whole silhouette, and it has
+been sitting in Ethan's whisper line since 2026-08-05.
+
+---
+
+## 0d. 🔑 THE FAMILY — and it re-writes §4 of `docs/57`
+
+Everyone in the depths is **Alice's found family**, and Milantros is the one who was
+adopted rather than raised from the start:
+
+| | |
+|---|---|
+| **Alice** | adopted her. *"Pretty eyes."* A small smile, no objection, she's in. |
+| **Caebrim** | one of the two who found her — **raised her**, gave her the silver rifle |
+| **Momma Pille** | the one who insisted: *"we may be of unlife, but that doesn't mean we can't nurture life"* |
+| **Kayer** | ⭐ got called **"Short/Ugly/Weird/Smelly"** by a small goat girl on day one |
+| **Ank** | got called **"Strong Man"** — ⭐ and is **married to Kayer**, which everyone knows except Alice |
+
+### 🔴 "Kayer hates Milantros" now has a real cause, and it is not the one I guessed
+
+`docs/57 §4` says the motive is **mine** — jealousy over Alice's attention — and flags it
+as a reading. **The dump replaces it with something better on both counts:**
+
+1. ⭐ **A small child called her Short, Ugly, Weird and Smelly, and then was adopted by
+   her mother.** That is funnier AND crueller than jealousy, and it is Ethan's brand
+   rather than mine — a grudge that is completely real to the person holding it and
+   completely ridiculous to everyone else.
+2. It is still *about Alice*, so the shape I built holds. It is just no longer abstract:
+   **Milantros is her adoptive sister**, and the coldest thing in the world is losing an
+   argument to a nine-year-old who is now a god.
+
+🔑 **And Milantros does not know**, which was already the design (`docs/57 §4`) and is now
+much more likely to be literally true — she name-called *everybody* that day. She has no
+idea one of them kept score.
+
+### ⭐ CAEBRIM IS HER MOTHER, NOT HER PETITIONER — the deep speaker just got much heavier
+
+`deep_speaker.js` registers Caebrim as **Forge's** voice in the dark (`docs/57 §3`), which
+I justified as *"the one who begged Alice to raise her."* **That was the thin version.**
+She found her in a razed village, kept her, raised her in an undead camp, and put a silver
+rifle in her hands.
+
+> *"you called me ugly and tripped"* — Caebrim, recalling their first meeting, in the Ank
+> book.
+
+⭐ **Caebrim's own canon memory of Milantros is that first meeting**, and the champion of
+Milantros walking into her dark is the closest she has come to her since. That beat is
+Ethan's and it belongs in the confession, replacing the wording I drafted.
+
+---
+
+## 0e. ⚠️ Not building on these, but they are now on the table
+
+- **The silver rifle.** TACZ guns are already in the pack and already Salvage's lifeline.
+  A silver rifle as Milantros's `high_gift` is the most obvious unbuilt hook in the repo.
+- **Darc** and the ornate **"D"**. A named antagonist with a calling card, and the reason
+  she was orphaned. Nothing in Veldora uses it.
+- **Momma Pille** — a fourth undead with the single warmest line in the dump.
+- **Ank and Kayer are married.** `docs/53` has Kayer as the one who loves Alice and has
+  "no allies"; a *husband* changes that sentence. ⚠️ **Flagging, not resolving** — the two
+  can coexist (she loves Alice differently) but somebody should say so on purpose.
+- **"The merged being she becomes."** Book 3. Almost certainly not the in-game version,
+  and I am not touching it.
+
+---
+
 ## 1. 🔴 THIS IS A HARDER REPLACEMENT THAN KAYER'S
 
 `docs/22` today:
@@ -82,31 +185,56 @@ poured into. Milantros was an afterthought whose soul went up because a spell br
 
 ---
 
-## 3. ⭐ "The forge has to deal with her wild ideas" IS A MECHANIC
+## 3. 🔴 "WILD IDEAS" ARE VOICE, NOT MECHANIC — corrected 2026-08-22
 
-This is the line that gives her an event shape nobody else has.
+> Ethan: *"wild ideas, these are less real ideas and **just her rambling in your ear**."*
 
-Every other patron's event is *correct on its own terms* — Blade's challenge is a real
-challenge, Salvage's trade is a real trade. **Milantros's ideas are enthusiastic and
-not always good**, because she is a child who is fascinated by machines and does not
-fully understand consequences.
+**I had this wrong and it was the riskiest thing in the design.** I read *"the forge has
+to deal with her wild ideas"* as an event class that is allowed to be WRONG — the gift
+slightly too strong, the contraption that works but not as promised — and then spent a
+section worrying about the thin line between *charming misfire* and *feels broken*.
 
-> | god | what an event is |
-> |---|---|
-> | Blade | a test |
-> | Wall | a smothering |
-> | Salvage | a transaction |
-> | Kayer | an errand |
-> | **Milantros** | ⭐ **a suggestion, offered in good faith, which may be a bad idea** |
+**There is no line, because nothing mechanical is ever wrong.** Her events are all
+straightforwardly good. The "wild ideas" are her TALKING. What the champion deals with is
+a small dead girl narrating his day at him.
 
-**Nothing in the pantheon is currently allowed to be WRONG.** She should be — not
-malicious, never a trap, just *over-ambitious*. The gift that is slightly too powerful
-for where you are. The contraption that works but not the way she promised.
+⭐ **AND THE MECHANISM ALREADY EXISTS.** `idle.js` picks a weighted context every roll —
+`combat` · `near_<god>` · `hold_none` / `hold_item` / `hold_weapon` / `hold_food` ·
+`loc_above` / `loc_below` · `guidance` — and its own comment states the rule that makes
+this work:
 
-⚠️ **The line between "charming misfire" and "feels broken" is thin**, and it is the
-one real risk in her design. A wild idea must always leave the player materially
-better off or exactly neutral — **never worse.** She is not a prank god. Her failures
-should cost her nothing of yours: enthusiasm that overshoots, not damage.
+> *"⚠️ A god with no pool for the chosen context says NOTHING. It does not fall back."*
+
+**So chattiness is not a rate, it is COVERAGE.** Every other god is quiet mostly because
+they have gaps. Measured across all four existing voice files:
+
+| context | blade | wall | salvage | art | **Milantros** |
+|---|:--:|:--:|:--:|:--:|:--:|
+| `guidance` | ✅ | ✅ | — | ✅ | ✅ |
+| `combat` | — | ✅ | ✅ | ✅ | ✅ |
+| `hold_weapon` | — | ✅ | ✅ | — | ✅ |
+| `hold_food` | — | ✅ | ✅ | — | ✅ |
+| `hold_item` | — | — | — | — | ⭐ ✅ |
+| `hold_none` | — | — | — | — | ⭐ ✅ |
+| `loc_above` / `loc_below` | — | ✅ | ✅ | above only | ✅ |
+| `near_<god>` ×4 | — | ✅ | 3 of 4 | 3 of 4 | ✅ all |
+| `rare_` twins | — | 2 | 2 | 1 | ⭐ most |
+
+🔑 **`hold_none` and `hold_item` are defined by NOBODY.** Two of the four hold contexts
+are dead air for the entire pantheon. Milantros filling them makes her, precisely and
+measurably, **the only god who talks to you while you are holding nothing and doing
+nothing.** That is the ruling, implemented, with no new code and no new gate.
+
+⚠️ **AND IT COSTS NOTHING TO GET WRONG.** A rambling pool that misses is a line you
+scroll past. The event class I had designed could have taken something from a player,
+which `docs/00` forbids outright. The ruling removed a whole category of risk.
+
+⚠️ **ONE TENSION TO CONFIRM.** `docs/54 §0` has Ethan's own chart line: *"Forge —
+**Quietest god**, smartest champion."* A god who rambles constantly is not obviously the
+quietest one. **My reading:** *quietest* means least **consequential** — she never
+demands, never summons, never orders a death, and has the fewest events of anyone. Her
+word count is the highest in the pantheon and her demand count is zero. Those are
+different axes and both can be true. **But it is a reading.**
 
 ---
 
@@ -150,13 +278,38 @@ asking because it did not occur to her to ask. Same mechanic, opposite meaning.
   **Did the collapsed ritual cause her banishment?** That is the obvious inference and I
   am not making it. *(Her pronoun was `he` here until Ethan corrected it 2026-08-22 —
   it was my inference, not his. `docs/57`.)*
-- **Does she know what she is?** She *watched* the ritual fail and her soul leave. So
-  she knows something went wrong — but whether she understands she is dead, or a god,
-  or an accident, changes her voice completely.
-- **The accent.** Southern is a strong choice and it is the only phonetic direction any
-  god has been given. Whether that means dropped g's and contractions in the written
-  line, or just word choice and rhythm, is a writing ruling — and it decides whether
-  her pools are readable at a glance.
+- ✅ **ANSWERED — she knows.** Ethan, 2026-08-22: *"She knows, she's been dead for a very
+  long time."*
+
+  ⭐ **This is the thing that stops her being a cartoon, and it is bigger than it looks.**
+  Not a child who does not understand what happened to her — a child who understands
+  perfectly and stopped finding it interesting several centuries ago. She is not in
+  denial and she is not grieving. **She is the only god in the pantheon who is at peace**,
+  and she got there by having had a very long time.
+
+  🔑 **That is the real anti-Kayer axis**, deeper than warm/cold. Kayer is the most
+  powerful thing Alice ever made and she is *bitter* — she has everything except the one
+  person's attention she wants. Milantros was an accident, died, knows it, and is fine.
+  **The one who was made carefully is the unhappy one.**
+
+  ⚠️ Consequence for whoever writes her: **her death is not a secret and not a wound.**
+  She can mention it in an ambient line the way you would mention the weather. Nothing
+  about it should read as a reveal, and no pool should treat it as one.
+- ✅ **ANSWERED, BY ETHAN, IN AUGUST.** The accent is not new. `stalker.js` has carried
+  his own whisper lines since 2026-08-05:
+
+  > *"The goat accidentally spills **his** entire bag, you try not to look"*
+  > *"The goat makes a goat noise"*
+  > *"The goat whispers in a **distinctly southern accent**. You don't get the reference"*
+
+  ⭐ **The goat, the accent, the clumsiness and a book reference — all four, three months
+  before the brief.** Milantros is not a retcon of these lines; the brief is what they
+  were always describing. One word changes: `his` → `her`.
+
+  🔑 **And that third line settles the writing question.** It *tells* the player about the
+  accent instead of performing it. So: **rhythm and word choice, no phonetic spelling** —
+  no dropped g's, no eye-dialect. His own line already established that the game states
+  what she sounds like, which is also the option that keeps her pools readable.
 
 ---
 

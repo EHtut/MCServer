@@ -118,7 +118,45 @@ Art **strongest god, strongest champion**. Three sources now disagree with this 
 
 ---
 
-## 3. 🔴 THE OPEN ONE — Caebrim as the *only* depth speaker
+## 3. ✅ RULED — Caebrim is FORGE's depth speaker
+
+> Ethan, 2026-08-22, asked directly whether Milantros gets a stand-in in the dark:
+> **"Her deep speaker is caebrim again."**
+
+**Built. She is `forge`'s entry in `deep_speaker.js`** — the first time Caebrim has a
+voice instead of a mention.
+
+⭐ **AND THE PAIRING IS THE POINT.** Caebrim is the one who **begged Alice to raise
+Milantros**. So the voice that meets the Goat's champion in the dark belongs to the
+person who *caused the Goat to exist* — and who has been banished under the world ever
+since. Every other god sends a stand-in they chose. Forge's is the only one with a claim
+on the god she is standing in for.
+
+🔑 **It also gives §2's body a voice.** The shadow stalker hunts you down there; Caebrim
+talks to you down there; **they are the same person.** Neither half works nearly as well
+alone.
+
+### ⚠️ SCOPED TO FORGE — I did not extrapolate
+
+His earlier message was *"the depth speaker I might change to **all of them** might just
+be Caebrim"*, and this ruling answers a question I asked about **Forge specifically**.
+`again` reads as *"yes, Caebrim"* rather than *"and also everywhere else"*.
+
+**So Blade's Speaker, Wall's Doctor, Salvage's Keeper and Kayer's own register are all
+untouched.** Replacing them is destructive — Blade's Speaker confesses about **Gregor**,
+and those lines are his patron's grief, not hers — and `docs/40 §4` says that decision
+gets made before either is written, not after. **Still open, one sentence from being
+settled.**
+
+⚠️ **If it does go universal, `docs/53`'s constraint has to be answered first:** *"the
+moment Caebrim or Ank speaks, 'unwilling to speak to her' stops being true."* Forge alone
+survives that cleanly — one champion, in one place, is not a conversation with Kayer. Four
+paths is a career.
+
+---
+
+## 3b. The original argument *(kept — it is the reasoning, not the ruling)*
+
 
 > *"The depth speaker I might change to all of them might just be Caebrim."*
 
@@ -191,9 +229,28 @@ Four characters, and every edge is now drawn:
 disagree about *method*. This is a grudge about **attention** — and it points at the two
 gods Ethan named the strongest.
 
-⚠️ **THE MOTIVE IS MINE.** Jealousy over Alice is the obvious reading, and I am flagging
-it as a reading. He said four words. It could as easily be contempt for a thing made by
-accident, or blame for the ritual that cost Caebrim.
+🔴 **THE MOTIVE WAS MINE FOR ABOUT AN HOUR.** I guessed jealousy over Alice and flagged
+it as a guess. Ethan's book dump (`docs/56 §0b`) replaced it with something better on
+both counts:
+
+> Milantros name-called everyone the day they met her — **"Short/Ugly/Weird/Smelly" at
+> Kayer**, "Strong Man" at Ank, "Pretty eyes" at Alice. And then Alice adopted her.
+
+⭐ **A small goat girl called her short, ugly, weird and smelly, and was then taken in by
+Kayer's own mother.** It is still about Alice, so the shape holds — but it is funnier and
+crueller than jealousy, and it is his voice rather than mine: a grudge completely real to
+the person holding it and completely ridiculous to everybody else. **The coldest thing in
+the world lost an argument to a nine-year-old who is now a god.**
+
+🔑 **And the calibration in `forge_voice.js` `near_art` depends on this:** Milantros knows
+about the NICKNAME — she still calls her Short — and does **not** know it is a grudge. She
+thinks it is a running family joke. *"It's our little thing."* It is not. **A later editor
+must not close that gap by having her notice.**
+
+⚠️ Also from the dump and NOT resolved: **Ank and Kayer are married** ("the worst-kept
+secret", hidden from Alice). `docs/53` says Kayer has *no allies* and is the only one who
+loves Alice. A husband changes that sentence. The two can coexist — but somebody should
+say so on purpose rather than by omission.
 
 🔑 **Whatever the reason, the shape is fixed and it is very good:** the coldest god in the
 game hates the warmest one, **and the warmest one does not know.** `docs/56 §2` already
