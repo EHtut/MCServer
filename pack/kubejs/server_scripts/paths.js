@@ -715,19 +715,40 @@
       p.tell('§8One walker each, and a path is not something you set down.')
       p.tell('§8Hostile kills pay in your path. Deeper kills pay better.')
 
-      // Notoriety belongs HERE, where players already look - not behind a command
-      // nobody knows exists. Design 18 §3: the number is shown precisely because
-      // it is your reward stat and you should be able to plan against it. The
-      // phase is deliberately NOT named; that stays something you notice.
+      // 🔴 THIS BLOCK LIED THE MOMENT TRUST REPLACED NOTORIETY (docs/63). It called
+      // notoriety "your reward stat" and computed the drop percentage from it - and
+      // both of those moved to trust. Rewritten 2026-08-24.
+      //
+      // ⭐ AND THE RANK IS SHOWN, which is a small departure from ruling 4. Ethan
+      // answered "see above" when asked how trust becomes visible - i.e. the loop is
+      // the display. That is true of the FEELING, but a rank you cannot name is hard
+      // to plan against, and this is exactly the argument Design 18 §3 already made
+      // for showing notoriety. Two lines to delete if he disagrees.
+      //
+      // ⚠️ The percentage is DERIVED from the same constants dropChanceFor uses, not
+      // restated. A display that quotes a hardcoded curve is a banner waiting to lie.
+      if (typeof VELDORA !== 'undefined' && typeof VELDORA.trust === 'function') {
+        try {
+          var rank = VELDORA.trust(srv, p)
+          var rmax = VELDORA.trustMax ? VELDORA.trustMax() : 5
+          var pct = Math.round(dropChanceFor(srv, p) * 1000) / 10
+          p.tell('§8§m                                        ')
+          p.tell('§7Trust §f§l' + rank + '§7/§f' + rmax +
+            ' §8- your kills pay §f' + pct + '%')
+          p.tell('§8Trust is what your god will give you, and only they can raise it.')
+        } catch (e) { }
+      }
+      // Notoriety belongs HERE too, where players already look - but it is a COUNTDOWN
+      // now, not a reward. Design 18 §3's argument still holds: you should be able to
+      // plan against it. The phase is deliberately NOT named; that stays something you
+      // notice rather than read.
       if (typeof VELDORA !== 'undefined' && typeof VELDORA.notoriety === 'function') {
         try {
           var b = VELDORA.notoriety(srv, p)
           if (!b) throw 'unavailable'
-          var pct = Math.round((0.08 + 0.002 * Math.min(b.value, 100)) * 1000) / 10
-          p.tell('§8§m                                        ')
-          p.tell('§7Notoriety §f§l' + b.value + ' §8- your kills pay §f' + pct + '%')
-          p.tell('§8It rises with the levels you hold, and on its own with the days.')
-          p.tell('§8Spending experience is the only thing that lowers it.')
+          p.tell('§7Notice §f§l' + b.value + '§7/100 §8- how close they are to testing you')
+          p.tell('§8It rises with the levels you gain, and on its own with the days.')
+          p.tell('§8It returns to nothing every time they do.')
         } catch (e) { }
       }
       return 1

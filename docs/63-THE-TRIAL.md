@@ -1,8 +1,9 @@
 # 63 — The Trial · trust replaces notoriety
 
-> **STATUS 2026-08-24** — ⭐ **RULED, NOT BUILT.** Ethan's four answers are in §0 and they
-> are decisive. Two problems fall out of them that he has not seen yet (§3, §4); both
-> need a word before code. Nothing here exists.
+> **STATUS 2026-08-24** — ✅ **BUILT AND LIVE.** Ruling B taken on §4. Items 1–5 done,
+> plus `ranks.js` (§6) and Art's Trial. Boot: `handlers: art, blade, salvage`,
+> `[ranks] non-combatant ranks live`, 0 errors, 332/332 harnesses.
+> ⚠️ **Thresholds and TRUST_MAX are first guesses and want play data** — see §8.
 
 ## 0. ⭐ THE RULINGS — Ethan, 2026-08-24
 
@@ -216,3 +217,45 @@ is free — **falling is still the fastest way to level.**
 
 It does not block the skeleton (§5 items 1–5 can be built without touching it) but it
 must be settled before Trials go live, or the first thing a player optimises is dying.
+
+---
+
+## 8. ✅ BUILT — 2026-08-24, solo
+
+| | |
+|---|---|
+| `notoriety.js` | `trust` (0–5, **per path**) + `xpAtLastTrial`; publishes `trust` / `trustScale` / `trustMax` / `awardTrust` / `resetTrialClock`. RATES flipped per **ruling B**. |
+| `power.js` | the four attributes ride `trustScale`. **The curve is untouched** — scale is multiplied back up to `CAP`, so every tuned number keeps its meaning and only the input moved. |
+| `paths.js` | drop chance rides `trustScale`; `/path` shows **Trust n/5** and re-labels notoriety as **Notice** |
+| `harvest.js` | un-gated as **the Trial**; awards a rank on a win, resets the clock **either way**; refuses non-combatant handlers in one visible place |
+| `art_events.js` | 🔴 her Trial, which never existed — the live bug from his own session |
+| **`ranks.js`** | ⭐ NEW — wall on **days survived**, forge on **things made** |
+
+### 🔑 Three things worth knowing about how it was built
+
+**The reset is an offset.** Notoriety is derived, so there was no number to zero, and
+forcing it meant wiping XP — taking something from the player. `xpAtLastTrial` anchors
+the level term instead. **Nothing is taken.**
+
+**Art points, she does not send.** Her whole design is that she cannot touch the world,
+so a Trial that spawns something contradicts her. **The Persecutor was never hers** — she
+is an Oracle with perfect information and a mouth, and she simply mentioned where you
+were. ⚠️ That distinction lives in the *writing*; if an editor writes *"I am sending
+something"*, the character is gone.
+
+**Wall uses a high-water mark, and that was my call.** *"Days survived"* reads two ways: a
+live streak (dying drops you to rank 0, stripping every buff exactly when you are weakest
+— a death spiral) or the best run you have ever managed. **High-water.** She remembers the
+longest you ever stayed alive and asks you to beat it. You are never punished and never
+finished.
+
+### ⚠️ What still wants Ethan
+
+1. **Every threshold is a first guess.** `TRUST_MAX = 5`, wall `1/4/10/20/35` days, forge
+   `50/250/800/2000/5000` made. The two metrics move at wildly different speeds and no
+   amount of arguing settles them — they want one session of play.
+2. **`/path` showing the rank is a small departure from ruling 4** (*"see above"* — the
+   loop is the display). Two lines to delete if he disagrees.
+3. **The `harvest_*` pools are still named for the old system**, and Blade's and
+   Salvage's Trial dialogue still talks about graduation and release rather than rank.
+   That is a writing pass, not a build.

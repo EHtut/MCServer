@@ -247,6 +247,94 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐⭐ HER TRIAL — and the one design problem worth reading before touching it.
+  //
+  // docs/63 §6 makes art a COMBATANT path, so she ranks by Trial like blade and
+  // salvage. But this file's entire premise is that she has FIVE ZEROES on the forced
+  // column because - Ethan, 2026-08-22 - "she's powerful but cannot physically touch
+  // the world, not really." She cannot spawn things. That is not a dial set low.
+  //
+  // 🔑 SO SHE DOES NOT SEND IT. SHE TELLS IT WHERE YOU ARE.
+  //
+  // The Persecutor is not hers and was never hers. It already existed, somewhere, and
+  // she is an Oracle with perfect information and a mouth. Pointing is not touching.
+  // That keeps her constraint completely intact while still producing a fight - and
+  // it is a better version of the Trial than "your god sends a champion", because it
+  // is the only one in the game where the thing hunting you was never anybody's.
+  //
+  // ⚠️ The distinction has to survive in the WRITING or it is just a spawn with a
+  // fancy comment. Every line below is about her having spoken, never about her
+  // having sent. If a future editor writes "I am sending something", that is the
+  // whole character gone.
+  //
+  // ⚠️ ACTOR PROBED LIVE, not read off a lang file: `data get entity
+  // @e[type=born_in_chaos_v1:scarlet_persecutor,limit=1]` parses and answers "No
+  // entity was found", which is a real registered type. The lang-file lesson
+  // (magistuarmory:bronze_ingot) is why this is stated.
+  //
+  // 🚨 NOT nightmare_stalker - that is RESERVED as Caebrim's form (docs/57 §2) and
+  // no path may cast it.
+  var TRIAL_ACTOR = 'born_in_chaos_v1:scarlet_persecutor'
+  var TRIAL_TAG = 'veldora_art_trial'
+  var QQ = String.fromCharCode(39)
+  var TRIAL_COLOUR = '§b§l'      // hers, matching art_voice.js. Pale blue, nothing warm.
+
+  // [CLAUDE-DRAFT] art/trial_scene
+  // Cold, bored, already-seen. She is not threatening you - she is telling you what
+  // is about to happen, which is worse, and she has known for some time.
+  var TRIAL_SCENE = [
+    'Something is coming. I did not send it - I do not send things.',
+    'I simply mentioned where you were, to something that wanted to know.',
+    'I have already watched how this goes. Several times.',
+    'Do not ask me which way it went. Earn it.',
+  ]
+
+  function trialArrive(server, p) {
+    if (!VELDORA.spawner) {
+      console.error(TAG + 'spawner.js missing - her Trial cannot arrive')
+      return false
+    }
+    try {
+      if (VELDORA.ritual && VELDORA.ritual.active(p)) {
+        console.info(TAG + 'Trial held for ' + p.username + ' - already in a scene')
+        return false
+      }
+    } catch (e) { }
+
+    var opened = false
+    if (VELDORA.ritual && typeof VELDORA.ritual.begin === 'function') {
+      opened = VELDORA.ritual.begin(p, { colour: TRIAL_COLOUR, lines: TRIAL_SCENE, options: [] })
+    }
+    // The actor lands AFTER the scene, never during it - the last thing that happens
+    // is her finishing, not something swinging.
+    var after = (opened ? (20 + TRIAL_SCENE.length * 50 + 40) : 0) + 40
+
+    server.scheduleInTicks(after, function () {
+      try {
+        VELDORA.spawner.wave(p, {
+          ids: [TRIAL_ACTOR], count: 1, minDist: 12, maxDist: 20,
+          nbt: '{Tags:["' + TRIAL_TAG + '"],CustomNameVisible:1b,CustomName:' + QQ +
+            '{"text":"The Persecutor","color":"aqua","bold":true}' + QQ + '}',
+        }, function (placed) {
+          // ⚠️ "placed 0" and "could not measure" must not read the same. A Trial that
+          // silently never arrived would leave a player waiting at the threshold with
+          // their clock already reset.
+          if (placed === 0) {
+            console.error(TAG + '!! her Trial actor PLACED NOTHING for ' + p.username +
+              ' - no valid spot. They are owed a Trial and did not get one.')
+          } else {
+            console.info(TAG + 'her Trial arrived for ' + p.username + ' (' + placed + ')')
+          }
+        })
+      } catch (e) { console.error(TAG + 'Trial spawn threw :: ' + e) }
+    })
+    return true
+  }
+
+  function trialWin(server, p) { say(p, 'harvest_won') }
+  function trialLose(server, p) { say(p, 'harvest_lost') }
+
+  // ═══════════════════════════════════════════════════════════════════════════
   ServerEvents.loaded(function (event) {
     if (!GATE) { console.info(TAG + 'the Matriarch is GATED OFF'); return }
     if (!VELDORA.events) { console.error(TAG + 'godevents.js missing'); return }
@@ -281,6 +369,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       cooldown: 3, weight: wAlways(2), tiers: HIGH,
       does: 'SUPPORT (choice) - she asks you to keep a RIVAL alive, for her own reasons',
     })
+
+    // 🔴 SHE HAD NO TRIAL HANDLER UNTIL NOW, AND IT WAS A LIVE BUG. From Ethan's own
+    // session, 2026-08-23: "[harvest] no handler for art - the Harvest fired and
+    // nothing was sent. That is a bug, not a quiet Harvest." He crossed the threshold
+    // and the game did nothing. docs/62 §1.
+    if (VELDORA.harvest) {
+      VELDORA.harvest.register(GOD, {
+        arrive: trialArrive, onWin: trialWin, onLose: trialLose, tag: TRIAL_TAG,
+      })
+    } else console.error(TAG + 'harvest.js missing - her Trial will not arrive')
 
     if (VELDORA.killorder) {
       VELDORA.killorder.register(GOD, {
