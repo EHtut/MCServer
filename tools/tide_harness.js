@@ -123,7 +123,27 @@ function mkP(name) {
     blockPosition: () => ({ x: 0, y: Y, z: 0 }),
     get level() { return SKY === null ? null : { canSeeSky: () => SKY } },
     tell: () => { },
-    persistentData: { getInt: () => 0, putInt: () => { }, getDouble: () => 0, putDouble: () => { }, getBoolean: () => true, getString: () => '', putString: () => { }, contains: () => true },
+    // 🔴 THIS WAS A WRITE-ONLY BLACK HOLE: getInt returned 0 forever, putInt discarded,
+    // and getBoolean returned TRUE UNCONDITIONALLY. Three consequences, all silent:
+    //   · the tide's persistent countdown always read 0, so a tide was always "due" -
+    //     the first-wave test passed for entirely the wrong reason
+    //   · every boolean flag in every file read as already-set
+    //   · lifetime escalation could never advance, so the ramp tested as flat
+    // A stub that cannot remember is a stub that decides what can be tested. Real map.
+    persistentData: (() => {
+      const m = {}
+      return {
+        getInt: (k) => (typeof m[k] === 'number' ? m[k] : 0),
+        putInt: (k, v) => { m[k] = v },
+        getDouble: (k) => (typeof m[k] === 'number' ? m[k] : 0),
+        putDouble: (k, v) => { m[k] = v },
+        getBoolean: (k) => m[k] === true,
+        putBoolean: (k, v) => { m[k] = v },
+        getString: (k) => (typeof m[k] === 'string' ? m[k] : ''),
+        putString: (k, v) => { m[k] = v },
+        contains: (k) => Object.prototype.hasOwnProperty.call(m, k),
+      }
+    })(),
   }
 }
 
@@ -338,28 +358,60 @@ grp('🔴 HARD MODE — the three changes of 2026-08-23')
 
 
 // ═══════════════════════════════════════════════════════════════════════════
-grp('🔴 THE FIRST WAVE — the bug this suite could not see')
+grp('🔴 THE PERSISTENT CLOCK — what the force() tests cannot see')
 {
-  // 🚨 EVERY WAVE TEST ABOVE USES T.force(), WHICH BYPASSES THE TIMER ENTIRELY. So the
-  // suite sat 33/33 green while the first wave took SIX TO ELEVEN MINUTES of unbroken
-  // enclosure - GRACE was written as a floor and used as an offset:
-  //
-  //     st.next = GRACE + nextGap(p)      // 60s PLUS a full 5-10 minute gap
-  //
-  // Ethan found it in play, not here: "apparently the tide never tided", with runs of
-  // 1-2 minutes ending at 0 waves. The fix is a dedicated first-wave window; THIS is
-  // the assertion that would have caught it, and it runs the real clock.
+  // 🚨 EVERY OTHER WAVE TEST USES T.force(), WHICH BYPASSES THE CLOCK ENTIRELY. That is
+  // how the suite sat green through two separate scheduling bugs:
+  //   · GRACE was a floor used as an offset, so the first wave needed 6-11 minutes of
+  //     unbroken enclosure and Ethan reported "the tide never tided"
+  //   · the countdown lived in the run and was wiped on surfacing, which at the new
+  //     1-2 hour cadence would have meant nobody ever saw a tide again
+  // These run the REAL clock.
   const p = fresh(); Y = -20; SKY = false
   ticks(3)                                     // 15s enclosed -> the run begins
   ok('the run started', T.inRun(p), true)
+  ok('a first-time player was SEEDED, not fired at instantly',
+    p.persistentData.getBoolean('veldora_tide_seed'), true)
+
+  const seeded = p.persistentData.getInt('veldora_tide_due')
+  ok('...with a window inside the opening range (2-8 min)',
+    seeded >= 2400 && seeded <= 9600, true)
 
   WAVES = []
-  ticks(5)                                     // 25s in - still inside GRACE
-  ok('🚨 nothing lands inside the grace period', WAVES.length, 0)
+  ticks(5)                                     // 25s - inside GRACE and inside the window
+  ok('🚨 nothing lands while the countdown is still running', WAVES.length, 0)
 
-  // FIRST_MAX is 150s. Sweeps are 5s, so 30 more covers the whole window with room.
-  ticks(35); drain()
-  ok('🚨 the first wave HAS landed within ~2.5 minutes', WAVES.length > 0, true)
+  // FIRST_DUE_MAX is 9600 ticks; sweeps are 100. 100 sweeps clears any roll, so this
+  // is deterministic rather than depending on which window was rolled.
+  ticks(100); drain()
+  ok('🚨 once the countdown elapses, the tide LANDS', WAVES.length > 0, true)
+
+  // ⭐ AND THE NEXT ONE IS AN HOUR OUT, not five minutes. This is the whole ruling.
+  const next = p.persistentData.getInt('veldora_tide_due')
+  ok('...and the next is 1-2 hours of play away', next >= 72000 && next <= 144000, true)
+}
+
+grp('⭐ THE CLOCK RUNS WHEREVER YOU ARE')
+{
+  // "it can happen at any time" — the countdown must not pause because you went up
+  // for supplies, and it must not fire into the sky either. It waits.
+  const p = fresh(); Y = 80; SKY = true       // on the surface, never enclosed
+  ticks(3)
+  ok('no run while under open sky', T.inRun(p), false)
+  const a = p.persistentData.getInt('veldora_tide_due')
+  ticks(20)
+  const b = p.persistentData.getInt('veldora_tide_due')
+  ok('🚨 the countdown ticks down ON THE SURFACE too', b < a, true)
+
+  WAVES = []
+  ticks(120)                                   // let it come fully due up here
+  ok('...but a due tide NEVER lands under open sky', WAVES.length, 0)
+  ok('...and it is still waiting, at zero', p.persistentData.getInt('veldora_tide_due'), 0)
+
+  // Now go under: the tide that has been waiting should arrive.
+  Y = -20; SKY = false
+  ticks(3 + Math.ceil(1200 / 100) + 2); drain()   // enter, clear GRACE, land
+  ok('🚨 going under while DUE brings it immediately', WAVES.length > 0, true)
 }
 
 console.log('\n' + (fail === 0

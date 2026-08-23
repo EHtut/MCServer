@@ -83,8 +83,42 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // under an overhang starts a run, and the tide becomes something that happens TO
   // you rather than something you chose. Leaving is faster than entering on purpose:
   // getting out should feel like getting out.
-  var WAVE_MIN = 6000             // 5 real minutes
-  var WAVE_MAX = 12000            // 10 real minutes
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐⭐ THE TIDE IS A RARE EVENT ON A PERSISTENT CLOCK. Ethan, 2026-08-24:
+  //
+  //     "maybe tides should be on 1-2 hour intervals randomly so you're not constantly
+  //      battered, and it should be a sort of 'it can happen at any time' type of
+  //      thing."
+  //
+  // 🔴 THE CLOCK USED TO LIVE INSIDE THE RUN, AND THAT COULD NOT SURVIVE THIS. The old
+  // countdown ticked only while enclosed and was wiped the moment you surfaced. At
+  // 5-10 minutes that was merely strict; at 1-2 HOURS it would mean nobody ever sees a
+  // tide again, because one trip up for supplies resets it.
+  //
+  // 🔑 SO THE COUNTDOWN IS PERSISTENT AND PER PLAYER, and it runs wherever you are.
+  // When it comes due it does not fire into the sky - it WAITS, and lands the next
+  // time you are enclosed. That is exactly "it can happen at any time": you do not
+  // know when you are due, and going underground while you are is how you find out.
+  //
+  // ⚠️ COUNTED IN PLAYED TICKS, NOT WORLD TIME. It only decrements in the sweep and
+  // the sweep only sees online players, so logging off never brings a tide closer.
+  // Same reasoning as ranks.js's boredom, same free implementation - and it sidesteps
+  // finding K9 entirely, because nothing here reads a clock that can run backwards.
+  var TIDE_MIN = 72000            // 1 real hour of play
+  var TIDE_MAX = 144000           // 2 real hours of play
+
+  // ⭐ THE FIRST ONE COMES SOONER, or the mechanic is folklore to a new champion.
+  var FIRST_DUE_MIN = 2400        // 2 minutes
+  var FIRST_DUE_MAX = 9600        // 8 minutes
+
+  var K_DUE = 'veldora_tide_due'      // played ticks until the next tide
+  var K_SEEDED = 'veldora_tide_seed'  // has this player been given a first window
+  var K_LIFETIME = 'veldora_tide_n'   // tides survived ever - drives escalation
+
+  // ⚠️ RETIRED, KEPT ONLY FOR /tide force. The old per-run cadence; nothing schedules
+  // with it any more.
+  var WAVE_MIN = 6000
+  var WAVE_MAX = 12000
   var SPAWN_WINDOW = 600          // 30s of arrivals, per Ethan
   var SPAWN_BATCHES = 6           // ...delivered in this many pulses, 5s apart
 
@@ -307,8 +341,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var ids = rosterFor(y)
     st.waves++
 
+    // ⭐⭐ ESCALATION IS LIFETIME NOW, AND IT HAD TO BE. The ramp was written when
+    // waves came every 5-10 minutes and one descent saw four of them. At 1-2 hour
+    // spacing almost nobody sees two in a session, so a per-run counter would have
+    // pinned EVERY tide at wave 1 - 24 mobs, permanently, escalation quietly dead.
+    //
+    // 🔑 Keyed to tides SURVIVED instead, so your fifth ever is worse than your first.
+    // That is what the ramp was always for; it was measuring the wrong span.
+    var lifetime = 0
+    try { lifetime = p.persistentData.getInt(K_LIFETIME) || 0 } catch (e) { }
+    try { p.persistentData.putInt(K_LIFETIME, lifetime + 1) } catch (e) { }
+
     var per = Math.min(MAX_PER_BATCH,
-      Math.max(1, Math.round(BASE_PER_BATCH + GROWTH * (st.waves - 1))))
+      Math.max(1, Math.round(BASE_PER_BATCH + GROWTH * lifetime)))
 
     // 🔑 STAMP THE WINDOW BEFORE ANY PULSE FIRES. This is what the leave-check
     // reads, so it has to be true from the instant the herald sounds - otherwise
@@ -388,8 +433,24 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
             } else if (VELDORA.spawner) {
               // Tagged so the census above can find them, and so anything later can
               // tell a tide corpse from an ordinary one.
+              // 🔴 CLOSE, BEHIND, AND PROVABLY REACHABLE. Ethan from play, 2026-08-24:
+              // "liam is still not saying that he's seeing any of them. they either
+              // need to pathfind directly to the player or spawn directly behind them
+              // close enough."
+              //
+              // The wave had been placing into whatever air it could find at 8-16
+              // blocks, which underground is usually a SEALED POCKET IN ANOTHER CAVE -
+              // spawned fine, walled in, never seen. `reachable` samples the straight
+              // line and rejects anything it cannot reach; `behind` puts them at his
+              // back so the wave is something he turns around into rather than
+              // something he walks toward.
+              //
+              // ⚠️ TIGHT RING ON PURPOSE. 5-11 blocks is close enough to be in the
+              // same corridor and far enough not to materialise on top of him.
               VELDORA.spawner.wave(p, {
-                ids: ids, count: per, nbt: '{Tags:["' + TIDE_TAG + '"]}',
+                ids: ids, count: per, minDist: 5, maxDist: 11,
+                behind: true, reachable: true,
+                nbt: '{Tags:["' + TIDE_TAG + '"]}',
               })
             }
           } catch (e) { console.warn(TAG + 'pulse threw :: ' + e) }
@@ -412,6 +473,30 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         var enc = enclosed(p)
         if (enc === null) continue          // cannot read sky: do nothing, ever
 
+        // ⭐ THE CLOCK RUNS WHEREVER THEY ARE. Above ground, below it, mid-fight - the
+        // countdown does not care. Only the LANDING cares about enclosure.
+        var due = 0
+        var seeded = false
+        try {
+          due = p.persistentData.getInt(K_DUE) || 0
+          seeded = !!p.persistentData.getBoolean(K_SEEDED)
+        } catch (e) { }
+        if (!seeded) {
+          // First sight: give them the short opening window rather than firing at
+          // once. A tide in the first minute of a first descent reads as a bug.
+          due = FIRST_DUE_MIN + Math.floor(Math.random() * (FIRST_DUE_MAX - FIRST_DUE_MIN + 1))
+          try {
+            p.persistentData.putBoolean(K_SEEDED, true)
+            p.persistentData.putInt(K_DUE, due)
+          } catch (e) { }
+          console.info(TAG + p.username + ' seeded - first tide in ~' +
+            Math.round(due / 1200) + ' min of play')
+        } else if (due > 0) {
+          due -= SWEEP
+          if (due < 0) due = 0
+          try { p.persistentData.putInt(K_DUE, due) } catch (e) { }
+        }
+
         if (!st.active) {
           st.out = 0
           st.in = enc ? st.in + SWEEP : 0
@@ -419,11 +504,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
             st.active = true
             st.age = 0
             st.waves = 0
-            // First wave uses FIRST_*, not nextGap - see the note on GRACE. artPull
-            // still applies, because the Matriarch draws the tide to her champion
-            // from the moment they go under, not only once it is rolling.
-            st.next = Math.max(GRACE, firstGap(p))
-            console.info(TAG + p.username + ' has gone under - the tide begins')
+            // GRACE is the in-run FLOOR only. What actually schedules a tide is the
+            // persistent countdown above.
+            st.next = GRACE
+            console.info(TAG + p.username + ' has gone under' + (due <= 0
+              ? ' - AND A TIDE IS DUE' : ' - next tide in ~' + Math.round(due / 1200) + ' min'))
           }
           continue
         }
@@ -467,10 +552,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         }
         st.out = 0
 
-        st.next -= SWEEP
-        if (st.next <= 0) {
+        // ⭐ TWO GATES, AND THEY MEAN DIFFERENT THINGS. `st.next` is the in-run floor
+        // (GRACE) so a wave never lands the instant you step through a doorway.
+        // `due` is the persistent countdown and it is what actually SCHEDULES a tide.
+        // A tide that came due while you were on the surface has been WAITING, and it
+        // lands as soon as both are satisfied.
+        if (st.next > 0) st.next -= SWEEP
+        if (st.next <= 0 && due <= 0) {
           sendWave(p, st)
-          st.next = nextGap(p)
+          var nxt = TIDE_MIN + Math.floor(Math.random() * (TIDE_MAX - TIDE_MIN + 1))
+          var pull = artPull(p)
+          if (pull < 1) nxt = Math.max(SWEEP, Math.round(nxt * pull))
+          try { p.persistentData.putInt(K_DUE, nxt) } catch (e) { }
+          console.info(TAG + p.username + ' - next tide in ~' +
+            Math.round(nxt / 1200) + ' min of play' +
+            (pull < 1 ? ' (drawn in by the Matriarch)' : ''))
         }
       }
     } catch (e) { console.warn(TAG + 'sweep threw :: ' + e) }
@@ -563,10 +659,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         Math.round(LEAVE_TICKS / 20) + 's after surfacing OR on death - but NOT while ' +
         'a wave is still arriving. Running for the surface RELOCATES the wave, it does ' +
         'not cancel it.')
-      console.info(TAG + 'first wave ' + Math.round(FIRST_MIN / 20) + '-' +
-        Math.round(FIRST_MAX / 20) + 's after going under; then waves every ' +
-        Math.round(WAVE_MIN / 1200) + '-' +
-        Math.round(WAVE_MAX / 1200) + ' min, first no sooner than ' +
+      console.info(TAG + 'tides come every ' + Math.round(TIDE_MIN / 1200) + '-' +
+        Math.round(TIDE_MAX / 1200) + ' MINUTES OF PLAY on a persistent per-player ' +
+        'clock - it runs wherever you are and WAITS if you are on the surface when it ' +
+        'comes due. First ever is sooner (' + Math.round(FIRST_DUE_MIN / 1200) + '-' +
+        Math.round(FIRST_DUE_MAX / 1200) + ' min). Escalation is by tides SURVIVED, ' +
+        'not per run. In-run floor is ' +
         Math.round(GRACE / 1200) + ' min in. Each is ' +
         Math.round(SPAWN_WINDOW / 20) + 's of ARRIVALS at range in ' + SPAWN_BATCHES +
         ' pulses - they walk in, they are never dropped on you.')

@@ -137,7 +137,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   // ── the wave ──────────────────────────────────────────────────────────────
-  // opts: { ids: [..], count: n, minDist, maxDist, nbt }
+  // opts: { ids: [..], count: n, minDist, maxDist, nbt, behind, reachable }
+  //   behind     bias the ring to the player's REAR arc (+-70 degrees)
+  //   reachable  require a clear line from the spot to the player - the fix for
+  //              mobs spawning into sealed pockets in a different cave. 2026-08-24.
   //   nbt  an NBT string appended to the summon, e.g. '{Tags:["veldora_hollow"]}'.
   //        Hollow Victory tags its wave so EntityEvents.drops can recognise it -
   //        a mob you cannot tell apart from a natural one cannot be given special
@@ -186,7 +189,57 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // A mob needs two open blocks and something to stand on. Returns absolute coords
   // or null - null means "did not find one", never "could not look", because the
   // caller treats those the same way (fall back) but the LOG must not.
-  function findSpot(player, lo, hi) {
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔴🔴 THE BUG THIS SOLVES: MOBS SPAWNED CORRECTLY AND WERE WALLED IN.
+  //
+  // Ethan, 2026-08-24, from play: "liam is still not saying that he's seeing any of
+  // them. they either need to pathfind directly to the player or spawn directly behind
+  // them close enough."
+  //
+  // findSpot() below asks three questions - air here, headroom above, floor below -
+  // and every one of them is about whether a mob can STAND there. None of them asks
+  // whether the spot is connected to the player. Underground at 8-22 blocks almost
+  // everything is solid stone, so the only candidates that pass are AIR POCKETS, and
+  // an air pocket that far away is overwhelmingly a DIFFERENT CAVE. The tide was
+  // placing its whole wave into sealed rooms and reporting success.
+  //
+  // ⭐ SO THE TEST IS A CLEAR LINE, NOT A CLOSER RING. Distance alone does not fix it -
+  // 5 blocks through a wall is still through a wall. Sampling the straight line
+  // between the spot and the player and requiring every step to be open is a cheap,
+  // direct answer to "is this the same air the player is standing in", and it costs a
+  // handful of block reads rather than a pathfinder.
+  //
+  // ⚠️ IT IS A LINE, NOT A PATH. A mob can still be separated by a one-block lip that
+  // the line clears. That is fine and deliberate: this is a filter that removes the
+  // catastrophic case (sealed room) without pretending to be navigation.
+  var LINE_STEPS = 10             // samples between the spot and the player
+
+  function openLine(level, ax, ay, az, bx, by, bz) {
+    for (var i = 1; i < LINE_STEPS; i++) {
+      var t = i / LINE_STEPS
+      var x = Math.round(ax + (bx - ax) * t)
+      var y = Math.round(ay + (by - ay) * t)
+      var z = Math.round(az + (bz - az) * t)
+      // ⚠️ null means "could not read", and that must NOT pass as open - a build with
+      // no block reads should fall back to the blind path, not spawn into rock and
+      // call it verified.
+      if (openAt(level, x, y, z) !== true) return false
+    }
+    return true
+  }
+
+  // ⭐ THE REAR ARC. His second instruction - "spawn directly behind them" - and it is
+  // the difference between a wave you turn to face and a wave that is simply there.
+  // Yaw is degrees, 0 = south (+z), and Minecraft yaw increases clockwise.
+  function facingOf(player) {
+    try {
+      var y = player.yaw
+      if (typeof y !== 'number' || !isFinite(y)) return null
+      return y
+    } catch (e) { return null }
+  }
+
+  function findSpot(player, lo, hi, opts) {
     var level = null, px = 0, py = 0, pz = 0
     try {
       level = player.level
@@ -205,8 +258,34 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       return null
     }
 
+    var behind = !!(opts && opts.behind)
+    var needLine = !!(opts && opts.reachable)
+    var yaw = behind ? facingOf(player) : null
+
     for (var i = 0; i < FIND_TRIES; i++) {
-      var angle = Math.random() * Math.PI * 2
+      var angle
+      if (behind && yaw !== null) {
+        // Rear arc: the direction they are FACING is (-sin(yaw), cos(yaw)) in world
+        // terms, so behind is the opposite, spread +-70 degrees so it is not a
+        // single predictable point.
+        var facing = (yaw + 180) * Math.PI / 180
+        angle = facing + (Math.random() - 0.5) * (140 * Math.PI / 180)
+        // convert MC yaw-space to the cos/sin the loop below uses
+        var bx = -Math.sin(angle), bz = Math.cos(angle)
+        var d0 = lo + Math.random() * (hi - lo)
+        var x0 = px + Math.round(bx * d0)
+        var z0 = pz + Math.round(bz * d0)
+        for (var k = 0; k < Y_LADDER.length; k++) {
+          var y0 = py + Y_LADDER[k]
+          if (openAt(level, x0, y0, z0) !== true) continue
+          if (openAt(level, x0, y0 + 1, z0) !== true) continue
+          if (openAt(level, x0, y0 - 1, z0) !== false) continue
+          if (needLine && !openLine(level, x0, y0, z0, px, py, pz)) continue
+          return { x: x0 + 0.5, y: y0, z: z0 + 0.5 }
+        }
+        continue
+      }
+      angle = Math.random() * Math.PI * 2
       var dist = lo + Math.random() * (hi - lo)
       var x = px + Math.round(Math.cos(angle) * dist)
       var z = pz + Math.round(Math.sin(angle) * dist)
@@ -215,6 +294,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         if (openAt(level, x, y, z) !== true) continue
         if (openAt(level, x, y + 1, z) !== true) continue    // headroom
         if (openAt(level, x, y - 1, z) !== false) continue   // a floor to stand on
+        // 🚨 THE CHECK THAT WAS MISSING. Without it a "valid" spot may be a sealed
+        // pocket in another cave, which is what the tide had been doing all along.
+        if (needLine && !openLine(level, x, y, z, px, py, pz)) continue
         return { x: x + 0.5, y: y, z: z + 0.5 }
       }
     }
@@ -270,7 +352,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var blind = 0
     for (var k = 0; k < count; k++) {
       var id = ids[Math.floor(Math.random() * ids.length)]
-      var spot = findSpot(player, lo, hi)
+      // ⭐ Options ride through from the caller so the TIDE can demand a reachable
+      // rear-arc spot while ordinary waves keep the old behaviour. Opt-in, so nothing
+      // that worked before changes.
+      var spot = findSpot(player, lo, hi, { behind: !!opts.behind, reachable: !!opts.reachable })
       try {
         // ⚠️ NOT createEntity().spawn() - see the header. And the return value is
         // deliberately ignored: E0 P12 proved it is undefined either way, so the
