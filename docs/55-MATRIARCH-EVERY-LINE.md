@@ -1,298 +1,350 @@
-# THE MATRIARCH — every line she has *(DRAFT, 2026-08-22)*
+# THE MATRIARCH — every line she has *(DRAFT 2, 2026-08-22)*
 
 **Mess with it and hand it back.** Edit in place, delete what you dislike, renumber
-freely — the numbering is only for reading, nothing depends on it. I rebuild
-`art_voice.js` from whatever comes back.
+freely. I rebuild `art_voice.js` and her `deep_speaker.js` entry from whatever comes
+back.
 
-⚠️ **NONE OF THIS IS IN THE GAME YET.** `art_voice.js` does not exist and her path is
-`CLOSED`. Unlike `docs/45`, this is not generated from source — it is a draft waiting
-on your pass. Every pool here is `[CLAUDE-DRAFT]` and appears in `docs/51`.
+⚠️ **NONE OF THIS IS IN THE GAME.** `art_voice.js` does not exist, her path is
+`CLOSED`, and unlike `docs/45` this is **not generated from source**. It enters
+`docs/51`'s refresh register when it lands in code, not before.
 
 > ### Her thesis, so you can write against it
-> **She cannot touch the world, so she must be loved enough to be obeyed.** Everything
-> is a favour asked, never an order given — she gets compliance by making it feel like
-> your idea, and her warmth is the instrument. *"You don't answer to me. Just this
-> once, would you pretend that you did?"*
+> **She cannot touch the world, so you are the only hands she has — and she resents
+> needing them.** Cold on the surface, where she is performing being a god. Openly
+> irritated underground, where she has had to come herself and can no longer pretend.
 >
-> And underneath: **every cruelty is in Alice's name**, which is never stated, only
-> leaked. Character brief in `docs/53`; her chart and voice rules in `docs/54`.
+> *"I would do this myself if I had hands. I don't. That's why you're here, and why
+> I'm irritated about it."*
 
-> 🔴 marks something I think fights that thesis · ⭐ marks something that nails it
-> · ✏️ marks something I changed from the draft, and why
-
----
-
-## ✏️ WHAT I CHANGED BEFORE HANDING IT OVER
-
-1. 🚨 **`near_salvage` and `demand_salvage` had Salvage as MALE** — *"it's made him
-   very lonely"*, *"tell your honest god I borrowed his champion"*. She is **the
-   Hound / the Wolf, she/her** (`docs/44`). Six pronouns corrected. Worth flagging
-   loudly because it is the exact class of error a fluent-sounding draft hides best:
-   nothing about those lines reads as wrong until you know the character.
-2. **`low_silence` line 1 was literally `...`** — a non-line. Replaced.
-3. ⚠️ **`rare_loc_below` invents a gender for Ank** (*"a sister who thinks I chose
-   wrong"*). You have only ever given the names. Kept because it reads well, flagged
-   because it silently establishes canon — **say if Ank should not be a sister.**
-4. ⚠️ **`cut_down` 2 uses "the strongest dog wears the shortest leash"** — good line,
-   but *dog* is Salvage's animal. Possible collision.
+> 🔴 fights the brief · ⭐ nails it · ⚠️ invents canon you did not give me
 
 ---
 
-# 1. THE IDLE VOICE
+## ⚠️ FOUR THINGS TO RULE ON
+
+**1. 🔴 `deep_rare` 2 and 4 STATE THE SECRET OUTRIGHT.** *"Everyone thinks I oppose
+her… I don't"* and *"She made me what I am."* `docs/53` says the devotion is never
+stated, only leaked — **but you also said the deep is where the mask comes off**, so
+this may be exactly where it belongs. It cannot be both. **My read: keep one, cut the
+other.** The secret can only be spent once, and spending it twice in the same pool
+makes the first time cheap.
+
+**2. ⚠️ `rare_loc_above` 3 invents how she died** — *"a winter that I did not survive
+on purpose."* That reads as suicide. You gave me "ice witch in life, then ascension"
+and nothing more. Strong line; large unrequested addition.
+
+**3. ⚠️ `deep_abandoned` 1 — *"Your god isn't coming. Mine barely does."*** She **is**
+a god, so "mine" is confusing on first read. If it means **Alice**, it is one of the
+best leaks in the document. If it was an accident, it is a bug wearing a good line.
+
+**4. 🔴 `cut_down` has no warning pool.** `docs/53 §2` says a player killed for playing
+well, with no tell, will call it a bug. These lines are the *execution*. **The approach
+still needs its own pool** — something that fires as you near the line, so the dread
+has somewhere to live.
+
+---
+
+# 1. SURFACE — THE COLD
 
 ### `guidance` — 8 lines
-*idle — her standing advice. ⭐ Note every one of them points AWAY from here.*
+*idle. ⭐ Every one points AWAY from her — she is the errand god.*
 
 ```
-1. Source doesn't gather itself. Somewhere far from here there's a jar with your name on it, waiting to be filled.
-2. Have you tried binding a glyph you don't understand yet? I find the ones that frighten you teach the fastest.
-3. I noticed the essences downriver. You noticed them too, I'd wager. Worth a look, don't you think?
-4. A ritual needs a circle and a reason. You have neither yet. I could imagine you finding both.
-5. Strength that stays home goes soft. I picture you walking until your boots disagree with you, and further still.
-6. Somewhere east, someone left a warren of drakes unguarded. I only mention it because you'd know exactly what to do.
-7. You could learn stasis, if you wanted. Wanting is the part I can't do for you.
-8. The world is very large, and you have seen so little of it. That seems, to me, like a problem.
+1. Source pools do not fill themselves. Go dig some.
+2. You will not find glyphs standing here. Walk.
+3. Essence is scattered. So is your attention. Fix one of those.
+4. A ritual needs a circle. A circle needs work. Go do it.
+5. There is nothing left to learn from me today. Leave.
+6. Archwood does not grow near me. That should tell you something.
+7. Every apprentice thinks the answer is closer than it is. It is not.
+8. Go further out. The easy sources are already spent.
 ```
-🔴 *6 mentions drakes — that is Ice and Fire, not Ars Nouveau. Fine if deliberate.*
 
 ### `low_silence` — 4 lines
-*she has nothing to say, early*
+*idle, early*
 
 ```
-1. Nothing for you today. It happens.
-2. Nothing today.
-3. I'm watching. That's all, for now.
-4. Quiet, for once.
+1. Nothing.
+2. I have nothing for you yet. Come back when that changes.
+3. You haven't done enough to warrant words.
+4. Speak to someone who cares what you did today. Not me.
 ```
 
 ### `high_silence` — 4 lines
-*⭐ she has nothing to say, late — silence as surveillance, which is `docs/53 §4` exactly*
+*idle, late. ⭐ Silence as surveillance — `docs/53 §4` exactly.*
 
 ```
-1. I'm still here. I'm always still here.
-2. No words today. Just eyes.
-3. I see you. That's enough said.
-4. Some days I say nothing on purpose. Notice that, if nothing else.
+1. I'm watching. That's all you get.
+2. Nothing to say. Everything to see.
+3. Silence is not absence. Keep that in mind.
+4. I don't need to speak to know what you did.
 ```
 
 ### `combat` — 5 lines
-*idle, while you are fighting*
+*while you fight*
 
 ```
-1. Good. Hurt it before it decides to hurt you first.
-2. Not elegant. It's working.
-3. I do enjoy watching you decide who lives.
-4. Careful. I'd rather not replace you today.
-5. Finish it. I don't like loose ends left breathing.
+1. Don't die. It's inconvenient for me.
+2. Finish it. Now.
+3. That opening was obvious. Take it before it isn't.
+4. You're slower than the last one. He also died.
+5. Efficient. Barely.
 ```
-⭐ *4 is the leash in one sentence.*
+⭐ *4 is the coldest line in the document and does two jobs — an insult, and the
+information that there were others.*
 
 ### `returned` — 4 lines
-*idle, when you come back after being away*
+*you come back after being away*
 
 ```
-1. You came back. I confess, I wondered.
-2. Away so long. I counted the days, in a manner of speaking.
-3. Welcome back. Nothing moved while you were gone. I made certain of it.
-4. There you are. I'd begun to think elsewhere had kept you.
+1. You went somewhere. Nothing here noticed.
+2. Back. Fine.
+3. I didn't wonder where you went. Don't mistake this for that.
+4. Time passed. You're still adequate. Barely.
 ```
+⭐ *3 is her denying an affection nobody accused her of.*
 
 ### `loc_above` — 5 lines
-*idle, on the surface*
+*idle, surface*
 
 ```
-1. Sunlight. I remember it fondly, the way you remember a room you're no longer allowed in.
-2. The sky doesn't ask for anything. Neither do I, mostly.
-3. There's more world than the part you keep returning to. I notice you rarely walk far enough to find it.
-4. A fine day up here, or so I'm told. I wouldn't know one way or the other.
-5. Everything above ground eventually has to answer for itself. So do you.
-```
-
-### `loc_below` — 5 lines
-*idle, underground*
-
-```
-1. Down here the dark doesn't perform for anyone. I appreciate that about it.
-2. Mind the dark. It's mine, mostly, and it plays favorites.
-3. Stone remembers longer than people do. Worth keeping in mind, while you dig.
-4. Mind how deep you go. Some things down there are older than the gods arguing above them.
-5. I hear better in the dark. You might try it.
+1. Nothing is happening. That is usually preferable.
+2. The sky is doing what it does. So am I.
+3. Stand there if you like. It changes nothing.
+4. This place is quiet. I prefer it that way.
+5. I have no orders for you. Find your own use.
 ```
 
 ### `rare_loc_above` — 4 lines
-*⭐ RARE. Where the living woman leaks — the ice witch, before.*
+*⭐ RARE. The living woman leaks, then she catches herself.*
 
 ```
-1. There was frost like this once, on a window I used to keep. Long before any of this.
-2. I had hands that ached in weather like this, before. I don't remember the aching fondly. Only that it was mine.
-3. Winters were longer where I was born. Or perhaps I was only smaller, and everything was.
-4. Someone used to call me in from the cold. I don't recall the voice anymore. Only that there was one.
+1. Ice used to mean something simple. Cold. Nothing more. I remember when that was true.
+2. I had hands once. Warm ones. I don't discuss the rest.
+3. There was a winter, before all this, that I did not survive on purpose. Forget I said that.
+4. I was a person before I was useful. Both are exhausting, in their own way.
 ```
-
-### `rare_loc_below` — 4 lines
-*⭐ RARE. The devotion, and the siblings. Never explicit.*
-
-```
-1. Somewhere below all of this, I have a brother who won't speak to me. I mention it, and then I don't, usually.
-2. There's a door down there I don't open. Behind it is a sister who thinks I chose wrong. She isn't wrong to think it.
-3. Everything I do, I do for one person. Deny I said that, if you're asked.
-4. Caebrim used to say I loved too specifically for a god. He wasn't wrong. I've never once considered it a flaw.
-```
-🔴 *3 comes closest to stating the secret outright. It never names her, so it holds —
-but it is the line to cut first if she should be more opaque.*
-⚠️ *2 makes Ank a sister. See §✏️3.*
+⭐ *2 is the whole character — "I had hands once" is the limitation and the grief in
+four words.*
+⚠️ *3 invents her death. See ruling 2.*
 
 ---
 
 # 2. WHAT SHE GIVES
 
 ### `low_gift` — 5 lines
-*she gives you something, early — you are a stranger and an untested tool*
+*early, untested*
 
 ```
-1. Small enough not to matter, if it goes missing. It's yours regardless.
-2. You haven't earned much from me yet. Call this a loan against what you will.
-3. I give this to everyone who starts. Most don't finish. Try to be the other kind.
-4. Nothing special. Sharp, though. Sharp is a start.
-5. Here. I do like watching what a stranger does with a first tool.
+1. Take it. Try not to lose it in the first hour.
+2. A starting tool. Everyone gets one. Few keep it long.
+3. This costs me nothing to give. Remember that.
+4. Small hands need small things. Here.
+5. I don't expect this to matter. Take it anyway.
 ```
 
 ### `medium_gift` — 5 lines
 *once you have been useful*
 
 ```
-1. You've been useful. This is what useful looks like, given shape.
-2. I don't hand these out. I'm handing you one.
-3. This took some finding. So did you, if I'm honest.
-4. You've earned the good kind. Don't make me regret the phrase.
-5. Consider it a raise. I notice effort, even from very far away.
+1. You did something correct. This is the reward for that, not for you.
+2. Better work earns better tools. Simple arithmetic.
+3. You've stopped being useless. This reflects that, narrowly.
+4. Consider this a raised ceiling, not a compliment.
+5. Fewer hands could do what you did. Take this and keep doing it.
 ```
+⭐ *1 — "the reward for that, not for you" — is the leash stated as bookkeeping.*
 
 ### `high_gift` — 5 lines
-*⭐ THE DOUBLE MEANING. Affection and appraisal in the same breath — the warmer she is,
-the closer you are to the line.*
+*⭐ highest tier. Appraisal, never affection. The warmer she sounds the closer you are.*
 
 ```
-1. Do you know how rare it is, giving someone everything? I find I don't mind, with you.
-2. This is the last thing I have that's worth giving. I hope that tells you something.
-3. I made certain this one was yours and no one else's. I am careful about who gets to be irreplaceable.
-4. You've become someone I think about between errands. That should worry you, a little.
-5. Take it. You've earned the kind of gift I don't take back.
+1. This is more than I give most. Note the word most.
+2. You are becoming difficult to replace. I am already thinking about that.
+3. Few champions reach this. Fewer enjoy what comes after.
+4. Take it. You've earned the attention, which is worse than earning nothing.
+5. I'm running out of things to withhold from you. That should concern you more than it does.
 ```
-⭐ *4 is the best line in this pool — the warning is inside the compliment.*
+⭐ *2 and 5 are the cut-down warning hiding inside a gift. If ruling 4 goes the other
+way and no separate warning pool is written, these two are carrying it alone.*
 
 ---
 
-# 3. WHAT SHE SAYS ABOUT THE OTHERS
+# 3. THE OTHERS
 
 ### `near_blade` — 3 lines
 
 ```
-1. Blade thinks strength is something you can hand someone. Watch what happens when he tries to take his back.
-2. His champion carries a sword blessed by someone else's conviction. Yours carries its own. I know which I'd wager on.
-3. He confuses loyalty for power and calls it doctrine. Almost sweet, from a distance.
+1. Blade thinks strength has to come from your own arm. Naive, but I understand the appeal.
+2. He'll tell you my gifts make you weaker. He's wrong about most things.
+3. Ask him why he still needs a champion, if his own arm is so sufficient.
 ```
+⭐ *3 is a genuinely good hit on his actual thesis.*
 
 ### `near_wall` — 3 lines
 
 ```
-1. Wall grieves so loudly you'd think grief were a virtue. For her, perhaps it is.
-2. She loves her champion the way you love something you fear will be taken. I understand her better than I'd like to admit.
-3. Careful, near her champion. She bites first and explains never.
+1. Wall will love you the way she loves everything. Completely, and past the point you wanted it.
+2. She grieves everyone before they're gone. Exhausting to watch. Worse to receive.
+3. Don't let her hold on too long. She doesn't know how to stop.
 ```
-⭐ *2 is Kayer accidentally describing herself, which is the best thing she can do
-about anyone.*
 
 ### `near_salvage` — 3 lines
-*✏️ pronouns corrected — Salvage is **she***
 
 ```
-1. Salvage tells everyone they're free to go. I've never understood why anyone would want that said to them.
-2. The only honest one among us. It's made her very lonely, and very rich.
-3. Ask her for a fair price. Don't ask me — I've never once given one.
+1. Salvage will tell you the truth and then let you walk away from it. Unusual, for one of us.
+2. She's the only one who means it when she says you can go.
+3. Trade with her if you must. She won't lie to sweeten it.
 ```
+*(pronouns correct this pass — she/her throughout)*
 
 ---
 
 # 4. TO OTHER GODS' CHAMPIONS
 
-⭐ **Nothing else in the pantheon does this.** She has no authority over these people
-and asks anyway — see `docs/54 §4d`, and note this is the mechanic that unblocks
-`docs/49 §1 B`.
+⭐ **Nothing else in the pantheon does this**, and it is the mechanic that unblocks
+`docs/49 §1 B`. See `docs/54 §4d`.
 
 ### `demand_blade` — 4 lines
 
 ```
-1. Your god won't like this. I'd like you to do it anyway — the ash fields, and whatever still guards them.
-2. I have no claim on you. I'm making one regardless. Would you fetch something, for me?
-3. Blade would call this treason. I'd call it a favor between people who understand each other. Will you?
-4. You don't answer to me. Just this once, would you pretend that you did?
+1. You don't answer to me. Answer anyway. It's faster.
+2. Your god isn't here. I am. Draw your own conclusions.
+3. I don't ask twice. I also don't ask nicely a second time.
+4. Blade's champion, doing Blade's work, standing in front of me. Interesting choices.
 ```
-⭐ *4 is the whole character in eleven words.*
+🔴 *3 is muddled — "don't ask twice" and "don't ask nicely a second time" contradict
+each other. Worth a rewrite.*
 
 ### `demand_wall` — 4 lines
 
 ```
-1. Your goddess grieves beautifully and asks very little of you in return. I'm going to ask for more, if you'll allow it.
-2. She'd flay me for this request, if she could reach me. Bring it to me anyway?
-3. I know you're hers. Could I borrow you, just for an afternoon?
-4. Wall keeps you close and calls it love. Lend yourself to me, and I'll call it business.
+1. You belong to Wall. That's not an argument, it's a fact I'm setting aside.
+2. She isn't watching right now. I am. Use the difference.
+3. I don't need you to be loyal. I need you to be useful for one minute.
+4. Wall's champion. I'll keep this brief, for both our sakes.
 ```
+⭐ *1 — "a fact I'm setting aside" — is exactly how a manipulator with no authority
+proceeds anyway.*
 
 ### `demand_salvage` — 4 lines
-*✏️ pronouns corrected — Salvage is **she***
 
 ```
-1. Your Hound will tell you that you're free to refuse me. She's right. Refuse me anyway, and see what it costs.
-2. Salvage never asks twice. I'm not so restrained. Would you bring me the ledger from the sunken market?
-3. She'd give you a fair price for this errand. I won't. Will you do it regardless?
-4. Tell your honest god I borrowed her champion. Tell her I said thank you — if you feel like lying to her.
+1. Salvage would tell you this is a bad trade. She'd be right. Do it anyway.
+2. You work for the honest one. I'm not going to pretend I am. Do it regardless.
+3. One task. No lie attached, unlike what you're used to.
+4. Salvage's champion. Tell her I said hello. Tell her nothing else.
 ```
+🔴 *3 contradicts itself against Salvage's whole character — SHE is the honest one, so
+"unlike what you're used to" is backwards. Cut or invert.*
 
 ---
 
-# 5. THE END
+# 5. UNDERGROUND — THE MASK OFF
+
+⭐ **She is her own deep speaker** (`docs/53 §3`). Nobody else in the pantheon changes
+register with location.
+
+### `deep_intro` — 3 lines
+*first time this champion is ever this deep. She has had to come herself.*
+
+```
+1. You've gone deep enough that I had to come myself. Don't make a habit of it.
+2. I don't usually come this far down. Consider this a mark against the depth, not a favor to you.
+3. This is what it costs to make me leave the surface. Try to be worth it.
+```
+
+### `deep_common` — 10 lines
+*⭐ the main underground pool. Irritated, impatient, insulting.*
+
+```
+1. Move faster. I have patience. It's thinner than yours.
+2. You're doing that wrong. I'd fix it myself if I could. I can't. That's the whole problem.
+3. Every step down here costs me something to watch. Make it worth the cost.
+4. I don't like it down here. I like waiting for you to finish even less.
+5. You hesitate more in the dark. Noted. Not admired.
+6. This is the part where you usually make a mistake. Go on, then.
+7. I would do this myself if I had hands. I don't. That's why you're here, and why I'm irritated about it.
+8. Slower than last time. Explain that to yourself, not to me.
+9. The dark doesn't frighten me. Watching you fumble in it does something close to that.
+10. Finish. Elsewhere is waiting.
+```
+⭐ *7 is the best line she has. It states her entire limitation AS the reason she is
+annoyed, which is the character in one sentence.*
+⭐ *9 is the only time she admits to feeling anything, and she cannot name it.*
+
+### `deep_abandoned` — 4 lines
+*said to ANOTHER god's champion down here, whose god cannot reach them*
+
+```
+1. Your god isn't coming. Mine barely does, and at least I show up.
+2. Alone down here, are you. Whoever sent you didn't think that far ahead.
+3. I notice who follows their champion into the dark and who doesn't. Yours doesn't.
+4. No one's watching you but me. Make of that what you will. I already have.
+```
+⚠️ *1 — "Mine" is ambiguous. See ruling 3.*
+
+### `deep_rare` — 4 lines
+*⭐ RARE. The devotion, and the siblings. Angrier than sad.*
+
+```
+1. I had siblings once. Caebrim. Ank. I don't say those names on the surface. Down here they slip. Forget you heard them.
+2. Everyone thinks I oppose her. Down here, where no one's listening properly, I'll say only this much: I don't. Repeat it and I'll deny it to your face.
+3. Caebrim and Ank made a choice about her that I never forgave. That's all you get. Don't ask for more.
+4. She made me what I am. I don't say that where it can be used against her. Down here, briefly, it's true. Then it isn't again.
+```
+🔴 *2 and 4 both spend the secret. See ruling 1.*
+⭐ *3 is the better version of the same information — it says the siblings chose
+against Alice and that Kayer never forgave it, which tells you everything without
+telling you anything.*
+
+---
+
+# 6. THE END
 
 ### `cut_down` — 5 lines
-*⭐ **The pool nothing else in the pantheon has.** She has come to kill you personally
-because you became too capable. Not angry. Almost proud.*
+*⭐ **The pool nothing else has.** She has come to kill you because you got too capable.
+Cold, unhurried, almost bored.*
 
 ```
-1. Look at you. You outgrew the hand that fed you, and I don't think I've ever been prouder of anything I've made.
-2. I told you once, the strongest dog wears the shortest leash. I don't think you believed me. I need you to believe me now.
-3. This isn't punishment. This is arithmetic. You became a variable I can no longer solve for, and I have never tolerated those.
-4. I would have given you everything. I think, in the end, I did. That's rather the problem.
-5. Don't be afraid. I only do this to the ones I loved best. Small comfort. It's the only kind I have.
+1. You got too good at this. I don't reward that. I end it.
+2. This was never going to end with you retiring somewhere warm. You knew that. I know you knew that.
+3. You were the closest thing I've had to a hand of my own. That's exactly the problem.
+4. No speech. No last lesson. You already learned the one that mattered: everything I lend, I take back.
+5. Hold still. I've done this before, and it goes faster when you don't fight it.
 ```
-⭐ *3 is the strongest line in the document — it makes the execution administrative,
-which is worse than making it cruel.*
-⚠️ *2 uses "dog", which is Salvage's animal. See §✏️4.*
+⭐ *3 and 4 are the two to keep whatever else changes. 3 makes the killing a
+consequence of intimacy; 4 makes it policy.*
+⭐ *5 — "I've done this before" — retroactively darkens every gift pool above it.*
 
 ### `harvest_won` — 3 lines
 
 ```
-1. You survived my best. I find I have nothing clever left to say about that.
-2. Well. It seems I raised something, rather than merely used it.
-3. Go on, then. You've earned the right to walk away from me, if you ever wanted to.
+1. You passed. I did not expect that, and I don't enjoy being wrong.
+2. That was almost adequate. Almost is new, for you.
+3. The trial is behind you. What comes next is worse.
 ```
 
 ### `harvest_lost` — 3 lines
 
 ```
-1. There, there. Not every tool gets to become a weapon.
-2. You fought well enough to be remembered fondly. That's more than most get from me.
-3. Rest now. I'll find a use for what's left of you.
+1. You failed. I'm not surprised, and I'm not disappointed. Disappointment requires expectation.
+2. That's the end of it, then. I'll find another hand.
+3. Some fail quietly. You didn't even manage that.
 ```
+⭐ *1 — "Disappointment requires expectation" — is the cruellest line in the document
+and it never raises its voice.*
 
 ---
 
-## Still missing from this sheet
+## Still missing
 
 | | |
 |---|---|
+| **the approach to `cut_down`** | ruling 4 — the dread needs somewhere to live |
 | `warn_wave` | the tide's tell, above y0 |
-| `argue_*` ×5 | god-to-god, aloud. ⚠️ **she LEADS them** — a leader being challenged, not a peer bickering |
-| `hold_weapon` / `hold_food` | idle by held item |
-| `warn_incoming` | ⚠️ `docs/49` has her never warning. Under `docs/53 §4` that is surveillance, not apathy — **still a zero?** |
-| **her one voice rule** | `docs/54 §4a` — the single most useful thing you can write |
-| **the chart column** | `docs/54 §3` — without it there is no `art_events.js` to attach any of this to |
+| `argue_*` ×5 | god-to-god, aloud. ⚠️ **she LEADS them** — a leader challenged, not a peer bickering |
+| `hold_weapon` / `hold_food` · `loc_below` | ⚠️ `loc_below` may be redundant now that her deep pools exist — **does she have an ordinary underground voice at all, or is it always the irritated one?** |
+| `warn_incoming` | ⚠️ `docs/49` has her never warning. Under `docs/53 §4` that is surveillance — still a zero? |
+| **her one voice rule** | `docs/54 §4a` |
+| **the chart column** | `docs/54 §3` — without it there is no `art_events.js` for any of this to attach to |
