@@ -1,7 +1,9 @@
 # 64 — The depth · why the bottom of the world is an empty box
 
-> **STATUS 2026-08-24** — ⭐ **DIAGNOSED AND THE FIX IS STAGED.** It cannot take effect on
-> the current world (§4) and does not need to: Ethan is regenerating once scope settles.
+> **STATUS 2026-08-24** — ✅ **DIAGNOSED, FIXED, AND VERIFIED ON A REAL GENERATED WORLD**
+> (§6). The fix cannot take effect on the current world (§4) and does not need to: Ethan
+> is regenerating once scope settles. ⭐ **The new depth is genuinely cavernous, not a
+> boring dig** — measured, §6.
 
 ## 0. 🔴 THE COMPLAINT — Ethan, 2026-08-24
 
@@ -114,3 +116,71 @@ forgotten later, and `tectonic.json.bak-2026-08-24` is the pre-change file.
    voids is *more* depth but not necessarily more scale; if it reads as a long boring dig,
    the answer is authored content down there (option B, `docs/62`-style) layered on top of
    a working generator — not instead of one.
+
+---
+
+## 6. ✅ VERIFIED ON A THROWAWAY WORLD — 2026-08-24
+
+§4 said the fix could not be tested without regenerating. That was true of *this* world,
+not of the question — so a **separate instance** was built and a real world generated
+under the fixed config, with Ethan's world never loaded.
+
+**The rig** — `C:\MCServer	estgen`, still present and reusable:
+
+| | |
+|---|---|
+| `mods`, `libraries` | **NTFS junctions** to the real instance — no multi-GB copy |
+| `config/` | a real copy, so worldgen settings can be varied independently |
+| `depthtest/datapacks/` | all nine `mcserver_*` packs, staged **before first boot** so the dimension is extended from chunk zero |
+| ports | left identical, and the real server stopped first — so `tools/rcon.py` works unchanged |
+| seed | `8675309`, fixed, so a re-run is comparable |
+
+🚨 **Tear it down with `cmd //c rmdir mods` FIRST.** Those are junctions; `rm -rf` through
+one deletes the *target*, which is the real mods folder.
+
+### ⭐ THE FIX WORKS
+
+Solid ground at every sampled column from y=0 straight down to **−127**. Under the old
+config the identical test read air from −65 down.
+
+### ⭐⭐ AND IT IS NOT A BORING DIG — which was the real question
+
+`docs/64 §5` asked whether 64 more blocks of deepslate is *scale* or just a longer dig.
+Measured as air-fraction per Y level, 1024 blocks sampled per level:
+
+```
+    y     air    %
+    0     108   10.5%   ####          normal deepslate caves
+  -20     112   10.9%   ####
+  -40       6    0.6%
+  -55       0    0.0%
+  -63      12    1.2%     <- the OLD floor
+  -66      64    6.2%   ##            ⭐ the new band begins
+  -70      56    5.5%   ##
+  -90       2    0.2%
+ -100      89    8.7%   ###           ⭐ comparable to y=0
+ -110      37    3.6%   #
+ -120       0    0.0%                 solid near the true floor, as expected
+```
+
+🔑 **−66 to −110 carries real cave systems — 8.7% air at −100 is close to y=0's 10.5%.**
+The extra depth is explorable, not a wall.
+
+⚠️ **And one genuine consequence to expect:** the band just above the old floor (−40 to
+−63) is now nearly solid, 0–1.2%. The bottom taper that used to squeeze caves out at −64
+has moved down with `min_y`. So the *shape* of a descent changes — a quiet stretch in the
+deepslate, then it opens up again below the old floor. That is arguably better than
+ending at a lava lake, but it is a change, not a free win.
+
+### ⚠️ TWO INVALID MEASUREMENTS ON THE WAY, BOTH CAUGHT BY CONTROLS
+
+1. `execute if block … run say X` — `say` output does not return through rcon, so grepping
+   the response matched the **echoed command** and reported the sky as air-confirmed. Use
+   `execute if block <x> <y> <z> <block>`, which answers `Test passed` / `Test failed`.
+2. `fill … minecraft:air replace minecraft:air` to count air **is a no-op** — zero blocks
+   *change*, so it always reports "No blocks were filled", including in open sky. Counting
+   needs a real substitution: `fill … minecraft:glass replace minecraft:air`, which is
+   destructive and therefore only appropriate in a throwaway world.
+
+🔑 **Both were caught the same way: assert the method against a known answer first.** Open
+sky must read 1024/1024. Neither error would have been visible in its own output.
