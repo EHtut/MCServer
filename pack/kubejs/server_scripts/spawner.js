@@ -214,6 +214,102 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // catastrophic case (sealed room) without pretending to be navigation.
   var LINE_STEPS = 10             // samples between the spot and the player
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐⭐ REACHABILITY, GUARANTEED BY CONSTRUCTION. Ethan, 2026-08-24:
+  //
+  //     "for the tides is there a way to ensure they spawn in such a way they can
+  //      always reach the player? same with trials..."
+  //
+  // openLine() below is a FILTER, not a guarantee, and it is worth being honest about
+  // the difference. A straight line can cross a chasm, thread a one-block gap no mob
+  // fits through, or pass over lava. It removes the catastrophic case - spawning into
+  // a sealed room in another cave - and nothing more.
+  //
+  // 🔑 A FLOOD FILL FROM THE PLAYER IS THE ACTUAL ANSWER. Walk outward through cells a
+  // mob could stand in, one step at a time; every cell it reaches is connected to the
+  // player THROUGH WALKABLE SPACE, because that is how it got there. Not inference -
+  // construction.
+  //
+  // ⚠️ THE ALTERNATIVE I DID NOT TAKE: spawn first, then ask the mob's own navigator
+  // for a path and delete it if there is none. That is more exact - it is literally
+  // the pathfinder the mob will use - but it means spawning something to find out
+  // whether it should have existed, and a player watching mobs blink in and vanish is
+  // worse than one who never sees them. It also depends on navigation being exposed to
+  // KubeJS in this build, which is unprobed. Flood fill needs only getBlock, which is
+  // already proven here.
+  //
+  // ── the walkability model ──────────────────────────────────────────────────
+  //   a cell is standable if:  air at y, air at y+1, solid at y-1
+  //   a step is legal if:      the destination is standable and is within one block
+  //                            of vertical difference (step up / walk / drop one)
+  //
+  // ⚠️ IT IS STILL AN APPROXIMATION AND SHOULD BE READ AS ONE. It does not model
+  // multi-block drops, swimming, flying mobs, doors, or a mob wider than one block.
+  // What it guarantees is a continuous chain of standable cells - which is the thing
+  // that was actually broken.
+  //
+  // 🚨 BUDGETED, because this runs on the server thread. Each cell costs three block
+  // reads ONCE and is then memoised, so the cap is a hard ceiling on work: 900 cells
+  // is roughly 2,700 reads, and a cave that large has more than enough candidates.
+  var FLOOD_BUDGET = 900
+  var STEP = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+
+  function standable(level, x, y, z, memo) {
+    var k = x + ',' + y + ',' + z
+    if (memo[k] !== undefined) return memo[k]
+    var v = false
+    if (openAt(level, x, y, z) === true &&
+        openAt(level, x, y + 1, z) === true &&
+        openAt(level, x, y - 1, z) === false) v = true
+    memo[k] = v
+    return v
+  }
+
+  // Every standable cell reachable from the player on foot, whose horizontal distance
+  // is within [lo, hi]. Returns [] if none - which is a real answer, distinct from the
+  // null that means "this build cannot read blocks".
+  function reachableSpots(player, lo, hi) {
+    var level, px, py, pz
+    try {
+      level = player.level
+      var bp = player.blockPosition()
+      px = bp.x; py = bp.y; pz = bp.z
+    } catch (e) { return null }
+    if (!level) return null
+    if (openAt(level, px, py, pz) === null) return null   // no block reads in this build
+
+    var memo = {}, seen = {}, out = []
+    var queue = [[px, py, pz]]
+    seen[px + ',' + py + ',' + pz] = true
+    var visited = 0
+
+    while (queue.length && visited < FLOOD_BUDGET) {
+      var cur = queue.shift()
+      visited++
+      var cx = cur[0], cy = cur[1], cz = cur[2]
+
+      var dx = cx - px, dz = cz - pz
+      var d = Math.sqrt(dx * dx + dz * dz)
+      if (d >= lo && d <= hi) out.push({ x: cx + 0.5, y: cy, z: cz + 0.5, d: d })
+
+      // Stop expanding well past the ring - the fill exists to find spots near the
+      // player, not to map the cave system.
+      if (d > hi + 4) continue
+
+      for (var i = 0; i < STEP.length; i++) {
+        for (var dy = 1; dy >= -1; dy--) {
+          var nx = cx + STEP[i][0], ny = cy + dy, nz = cz + STEP[i][1]
+          var nk = nx + ',' + ny + ',' + nz
+          if (seen[nk]) continue
+          if (!standable(level, nx, ny, nz, memo)) continue
+          seen[nk] = true
+          queue.push([nx, ny, nz])
+        }
+      }
+    }
+    return out
+  }
+
   function openLine(level, ax, ay, az, bx, by, bz) {
     for (var i = 1; i < LINE_STEPS; i++) {
       var t = i / LINE_STEPS
@@ -336,18 +432,89 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // An explicit ring from the caller always wins. Otherwise the default, tightened
     // underground - see the constants. A god that wants a wave at the horizon still
     // asks for one; nothing here takes that away.
+    // ⚠️ `deep` IS COMPUTED UNCONDITIONALLY NOW. It used to be worked out only when the
+    // caller omitted a ring, which meant anything passing explicit distances - most of
+    // Blade's events, all three Trials - never learned it was underground.
+    var deep = false
+    try {
+      if (VELDORA.events && typeof VELDORA.events.isUnderground === 'function') {
+        deep = VELDORA.events.isUnderground(server, player) === true
+      }
+    } catch (e) { }
+
     var lo = opts.minDist, hi = opts.maxDist
     if (!lo || !hi) {
-      var deep = false
-      try {
-        if (VELDORA.events && typeof VELDORA.events.isUnderground === 'function') {
-          deep = VELDORA.events.isUnderground(server, player) === true
-        }
-      } catch (e) { }
       lo = lo || (deep ? DEEP_MIN : MIN_DIST)
       hi = hi || (deep ? DEEP_MAX : MAX_DIST)
     }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ⭐⭐ REACHABILITY IS THE DEFAULT UNDERGROUND, AND THAT IS THE REAL FIX.
+    //
+    // It shipped as an opt-in for the tide, because the tide was where Ethan saw the
+    // symptom - his brother never met a single wave mob. But the cause was never the
+    // tide's: findSpot() asks "can a mob stand here" and never "can it get to the
+    // player", and underground almost every candidate that passes is a DISCONNECTED
+    // AIR POCKET. Every underground spawn in the game has that problem - Blade's
+    // gauntlet, his duel, all three Trials - and fifteen call sites would have had to
+    // opt in one at a time and stay opted in forever.
+    //
+    // 🔑 So the SPAWNER decides, from where the player is standing. Underground you get
+    // the guarantee; under open sky the old ring is kept, because connectivity is
+    // rarely the failing constraint out there and the fill would just be cost.
+    //
+    // ⚠️ A caller can still force it either way with `reachable`, and a false stays
+    // false - `opts.reachable === false` is a deliberate opt-OUT, not an absent value.
+    var wantReach = (opts.reachable === false) ? false : (opts.reachable === true || deep)
     var before = countNear(player, ids, hi + SCAN_PAD)
+
+    // ⭐⭐ ONE FLOOD FILL PER WAVE, SHARED BY EVERY MOB IN IT. Ethan asked whether
+    // spawns can be GUARANTEED to reach the player; this is the guarantee. Every cell
+    // in the pool was walked to from the player's own feet, so connectivity is not
+    // inferred from a line - it is how the cell was found.
+    //
+    // ⚠️ Computed here rather than inside the per-mob loop on purpose: a twelve-mob
+    // pulse would otherwise run twelve identical fills. Once per pulse is ~2,700 block
+    // reads at the 900-cell cap; twelve times that on the server thread would not be.
+    //
+    // 🚨 null AND [] ARE DIFFERENT ANSWERS AND BOTH ARE REPORTED. null means this build
+    // cannot read blocks at all; [] means the fill ran and the player is somewhere with
+    // no standable, reachable ground in the ring - a one-block hole, a boat, mid-air.
+    // Either way it falls through to findSpot() and SAYS SO, because a wave quietly
+    // placing into rock is the bug this whole thing exists to end.
+    var pool = null
+    if (wantReach) {
+      pool = reachableSpots(player, lo, hi)
+      if (pool === null) {
+        console.warn(TAG + 'reachable spawn asked for but block reads are unavailable - ' +
+          'falling back to the ring finder for ' + name)
+      } else if (!pool.length) {
+        console.warn(TAG + 'reachable spawn asked for and the flood fill found NOWHERE ' +
+          'standable within ' + lo + '-' + hi + ' of ' + name + ' - falling back. They ' +
+          'may be somewhere a mob genuinely cannot walk to.')
+      } else if (opts.behind) {
+        // ⭐ REAR ARC AS A PREFERENCE, NOT A REQUIREMENT. Filter to behind them if that
+        // still leaves somewhere to stand; otherwise take reachable-but-in-front,
+        // because being SEEN matters more than being sneaky. A wave you never meet is
+        // the failure this is fixing.
+        var yaw = facingOf(player)
+        if (yaw !== null) {
+          var bp2 = null
+          try { bp2 = player.blockPosition() } catch (e) { }
+          if (bp2) {
+            var fx = -Math.sin(yaw * Math.PI / 180), fz = Math.cos(yaw * Math.PI / 180)
+            var rear = []
+            for (var q = 0; q < pool.length; q++) {
+              var vx = pool[q].x - (bp2.x + 0.5), vz = pool[q].z - (bp2.z + 0.5)
+              var len = Math.sqrt(vx * vx + vz * vz) || 1
+              // dot < 0 means the spot is behind the facing direction
+              if ((vx / len) * fx + (vz / len) * fz < -0.1) rear.push(pool[q])
+            }
+            if (rear.length) pool = rear
+          }
+        }
+      }
+    }
 
     var blind = 0
     for (var k = 0; k < count; k++) {
@@ -355,7 +522,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // ⭐ Options ride through from the caller so the TIDE can demand a reachable
       // rear-arc spot while ordinary waves keep the old behaviour. Opt-in, so nothing
       // that worked before changes.
-      var spot = findSpot(player, lo, hi, { behind: !!opts.behind, reachable: !!opts.reachable })
+      //
+      // 🔑 A GUARANTEED spot comes from the flood-fill pool, computed ONCE per wave()
+      // call above and shared by every mob in it - one fill per pulse rather than one
+      // per mob. Falling through to findSpot() is the documented degradation, and it
+      // says so out loud rather than quietly placing into rock.
+      var spot = null
+      if (pool && pool.length) {
+        var pick = pool[Math.floor(Math.random() * pool.length)]
+        spot = { x: pick.x, y: pick.y, z: pick.z }
+      } else {
+        spot = findSpot(player, lo, hi, { behind: !!opts.behind, reachable: !!opts.reachable })
+      }
       try {
         // ⚠️ NOT createEntity().spawn() - see the header. And the return value is
         // deliberately ignored: E0 P12 proved it is undefined either way, so the
@@ -453,6 +631,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     validate: function (server, id) { return validate(server, id) },
     countNear: countNear,
     limits: { min: MIN_DIST, max: MAX_DIST, cap: MAX_PER_WAVE },
+    // ⭐ EXPORTED FOR THE HARNESS. The reachability guarantee is the whole reason the
+    // tide works, and a guarantee nothing can test is a claim. tools/spawner_harness.js
+    // builds synthetic caves and checks it against known topology - a sealed vault must
+    // come back empty however perfect a standing spot it contains.
+    reachableSpots: reachableSpots,
   }
 
   // ── boot: validate every roster anything might ask for ────────────────────
