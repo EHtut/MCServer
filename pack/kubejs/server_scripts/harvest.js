@@ -240,6 +240,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       var won = 0
       try { won = p.persistentData.getInt(K_WON) || 0 } catch (e) { }
       p.tell(Text.of('§8§m                                        '))
+      // 🔴 THE PANEL MUST SAY THE SYSTEM IS CUT. Everything below it - "handler:
+      // registered", the begin|win|lose menu - describes a system that no longer
+      // runs, and an admin screen that reads healthy while the feature is gated is
+      // the same lie as a boot banner that does. docs/62.
+      if (!GATE) {
+        p.tell(Text.of('§c  THE HARVEST IS CUT §8(docs/62 - GATE=false in harvest.js)'))
+        p.tell(Text.of('§8  begin() returns false. Everything below is inert.'))
+      }
       p.tell(Text.of('§6path §f' + (god || 'none') + ' §8· phase §f' +
         (VELDORA.stalkerPhase ? (VELDORA.stalkerPhase(ctx.source.server, p) || 'none') : '?')))
       p.tell(Text.of('§7  handler: ' + (HANDLERS[god] ? '§aregistered' : '§cNONE - nothing would be sent')))

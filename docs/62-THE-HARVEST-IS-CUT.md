@@ -1,7 +1,7 @@
 # 62 — The Harvest is cut
 
-> **STATUS 2026-08-23** — ⭐ **RULED, NOT YET EXECUTED.** The ruling is final; the removal
-> is its own chunk and has not been started. Nothing in this doc has been built.
+> **STATUS 2026-08-24** — ✅ **STEPS 1 AND 2 DONE AND LIVE.** Gated off, orphans re-homed,
+> boot clean. ⚠️ **STEP 3 (deleting the code) IS DELIBERATELY NOT DONE** — see §6.
 
 ## 0. 🔴 THE RULING — Ethan, 2026-08-23
 
@@ -122,3 +122,77 @@ own way"* was reachable with four of the five shapes already written.
 
 **Overruled by §0**: act-based structure means the story supplies the endings, so per-god
 endings would be solving the same retired problem in five voices instead of one.
+
+---
+
+## 6. ✅ WHAT WAS ACTUALLY DONE — 2026-08-24
+
+### Step 1 — gated off
+
+`GATE = false`. It already covered both entry points cleanly: `begin()` returns false,
+the retry sweep never registers. **One character to undo.**
+
+⭐ **The fear in §3 was wrong, and it is worth recording that it was checked first.** The
+confessions gate on `phase === 'harvest'`, which is the **notoriety band**, not the event.
+Reaching n≥100 still enters the band. *"Gregor, I am sorry."* is untouched.
+
+### 🔴 Step 1 also exposed four banners that had started lying — one written that morning
+
+`tide` still claimed *"ends 10s after surfacing"* after surfacing mid-wave stopped ending
+a run. `wallev` promised *"winning her Harvest is the only exit."* `notoriety` announced
+a curve that could no longer move. **All fixed by reading the boot report** — which is the
+argument for restarting rather than trusting a green suite.
+
+### 🚨 Step 2 — and the orphan was the OPPOSITE of what this doc predicted
+
+§3 said the risk was notoriety's rate curve going **dead**. It does not. `recordHarvest`
+lives in `notoriety.js`, **not** `harvest.js`, so the gate never touched it — and
+`fall.js` still calls it on every fall:
+
+```js
+var next = won ? 0 : hc + 1
+```
+
+**Only `harvest.js` ever passed `won=true`.** So wins — the sole reset — are gone, losses
+still fire, and the count now **only ever climbs**. Four falls pinned a player at rate
+**3.0 forever**, compounding with the banding bug in §2.
+
+⚠️ **A comment and a boot banner claiming the opposite ("PINNED AT 1", "this curve is
+DEAD") shipped and stood for half a day.** Asserting a value was frozen without checking
+who writes it.
+
+**The fix is forgiveness, derived at read time:** `effectiveHarvestCount(stored, since)`
+forgives one step per **12 in-game days**, using `lastHarvestDay` and `since`, both of
+which already existed. No new state, no sweep, nothing to drift.
+
+| stored falls | day 0 | day 12 | day 24 | day 48 | day 96 |
+|---|--:|--:|--:|--:|--:|
+| 1 | 1.5 | 1.0 | 1.0 | 1.0 | 1.0 |
+| 4 | 3.0 | 2.5 | 2.0 | 1.0 | 1.0 |
+| 6 | 3.0 | 3.0 | 3.0 | 2.0 | 1.0 |
+
+⭐ **Serial falling still compounds faster than forgiveness**, which is what the original
+design wanted from a loss. `FORGIVE_DAYS` is one constant to tune.
+
+**And `notoriety.js` now has a harness at all** — it had none, while driving the day-floor,
+the phase bands, power scaling and drop rates. 10 assertions, verified to FAIL against the
+ratchet.
+
+---
+
+## 7. ⚠️ STEP 3 IS NOT DONE, ON PURPOSE
+
+§4 said *"then remove the dead code and the ~12 `harvest_*` pools."* **Recommend against
+it, or at least against doing it now:**
+
+1. **The code is inert and clearly marked.** Gate off, boot banner says `GATED OFF`, the
+   `/harvest` admin panel now leads with `THE HARVEST IS CUT`. Nothing misleads.
+2. **Deleting it makes the ruling expensive to reverse.** Rulings in this project *do*
+   get revisited — the written accent, Caebrim's scope, the speaker map all moved after
+   they were "settled." A one-character revert is worth keeping.
+3. **300 references across 20 files is a refactor with real risk and no player-visible
+   benefit.** The only thing it buys is tidiness, and it buys it at exactly the odds that
+   produced this week's two silent-breakage findings.
+
+**What WAS worth doing from step 3 has been done:** the misleading surfaces. If the pools
+are ever wanted back, `docs/51` still registers all twelve for a rewrite pass.

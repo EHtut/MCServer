@@ -31,28 +31,42 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 //  · state lives on server.persistentData keyed by UUID (build plan rule 5)
 (function () {
   var ROOT = 'veldora_notoriety'
-  // 🔴🔴 ORPHANED BY THE HARVEST CUT (2026-08-23, docs/62). READ BEFORE TUNING.
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔴🔴 THE HARVEST CUT TURNED THIS CURVE INTO A ONE-WAY RATCHET. Fixed 2026-08-24.
   //
-  // This curve is indexed by harvestCount - "it comes back sooner each time" - and
-  // harvestCount can no longer increment, because harvest.js is gated off. So every
-  // player is now permanently pinned at RATES[0] = 1.0 and notoriety accrues at the
-  // slowest speed the system has, forever.
+  // ⚠️ AND THE COMMENT THAT STOOD HERE FOR HALF A DAY SAID THE EXACT OPPOSITE. It
+  // claimed harvestCount "can no longer increment" and that the curve was DEAD, and a
+  // boot banner announced "PINNED AT 1" to match. Both were wrong, and wrong in the
+  // most embarrassing direction available: I asserted a value was frozen without
+  // checking who writes it.
   //
-  // ⚠️ THAT IS A SILENT PROGRESSION CHANGE, NOT A NEUTRAL ONE. Nothing throws, no
-  // banner complains, and the only symptom is that the game feels slower than it did
-  // - which is exactly the shape of defect this repo keeps paying for.
+  // 🔑 WHAT IS ACTUALLY TRUE. recordHarvest lives in THIS file, not harvest.js, so
+  // the gate never touched it - and fall.js still calls it on every fall:
   //
-  // ⭐ AND IT INTERACTS WITH A SECOND KNOWN BUG, IN THE OPPOSITE DIRECTION. phase.js
-  // applies the path's phase COEFFICIENT before banding, so raw n=57 banded as 114
-  // for blade (x2) and 171 for art (x3) against a threshold of 100 - bands arrive far
-  // sooner than the numbers say. The two errors have been partly cancelling each
-  // other out, so fixing either one alone will swing the pacing.
+  //       var next = won ? 0 : hc + 1
   //
-  // 🚨 DO NOT re-home this to a new counter without deciding both together. The
-  // obvious candidate is phase band reached (helper/companion/absence/harvest = 0..3),
-  // which preserves the original intent - accelerate as you progress - pointed at
-  // progression that still exists. NOT DONE: it is a pacing decision and it is Ethan's.
-  var RATES = [1.0, 1.5, 2.0, 2.5, 3.0]   // by harvestCount; ⚠️ now always index 0
+  // Only harvest.js ever passed won=true. So WINS - the sole thing that reset the
+  // counter - are gone, LOSSES still fire, and the count now only ever climbs. Four
+  // falls pin a player at RATES[4] = 3.0 forever, with no way back down.
+  //
+  // 🚨 That is strictly worse than the frozen curve I invented. Frozen would have made
+  // the game slower; a ratchet makes a player who has struggled accrue THREE TIMES
+  // faster than a player who has not, permanently - and it compounds with the banding
+  // bug (phase.js multiplies the phase coefficient BEFORE banding, so raw n=57 bands
+  // as 114 for blade x2 and 171 for art x3 against a threshold of 100). A fallen Art
+  // walker would hit the top band almost immediately.
+  //
+  // ⭐ THE FIX IS FORGIVENESS, AND IT COSTS NO NEW STATE. `lastHarvestDay` is already
+  // written on every record and `since` is already computed in breakdown(), so the
+  // effective count is DERIVED at read time - no sweep, no extra writes, nothing to
+  // drift. See effectiveHarvestCount() below.
+  //
+  // ⚠️ FORGIVE_DAYS IS MINE, NOT ETHAN'S — one constant to tune. 12 in-game days per
+  // step means a single fall's penalty is gone in under a fortnight while serial
+  // falling still compounds faster than it forgives, which is the behaviour the
+  // original design wanted from a Harvest loss.
+  var RATES = [1.0, 1.5, 2.0, 2.5, 3.0]   // by EFFECTIVE harvestCount
+  var FORGIVE_DAYS = 12                   // in-game days to forgive one step
   var CAP = 100
 
   // ---------------------------------------------------------------- helpers
@@ -81,6 +95,22 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (typeof d === 'number' && isFinite(d)) return d
     } catch (e) { }
     return null
+  }
+
+  // ⭐ DERIVED, NEVER STORED. A stored decay would need a sweep, and a sweep that
+  // misses a tick silently leaves a player on the wrong rate forever - the exact
+  // class of drift this file's own comments warn about. This reads two numbers that
+  // already exist and computes the answer every time it is asked.
+  //
+  // `since` is days since the last fall. It is ALSO what the day-floor is built from,
+  // which makes the two halves cohere: right after a fall the patron is impatient
+  // (full escalated rate, floor starting from zero), and as the days pass the floor
+  // climbs while the impatience cools.
+  function effectiveHarvestCount(stored, since) {
+    if (typeof stored !== 'number' || !isFinite(stored) || stored <= 0) return 0
+    if (typeof since !== 'number' || !isFinite(since) || since <= 0) return stored
+    var forgiven = stored - Math.floor(since / FORGIVE_DAYS)
+    return forgiven < 0 ? 0 : forgiven
   }
 
   function rateFor(harvestCount) {
@@ -148,9 +178,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (day === null) return null
     var last = rec.getInt('lastHarvestDay')
     var hc = rec.getInt('harvestCount')
-    var rate = rateFor(hc)
     var since = day - last
     if (since < 0) since = 0                       // clock ran backwards; do not go negative
+    // 🚨 ORDER MATTERS AND IT WAS WRONG THE OTHER WAY. `since` is now computed BEFORE
+    // the rate, because the rate depends on it. Reading the rate first - as this did
+    // - would have applied zero forgiveness on every single call.
+    var rate = rateFor(effectiveHarvestCount(hc, since))
     var floor = Math.floor(since * rate)
     var xp = xpLevelOf(player)
     if (xp === null && !xpWarned) {
@@ -234,9 +267,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       ? 'VELDORA.notoriety published OK'
       : '!! PUBLISH FAILED - C2/C3 must not be built until this is fixed'))
     console.info('[notoriety] world day is ' + dayNow(event.server) +
-      '; rates by harvest count = [' + RATES.join(', ') + '] - PINNED AT ' +
-      RATES[0] + ': the Harvest is cut (docs/62) so harvestCount can never ' +
-      'increment. This curve is DEAD until it is re-homed.')
+      '; rates by harvest count = [' + RATES.join(', ') + '], forgiving one step ' +
+      'per ' + FORGIVE_DAYS + ' in-game days. Only the FALL raises it now - the ' +
+      'Harvest is cut (docs/62), so nothing resets it to zero and the forgiveness ' +
+      'is what stops it being a one-way ratchet.')
   })
 
   PlayerEvents.loggedIn(function (event) { ensure(event.server, event.player) })
