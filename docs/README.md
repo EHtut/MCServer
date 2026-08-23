@@ -97,6 +97,11 @@ wholesale; her release condition is CAPABILITY, not failure) ·
 her pools) · **`55-MATRIARCH-EVERY-LINE`** (DRAFT lines to edit and hand back —
 ⚠️ not generated from source, none of it is in the game yet)
 
+**Rulings** — **`62-THE-HARVEST-IS-CUT`** (2026-08-23 — Ethan: *"no reason for an
+ending anymore since it is essentially an act-based story"*. ⭐ It was already half-dead —
+only 3 of 5 gods had a handler and it FIRED FOR HIM ON ART AND DID NOTHING. ⚠️ RULED, not
+executed: 20 files / ~300 refs, gate before deleting)
+
 **The book canon** — **`61-CAEBRIM-CANON`** (2026-08-23 — ✅ **the deep-speaker map is FINAL**:
 Caebrim holds blade + forge, **the Doctor was ALICE all along**, Kayer speaks for herself,
 Salvage exempted · ⭐ she is a **MOTHER**, and "waiting is most of what I am" turned out to be

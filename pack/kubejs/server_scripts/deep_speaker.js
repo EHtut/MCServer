@@ -716,6 +716,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return stageOf(p, s) >= s.confession.length
   }
 
+  // How often an ordinary deep line becomes "your god is not coming" instead.
+  // Deliberately low: it is a reminder, not a theme.
+  var ABANDONED_CHANCE = 0.15
+
   // Say something as whoever is down there. Handles the one-time introduction
   // itself, because the first thing a speaker ever says is not a random line.
   function say(p, tag) {
@@ -727,6 +731,28 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       try { p.persistentData.putBoolean(metKey(s), true) } catch (e) { }
       console.info(TAG + p.username + ' has met ' + s.name)
       return VELDORA.voice.say(p, s.id, 'intro')
+    }
+    // ⭐⭐ `abandoned` FINALLY HAS A CONSUMER (2026-08-23). Five speakers have written
+    // this pool since 2026-08-15 and NOTHING had ever spoken it - a pool with no
+    // consumer is the same defect as a gate with no consumer, and it had been flagged
+    // and left three times.
+    //
+    // 🔑 THE SEMANTIC THAT MAKES IT WORK ONLY EXISTS NOW. Its comment says it is for
+    // a champion "whose patron cannot reach them down here" - which was true of nobody
+    // in particular until Kayer became her own deep speaker. She is the ONE god who
+    // comes down herself (docs/53 §3). Everyone else's god genuinely cannot follow.
+    //
+    // So: on an ordinary line, a non-art champion sometimes hears that their god is
+    // not coming, from the thing that is here instead. Art's champion never does,
+    // because hers IS here - and that asymmetry is the entire point of her register.
+    //
+    // ⚠️ MY CALL, not a ruling. One constant to revert.
+    if (!tag && s.lines && s.lines.abandoned && s.lines.abandoned.length) {
+      var mine = ''
+      try { mine = (VELDORA.paths && VELDORA.paths.pathOf(p)) || '' } catch (e) { }
+      if (mine !== 'art' && Math.random() < ABANDONED_CHANCE) {
+        if (VELDORA.voice.say(p, s.id, 'abandoned')) return true
+      }
     }
     return VELDORA.voice.say(p, s.id, tag || 'common')
   }

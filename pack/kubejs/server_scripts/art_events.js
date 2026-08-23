@@ -199,7 +199,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         if (id !== 'yes') { say(player, 'low_silence'); return }
         try {
           server.runCommandSilent('effect give ' + tname + ' minecraft:slowness 45 0 false')
-          if (VELDORA.voice) VELDORA.voice.say(t, GOD, 'demand_' + (VELDORA.paths ? (VELDORA.paths.pathOf(t) || 'blade') : 'blade'))
+          // 🔴 THE CROWN ALIAS, MISSED FOR THE THIRD TIME. Found by
+          // tools/completeness.py 2026-08-23, which expands a concatenated tag over
+          // every god instead of reporting the stub. `crown` aliases wall in
+          // coefficients.js, warn.js, grudge.js and paths.js - and it was missing
+          // here, so Kayer hindering a Crown walker resolved to `demand_crown`, a
+          // pool that has never existed, and she said nothing.
+          //
+          // ⚠️ Same defect, same shape, third file. Resolved through the alias rather
+          // than by writing a fifth pool, so the two can never drift.
+          if (VELDORA.voice) {
+            var tp = ''
+            try { tp = (VELDORA.paths && VELDORA.paths.pathOf(t)) || '' } catch (e) { }
+            if (tp === 'crown') tp = 'wall'
+            VELDORA.voice.say(t, GOD, 'demand_' + (tp || 'blade'))
+          }
         } catch (e) { }
       },
     })

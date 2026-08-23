@@ -210,6 +210,30 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "Wall's champion. I'll keep this brief, for both our sakes.",
       "Of all of them, hers. Fine. Stand there and let me get through this.",
     ],
+    // 🔴 THESE TWO DID NOT EXIST UNTIL THE AUDIT FOUND THEM, 2026-08-23.
+    // art_events.js builds the tag dynamically - `'demand_' + pathOf(target)` - so a
+    // Forge or Art champion on the receiving end resolved to a pool that was never
+    // written, and Kayer opened her mouth and produced nothing. Invisible to grep
+    // because the tag is concatenated, and newly LIVE the moment forge opened.
+    //
+    // ⭐ demand_forge is the loaded one: this is Kayer speaking directly to the
+    // champion of the god she cannot forgive (docs/57 §4). Same rule as near_forge -
+    // the contempt shows, the cause never does.
+    // [CLAUDE-DRAFT] art/demand_forge · art/demand_art
+    demand_forge: [
+      "You follow the Goat. I am going to need you to be useful in spite of that.",
+      "She would tell you not to. She tells everyone not to, at length, and then does nothing.",
+      "One task. Do not report it to her. She could not keep it to herself if she tried.",
+      "Of all of them, hers. Fine. Listen carefully, I will only say this once.",
+    ],
+    // ⚠️ She is addressing another of HER OWN champions here, which she does not enjoy
+    // - she does not share, and having two of you is an admission that one was not
+    // enough. Short, and colder than she is with strangers.
+    demand_art: [
+      'You are mine already, so I will skip the part where I persuade you.',
+      "Two of you. I had not planned for two of you. Do this anyway.",
+      "Do not mistake being asked for being favoured. The other one is not being asked.",
+    ],
     demand_salvage: [
       "Salvage would tell you this is a bad trade. She'd be right. Do it anyway.",
       "You work for the honest one. I'm not going to pretend I am. Do it regardless.",

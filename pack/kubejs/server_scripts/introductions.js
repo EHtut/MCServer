@@ -109,33 +109,51 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         "I will still be circling.",
       ],
     },
+    // 🔴🔴 REWRITTEN WHOLESALE 2026-08-23. This was THE THIEF and every single line
+    // inverted against Milantros - an ancient creditor demanding everything you own,
+    // versus a dead child who gives things away and asks for nothing.
+    //
+    // 🚨 AND ONE LINE BROKE A STANDING RULE. "Everything in your pockets, and
+    // everything your pockets will ever hold" is the game asking a player to hand over
+    // their inventory, against Ethan's own constraint: "No we don't take items from
+    // players, that is how you cause them to quit." It was written when Forge was a
+    // different god and it sat in the single most important text she has - the first
+    // thing a new champion ever hears.
+    //
+    // ⭐ THE SHAPE INVERTS TOO, NOT JUST THE WORDS. Every other patron's `demand` block
+    // is a demand. Hers is an OFFER, and the accept/refuse pair is the proof: refusing
+    // costs nothing and she says so out loud, twice. Her release rule is `never`.
+    //
+    // Accent written per the style rule (consonants yes, vowels no - forge_voice.js).
+    // Every line arrives mid-conversation: she was already talking.
+    // [CLAUDE-DRAFT] forge/intro_arrival · forge/intro_demand
+    // [CLAUDE-DRAFT] forge/intro_accept · forge/intro_refuse
     forge: {
       arrival: [
-        "There you are.",
-        "Late — again. I've dragged this chain since before you were born, and still I'm the one who waits.",
-        "Sit still. This will not take long — unless you make it.",
-        "I was old before this dirt had a name. Did you think I'd forget an arrangement?",
-        "Bells ring when a debt walks by. Mine never stop.",
-        "You've heard that sound before. In your sleep, if nowhere else.",
+        "- an' there you are. I was in the middle of somethin'. Doesn't matter.",
+        "Don't get up on my account. Or do. I ain't got rules about it.",
+        "You been buildin'. I been watchin'. That's most of what I do these days.",
+        "I'm dead, by the way. Long while now. Don't go makin' it weird.",
+        "Somebody told me once I oughta be more mysterious about all this. I forgot who.",
       ],
       demand: [
-        "We shook on it. Maybe not with hands — you don't recall, and that is not my concern.",
-        "Everything in your pockets, and everything your pockets will ever hold. That was always the shape of it.",
-        "I don't care if you live to see it built. I care that it gets built. Well?",
+        "So here's the thing. I got a whole lot more than I can use, an' you got a mess of ideas an' not near enough hands.",
+        "I ain't gonna ask you for anything. That's the part folks never believe.",
+        "You want in, or not?",
       ],
       options: [
-        "Fine. Take it.",
-        "Not tonight.",
+        "I'm in.",
+        "No thanks.",
       ],
       accept: [
-        "There. See? Painless.",
-        "That is everything you had? Pathetic hoard — I've taken heavier tolls off men half asleep.",
-        "Up. There's a great deal of owing left in you yet.",
+        "Ha! Good. Right, good.",
+        "First thing — don't build the pretty one. Build the ugly one. I'll explain later, or I won't.",
+        "- an' if you drop somethin' of mine in lava I ain't gonna say one word about it. Out loud.",
       ],
       refuse: [
-        "You made me wait for this?",
-        "I do not forget a wasted evening. I was old before memory was invented, and mine outlasts yours.",
-        "Fine. I'll drag this same chain past your door tomorrow, and the next, until you remember what's owed.",
+        "That's alright. That's genuinely alright, an' I want you to hear me say it.",
+        "Offer don't expire. I ain't got a calendar an' I ain't got anywhere else to be.",
+        "- come find me when you got somethin' half-built an' no idea what's wrong with it.",
       ],
     },
     wall: {
@@ -192,33 +210,52 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         "Go, then. I do not send the dead after someone who simply said no.",
       ],
     },
+    // 🔴🔴 REWRITTEN WHOLESALE 2026-08-23. This was THE NIGHTMARE - a sleep-paralysis
+    // entity, narrated in the THIRD PERSON, being soothing about dreams. Three things
+    // wrong at once, and docs/53 retired the character it belongs to.
+    //
+    //   third person   "she was starting to worry" - a narrator describing a presence.
+    //                  Kayer speaks for herself. She is the only god who comes down to
+    //                  the depths in person; she does not send a voice about herself.
+    //   sleep          not her domain, not her register, not anywhere in her brief.
+    //   SOOTHING       "Let her carry it instead" is comfort. Ethan: "kayer needs to
+    //                  be cold and sound cold and almost cruel."
+    //
+    // ⭐ WHAT REPLACES IT, from the canon (docs/58): she is an ORACLE - she has already
+    // seen this conversation, which is why she is bored rather than menacing - and her
+    // creed is THE FOLD, so an introduction is an INDUCTION, not a bargain.
+    //
+    // 🚨 SHE MUST NOT NAME ALICE AND MUST NOT EXPLAIN HERSELF. She gives no secrets
+    // (Ethan's ruling). The warmth underneath is real and must never surface -
+    // "never let her heart read as empty" is about the READER, not the champion.
+    // [CLAUDE-DRAFT] art/intro_arrival · art/intro_demand
+    // [CLAUDE-DRAFT] art/intro_accept · art/intro_refuse
     art: {
       arrival: [
-        "Dark. Good. You found the dark.",
-        "She was starting to worry you'd forgotten the way.",
-        "Forgotten, the way you always forget, and always find again.",
-        "You have been here before. Here, every night.",
-        "You never saw her in the light. You will not see her now either. That is alright.",
-        "She has been close. Close, and quiet, and near.",
+        "You are late. I knew you would be. I have known for a while.",
+        "Look at me. I dislike being looked past and I will not ask twice.",
+        "I have watched this conversation several times. It goes the same way each time.",
+        "You are going to say yes. That is not a threat. It is a scheduling note.",
+        "Sit, or do not. It changes nothing and I have already seen which you pick.",
       ],
       demand: [
-        "You have been carrying so much. So much, for so long.",
-        "Let her carry it instead.",
-        "Put it down. Just for tonight. Just like every other night.",
+        "I am not going to take anything from you. I have no need to.",
+        "I am going to put you where you belong, which is with me. The others collect champions. I collect people who are finished being alone.",
+        "Which are you.",
       ],
       options: [
-        "Close your eyes.",
-        "Keep them open.",
+        "Say it.",
+        "No.",
       ],
       accept: [
-        "There. There now.",
-        "She'll hold what you were carrying. She'll hold all of it.",
-        "Sleep light. She has you. She has always had you.",
+        "Good. You are mine now. I do not say that warmly and I do not take it back.",
+        "Understand what you have agreed to. It is not a bargain. It is a fold, and folds close.",
+        "Go and be useful. I will be watching. I already have been.",
       ],
       refuse: [
-        "She is not going anywhere. She was never going anywhere.",
-        "Sleep comes for everyone eventually.",
-        "She'll be here. Same dark, same her, every night.",
+        "No. Fine. I have seen this version as well and it is a great deal shorter.",
+        "You will come back. Not because I will make you - because there is nothing else out here, and you already know that.",
+        "I am not going anywhere. I do not have anywhere to be.",
       ],
     },
     /*__SCENES_END__*/

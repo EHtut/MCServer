@@ -293,6 +293,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       'Here. Now we find out.',
     ],
 
+    // 🔴 SPOKEN TWICE BY blade_events.js AND NEVER WRITTEN — found by the
+    // completeness audit 2026-08-23. It fires when you DECLINE his Sharpen offer, or
+    // let it time out, so the most common way to say no to Blade produced silence.
+    //
+    // ⭐ HIS REGISTER, AND IT IS THE EASY ONE: he does not mind. A refusal is
+    // information, not an insult - he told you your ceiling and you declined to raise
+    // it, which only confirms the ceiling. Salvage's refusals are strikes (3 and she
+    // releases you); his are nothing at all, and that difference is characterising.
+    // [CLAUDE-DRAFT] blade/idling
+    idling: [
+      'Then no. It costs me nothing.',
+      'Suit yourself. The offer was the whole of my interest.',
+      'Noted. I will not ask twice in a row.',
+      'You will want it later. I may be busy later.',
+      'As you like. Standing still is also a choice.',
+    ],
+
     argue_accuse: [
       'Your champion has put mine in the dirt three times. I am beginning to take it personally.',
       'Call it off, or admit you enjoy this.',

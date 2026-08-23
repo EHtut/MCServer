@@ -504,6 +504,27 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     },
 
     // ═══════════════════════════════════════════════════════════════════════
+    // ⭐ THE MATRIARCH — five zeroes, and they are the entire FORCED column.
+    //
+    // Ethan, 2026-08-22: "she's powerful but cannot physically touch the world, not
+    // really, so she needs to manipulate the player into doing things for her." So
+    // challenge / duel / buff / invade / aid / assassination are not dialled low, they
+    // are things she is INCAPABLE of - and `attack` and `support` are her asking YOU
+    // to do the reaching.
+    //
+    // 🔴 ADDED 2026-08-23 BY THE COMPLETENESS AUDIT. art_events.js had been printing
+    // its zeroes in a boot banner while the CHART had no row for her at all - so
+    // chartPick() fell through to the legacy weightedPick and the numbers below were
+    // never actually applied. A banner claiming a rule the table did not hold: the
+    // same defect that has now been found five times in this repo.
+    //
+    // ⚠️ Numbers are mine (docs/54 §3), like forge's. The SHAPE is his sentence.
+    art: {
+      challenge: 0, duel: 0, buff: 0, invade: 0, aid: 0, assassination: 0,
+      boon: 4, contract: 4, attack: 3, support: 2,
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════
     // ⭐ THE GOAT — the mirror of Salvage's row, and the only generous FORCED column.
     //
     // Salvage's whole column is the CHOICE half: she cannot do anything TO you.

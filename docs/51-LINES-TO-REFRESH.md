@@ -18,7 +18,7 @@ in this repo has died before.
 
 ---
 
-## art — 25 pool(s)
+## art — 31 pool(s)
 
 | tag | to rewrite | ⭐ yours, keep | file |
 |---|---:|---:|---|
@@ -37,18 +37,24 @@ in this repo has died before.
 | `demand_blade` | 5 | — | [`art_voice.js:190`](../pack/kubejs/server_scripts/art_voice.js) |
 | `demand_wall` | 5 | — | [`art_voice.js:190`](../pack/kubejs/server_scripts/art_voice.js) |
 | `demand_salvage` | 4 | — | [`art_voice.js:190`](../pack/kubejs/server_scripts/art_voice.js) |
-| `loc_above` | 5 | — | [`art_voice.js:222`](../pack/kubejs/server_scripts/art_voice.js) |
-| `rare_loc_above` | 4 | — | [`art_voice.js:222`](../pack/kubejs/server_scripts/art_voice.js) |
-| `near_blade` | 4 | — | [`art_voice.js:245`](../pack/kubejs/server_scripts/art_voice.js) |
-| `near_wall` | 6 | — | [`art_voice.js:245`](../pack/kubejs/server_scripts/art_voice.js) |
-| `near_salvage` | 4 | — | [`art_voice.js:245`](../pack/kubejs/server_scripts/art_voice.js) |
-| `near_forge` | 5 | — | [`art_voice.js:296`](../pack/kubejs/server_scripts/art_voice.js) |
+| `demand_forge` | 4 | — | [`art_voice.js:222`](../pack/kubejs/server_scripts/art_voice.js) |
+| `demand_art` | 3 | — | [`art_voice.js:222`](../pack/kubejs/server_scripts/art_voice.js) |
+| `loc_above` | 5 | — | [`art_voice.js:246`](../pack/kubejs/server_scripts/art_voice.js) |
+| `rare_loc_above` | 4 | — | [`art_voice.js:246`](../pack/kubejs/server_scripts/art_voice.js) |
+| `near_blade` | 4 | — | [`art_voice.js:269`](../pack/kubejs/server_scripts/art_voice.js) |
+| `near_wall` | 6 | — | [`art_voice.js:269`](../pack/kubejs/server_scripts/art_voice.js) |
+| `near_salvage` | 4 | — | [`art_voice.js:269`](../pack/kubejs/server_scripts/art_voice.js) |
+| `near_forge` | 5 | — | [`art_voice.js:320`](../pack/kubejs/server_scripts/art_voice.js) |
 | `deep_intro` | ? | — | [`deep_speaker.js:396`](../pack/kubejs/server_scripts/deep_speaker.js) |
 | `deep_common` | ? | — | [`deep_speaker.js:396`](../pack/kubejs/server_scripts/deep_speaker.js) |
 | `deep_abandoned` | ? | — | [`deep_speaker.js:396`](../pack/kubejs/server_scripts/deep_speaker.js) |
 | `deep_rare` | ? | — | [`deep_speaker.js:396`](../pack/kubejs/server_scripts/deep_speaker.js) |
+| `intro_arrival` | ? | — | [`introductions.js:231`](../pack/kubejs/server_scripts/introductions.js) |
+| `intro_demand` | ? | — | [`introductions.js:231`](../pack/kubejs/server_scripts/introductions.js) |
+| `intro_accept` | ? | — | [`introductions.js:232`](../pack/kubejs/server_scripts/introductions.js) |
+| `intro_refuse` | ? | — | [`introductions.js:232`](../pack/kubejs/server_scripts/introductions.js) |
 
-## blade — 6 pool(s)
+## blade — 7 pool(s)
 
 | tag | to rewrite | ⭐ yours, keep | file |
 |---|---:|---:|---|
@@ -58,8 +64,9 @@ in this repo has died before.
 | `argue_refuse` | 2 | 1 | [`blade_voice.js:270`](../pack/kubejs/server_scripts/blade_voice.js) |
 | `argue_unanswered` | 3 | — | [`blade_voice.js:271`](../pack/kubejs/server_scripts/blade_voice.js) |
 | `warn_wave` | 4 | — | [`blade_voice.js:286`](../pack/kubejs/server_scripts/blade_voice.js) |
+| `idling` | 5 | — | [`blade_voice.js:304`](../pack/kubejs/server_scripts/blade_voice.js) |
 
-## forge — 42 pool(s)
+## forge — 46 pool(s)
 
 | tag | to rewrite | ⭐ yours, keep | file |
 |---|---:|---:|---|
@@ -105,6 +112,10 @@ in this repo has died before.
 | `near_wall` | 5 | — | [`forge_voice.js:402`](../pack/kubejs/server_scripts/forge_voice.js) |
 | `near_salvage` | 3 | — | [`forge_voice.js:402`](../pack/kubejs/server_scripts/forge_voice.js) |
 | `near_art` | 5 | — | [`forge_voice.js:402`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `intro_arrival` | ? | — | [`introductions.js:129`](../pack/kubejs/server_scripts/introductions.js) |
+| `intro_demand` | ? | — | [`introductions.js:129`](../pack/kubejs/server_scripts/introductions.js) |
+| `intro_accept` | ? | — | [`introductions.js:130`](../pack/kubejs/server_scripts/introductions.js) |
+| `intro_refuse` | ? | — | [`introductions.js:130`](../pack/kubejs/server_scripts/introductions.js) |
 
 ## salvage — 15 pool(s)
 
@@ -154,7 +165,7 @@ in this repo has died before.
 
 ---
 
-**389 drafted lines across 104 pools.**
+**401 drafted lines across 115 pools.**
 
 Ethan's own writing is NOT listed here — his lines carry no marker, which is
 the whole point of the convention. Where a pool is mixed (his first line, drafts
