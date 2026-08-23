@@ -20,6 +20,25 @@
 > The Matriarch has no allies. Her siblings **Caebrim** and **Ank**, now banished to
 > the depths, are unwilling to speak to her.
 
+### 🚨 THE TONE, ruled 2026-08-22 after a draft was rejected
+
+> *"kayer needs to be cold and sound cold and almost cruel... We can insult the player
+> too."*
+
+**Cold. Not warm-pretending-to-be-cold, and not cold-with-a-warm-centre.** The first
+draft of her lines was rejected as *"too light"* — it made her fond and chatty because
+the brief had said "unfailingly warm, and it is never kindness", and *warm* is what
+came out. **That framing is retired.**
+
+She is a genius addressing something she considers barely adequate. **Insults are
+permitted and in character** — slow, dull, replaceable, disappointing. Cruelty at room
+temperature, never heated. She still *asks* rather than commands, because she cannot
+compel anyone; the asking is simply contemptuous.
+
+⚠️ **AND SHE HAS TWO REGISTERS, SPLIT BY DEPTH** (§3): cold and composed on the
+surface, **cold and openly irritated** below it. She is performing up there. Down here
+she is not.
+
 *(Card: **Kayer Alice Rysor**, framed by twin moons. Visible title fragments —
 `False Que…` · `Ice M…` · `Ma…` — read as **False Queen**, an ice epithet, and
 **Matriarch**.)*
@@ -77,7 +96,7 @@ approach; the execution is the payoff.
 
 ---
 
-## 3. ⭐ Caebrim and Ank — the silence below is already built
+## 3. ⭐ SHE IS HER OWN DEEP SPEAKER — and the mask comes off down there
 
 > *"Her siblings Caebrim and Ank, now banished to the depths, unwilling to speak to
 > her."*
@@ -88,13 +107,29 @@ banner already ends:
 
 > *"a path with no speaker gets SILENCE down there, not a stand-in."*
 
-⭐ **That is no longer a gap. It is canon.** Kayer's champion descends and hears
-**nothing** — not because nobody was written, but because **the only two who could
-speak for her refuse to.** Two gods are down there and both of them are ignoring her.
+🔴 **I WROTE THAT HER CHAMPION HEARS NOTHING DOWN THERE. ETHAN OVERRULED IT
+2026-08-22, and he is right:**
 
-**It costs nothing to build; it is the current behaviour, reclassified.** And it makes
-her the only path where the deep is *emptier* than the surface, which suits the one
-god who has no allies.
+> *"she is her own depth speaker, those lines should switch from cold to irritated and
+> impatient."*
+
+**She goes down herself.** Which is better than the silence I proposed, for three
+reasons I did not see:
+
+1. ⭐ **It is the only place she gets to be inconvenienced.** She cannot touch the
+   world — but she can follow you into the dark, and she plainly *resents having to*.
+   Every other god's deep voice is a stand-in; hers is her, annoyed.
+2. ⭐ **The mask comes off by depth.** Above ground she performs: composed, cold,
+   godlike. Below it the composure thins into open impatience and insult. **Nobody
+   else in the pantheon changes register with location** — and it means descending
+   reveals character rather than just danger.
+3. It preserves the siblings as a wound without spending them. Caebrim and Ank still
+   will not speak to her; she simply does not need them to, and that is worse for her
+   than being unable to reach you.
+
+⚠️ **So the silence claim above is WRONG and stays only as a record of the reasoning.**
+`deep_speaker.js` registers a speaker per path — Kayer's entry is *herself*, with her
+own pools (`deep_intro` / `deep_common` / `deep_abandoned` / `deep_rare`).
 
 ⚠️ **The temptation will be to give them lines later.** Resist unless the fiction
 changes: the moment Caebrim or Ank speaks, "unwilling to speak to her" stops being
@@ -151,4 +186,4 @@ waiting — but "ignores you" is now the wrong word for what she is doing.
 | **the Nightmare sweep** | 9 docs describe a character who is gone |
 | ✅ **drop table** | already written and live-validated (Ars Nouveau) |
 | ✅ **the name** | Matriarch / Kayer — settled by §1 |
-| ✅ **deep silence** | already the behaviour, now canon (§3) |
+| ❌ **her deep pools** | `deep_intro` / `deep_common` / `deep_abandoned` / `deep_rare` — she is her OWN speaker (§3), in an IRRITATED register |
