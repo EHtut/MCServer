@@ -152,24 +152,67 @@ and levels on something else.
 
 ---
 
-## 6. ⚠️ Wall is deliberately inverted, and it is now load-bearing
+## 6. ⭐⭐ NOT EVERY GOD LEVELS BY FIGHTING — Ethan, 2026-08-24
 
-> Ethan: *"Yea its intention, wall plays differently."*
+> *"forge and wall play differently as non-combatant classes, they will get a pass
+> after. we give the harvest only to combatant classes then to raise trust. Wall's trust
+> raises on days survived, and forge can be items crafted."*
 
-Her counter is **rage**, not affection — it rises when you are hurt and falls when you heal
-or survive:
+| god | class | how trust rises |
+|---|---|---|
+| **blade** | combatant | ⚔️ **the Trial** |
+| **salvage** | combatant | ⚔️ **the Trial** |
+| **art** | combatant | ⚔️ **the Trial** — ⚠️ has never had a handler, needs one built |
+| **wall** | non-combatant | 🛡️ **days survived** |
+| **forge** | non-combatant | 🔨 **items crafted** |
 
-```js
-counter.add(p, GOD, -drop, 'stayed alive')
-counter.add(p, GOD, -Math.min(cur, down), 'healed')
-```
+### 🔑 THIS SOLVES THE PROBLEM §6 USED TO DESCRIBE, AND IT SOLVES IT BETTER
 
-So levelling with Wall means **suffering on purpose**, and that is confirmed as intended.
-⭐ It fits her exactly — *"she calls her obsession devotion"*, and `docs/59` has her holding
-on to the one thing that still needs her. **A champion who must stay hurt to keep her
-attention is the cruellest correct version of that.**
+The previous version of this section flagged a real hazard: Wall's counter is **rage**,
+which rises when you are hurt — so if trust bought buffs and trust *was* that counter,
+**the optimal Wall play would be to stand still and get hit.**
 
-🚨 **But it must not silently become the strongest strategy.** If trust buys buffs and
-Wall's trust rises with damage taken, the optimal Wall play is to get hit constantly.
-Watch it in play before tuning — it may self-limit, since being hurt in the depths is how
-you die.
+⭐ **Two numbers, two jobs.** Rage stays exactly as it is — the slider that drives which
+events she sends. **Trust is separate, and hers comes from surviving.** Nothing about her
+inverted counter changes, and the exploit never exists.
+
+⭐⭐ **And it makes the three classes say something.** Each god's rank now measures the
+thing that god actually values:
+
+> Blade and Salvage and Kayer want to see you **win a fight.**
+> Wall wants to see you **come home.**
+> Milantros wants to see you **make something.**
+
+🔑 Wall's is the sharpest. *"She never lets go"*, `release.js` mode `never`, *"the Mother
+weeps for every champion she loses"* — and now her champion levels up by **not dying**.
+The one god who cannot release you rewards you for staying alive. That is the whole
+character as a progression curve.
+
+### ⚠️ What this changes about the build
+
+**Notoriety becomes a combatant-only mechanic.** Wall and Forge never need to reach 100,
+because nothing waits for them there — they level on their own clock. So:
+
+- `power.js` and the drop chance read **trust**, for everybody (unchanged plan)
+- the **notoriety → 100 → Trial** loop only runs for blade / salvage / art
+- wall and forge get an **award hook** on their own metric instead
+
+⚠️ **Thresholds are unset and want play data, not a guess.** Days survived and items
+crafted move at wildly different speeds, and Forge's counter already climbs fast enough
+that `forge_voice.js` uses 250/1200 for its gift tiers. Pick numbers, then watch.
+
+🚨 **"Days survived" needs defining before it is coded.** Days on the path without dying
+is the reading that fits her, and it means a death does not just cost you a life, it
+costs your progress toward her. That is characterful and it is also the harshest reading
+available — confirm it is the intended one.
+
+---
+
+## 7. 🔴 STILL OPEN — problem two has not been answered
+
+§4's rate-curve inversion is **unresolved** and it now applies to the three combatant
+paths. Falling escalates the accrual rate, so a Trial arrives sooner, and losing a Trial
+is free — **falling is still the fastest way to level.**
+
+It does not block the skeleton (§5 items 1–5 can be built without touching it) but it
+must be settled before Trials go live, or the first thing a player optimises is dying.
