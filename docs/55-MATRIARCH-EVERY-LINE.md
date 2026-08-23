@@ -20,27 +20,33 @@ back.
 
 ---
 
-## ⚠️ FOUR THINGS TO RULE ON
+## ⭐ RULED 2026-08-22: **KAYER DOES NOT GIVE SECRETS**
 
-**1. 🔴 `deep_rare` 2 and 4 STATE THE SECRET OUTRIGHT.** *"Everyone thinks I oppose
-her… I don't"* and *"She made me what I am."* `docs/53` says the devotion is never
-stated, only leaked — **but you also said the deep is where the mask comes off**, so
-this may be exactly where it belongs. It cannot be both. **My read: keep one, cut the
-other.** The secret can only be spent once, and spending it twice in the same pool
-makes the first time cheap.
+> *"cut all of them and rewrite, kayer does not give secrets."*
 
-**2. ⚠️ `rare_loc_above` 3 invents how she died** — *"a winter that I did not survive
-on purpose."* That reads as suicide. You gave me "ice witch in life, then ascension"
-and nothing more. Strong line; large unrequested addition.
+Every leaking line is gone. And the ruling is better than the lines were, because it
+turns a passive rule into an active one:
 
-**3. ⚠️ `deep_abandoned` 1 — *"Your god isn't coming. Mine barely does."*** She **is**
-a god, so "mine" is confusing on first read. If it means **Alice**, it is one of the
-best leaks in the document. If it was an accident, it is a bug wearing a good line.
+**The rare pools are no longer where she slips. They are where she NOTICES YOU
+FISHING AND SHUTS IT DOWN.** She comes near something, sees you leaning in, and
+closes. A character who almost tells you is ordinary; a character who catches you
+listening is not.
 
-**4. 🔴 `cut_down` has no warning pool.** `docs/53 §2` says a player killed for playing
-well, with no tell, will call it a bug. These lines are the *execution*. **The approach
-still needs its own pool** — something that fires as you near the line, so the dread
-has somewhere to live.
+⚠️ **This breaks the pattern every other god follows**, deliberately. Wall's past leaks
+through `rare_loc_above`; Blade's rare lines are *"where Blade is a PERSON"* (docs/45).
+**Kayer's rare lines are where she is LESS available than usual, not more.** That is
+the point of her.
+
+🔑 **So the devotion to Alice can never be learned from her.** If it is ever revealed
+it has to come from somewhere else — another god, a deep speaker, a found thing. That
+is a real constraint on future writing and worth knowing now rather than later.
+
+### Still open
+
+**🔴 `cut_down` has no warning pool.** `docs/53 §2`: a player killed for playing well,
+with no tell, will call it a bug. These lines are the *execution*. Right now
+`high_gift` 2 and 5 are carrying the entire approach by accident, and doing it well —
+but that is load-bearing by coincidence.
 
 ---
 
@@ -116,17 +122,17 @@ information that there were others.*
 ```
 
 ### `rare_loc_above` — 4 lines
-*⭐ RARE. The living woman leaks, then she catches herself.*
+*⭐ RARE. She gestures at a past and refuses to open it. **She does not leak.***
 
 ```
-1. Ice used to mean something simple. Cold. Nothing more. I remember when that was true.
-2. I had hands once. Warm ones. I don't discuss the rest.
-3. There was a winter, before all this, that I did not survive on purpose. Forget I said that.
-4. I was a person before I was useful. Both are exhausting, in their own way.
+1. I had hands once. Warm ones. I don't discuss the rest.
+2. Ice meant something simpler, before. That is the entire story and you have had all of it.
+3. You are waiting for me to continue. I have noticed. I am not going to.
+4. There was a before. There is no version of this where I describe it to you.
 ```
-⭐ *2 is the whole character — "I had hands once" is the limitation and the grief in
-four words.*
-⚠️ *3 invents her death. See ruling 2.*
+⭐ *1 survives the rewrite — "I had hands once" is the limitation and the grief in
+four words, and it refuses in the same breath.*
+⭐ *3 is the ruling made audible: she catches you listening and stops.*
 
 ---
 
@@ -210,11 +216,11 @@ way and no separate warning pool is written, these two are carrying it alone.*
 ```
 1. You don't answer to me. Answer anyway. It's faster.
 2. Your god isn't here. I am. Draw your own conclusions.
-3. I don't ask twice. I also don't ask nicely a second time.
+3. I asked. That was the courtesy. There isn't a second one.
 4. Blade's champion, doing Blade's work, standing in front of me. Interesting choices.
 ```
-🔴 *3 is muddled — "don't ask twice" and "don't ask nicely a second time" contradict
-each other. Worth a rewrite.*
+⭐ *3 rewritten — the old one contradicted itself ("don't ask twice" / "don't ask
+nicely a second time"). Now the asking IS the courtesy, which is colder.*
 
 ### `demand_wall` — 4 lines
 
@@ -232,11 +238,12 @@ proceeds anyway.*
 ```
 1. Salvage would tell you this is a bad trade. She'd be right. Do it anyway.
 2. You work for the honest one. I'm not going to pretend I am. Do it regardless.
-3. One task. No lie attached, unlike what you're used to.
+3. One task. She'd have told you the price first. I won't.
 4. Salvage's champion. Tell her I said hello. Tell her nothing else.
 ```
-🔴 *3 contradicts itself against Salvage's whole character — SHE is the honest one, so
-"unlike what you're used to" is backwards. Cut or invert.*
+⭐ *3 rewritten — the old one had the honesty backwards, implying Salvage lies. She is
+the honest one, so the contrast now runs the right way: SHE would warn you, Kayer will
+not.*
 
 ---
 
@@ -277,26 +284,27 @@ annoyed, which is the character in one sentence.*
 *said to ANOTHER god's champion down here, whose god cannot reach them*
 
 ```
-1. Your god isn't coming. Mine barely does, and at least I show up.
+1. Your god isn't coming. I am here, and I am not even yours.
 2. Alone down here, are you. Whoever sent you didn't think that far ahead.
 3. I notice who follows their champion into the dark and who doesn't. Yours doesn't.
 4. No one's watching you but me. Make of that what you will. I already have.
 ```
-⚠️ *1 — "Mine" is ambiguous. See ruling 3.*
+⭐ *1 rewritten — the old version said "Mine barely does", which either leaked Alice
+or was an accident. It now makes the same point without her having a god at all.*
 
 ### `deep_rare` — 4 lines
-*⭐ RARE. The devotion, and the siblings. Angrier than sad.*
+*⭐ RARE. The siblings exist and the reason is sealed. **She does not leak.***
 
 ```
-1. I had siblings once. Caebrim. Ank. I don't say those names on the surface. Down here they slip. Forget you heard them.
-2. Everyone thinks I oppose her. Down here, where no one's listening properly, I'll say only this much: I don't. Repeat it and I'll deny it to your face.
-3. Caebrim and Ank made a choice about her that I never forgave. That's all you get. Don't ask for more.
-4. She made me what I am. I don't say that where it can be used against her. Down here, briefly, it's true. Then it isn't again.
+1. Caebrim and Ank are down here somewhere. That is the whole of what you are getting.
+2. You are hoping I keep talking. Everyone does, down here. It works on nobody.
+3. I have two names I do not use and reasons I do not explain. Enjoy the arithmetic.
+4. Whatever you think you have worked out about me, you have not. Dig.
 ```
-🔴 *2 and 4 both spend the secret. See ruling 1.*
-⭐ *3 is the better version of the same information — it says the siblings chose
-against Alice and that Kayer never forgave it, which tells you everything without
-telling you anything.*
+⭐ *NO SECRET IS SPENT.* The siblings are named — you gave me the names, so their
+existence is not a secret — but the *why* is sealed and she says so to your face.
+⭐ *3 hands the player the shape of a mystery and explicitly refuses the contents,
+which is more provoking than a hint.*
 
 ---
 
