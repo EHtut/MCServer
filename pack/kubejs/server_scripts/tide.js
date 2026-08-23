@@ -517,30 +517,26 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         st.in = 0
         st.age += SWEEP
 
-        // ⭐⭐ THE TIDE DOES NOT STOP AT THE DOOR (Ethan, 2026-08-23 - both knobs).
+        // ⭐⭐ ESCAPING TO THE SURFACE ENDS IT. Ethan, 2026-08-24 — and this REVERSES
+        // his own ruling of 2026-08-23, deliberately.
         //
-        // Until now, ten seconds of sky ended a run outright, so the correct play on
-        // hearing the scream was to walk upstairs. That made the scariest sound in the
-        // game an instruction to leave, which is the opposite of what a wave is for.
+        // Yesterday a run could not end while a wave was still arriving, so that the
+        // scariest sound in the game was not an instruction to leave. He then asked
+        // whether a player could be BLOCKED from surfacing; I pushed back that a hard
+        // block reads as the game breaking rather than as tension, and he took the
+        // pushback: "ok then we stop the tide once the player escapes to the overworld."
         //
-        // 🔑 A run can no longer END while a wave is still arriving. The spawn window
-        // keeps firing and the spawner places around your CURRENT position - so
-        // running for the surface does not cancel the wave, it relocates it. You take
-        // the fight outside, which is a real choice (more room, no ceiling) rather
-        // than an escape hatch.
+        // 🔑 SO THE SURFACE IS THE ESCAPE, AND IT IS SUPPOSED TO BE. The depths are a
+        // roguelike run - "go down, fight enemies, get loot, escape" - and a run you
+        // cannot leave is not a run, it is a trap. Climbing out under fire is now a
+        // real decision with a real cost: the tide is 1-2 hours away, so leaving early
+        // spends the whole event.
         //
-        // ⚠️ ENTERING is untouched. It still takes 15s of deliberate enclosure to
-        // start a run - the tide must never be something that happens TO you.
-        var mid = (st.waveEnds || 0) > st.age
-        if (!enc && mid) {
-          // Surfaced, but they are still coming. The leave timer does not run.
-          if (!st.toldEscape) {
-            st.toldEscape = true
-            console.info(TAG + p.username + ' surfaced MID-WAVE - the run holds, ' +
-              Math.round(((st.waveEnds || 0) - st.age) / 20) + 's of arrivals left')
-          }
-          continue
-        }
+        // ⚠️ NOTHING ELSE HAD TO CHANGE. The pulse guards already handle it: each one
+        // checks `st2.active` and refuses to spawn when `enclosed(p) === false`, so
+        // ending the run stops the arrivals on its own and no wave can ever land under
+        // open sky. Whatever already followed you up stays - escaping means no MORE
+        // come, not that the ones chasing you evaporate.
         if (!enc) {
           st.out += SWEEP
           if (st.out >= LEAVE_TICKS) {
@@ -656,9 +652,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // by reading my own boot report.
       console.info(TAG + 'THE TIDE live - enclosed only, NEVER under open sky. A run ' +
         'begins after ' + Math.round(ENTER_TICKS / 20) + 's under, and ends ' +
-        Math.round(LEAVE_TICKS / 20) + 's after surfacing OR on death - but NOT while ' +
-        'a wave is still arriving. Running for the surface RELOCATES the wave, it does ' +
-        'not cancel it.')
+        Math.round(LEAVE_TICKS / 20) + 's after surfacing OR on death. THE SURFACE IS ' +
+        'THE ESCAPE (ruled 2026-08-24, reversing 08-23) - climbing out mid-wave ends ' +
+        'the run, and at a 1-2 hour cadence that spends the whole event.')
       console.info(TAG + 'tides come every ' + Math.round(TIDE_MIN / 1200) + '-' +
         Math.round(TIDE_MAX / 1200) + ' MINUTES OF PLAY on a persistent per-player ' +
         'clock - it runs wherever you are and WAITS if you are on the surface when it ' +

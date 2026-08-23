@@ -326,19 +326,30 @@ grp('🔴 HARD MODE — the three changes of 2026-08-23')
   ok('...and it is tagged, so it can be counted later',
     WAVES.every(w => String(w.nbt || '').indexOf('veldora_tide') >= 0), true)
 
-  // 2. THE TIDE DOES NOT STOP AT THE DOOR. Surfacing mid-wave used to end the run in
-  //    10s, which made the scariest sound in the game an instruction to leave.
+  // 2. 🔴 ESCAPING TO THE SURFACE ENDS THE RUN — REVERSED 2026-08-24.
+  //
+  // This block previously asserted the OPPOSITE: that surfacing mid-wave could not end
+  // a run, so the scariest sound in the game was not an instruction to leave. Ethan
+  // then asked about hard-blocking a player from surfacing, took the pushback that a
+  // hard block reads as the game breaking, and ruled: "we stop the tide once the
+  // player escapes to the overworld."
+  //
+  // 🔑 The surface IS the escape, and the cost is the event itself - at a 1-2 hour
+  // cadence, leaving early spends the whole tide. That is a real decision; a run you
+  // cannot leave is a trap, not a roguelike.
   const q = fresh(); Y = -20; SKY = false; ticks(3)
   ok('in a run', T.inRun(q), true)
   T.force(q)                                  // a wave is now arriving
-  Y = 80; SKY = true                          // ...and they run for the surface
+  Y = 80; SKY = true                          // ...and they climb out through it
   ticks(4)                                    // 20s of sky - twice LEAVE_TICKS
-  ok('🚨 surfacing MID-WAVE does not end the run', T.inRun(q), true)
+  ok('🚨 surfacing MID-WAVE ends the run - the surface is the escape', T.inRun(q), false)
 
-  // 3. ...but it is a hold, not a trap. Once the arrivals stop, leaving works again.
-  drain()                                     // let the spawn window elapse
-  ticks(40)
-  ok('...and once the wave is over, surfacing DOES end it', T.inRun(q), false)
+  // 3. And the arrivals stop with it. The pulse guards do this on their own: each
+  // checks st2.active and refuses when enclosed(p) === false, so no wave can land
+  // under open sky and none had to be cancelled by hand.
+  WAVES = []
+  drain()
+  ok('...and no queued pulse lands above ground', WAVES.length, 0)
 
   // 4. 🔴 THE LOOT REFRESH IS NOT THIS FILE'S JOB - reversed 2026-08-24.
   //
