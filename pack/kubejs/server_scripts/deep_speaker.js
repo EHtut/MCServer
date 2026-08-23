@@ -349,6 +349,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         'I notice who follows their champion into the dark and who does not. Yours does not.',
         'No one is watching you but me. Make of that what you will. I already have.',
       ],
+      // ⭐⭐ THE FIRST LINE SURVIVES THE BOOK CANON AND GETS BETTER (docs/58 §2).
+      // I wrote it as DISMISSAL. It is not. Caebrim is her closest bond in the entire
+      // series - "her rock, more than her husband" - and the four words that matter are
+      // **"she'd never admit it"**. She timed the siege of Harrowfen so her sister would
+      // be safely gone first.
+      //
+      // 🔑 So this is a WALL, not a shrug, and it needs no rewrite - only the note that
+      // the person shutting the question down is shutting it down about the person she
+      // loves most. Which is also exactly Ethan's own ruling that she never gives
+      // secrets, now with a reason underneath it.
+      //
+      // 🚨 A later editor must NOT soften this line to show the warmth. The whole point
+      // is that the warmth is never visible from outside; his own craft note says
+      // showing her cold for 22 chapters is what made it land when we finally got in.
       rare: [
         'Caebrim and Ank are down here somewhere. That is the whole of what you are getting.',
         'You are hoping I keep talking. Everyone does, down here. It works on nobody.',

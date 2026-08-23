@@ -97,6 +97,12 @@ wholesale; her release condition is CAPABILITY, not failure) ·
 her pools) · **`55-MATRIARCH-EVERY-LINE`** (DRAFT lines to edit and hand back —
 ⚠️ not generated from source, none of it is in the game yet)
 
+**The book canon** — **`58-KAYER-CANON`** (2026-08-22 — Ethan's series notes for Kayer,
+verbatim + reconciled. ⭐ **Forge is Milantros and Wall is MERA, and Kayer cannot forgive
+either of them for being Alice's daughter** · she MADE Blade (*Gregor **Kayer** Court*) ·
+her silence is foresight, not surveillance · ⚠️ the Homelander trap, which is a review
+gate on every line of hers)
+
 **Not a patron — the thing in the dark** — **`57-CAEBRIM`** (2026-08-22 — she is
 FEMALE; the shadow stalker is taken off Art and reserved as **her** form, Art recast to
 the Lifestealer's TRUE form and why the base one would have turned on its own champion;

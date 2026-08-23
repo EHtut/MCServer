@@ -73,20 +73,39 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "You haven't done enough to warrant words.",
       'Speak to someone who cares what you did today. Not me.',
     ],
-    // ⭐ Silence as SURVEILLANCE, not absence. docs/53 §4: she knows your every move,
-    // so her quiet is a decision rather than inattention.
+    // ⭐⭐ SILENCE IS FORESIGHT. docs/53 §4 upgraded this pool from apathy to
+    // surveillance; the book canon (docs/58 §5) upgrades it again, and further.
+    //
+    // She was formed from the THREE ORACLES - Past, Present and Future - reunited, and
+    // Ethan's phrase for it is divination "in the most brutal sense": she does not plan
+    // using foresight, she has SEEN THE WHOLE THING, including the end, and chosen it.
+    //
+    // 🔑 So she is not watching you. SHE ALREADY WATCHED. Years ago. That is a colder
+    // thing than surveillance and nobody else in the pantheon can do it - and it is
+    // why his note on her first POV says she is "serene and BORED, not seething".
+    // There is no suspense anywhere in her life.
     high_silence: [
-      "I'm watching. That's all you get.",
-      'Nothing to say. Everything to see.',
-      'Silence is not absence. Keep that in mind.',
-      "I don't need to speak to know what you did.",
+      'I already know how this goes. Saying it would only slow you down.',
+      'Nothing to say. Everything to see. Those are not the same and I have both.',
+      'I watched this a long time ago. Go on.',
+      "There is nothing you can do in front of me that I have not already had time to get bored of.",
+      "I don't need to speak to know what you did. Or what you are going to.",
     ],
+    // ⚠️ REWRITTEN AGAINST docs/58 §4. Ethan on his own weakest voice: she "rides the
+    // Homelander archetype... the template does the work, so the uniquely-Kayer verbal
+    // print stays thin." Three lines here were exactly that - "Finish it. Now.",
+    // "That opening was obvious.", "You are slower than the last one" - stock menace
+    // any cold villain in any story could say.
+    //
+    // 🔑 THE TEST, and it applies to every future line of hers: does it touch the
+    // FORESIGHT, the FOLD, ALICE, CAEBRIM, or the two daughters? If it touches none of
+    // them, the archetype is writing itself and the line is replaceable.
     combat: [
       "Don't die. It's inconvenient for me.",
-      'Finish it. Now.',
-      "That opening was obvious. Take it before it isn't.",
-      'You are slower than the last one. He also died.',
+      'I have already seen how this ends. Get there.',
+      "You will step left. You always step left. Do it faster this time.",
       'Efficient. Barely.',
+      "I am not worried. I am incapable of being worried. Try to find that comforting.",
     ],
     returned: [
       'You went somewhere. Nothing here noticed.',
@@ -168,11 +187,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "I asked. That was the courtesy. There isn't a second one.",
       "Blade's champion, doing Blade's work, standing in front of me. Interesting choices.",
     ],
+    // ⚠️ ALSO A MERA POOL (docs/58 §0), and colder than the others for it - she is
+    // shorter with Wall's champion than with anybody else's, and will not say why.
     demand_wall: [
       "You belong to Wall. That's not an argument, it's a fact I'm setting aside.",
       "She isn't watching right now. I am. Use the difference.",
       "I don't need you to be loyal. I need you to be useful for one minute.",
       "Wall's champion. I'll keep this brief, for both our sakes.",
+      "Of all of them, hers. Fine. Stand there and let me get through this.",
     ],
     demand_salvage: [
       "Salvage would tell you this is a bad trade. She'd be right. Do it anyway.",
@@ -207,15 +229,40 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // underground line, that is a decision to take on purpose, not a gap to fill.
 
     // [CLAUDE-DRAFT] art/near_blade · art/near_wall · art/near_salvage
+    // 🔑 SHE MADE HIM. docs/58 §3 - the naming convention gives Blade as "Gregor
+    // KAYER Court", and a falsehood's middle name is the maker. docs/15 calls his
+    // deference to her a mystery; it is not one. She will not spell it out.
     near_blade: [
       'Blade thinks strength has to come from your own arm. Naive, but I understand the appeal.',
+      "He defers to me and he has never once asked himself why. I would rather he didn't start.",
       "He'll tell you my gifts make you weaker. He's wrong about most things.",
       'Ask him why he still needs a champion, if his own arm is so sufficient.',
     ],
+    // ═══════════════════════════════════════════════════════════════════════
+    // 🔴 THIS IS THE MERA POOL, AND IT IS THE MOST LOADED THING SHE HAS. docs/58 §0.
+    //
+    // Wall is MERA - Alice and Arkh's genetic heir - and Kayer's core wound, in her own
+    // words: "I am the daughter of Alice, not her." On a news broadcast Mera is hailed
+    // as the possible "real daughter of our master Alice" and Kayer snaps the TV off in
+    // fury. "WE ARE HER CHILDREN!"
+    //
+    // ⭐ Alice made Kayer "in the image of the one she loved most, out of the bones of
+    // the one she loved most" - and she is still denied the title, while the one who
+    // simply INHERITED it gets it for free.
+    //
+    // ⚠️ AND SHE CANNOT SAY ANY OF THAT to a stranger. She never gives secrets (Ethan's
+    // ruling, docs/53). So these lines are the pressure with the cause sealed inside:
+    // she talks about Wall's champion and cannot stop talking about lineage.
+    //
+    // 🚨 DO NOT LET HER NAME ALICE HERE. That is a confession, and she does not make
+    // them. The wound shows in what she keeps circling, not in what she admits.
     near_wall: [
       'Wall will love you the way she loves everything. Completely, and past the point you wanted it.',
+      "That one was born into it. Some of us were assembled. I am told the difference does not matter.",
       "She grieves everyone before they're gone. Exhausting to watch. Worse to receive.",
+      "Ask her sometime whose daughter she is. Ask her slowly. I want it to take a while.",
       "Don't let her hold on too long. She doesn't know how to stop.",
+      "She inherited hers. Every single thing I have, I was given, and giving can be revoked.",
     ],
     near_salvage: [
       'Salvage will tell you the truth and then let you walk away from it. Unusual, for one of us.',

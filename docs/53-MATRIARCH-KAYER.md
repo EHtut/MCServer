@@ -17,6 +17,11 @@
 > She is **not your ally**. She knows your every move, and when you go down into the
 > dark — if you prove to be too capable — **she will cut you down herself.**
 >
+> 🔴 *(**SUPERSEDED 2026-08-22 by the book canon** — `docs/58 §1`. She is **married**
+> to Ank; her surname *Rysor* IS that marriage. And Caebrim is not merely a sibling, she
+> is **"her rock, more than her husband"** — a thing Kayer would never admit. The
+> ESTRANGEMENT is real and stays; the **"no allies"** framing does not.)*
+>
 > The Matriarch has no allies. Her siblings **Caebrim** and **Ank**, now banished to
 > the depths, are unwilling to speak to her.
 
