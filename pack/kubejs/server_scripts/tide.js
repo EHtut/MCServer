@@ -56,7 +56,28 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var SWEEP = 100                 // 5s between checks - cheap, only online players
   var ENTER_TICKS = 300           // 15s enclosed before a run BEGINS
   var LEAVE_TICKS = 200           // 10s of sky before it ENDS
-  var GRACE = 1200                // 60s into a run before the first wave can land
+  // 🔴 GRACE WAS A FLOOR THAT WAS BEING USED AS AN OFFSET. Fixed 2026-08-24 from
+  // Ethan's play log - "apparently the tide never tided".
+  //
+  // The comment said "60s into a run before the first wave can land". The code said
+  // `st.next = GRACE + nextGap(p)` - sixty seconds PLUS a full 5-10 minute gap, so the
+  // first wave needed SIX TO ELEVEN MINUTES of unbroken enclosure. His log is the
+  // proof: the single run that ever produced a wave began 15:21 and fired at 15:28,
+  // seven minutes in. Every other run was 1-5 minutes and got nothing:
+  //
+  //     16:09:04 surfaced - tide ends after 0 wave(s), 2 min
+  //     16:11:34 surfaced - tide ends after 0 wave(s), 1 min
+  //
+  // ⚠️ AND SURFACING WIPES THE RUN, so every dip restarted that clock from zero. A
+  // player who goes in and out - which is how anyone actually mines - could never
+  // reach a wave at all.
+  var GRACE = 1200                // 60s minimum before the first wave can land
+
+  // ⭐ THE FIRST WAVE IS ITS OWN WINDOW, NOT THE ORDINARY CADENCE. Going under has to
+  // announce itself while you still remember choosing it; the 5-10 minute rhythm is
+  // for a run you have already committed to, not for the doorway.
+  var FIRST_MIN = 1200            // 60s  \  so the first wave lands between one and
+  var FIRST_MAX = 3000            // 150s /   two and a half minutes under
 
   // ⚠️ ENTERING MUST BE DELIBERATE. Without ENTER_TICKS, stepping into a doorway or
   // under an overhang starts a run, and the tide becomes something that happens TO
@@ -232,6 +253,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { return 1 }
   }
 
+  // The doorway window. Shares artPull so her champion is drawn in faster from the
+  // very first wave rather than only from the second.
+  function firstGap(p) {
+    var base = FIRST_MIN + Math.floor(Math.random() * (FIRST_MAX - FIRST_MIN + 1))
+    var pull = p ? artPull(p) : 1
+    if (pull >= 1) return base
+    return Math.max(SWEEP, Math.round(base * pull))
+  }
+
   function nextGap(p) {
     var base = WAVE_MIN + Math.floor(Math.random() * (WAVE_MAX - WAVE_MIN + 1))
     if (!p) return base
@@ -389,7 +419,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
             st.active = true
             st.age = 0
             st.waves = 0
-            st.next = GRACE + nextGap(p)
+            // First wave uses FIRST_*, not nextGap - see the note on GRACE. artPull
+            // still applies, because the Matriarch draws the tide to her champion
+            // from the moment they go under, not only once it is rolling.
+            st.next = Math.max(GRACE, firstGap(p))
             console.info(TAG + p.username + ' has gone under - the tide begins')
           }
           continue
@@ -530,7 +563,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         Math.round(LEAVE_TICKS / 20) + 's after surfacing OR on death - but NOT while ' +
         'a wave is still arriving. Running for the surface RELOCATES the wave, it does ' +
         'not cancel it.')
-      console.info(TAG + 'waves every ' + Math.round(WAVE_MIN / 1200) + '-' +
+      console.info(TAG + 'first wave ' + Math.round(FIRST_MIN / 20) + '-' +
+        Math.round(FIRST_MAX / 20) + 's after going under; then waves every ' +
+        Math.round(WAVE_MIN / 1200) + '-' +
         Math.round(WAVE_MAX / 1200) + ' min, first no sooner than ' +
         Math.round(GRACE / 1200) + ' min in. Each is ' +
         Math.round(SPAWN_WINDOW / 20) + 's of ARRIVALS at range in ' + SPAWN_BATCHES +

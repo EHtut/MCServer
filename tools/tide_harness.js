@@ -336,6 +336,32 @@ grp('🔴 HARD MODE — the three changes of 2026-08-23')
     CMDS.filter(c => c.indexOf('lootr') >= 0).length, 0)
 }
 
+
+// ═══════════════════════════════════════════════════════════════════════════
+grp('🔴 THE FIRST WAVE — the bug this suite could not see')
+{
+  // 🚨 EVERY WAVE TEST ABOVE USES T.force(), WHICH BYPASSES THE TIMER ENTIRELY. So the
+  // suite sat 33/33 green while the first wave took SIX TO ELEVEN MINUTES of unbroken
+  // enclosure - GRACE was written as a floor and used as an offset:
+  //
+  //     st.next = GRACE + nextGap(p)      // 60s PLUS a full 5-10 minute gap
+  //
+  // Ethan found it in play, not here: "apparently the tide never tided", with runs of
+  // 1-2 minutes ending at 0 waves. The fix is a dedicated first-wave window; THIS is
+  // the assertion that would have caught it, and it runs the real clock.
+  const p = fresh(); Y = -20; SKY = false
+  ticks(3)                                     // 15s enclosed -> the run begins
+  ok('the run started', T.inRun(p), true)
+
+  WAVES = []
+  ticks(5)                                     // 25s in - still inside GRACE
+  ok('🚨 nothing lands inside the grace period', WAVES.length, 0)
+
+  // FIRST_MAX is 150s. Sweeps are 5s, so 30 more covers the whole window with room.
+  ticks(35); drain()
+  ok('🚨 the first wave HAS landed within ~2.5 minutes', WAVES.length > 0, true)
+}
+
 console.log('\n' + (fail === 0
   ? '\x1b[32m' + pass + '/' + (pass + fail) + ' passed\x1b[0m'
   : '\x1b[31m' + fail + ' FAILED\x1b[0m, ' + pass + ' passed'))
