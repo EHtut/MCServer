@@ -109,6 +109,25 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // Three cutscenes, one per descent, in order. She is a character who cannot
     // finish a sentence, so being stopped three times mid-thought makes the FORM
     // match the writing.
+    //
+    // 🔴🔴 SHE MAY BE KAYER. OPEN QUESTION, 2026-08-23 - docs/60 §2. NOT A CHANGE, AND
+    // NOT ONE LINE OF ETHAN'S TEXT BELOW HAS BEEN TOUCHED. Read against the book canon,
+    // every stanza fits the Matriarch:
+    //
+    //   "I had to make a choice"        she sees the whole future and chooses it anyway
+    //   "He was one of us. Our family."  Gregor KAYER Court - she named and bound him,
+    //                                    and he left the Court for the Church
+    //   "someone I was meant to protect, but I was too weak"
+    //                                    canon: KAYER kills him, by cutting him off
+    //                                    from the link
+    //   "rescue my goddess from that church"
+    //                                    her entire war is "because the church took Alice"
+    //   "Blinded by faith."             ⭐ the dark shepherd. This fits nothing else.
+    //
+    // ⚠️ THE COUNTER-CASE IS REAL AND IS WHY THIS IS A COMMENT, NOT AN EDIT: the header
+    // above says of the Speaker "grey. She is not a god", and Kayer already has her own
+    // entry in this file (death_matriarch, for art). Whoever rules on it should read
+    // docs/60 §2 first - and either way these lines stay exactly as written.
     confession: [
       [
         'When you get up there... Tell your god I... Tell him I\'m sorry. For everything I did.',

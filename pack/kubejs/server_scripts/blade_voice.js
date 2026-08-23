@@ -401,6 +401,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
               "I have outlasted every one of them."
           ]
       },
+      // ⭐⭐ AND HIS COLDNESS IS THE COST, NOT THE CHARACTER (docs/60 §1). The book
+      // Gregor is "the most human of the entire undead cast" - kind, humble, warm, no
+      // irony and no god-distance. That looks unrecoverable against the god of war
+      // until you read his TWO CARDS:
+      //
+      //     GREGOR KAYER COURT   Companion . Friend . Brother   -> defined by PEOPLE
+      //     GREGOR CROSS         Soldier . Veteran . General    -> defined by RANK
+      //     "He goes from being known to being positioned."
+      //
+      // 🔑 Veldora's Blade is the SECOND card. The hardness is what is left when you
+      // take the Court out of Gregor Kayer Court, and the player only ever meets the
+      // general. The warmth survives as a mechanic instead: Ethan's own chart note,
+      // "the warrior focuses on you and really only tests you" - he is the one god
+      // whose entire attention is on the person in front of him.
+      //
       // 🔴🔴 HE IS DESCRIBING HIS DAUGHTER. docs/59 §1.
       //
       // Blade is GREGOR (docs/40 §0). Wall is MERA - and per Ethan's book canon she is

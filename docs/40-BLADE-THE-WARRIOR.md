@@ -112,6 +112,13 @@ is the model for the whole tier.
 arc. It just about works, since competence is what makes him relax, but 50/200 were
 never chosen with three named stages in mind.
 
+🔴 **UPDATE 2026-08-23 — THIS QUESTION HAS MOVED, TWICE.** (a) Caebrim is now
+**Forge's** deep speaker (`docs/57 §3`), so she is no longer a candidate to replace
+Blade's. (b) The book canon points hard at a different answer: **the Speaker may be
+KAYER** — every line of the confession fits her, and *"Blinded by faith"* fits nothing
+else. The evidence, and the real counter-case, are in **`docs/60 §2`**. ⚠️ Still open,
+and it is the biggest lore ruling left.
+
 **4. Caebrim vs the Speaker.** `deep_speaker.js` already gives Blade a deep voice —
 *the Speaker*, grey, confessing about **Gregor**. Caebrim is a different character with
 a stronger idea. **Decide whether she replaces the Speaker or stands beside her** before
@@ -161,6 +168,22 @@ single most expensive word in the game, and it means:
 * **Blade's *"Why can I hear her name?"* is exactly right** — he cannot say it, which
   is the point;
 * Caebrim and Alice are **titles-in-waiting** in the deep speaker, not labels to print.
+
+### ⭐⭐⭐ AND THIS RULE TURNS OUT TO BE HIS CANON (`docs/60 §0`, 2026-08-23)
+
+The rule above was made for **pacing**. Ethan's book notes then arrived and said that
+Gregor is the character *defined* by a name:
+
+> Ch 28 — he rips up a forged noble certificate rather than be called a Chadson:
+> **"It's Court. It will always be Court."** / **"Names mean a lot, Caebrim."**
+>
+> ⭐⭐ **And he stops being one.** *Gregor Kayer Court* → *Gregor Cross*. ⚠️ Canon rule:
+> **no middle name = NO PATRON.** "Gregor Cross" is literally the name of an undead who
+> belongs to no one.
+
+🔑 **Blade cannot say names because he lost his own.** Nothing needs to change — it was
+already true. And *"Why can I hear her name?"* stops being a good line and becomes the
+only crack in him: a man who lost the right to names, hearing one anyway.
 
 ---
 

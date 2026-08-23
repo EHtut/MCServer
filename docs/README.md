@@ -97,7 +97,10 @@ wholesale; her release condition is CAPABILITY, not failure) ·
 her pools) · **`55-MATRIARCH-EVERY-LINE`** (DRAFT lines to edit and hand back —
 ⚠️ not generated from source, none of it is in the game yet)
 
-**The book canon** — **`59-MERA-CANON`** (2026-08-23 — Ethan's series notes for Mera =
+**The book canon** — **`60-GREGOR-CANON`** (2026-08-23 — Ethan's notes for Gregor =
+**BLADE**. ⭐⭐⭐ **The name rule in `docs/40` turns out to be his canon** — he cannot say
+names because he lost his own · his coldness is the COST of the link severance, not his
+character · 🔴 OPEN: the deep Speaker may be **Kayer**) · **`59-MERA-CANON`** (2026-08-23 — Ethan's series notes for Mera =
 **WALL**, verbatim + an honest usability triage. 🔴 **Wall is Blade's daughter and
 neither of them knows** · her clinging is PURPOSE-LOSS, not motherhood · ⚠️ OPEN: her
 anti-undead golden light vs. her necromancy path — blocks the voice rewrite) ·
