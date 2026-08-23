@@ -35,7 +35,17 @@ const server = {
 
 global.EntityEvents = { death: () => { }, beforeHurt: () => { }, spawned: () => { }, checkSpawn: () => { } }
 global.PlayerEvents = { respawned: () => { }, loggedIn: () => { }, loggedOut: () => { }, tick: () => { } }
-global.ServerEvents = { commandRegistry: () => { }, loaded: () => { }, tick: () => { } }
+// 🔴🔴 THIS STUB WAS A NO-OP AND IT COST TWO SPEAKERS A DAY OF BEING DEAD.
+//
+// deep_speaker.js does its ENTIRE registration inside ServerEvents.loaded. Swallowing
+// the handler meant 21/21 passed green while the live boot block threw on Kayer (who
+// has no confession, deliberately) and took `art` and `forge` down with it. The
+// harness was testing pure functions against fixtures and calling that coverage.
+//
+// ⭐ Captured now, and RUN below. This is the repo's own oldest rule finally applied
+// to this file: run_all cannot see liveness, so the test has to run the boot path.
+const LOADED = []
+global.ServerEvents = { commandRegistry: () => { }, loaded: (fn) => LOADED.push(fn), tick: () => { } }
 global.ItemEvents = { rightClicked: () => { }, entityInteracted: () => { } }
 global.BlockEvents = { placed: () => { }, broken: () => { }, rightClicked: () => { } }
 global.Text = { of: (s) => s }
@@ -220,6 +230,68 @@ grp('A PATHLESS PLAYER HEARS NOBODY, AT ANY DEPTH')
 }
 
 speak()
+
+// ═══════════════════════════════════════════════════════════════════════════
+grp('🚨 deep_speaker.js IS ACTUALLY LOADED AND BOOTED — both were missing')
+{
+  // 🔴🔴 TWO HOLES, FOUND 2026-08-23 WHEN A RESTART BROKE:
+  //
+  //   1. This file is called deep_speaker_harness and it NEVER LOADED
+  //      deep_speaker.js. Everything above is idle.js talking to a STUBBED speaker -
+  //      real coverage of the cutoff and the cooldowns, and zero coverage of the file
+  //      in the name.
+  //   2. ServerEvents.loaded was stubbed to a no-op, so the registration loop - which
+  //      is where deep_speaker.js does ALL of its work - never ran.
+  //
+  // Together they let 21/21 stay green while the live boot threw on Kayer (no
+  // confession, deliberately) and took `art` AND `forge` down with it, silently.
+  //
+  // ⭐ Loaded in isolation and restored afterwards, so the stub the tests above rely
+  // on is untouched.
+  const stubSpeaker = global.VELDORA.speaker
+  const before = LOADED.length
+  // 🔑 MEASURE AT THE POINT OF USE. A first version of this asserted on
+  // VELDORA.speaker.speakers - which is filled by register() in the SCRIPT BODY and is
+  // therefore always complete, boot loop or no boot loop. It passed against the broken
+  // code. The actual casualty was the VOICE POOLS: art threw, so forge never reached
+  // registerLines and its champion heard silence. So that is what gets counted.
+  const REGISTERED = []
+  global.VELDORA.voice.registerLines = (id, tag) => { REGISTERED.push(id); return true }
+  global.VELDORA.voice.setColour = () => { }
+  global.VELDORA.ritual.begin = () => true
+  global.VELDORA.phase = { of: () => 'early' }
+
+  hush()
+  let loadErr = null, bootErr = null
+  try { (0, eval)(fs.readFileSync(path.join(SS, 'deep_speaker.js'), 'utf8')) }
+  catch (e) { loadErr = e }
+  if (!loadErr) {
+    try { for (let i = before; i < LOADED.length; i++) LOADED[i]({ server }) }
+    catch (e) { bootErr = e }
+  }
+  speak()
+
+  ok('deep_speaker.js loads', loadErr === null ? true : String(loadErr), true)
+  ok('🚨 and its ServerEvents.loaded RUNS without throwing', bootErr === null ? true : String(bootErr), true)
+
+  const spk = (global.VELDORA.speaker && global.VELDORA.speaker.speakers) || {}
+  const gotLines = [...new Set(REGISTERED)].sort()
+  ok('🚨 ALL FIVE SPEAKERS GOT THEIR LINES INTO THE VOICE SYSTEM', gotLines,
+    ['death_doctor', 'death_keeper', 'death_matriarch', 'death_shadow', 'death_speaker'])
+
+  // ⭐ THE EXACT SHAPE THAT BROKE IT. `confession` is optional; Kayer has none on
+  // purpose. One entry without it must cost its own registration and nothing
+  // downstream - and `forge` enumerates after `art`, so it is the canary.
+  ok('art has NO confession, deliberately', !(spk.art && spk.art.confession), true)
+  ok('...and forge, registered AFTER her, survived it', !!spk.forge, true)
+  ok('...with its own three cutscenes intact', spk.forge && spk.forge.confession.length, 3)
+  ok('caebrim holds BOTH blade and forge (docs/61)',
+    [spk.blade && spk.blade.name, spk.forge && spk.forge.name], ['the Shadow', 'the Shadow'])
+
+  global.VELDORA.speaker = stubSpeaker
+}
+
+
 console.log('\n' + (fail === 0
   ? '\x1b[32m' + pass + '/' + (pass + fail) + ' passed\x1b[0m'
   : '\x1b[31m' + fail + ' FAILED\x1b[0m, ' + pass + ' passed'))

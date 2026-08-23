@@ -927,8 +927,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   ServerEvents.loaded(function (event) {
     if (!VELDORA.voice) { console.error(TAG + 'voice.js missing'); return }
     var names = []
+    var lost = []
     for (var path in SPEAKERS) {
       if (!SPEAKERS.hasOwnProperty(path)) continue
+      try {
       var s = SPEAKERS[path]
       VELDORA.voice.setColour(s.id, s.colour)
       var n = 0
@@ -936,11 +938,44 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         if (!s.lines.hasOwnProperty(k)) continue
         if (VELDORA.voice.registerLines(s.id, k, s.lines[k])) n += s.lines[k].length
       }
+      // 🔴🔴 THIS LINE TOOK TWO SPEAKERS OFF THE MAP FOR A DAY. Fixed 2026-08-23.
+      //
+      // `confession` is OPTIONAL - Kayer's entry has none deliberately ("her three
+      // cutscenes are the ritual, she does not confess"). This loop read
+      // s.confession.length unguarded, threw on her, and killed ServerEvents.loaded
+      // where it stood. Everything registered BEFORE her survived; everything after
+      // her did not:
+      //
+      //     blade  ✅   wall  ✅   salvage  ✅   art  🔴 THREW   forge  🔴 NEVER REGISTERED
+      //
+      // ⚠️ HOW IT HID: this file's own ServerEvents.loaded only runs on a RESTART, and
+      // every deploy since Kayer was built said "deployed, NOT restarted". The
+      // 21-assertion harness passed the whole time because it calls the functions
+      // directly and never runs the boot block. That is this project's oldest lesson
+      // arriving again - run_all cannot see liveness, and a gate ships with a live
+      // consumer or not at all.
+      //
+      // 🚨 The guard is not the real fix; ORDER-INDEPENDENCE is. One malformed entry
+      // must cost its own registration and nothing else, so the loop body is wrapped
+      // and reports the casualty by name instead of dying silently in the middle.
+      var conf = (s.confession && s.confession.length) ? s.confession : []
       var cl = 0
-      for (var i = 0; i < s.confession.length; i++) cl += s.confession[i].length
+      for (var i = 0; i < conf.length; i++) cl += conf[i].length
       console.info(TAG + path + ' -> ' + s.name + ' (' + s.id + ') - ' + n +
-        ' lines + ' + s.confession.length + ' confession cutscenes (' + cl + ' lines)')
+        ' lines + ' + conf.length + ' confession cutscenes (' + cl + ' lines)' +
+        (conf.length ? '' : ' - NO CONFESSION, and that is deliberate for her'))
       names.push(path + ':' + s.name)
+      } catch (e) {
+        // One bad entry costs ITSELF and nothing downstream. Named loudly, because a
+        // path that silently has no deep voice is indistinguishable from a path that
+        // deliberately has none.
+        lost.push(path)
+        console.error(TAG + '!! ' + path + ' FAILED TO REGISTER and has NO deep voice :: ' + e)
+      }
+    }
+    if (lost.length) {
+      console.error(TAG + '!! ' + lost.length + ' speaker(s) lost: ' + lost.join(', ') +
+        ' - their champions hear SILENCE below the cutoff. This is a bug, not a design.')
     }
     confessionSweep(event.server)
     // ⚠️ THE FIFTH STALE BANNER IN FOUR DAYS. This announced "below y-64" for hours

@@ -1,7 +1,10 @@
 # 56 — The Goat · Milantros
 
-> **STATUS 2026-08-22** — lore CAPTURED, nothing built. `forge` is the last `CLOSED`
-> path. Her drop table already exists (Create) and her coefficient row is live.
+> **STATUS 2026-08-23** — ✅ **BUILT AND OPEN.** `forge_voice.js` (42 pools, accent
+> written) · `forge_events.js` (four events, six explicit zeroes) · Caebrim as her deep
+> speaker (`docs/61 §0`) · release rule `never` · **the `CLOSED` table is now empty and
+> the live server says so**: *"CLOSED (unbuilt, cannot be claimed): none"*. Every path
+> in Veldora is claimable. Verified on a real restart: 0 errors, 301/301 harnesses.
 
 ## 0. ⭐ THE CHARACTER BRIEF — Ethan, 2026-08-22
 

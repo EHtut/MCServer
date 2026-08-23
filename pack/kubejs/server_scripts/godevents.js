@@ -502,6 +502,30 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       challenge: 0, buff: 0, invade: 0, aid: 0, assassination: 0,   // never forced
       duel: 2, boon: 4, attack: 3, support: 1, contract: 3,
     },
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // ⭐ THE GOAT — the mirror of Salvage's row, and the only generous FORCED column.
+    //
+    // Salvage's whole column is the CHOICE half: she cannot do anything TO you.
+    // Milantros's is the HELP half: she cannot do anything AGAINST you. Six zeroes,
+    // and they are the entire harmful side of docs/23 - challenge, duel, invade,
+    // attack, assassination, contract.
+    //
+    // 🔑 SHE IS THE ONLY GOD WHOSE FORCED COLUMN IS A KINDNESS. docs/23's rule is
+    // "choice always gives a reward, no choice often gives none", which reads as
+    // forced = demanding. She breaks it the other way: buff 4 and aid 3 are things
+    // she does to you and for your friends WITHOUT ASKING, because it did not occur
+    // to her to ask.
+    //
+    // ⚠️ REGISTERED AS AN EXPLICIT ROW rather than left absent, because docs/23 §VI.0
+    // requires that a decided-zero and a missing kind never look the same - and
+    // godevents' own boot report warns about gods with no chart. ⚠️ `art` still has
+    // no row and relies on its boot banner instead; that is a real inconsistency and
+    // is flagged, not silently fixed here.
+    forge: {
+      challenge: 0, duel: 0, invade: 0, attack: 0, assassination: 0, contract: 0,
+      buff: 4, boon: 4, aid: 3, support: 3,
+    },
   }
 
   function wallMood(p) {

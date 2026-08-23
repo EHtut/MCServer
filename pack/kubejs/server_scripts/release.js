@@ -93,9 +93,27 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       blurb: 'You said no to her.',
     },
 
+    // ⭐⭐ THE GOAT NEVER PUTS YOU DOWN — ruled 2026-08-23, when forge opened.
+    //
+    // She was on the legacy `regard` door below because she was CLOSED. She is not any
+    // more, so this had to be decided rather than inherited - and the answer was
+    // already written, in her own harvest_lost pool:
+    //
+    //     "You lost. Nothin' happens. Don't nobody take nothin' from you.
+    //      That's how I do it."
+    //
+    // 🔑 SO SHE SHARES `never` WITH WALL, AND IT MEANS THE OPPOSITE THING. Wall never
+    // releases you because she will not let a champion go - possession. Milantros
+    // never releases you because she would never do that to anybody - kindness. Same
+    // mechanic, opposite meaning, which is the exact pattern her chart already runs on
+    // (docs/56 §4: the only god whose FORCED column is generous).
+    //
+    // ⚠️ It also belts-and-braces forge_events.js: even if a future editor calls
+    // release.refused() on one of her refusals, `never` has no counter to strike.
+    forge: { mode: 'never', speaksAtMax: true },
+
     // Closed or retired. Left on the legacy door rather than deleted, so anyone
     // still carrying one of these keys behaves exactly as they did yesterday.
-    forge: { mode: 'regard', speaksAtMax: true },
     art: { mode: 'regard', speaksAtMax: true },
     crown: { mode: 'regard', speaksAtMax: true },
   }

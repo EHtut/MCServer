@@ -230,7 +230,15 @@ grp('CROSS-CUTTING')
   ok('and it is still there if they return to blade', streak(p, 'blade'), 2)
 }
 ok('an UNKNOWN god still falls on regard (never silently unloseable)', R.fallsOnRegard('nonesuch'), true)
-ok('forge keeps the legacy door', R.fallsOnRegard('forge'), true)
+// 🔴 FORGE CAME OFF THE LEGACY DOOR 2026-08-23, when the path opened. This used to
+// assert she kept it - correct while she was CLOSED, wrong the moment she was not.
+// ⭐ Her rule is now DECIDED, and the point of these three lines is that a decided
+// 'never' and an inherited 'regard' are never the same thing: an unbuilt god falls
+// on regard, a built one has an answer. Her answer is in her own harvest_lost pool -
+// "You lost. Nothin' happens. Don't nobody take nothin' from you."
+ok('forge is OFF the legacy door - she was opened, so it was decided', R.fallsOnRegard('forge'), false)
+ok('...and the decision is NEVER: she does not put champions down', R.read(server, mkPlayer('Built', 'forge')).mode, 'never')
+ok('...the same mode as wall, meaning the opposite thing (possession vs kindness)', R.read(server, mkPlayer('Held', 'wall')).mode, 'never')
 ok('art keeps the legacy door', R.fallsOnRegard('art'), true)
 ok('crown keeps the legacy door', R.fallsOnRegard('crown'), true)
 ok('a pathless player has no mode', R.read(server, mkPlayer('Nobody', '')).mode, 'none')

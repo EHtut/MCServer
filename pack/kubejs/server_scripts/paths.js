@@ -427,8 +427,23 @@
   //
   // ⚠️ AND THE CLOSED MESSAGE CALLED HER THE DREAMWALKER, which is one of the three
   // names docs/53 retired. She is the MATRIARCH, and she is Kayer.
+  // ⭐⭐⭐ FORGE IS OPEN, 2026-08-23 — AND THE ROSTER IS COMPLETE. She was the last
+  // key in this table, and the bar this file set for opening a path was:
+  //
+  //     "TO OPEN: delete the key from CLOSED. Do it when the god has a written voice
+  //      and registered events, not before - `[voice] N god(s)` at boot is the check."
+  //
+  // She clears it: forge_voice.js (42 pools, accent written), forge_events.js (four
+  // events - notion, gift, kindness, lend, and SIX explicit zeroes), a deep-speaker
+  // entry that is CAEBRIM (docs/61 §0 - the woman who raised her), a validated drop
+  // table, a live counter (blocks placed + crafted + smelted), a coefficient row that
+  // was always hers (drops 5.0, the highest in the game), and a release rule decided
+  // rather than inherited (`never` - she does not put champions down).
+  //
+  // 🔑 EVERY PATH IN VELDORA IS NOW CLAIMABLE. Keep the empty object rather than
+  // deleting the machinery: the next god to be built needs this door, and a closed
+  // path is a feature, not a leftover.
   var CLOSED = {
-    forge: 'The Goat does not answer.',
   }
 
   // ── the test override ──────────────────────────────────────────────────────

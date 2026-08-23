@@ -315,9 +315,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       console.info(TAG + 'THE GRUDGE live - ' + NEED + ' kills by the SAME player, ' +
         'per (victim, killer) pair, reset on fire, -1 per ' +
         Math.round(DECAY_TICKS / 24000) + ' world days of peace.')
-      console.info(TAG + 'reprisals: blade=weakness ' + LASH.blade.secs + 's · salvage=slowness ' +
-        LASH.salvage.secs + 's · forge=mining_fatigue ' + LASH.forge.secs + 's · wall=' +
-        WALL_COUNT + ' spiders · art=nothing, by design')
+      // 🔴 THIS BANNER THREW ON BOOT 2026-08-23 - it read LASH.forge.secs after forge
+      // became null, and it ALSO still claimed "forge=mining_fatigue", which was a lie
+      // the moment the table changed. Both failures are the same defect: **a banner
+      // restating a rule another structure owns.** Five banners lied in one day this
+      // month for exactly this reason. Derived from LASH now, so it cannot lie and
+      // cannot throw - add a god to the table and this line reports it for free.
+      var bits = []
+      for (var g2 in LASH) {
+        if (!LASH.hasOwnProperty(g2)) continue
+        var r = LASH[g2]
+        if (r === null) { bits.push(g2 + '=nothing, by design'); continue }
+        if (r.spiders) { bits.push(g2 + '=' + WALL_COUNT + ' spiders'); continue }
+        bits.push(g2 + '=' + String(r.effect || '?').replace('minecraft:', '') + ' ' + r.secs + 's')
+      }
+      console.info(TAG + 'reprisals: ' + bits.join(' · '))
       if (noLines.length) {
         console.warn(TAG + '!! NO ARGUE LINES for: ' + noLines.join(', ') +
           ' - the reprisal still lands but it arrives UNANNOUNCED, which is the ' +
