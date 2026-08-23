@@ -320,13 +320,20 @@ grp('🔴 HARD MODE — the three changes of 2026-08-23')
   ticks(40)
   ok('...and once the wave is over, surfacing DOES end it', T.inRun(q), false)
 
-  // 4. SURVIVING A WAVE RE-OPENS THE LOOT.
+  // 4. 🔴 THE LOOT REFRESH IS NOT THIS FILE'S JOB - reversed 2026-08-24.
+  //
+  // These two assertions passed for one day against code that could never have
+  // worked: `/lootr clear <player>` does not exist, and probing the live server
+  // showed Lootr has NO per-player clear in any spelling. The refresh belongs in
+  // Lootr's own [refresh] config, scoped by loot table so the depths recycle and the
+  // surface does not.
+  //
+  // ⭐ INVERTED RATHER THAN DELETED. A guard is worth more than a gap here: if
+  // somebody re-adds a per-wave loot command, this fails and points at the config.
   const r = fresh(); Y = -20; SKY = false; ticks(3)
   CMDS = []; T.force(r); drain()
-  const loot = CMDS.filter(c => c.indexOf('lootr') >= 0)
-  ok('a survived wave issues a Lootr refresh', loot.length >= 1, true)
-  ok('...for that player by name, not globally',
-    loot.length > 0 && loot[0].indexOf(r.username) > 0, true)
+  ok('the tide issues NO loot command - that lives in Lootr config now',
+    CMDS.filter(c => c.indexOf('lootr') >= 0).length, 0)
 }
 
 console.log('\n' + (fail === 0

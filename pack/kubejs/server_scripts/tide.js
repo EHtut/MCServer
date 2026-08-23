@@ -97,9 +97,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // Counted LIVE from the world rather than tracked in a variable - a counter that
   // drifts would either strangle the tide or fail to stop it, and neither failure
   // announces itself. Tagged mobs, measured at the point of use.
-  // Loot refresh after a survived wave. One flag to disable if it misbehaves in play.
-  var LOOT_REFRESH = true
-
   var TIDE_TAG = 'veldora_tide'
   var MAX_ALIVE_NEAR = 45         // per player, within CENSUS_RANGE
   var CENSUS_RANGE = 48
@@ -259,43 +256,30 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (!srv) return
 
     // ═══════════════════════════════════════════════════════════════════════
-    // ⭐⭐ SURVIVING A WAVE RE-OPENS THE LOOT. Ethan, 2026-08-23:
-    // "if possible after a tide reset the lootr containers."
+    // 🔴 THE LOOT REFRESH LIVED HERE FOR ONE DAY AND WAS THE WRONG MECHANISM.
+    // Removed 2026-08-24 after probing the running server.
     //
-    // Lootr gives every player their own roll from a container, once. Clearing that
-    // record makes every chest down there lootable again - so the loop becomes the
-    // one he described back on 2026-08-22: "go down, fight enemies, get loot,
-    // escape." Staying deeper means more waves AND more loot, which is the whole
-    // risk/reward the depths were missing.
+    // The ask was Ethan's, 2026-08-23: "if possible after a tide reset the lootr
+    // containers." I built it as a command fired at the end of each spawn window -
+    // `lootr clear <player>` - and shipped it fail-loud because the server was off
+    // and the syntax could not be verified.
     //
-    // 🔑 FIRED AT THE END OF THE SPAWN WINDOW, NOT THE START. The reward lands when
-    // the arrivals stop, so it reads as payment for the wave rather than a reason to
-    // run past it.
+    // 🚨 `/lootr clear` DOES NOT EXIST. The real subcommands are: refresh, decay,
+    // openers, cclear, cull, custom-*, force_*. There is also NO per-player clear at
+    // all, so the shape I designed was not available in any spelling.
     //
-    // 🚨 FAIL LOUD. runCommandSilent returns the command's success count; Lootr's
-    // exact subcommand has NOT been probed on a live server yet (it was off when this
-    // was written). If the syntax is wrong this prints the command verbatim on the
-    // first real wave instead of silently doing nothing - "I failed" and "I found
-    // nothing" must never share a return value.
-    srv.scheduleInTicks(SPAWN_WINDOW + 20, function () {
-      if (!LOOT_REFRESH) return
-      var who = '?'
-      try { who = String(p.username) } catch (e) { return }
-      var cmd = 'lootr clear ' + who
-      var r = -1
-      try { r = srv.runCommandSilent(cmd) } catch (e) {
-        console.error(TAG + '!! loot refresh THREW - `' + cmd + '` :: ' + e)
-        return
-      }
-      if (r > 0) {
-        console.info(TAG + who + ' survived wave ' + st.waves + ' - loot refreshed')
-      } else {
-        console.warn(TAG + '!! LOOT REFRESH DID NOTHING for ' + who + '. Ran: `' +
-          cmd + '` and got ' + r + '. The Lootr subcommand has never been verified ' +
-          'against a running server - check `/help lootr` and fix LOOT_CMD. The tide ' +
-          'still works; the reward does not.')
-      }
-    })
+    // ⭐ AND LOOTR ALREADY DOES THIS PROPERLY, IN CONFIG, WITHOUT KUBEJS:
+    //     [refresh] refresh_value / refresh_loot_tables / refresh_modids
+    //               perform_refresh_while_ticking / start_refresh_while_ticking
+    // Scoping by LOOT TABLE is exact for us, because the depths inject into deep
+    // structure tables (betterdungeons, galosphere, ancient_city) while surface
+    // structures use different ones - so the depths can refresh on a timer and the
+    // surface stays one-shot, with no code and no per-wave hook.
+    //
+    // 🔑 THE LESSON, WHICH IS THE REASON THIS COMMENT IS LONG: fail-loud saved the
+    // player from a silent no-op, but it could not save the DESIGN. Only probing the
+    // real server could, and that took one `/help lootr`. A guarded call to a command
+    // nobody has run is still a guess wearing a seatbelt.
 
     // ⭐ THIRTY SECONDS OF ARRIVALS. Batched rather than dumped, so they come in a
     // stream you can hear approaching - and so a single unlucky pulse cannot bury
@@ -496,9 +480,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (!haveSpawner) {
         console.error(TAG + 'spawner missing - the tide can announce but never arrive')
       }
+      // 🔴 THIS BANNER LIED FOR ONE BOOT, AND IT WAS MINE. It still said "ends 10s
+      // after surfacing" after 2026-08-23 made surfacing MID-WAVE not end a run at all
+      // - the exact defect this repo has caught five times in other files, caught here
+      // by reading my own boot report.
       console.info(TAG + 'THE TIDE live - enclosed only, NEVER under open sky. A run ' +
-        'begins after ' + Math.round(ENTER_TICKS / 20) + 's under, ends ' +
-        Math.round(LEAVE_TICKS / 20) + 's after surfacing or on death.')
+        'begins after ' + Math.round(ENTER_TICKS / 20) + 's under, and ends ' +
+        Math.round(LEAVE_TICKS / 20) + 's after surfacing OR on death - but NOT while ' +
+        'a wave is still arriving. Running for the surface RELOCATES the wave, it does ' +
+        'not cancel it.')
       console.info(TAG + 'waves every ' + Math.round(WAVE_MIN / 1200) + '-' +
         Math.round(WAVE_MAX / 1200) + ' min, first no sooner than ' +
         Math.round(GRACE / 1200) + ' min in. Each is ' +

@@ -1095,8 +1095,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // restart, not by any test: a banner is a string, and no harness reads strings.
     console.info(TAG + 'rage: +' + RAGE_ON_DEATH + ' on YOUR ' +
       'death, +1 per ' + DMG_PER_RAGE + ' damage taken, -1 per ' + HEAL_PER_RAGE +
-      ' healed, -' + QUIET_DROP + ' per quarter-day alive. She never lets go - winning ' +
-      'her Harvest is the only exit.')
+      ' healed, -' + QUIET_DROP + ' per quarter-day alive. She never lets go - and ' +
+      'with the Harvest cut (docs/62) there is now NO exit at all, which suits her ' +
+      'better than the old rule did.')
     console.info(TAG + 'The Spider - 9 events on a SLIDING SCALE against rage. ' +
       'Boons at ' + RAGE_CALM + ' and below, attacks at ' + RAGE_FURY + ' and above, ' +
       'and she only ASKS in between. Rage watches YOUR BODY, not minions. ' +

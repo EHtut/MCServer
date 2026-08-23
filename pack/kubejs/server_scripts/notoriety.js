@@ -31,7 +31,28 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 //  · state lives on server.persistentData keyed by UUID (build plan rule 5)
 (function () {
   var ROOT = 'veldora_notoriety'
-  var RATES = [1.0, 1.5, 2.0, 2.5, 3.0]   // by harvestCount; it comes back sooner each time
+  // 🔴🔴 ORPHANED BY THE HARVEST CUT (2026-08-23, docs/62). READ BEFORE TUNING.
+  //
+  // This curve is indexed by harvestCount - "it comes back sooner each time" - and
+  // harvestCount can no longer increment, because harvest.js is gated off. So every
+  // player is now permanently pinned at RATES[0] = 1.0 and notoriety accrues at the
+  // slowest speed the system has, forever.
+  //
+  // ⚠️ THAT IS A SILENT PROGRESSION CHANGE, NOT A NEUTRAL ONE. Nothing throws, no
+  // banner complains, and the only symptom is that the game feels slower than it did
+  // - which is exactly the shape of defect this repo keeps paying for.
+  //
+  // ⭐ AND IT INTERACTS WITH A SECOND KNOWN BUG, IN THE OPPOSITE DIRECTION. phase.js
+  // applies the path's phase COEFFICIENT before banding, so raw n=57 banded as 114
+  // for blade (x2) and 171 for art (x3) against a threshold of 100 - bands arrive far
+  // sooner than the numbers say. The two errors have been partly cancelling each
+  // other out, so fixing either one alone will swing the pacing.
+  //
+  // 🚨 DO NOT re-home this to a new counter without deciding both together. The
+  // obvious candidate is phase band reached (helper/companion/absence/harvest = 0..3),
+  // which preserves the original intent - accelerate as you progress - pointed at
+  // progression that still exists. NOT DONE: it is a pacing decision and it is Ethan's.
+  var RATES = [1.0, 1.5, 2.0, 2.5, 3.0]   // by harvestCount; ⚠️ now always index 0
   var CAP = 100
 
   // ---------------------------------------------------------------- helpers
@@ -213,7 +234,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       ? 'VELDORA.notoriety published OK'
       : '!! PUBLISH FAILED - C2/C3 must not be built until this is fixed'))
     console.info('[notoriety] world day is ' + dayNow(event.server) +
-      '; rates by harvest count = [' + RATES.join(', ') + ']')
+      '; rates by harvest count = [' + RATES.join(', ') + '] - PINNED AT ' +
+      RATES[0] + ': the Harvest is cut (docs/62) so harvestCount can never ' +
+      'increment. This curve is DEAD until it is re-homed.')
   })
 
   PlayerEvents.loggedIn(function (event) { ensure(event.server, event.player) })

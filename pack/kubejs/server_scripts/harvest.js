@@ -22,7 +22,29 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
 ;(function () {
   var TAG = '[harvest] '
-  var GATE = true
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔴🔴 THE HARVEST IS CUT. Ethan, 2026-08-23:
+  //
+  //     "There is no reason for an ending anymore since its essentially an
+  //      act-based story."
+  //
+  // Full ruling and the evidence in docs/62. The short version: it was already
+  // half-dead - only 3 of 5 gods ever had a handler, and it FIRED FOR HIM ON ART AND
+  // SENT NOTHING. The Harvest was designed when every god was a demanding patron;
+  // once they became a family, three of the five endings stopped being a fight.
+  //
+  // ⭐ DISABLED, NOT DELETED — deliberately, and this is step 1 of 3 (docs/62 §4).
+  // A 300-reference rip in one pass is the opposite of this project's method. The
+  // gate answers "what actually depended on this?" by MEASUREMENT rather than by
+  // reading, and it is one character to undo if the ruling is revisited.
+  //
+  // What this flag already covers, cleanly, with no other edit:
+  //     begin()                 returns false immediately (line ~74)
+  //     ServerEvents.loaded     the retry sweep never registers, banner says GATED
+  //     resolve() / active()    still callable, and vacuous - active() is false
+  //                             for everyone, so every guard reading it is a no-op
+  var GATE = false
 
   var K_ACTIVE = 'veldora_harvest_active'   // the id of what was sent, '' if none
   var K_WON = 'veldora_harvest_won'         // how many times they have won one

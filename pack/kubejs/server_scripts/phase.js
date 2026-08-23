@@ -138,7 +138,27 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         console.info(TAG + p.username + ' ' + (prev || '-') + ' -> ' + next +
           ' (n=' + n + (pn !== n ? ', scaled ' + (Math.round(pn * 10) / 10) : '') + ')')
 
-        // Entering harvest is the one transition that DOES something.
+        // ⭐⭐ THE BAND SURVIVES THE CUT — AND THAT IS THE IMPORTANT PART.
+        //
+        // `harvest` is a NOTORIETY BAND (100..Infinity), not the event. docs/62 cut
+        // the event; the band stays, and it has to, because other systems read the
+        // PHASE and would silently lose their top rung if it went:
+        //
+        //   🔑 deep_speaker.js CONFESSION_PHASES = ['companion','absence','harvest']
+        //      Stage 3 - "Gregor, I am sorry.", Ethan's own writing and the best text
+        //      in the game - is gated on reaching phase `harvest`. It is UNAFFECTED,
+        //      because reaching notoriety 100 still enters the band. Nothing needed
+        //      re-gating. This was the first thing checked before touching anything.
+        //
+        // ⚠️ NAMING ROT ACCEPTED FOR NOW: a band called `harvest` in a game with no
+        // Harvest. Renaming it touches phaseRank(), CONFESSION_PHASES, this table and
+        // every display string, and it would be a cosmetic change riding along with a
+        // behavioural one. Separate chunk, on purpose.
+        //
+        // 🔴 THE CALL BELOW IS THE ONLY BEHAVIOURAL THING THE CUT REMOVES HERE. It is
+        // left in place but neutered by harvest.js's own GATE rather than deleted,
+        // so step 3 removes it once step 1 has proven nothing else depended on it.
+        // Entering harvest was the one transition that DID something.
         if (next === 'harvest' && prev !== 'harvest') {
           try {
             if (VELDORA.harvest && typeof VELDORA.harvest.begin === 'function') {
