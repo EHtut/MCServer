@@ -91,9 +91,81 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   VELDORA.stalkerPhase = function (server, player) {
     return phaseStored(server, player)
   }
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔴🔴 THE TRIAL WAS ARRIVING AT RAW 50 FOR BLADE AND 34 FOR ART.
+  //
+  // E3's `phase` coefficient scaled notoriety BEFORE banding, which is how Blade
+  // "escalates twice as fast" - correct in intent, and far too strong in effect. With
+  // a hard band edge at 100 the raw thresholds fell out as:
+  //
+  //     others x1 -> 100        blade x2 -> 50        art x3 -> 33
+  //
+  // Ethan's ruling, 2026-08-24: **keep the curve, stretch the bands** - the faster
+  // paths should still arrive first, but every path's Trial should land nearer 75-100.
+  //
+  // ── ⚠️ AND RAISING THE BAND EDGE CANNOT DO IT. Worked through before building:
+  // the raw threshold is `edge / coeff`, and notoriety CAPS at 100, so an edge the x3
+  // path needs (>=225) is one the x1 path can never reach.
+  //
+  //     edge 150 -> x1 150 UNREACHABLE  x2 75   x3 50
+  //     edge 225 -> x1 225 UNREACHABLE  x2 112 UNREACHABLE  x3 75
+  //
+  // There is no single edge that puts all three in 75-100. The spread IS the multiply,
+  // so the multiply is what has to move.
+  //
+  // 🔑 SO THE COEFFICIENT IS COMPRESSED FOR BANDING ONLY. Its full strength still
+  // drives buffs and the drop curve - this changes nothing about what a coefficient is
+  // worth, only how hard it pulls the phase ladder:
+  //
+  //     factor = 1 + (coeff - 1) * PHASE_COMPRESS,  clamped to CAP/TRIAL_RAW_FLOOR
+  //
+  //     others x1 -> 1.000 -> Trial at raw 100
+  //     blade  x2 -> 1.167 -> Trial at raw 86
+  //     art    x3 -> 1.333 -> Trial at raw 75   (exactly on the floor)
+  //     any x4+   -> clamped -> raw 75, never sooner
+  //
+  // Order preserved, everything inside 75-100, and the clamp means a coefficient
+  // nobody has invented yet still cannot drag a Trial forward past the floor.
+  //
+  // 🚨 CONSEQUENCE WORTH KNOWING: `deep_speaker.js` gates confession stage 3 on
+  // reaching phase `harvest`, and that is Ethan's own writing. It now arrives LATER
+  // for blade and art than it did - raw 86 and 75 instead of 50 and 33. That is the
+  // ruling working as asked, not a side effect nobody noticed.
+  var PHASE_COMPRESS = 1 / 6      // how much of the coefficient reaches the ladder
+  var TRIAL_RAW_FLOOR = 75        // no path's Trial may arrive before this raw value
+
+  // The factor actually applied to notoriety before banding. ONE implementation, so
+  // the sweep, /phase and /path can never disagree about where the bar is - which
+  // they did for a full day when /path computed its own.
+  function phaseFactor(server, player) {
+    var pc = 1
+    try {
+      if (VELDORA.coeff && typeof VELDORA.coeff.of === 'function') {
+        var raw = VELDORA.coeff.of(server, player, 'phase')
+        if (typeof raw === 'number' && isFinite(raw) && raw > 0) pc = raw
+      }
+    } catch (e) { return 1 }
+
+    var f = 1 + (pc - 1) * PHASE_COMPRESS
+    // ⚠️ NEVER BELOW 1. Ethan's standing rule - a coefficient is always an increase,
+    // so a sub-1 `phase` coefficient must not make the ladder LONGER than default.
+    if (!(f > 1)) return 1
+    var maxF = CAP_VALUE / TRIAL_RAW_FLOOR
+    return f > maxF ? maxF : f
+  }
+
   VELDORA.phaseLabel = function (n) { return bandOf(n) }
   VELDORA.phase = {
     of: phaseStored, resolve: resolvePhase, bands: BANDS, hyst: HYST,
+    factor: phaseFactor,
+    compress: PHASE_COMPRESS,
+    trialRawFloor: TRIAL_RAW_FLOOR,
+    // What raw notoriety this player's Trial actually needs. This is the number a
+    // player should be shown, and paths.js consumes exactly this rather than
+    // recomputing it from the raw coefficient.
+    trialAt: function (server, player) {
+      return Math.ceil(CAP_VALUE / phaseFactor(server, player))
+    },
   }
 
   // ── the sweep ─────────────────────────────────────────────────────────────
@@ -122,13 +194,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // meets his end at half the fame. Deliberately NOT clamped to CAP_VALUE -
         // harvest is [100, Infinity) and clamping would park a fast path in
         // `absence` permanently, which is the bug above wearing a different hat.
-        var pn = n
-        try {
-          if (VELDORA.coeff && typeof VELDORA.coeff.of === 'function') {
-            var pc = VELDORA.coeff.of(server, p, 'phase')
-            if (typeof pc === 'number' && isFinite(pc) && pc > 0) pn = n * pc
-          }
-        } catch (e) { }
+        // 🔑 ONE implementation of the factor, shared with /phase and /path.
+        var pn = n * phaseFactor(server, p)
 
         var prev = phaseStored(server, p)
         var next = resolvePhase(pn, prev)
@@ -184,13 +251,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       var b = null
       try { if (VELDORA.notoriety) b = VELDORA.notoriety(srv, p) } catch (e) { }
       var n = (b && typeof b.value === 'number') ? b.value : null
-      var pn = n
-      try {
-        if (n !== null && VELDORA.coeff) {
-          var pc = VELDORA.coeff.of(srv, p, 'phase')
-          if (typeof pc === 'number' && isFinite(pc) && pc > 0) pn = n * pc
-        }
-      } catch (e) { }
+      var pn = (n === null) ? null : n * phaseFactor(srv, p)
       p.tell(Text.of('§8§m                                        '))
       p.tell(Text.of('§6phase §f' + (phaseStored(srv, p) || 'none') +
         ' §8(notoriety ' + (n === null ? '?' : n) +
@@ -199,6 +260,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         p.tell(Text.of('§8  ' + BANDS[i][0] + ' [' + BANDS[i][1] + ', ' +
           (BANDS[i][2] === Infinity ? '∞' : BANDS[i][2]) + ')'))
       }
+      // The bands above are in SCALED space. A player thinks in raw notoriety, so
+      // say plainly where their own bar is rather than leaving them to divide.
+      try {
+        var f = phaseFactor(srv, p)
+        p.tell(Text.of('§8factor §f' + (Math.round(f * 1000) / 1000) +
+          '§8 - your Trial needs raw notoriety §f' +
+          Math.ceil(CAP_VALUE / f) + '§8/' + CAP_VALUE))
+      } catch (e) { }
       return 1
     }))
   })

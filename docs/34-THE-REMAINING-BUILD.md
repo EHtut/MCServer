@@ -37,68 +37,77 @@ It had been mathematically unreachable for weeks.
 
 ## 📍 STATE AT 2026-08-24 (end of session)
 
-**Server is UP, 0 errors, Liam online.** Everything below is committed. One file
-(`fall.js`, a console-only banner) is **deployed but NOT loaded** — it lands on the
-next natural restart.
+**Server is UP, 0 errors.** 🔴 **Nine files are DEPLOYED BUT NOT LOADED** — Ethan is
+calling the restart himself, and Liam has been mid-session all evening. Everything
+below is committed and harness-green; **none of it is verified live.**
 
-**Done this session:**
+### Landed this session
 
 | | |
 |---|---|
 | ✅ **THERE IS NO END** | `docs/65`. All six gods `mode: 'never'`. `release.js` retired, `fall.js` dead *via the registry, unedited*, regard now saturates instead of executing |
-| ✅ **two open problems deleted, not solved** | art's unwired `cut_down`, and art/crown still on the legacy `regard` door. Neither exists now |
-| ✅ **six lying banners** | five fixed by code-read, **the sixth caught live in the boot log** — `fall.js` was announcing a fall it can no longer perform. It is now *derived from the registry* rather than restating an intention |
-| ✅ **`Notice n/100` was wrong for 4 of 6 paths** | Blade's real bar is 50, Art's is 34. `/path` now divides the cap by the same coefficient the sweep multiplies by |
-| ✅ **the tide harness flake** | failed ~2 runs in 5 — it read a countdown several sweeps *after* it was written, and every sweep decrements it. It now observes the clock at the moment it is set. **The source was correct the whole time** |
-| ✅ **`completeness.py` knows retired-by-design pools** | `art/cut_down` reports as `retired`, with the ruling as its reason — *and it warns if such a pool starts being spoken again* |
-| ✅ **`release_harness.js` 41 → 66** | asserts the shipped ruling FIRST, then re-arms each rule's `_retired` config so the retained engine stays covered and cannot rot |
+| ✅ **11 empty voice pools filled** | blade ×7 — and because each event opens `if (!hasVoice(...)) return mute(...)`, **four of Blade's nineteen events had never once fired**. salvage ×4 gated no event but made seven call sites silent. All `[CLAUDE-DRAFT]` → `docs/51` |
+| ✅ **the gods make a noise** | `patron_sound.js`. `23` PART V.7 §5, carried unbuilt for weeks. Two tiers off `voice.say`/`sayAbout`: PRESENCE (rate-limited) and MOMENT (never limited) |
+| ✅ **Wall's aura** | `wall_aura.js`. She wounds and webs to 25% of max and **never kills**, so the kill — and the drop, and the counter credit — stays the player's |
+| ✅ **the band stretch** | `63` §7b. Trials were arriving at raw **50** (blade) and **34** (art) against a bar everything called 100. Now 86 / 75 / 100 |
+| ✅ **salvage's three untagged events** | `collect`→`attack`, `sample`→`boon`, `tipoff`→`boon`. The boot has warned about these at every start |
+| ✅ **seven stale doc claims** | four in this file, three in `63` — all things these docs called pending that the live server had been doing for days |
 
-**364 assertions across 11 harnesses, all green. `completeness.py`: no gaps.**
+**427 assertions across 13 harnesses, green.** Two new: `wall_aura_harness` (31),
+`phase_harness` (32).
+
+### 🔴 The negative control caught my own test, twice
+
+Deleting `wall_aura.js`'s floor clamp left its harness at **28/28 green** — every mob
+in the fixtures divided evenly, so the clamp was never reached. **A clamp is only
+tested by an overshoot.** Same check on `phase.js` then caught two more gaps. Both
+harnesses now fail exactly the right assertions when the code under them is broken,
+which is the only evidence a test is worth anything.
+
+⚠️ **`e.maxHealth` was in the aura's first draft and is not the accessor** —
+`stalker.js` already had `getAttribute('minecraft:generic.max_health').getValue()`.
+Reading it as `undefined` gives a floor of `NaN`, every comparison against `NaN` is
+false, and the aura would have bitten straight through to zero while looking correct.
+
+### ⚠️ `/playsound` CANNOT BE PROBED — measured, three ways
+
+A fake sound id and a real one are **byte-identical** over rcon: the id is a
+ResourceLocation resolved client-side, and the server accepts anything. Silence is the
+failure mode, and silence is also the state we were already in. Guards: **vanilla ids
+only**, and **`/patronsound`** plays every one of them at you so it can be verified by
+ear. That is the same answer `_probe_patron.js` gave to the same problem.
 
 ---
 
-### 🔴 THE ONE THING THAT NEEDS ETHAN
+### 🔴 WHAT NEEDS ETHAN
 
-**The Trial fires far earlier than 100 for most paths.** `phase.js` multiplies
-notoriety by the `phase` coefficient *before* banding — deliberate, and it is how Blade
-"escalates twice as fast" — so the real thresholds are:
-
-| path | coefficient | Trial at raw notoriety |
-|---|---|---|
-| Blade | ×2 | **50** |
-| Art | ×3 | **34** |
-| others | ×1 | 100 |
-
-The display now tells the truth about this. **The pacing was left alone on purpose** —
-whether a Trial at 34 is too soon is a tuning call, not something to quietly re-balance
-behind an honesty fix.
-
----
+1. **The restart.** Nine files are waiting. `/patronsound` should be the first thing
+   run after it — a silent god means a wrong id.
+2. **~370 `[CLAUDE-DRAFT]` lines** (`docs/51`, 128 pools / 446 lines across 6 gods).
+   The 11 new pools are placeholder and marked as such.
+3. **Salvage's register** (`7b`) — her trade voice and her collection voice are
+   audibly different people.
+4. **Blade's seven Challenges want rebalancing downward** — his own file flags it as
+   "a separate pass and Ethan's call".
 
 ### Carried, unfixed
 
-- **Wall's playstyle redo** — mod stays Goety (`docs/43 §0b`); the redo itself is unscoped
-- **the world refresh.** Diagnosed (`docs/64`): Tectonic owns terrain, and the fixed
-  config generates solid ground to −127 with real caves. **Staged in
-  `instance/config/tectonic.json`, applies only to a regenerated world.**
-  ⚠️ Side effect measured: the band −40 to −63 becomes nearly solid
-- ~~**`Lootr clear` has never been probed live**~~ ✅ **RESOLVED 2026-08-24.**
-  `/lootr clear` **does not exist** — the real subcommands are refresh, decay, openers,
-  cclear, cull, custom-*, force_*, and there is no per-player clear in any spelling. It
-  moved into config instead (`lootr-common.toml`: `refresh_value` + the 12 deep loot
-  tables), which is exact for us because the depths inject into deep structure tables
-  while the surface uses different ones. ⚠️ **The config has never been observed
-  working in play** — that check is available in the current world, no reset needed.
-  🔑 The lesson is recorded in `tide.js`: *a guarded call to a command nobody has run
-  is still a guess wearing a seatbelt.*
-- **~370 `[CLAUDE-DRAFT]` lines** await Ethan's own pass (`docs/51`, generated)
-- **`[events] !! salvage has UNTAGGED events: collect, sample, tipoff`** — flagged by the
-  server at every boot. They fall into `misc` at the lowest band. ⚠️ **Not fixed
-  here on purpose:** assigning a `kind:` changes weighting, and `docs/23 §VI.0` ruled
-  that a god's weight vector *is* the character. Ethan's call, not a guess
+- **Wall's playstyle redo** — mod stays Goety (`43` §0b); `35` is invalidated
+  (MineColonies is not installed). The redo itself is unscoped
+- **the world refresh.** Diagnosed (`64`): Tectonic owns terrain; the fixed config
+  generates solid ground to −127 with real caves. **Staged, applies only to a
+  regenerated world.** ⚠️ Measured side effect: the band −40 to −63 becomes nearly solid
+- **the Lootr config has never been observed working in play** — available in the
+  current world, no reset needed
+- **the respawn mechanic** — still undiagnosed, still open
 - **naming rot accepted** — a `harvest` band and `harvest_*` pools in a game with no
   Harvest. Cosmetic; deliberately not ridden along with a behavioural change
 - 90+ commits ahead of `origin/main`, unpushed
+
+### Needs the world reset — and only these
+
+**Tectonic depth** · **crown merging into Wall** (§0c) · **The Arrival** (once per
+player on first join; everyone here has spent theirs) · **`/path forcereset`**
 
 ---
 

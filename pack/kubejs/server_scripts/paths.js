@@ -759,11 +759,15 @@
           // ⚠️ THE PACING ITSELF IS UNCHANGED - this only stops the display lying about
           // it. Whether a Trial at a raw 50 is too soon is a TUNING question and it is
           // Ethan's, not something to quietly re-balance behind an honesty fix.
+          // 🔴 THIS RECOMPUTED THE BAR FROM THE RAW COEFFICIENT AND WAS WRONG THE
+          // MOMENT phase.js COMPRESSED IT. Two implementations of one number is how
+          // /path came to advertise a threshold nothing used; the fix is not a second
+          // correct copy, it is having no copy at all.
           var cap = 100
           try {
-            if (VELDORA.coeff && typeof VELDORA.coeff.of === 'function') {
-              var pc = VELDORA.coeff.of(srv, p, 'phase')
-              if (typeof pc === 'number' && isFinite(pc) && pc > 0) cap = Math.ceil(100 / pc)
+            if (VELDORA.phase && typeof VELDORA.phase.trialAt === 'function') {
+              var t = VELDORA.phase.trialAt(srv, p)
+              if (typeof t === 'number' && isFinite(t) && t > 0) cap = t
             }
           } catch (e) { }
           p.tell('§7Notice §f§l' + b.value + '§7/' + cap + ' §8- how close they are to testing you')

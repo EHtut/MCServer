@@ -209,14 +209,90 @@ available — confirm it is the intended one.
 
 ---
 
-## 7. 🔴 STILL OPEN — problem two has not been answered
+## 7. ✅ CLOSED — problem two was answered by ruling B
 
-§4's rate-curve inversion is **unresolved** and it now applies to the three combatant
-paths. Falling escalates the accrual rate, so a Trial arrives sooner, and losing a Trial
-is free — **falling is still the fastest way to level.**
+> 🔴 **This section said "STILL OPEN" while §8 below recorded the fix.** Two parts of
+> one doc disagreeing about whether a problem was solved — corrected 2026-08-24.
 
-It does not block the skeleton (§5 items 1–5 can be built without touching it) but it
-must be settled before Trials go live, or the first thing a player optimises is dying.
+§4's rate-curve inversion — *falling is the fastest way to level* — was settled by
+**Ethan's ruling B**: the rates are **DESCENDING**, so falling makes the next Trial
+arrive **later**, not sooner.
+
+```js
+var RATES = [1.0, 0.75, 0.55, 0.4, 0.3]   // ruling B: LOWER = slower
+```
+
+Live on the server: `Fall rates 1/0.75/0.55/0.4/0.3 (docs/63 ruling B: falling makes
+the next Trial arrive LATER), forgiving one step per 12 in-game days.`
+`tools/notoriety_harness.js` asserts the **direction** of the curve rather than the
+table, so retuning the numbers cannot silently re-invert it.
+
+---
+
+## 7b. ⭐⭐ THE BAND STRETCH — ruled and built 2026-08-24
+
+> **Ethan:** *"Keep the curve, stretch the bands"* — faster paths still arrive first,
+> but every Trial should land nearer **75–100** raw notoriety.
+
+### The problem
+
+`phase.js` scaled notoriety by E3's `phase` coefficient **before** banding. Correct in
+intent — it is how Blade "escalates twice as fast" — and far too strong in effect
+against a hard band edge at 100:
+
+| path | coefficient | Trial arrived at raw notoriety |
+|---|---|---|
+| others | ×1 | 100 |
+| **blade** | ×2 | **50** |
+| **art** | ×3 | **34** |
+
+Everything in the game described the bar as 100. Nothing was broken; no single file
+contained both the multiply and the band edge, so nobody could see it end to end.
+
+### ⚠️ Raising the band edge cannot fix it — worked out before building
+
+The raw threshold is `edge ÷ coefficient`, and **notoriety caps at 100**, so an edge
+the ×3 path needs is one the ×1 path can never reach:
+
+| edge | ×1 | ×2 | ×3 |
+|---|---|---|---|
+| 150 | **150 UNREACHABLE** | 75 | 50 |
+| 225 | **225 UNREACHABLE** | **112 UNREACHABLE** | 75 |
+
+**No single edge puts all three in 75–100.** The spread *is* the multiply, so the
+multiply is what had to move.
+
+### 🔑 The fix: compress the coefficient, for banding only
+
+```js
+factor = 1 + (coeff - 1) × PHASE_COMPRESS      // PHASE_COMPRESS = 1/6
+       clamped to CAP_VALUE / TRIAL_RAW_FLOOR  // = 100/75 = 1.333
+       never below 1                           // Ethan's standing rule
+```
+
+| path | factor | Trial now at |
+|---|---|---|
+| others ×1 | 1.000 | **100** |
+| blade ×2 | 1.167 | **86** |
+| art ×3 | 1.333 | **75** (exactly on the floor) |
+| any ×4+ | clamped | **75**, never sooner |
+
+The coefficient keeps its **full strength** for buffs and the drop curve. This changes
+only how hard it pulls the phase ladder.
+
+### 🔑 One implementation, because two was the original bug
+
+`phase.factor()` and `phase.trialAt()` are exported, and the sweep, `/phase` **and**
+`/path` all consume them. `/path` previously computed `Math.ceil(100 / pc)` from the
+raw coefficient — a second copy that went wrong the instant the first one changed.
+`phase_harness.js` asserts the source no longer contains that expression.
+
+### 🚨 Consequence worth knowing
+
+`deep_speaker.js` gates **confession stage 3** on reaching phase `harvest` — Ethan's
+own writing, and the best text in the game. It now arrives **later** for blade and art
+(raw 86 and 75, was 50 and 34). That is the ruling working as asked, not a side effect
+nobody noticed.
 
 ---
 

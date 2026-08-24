@@ -715,11 +715,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       does: 'TRADE - strength now, a real debt written. One tab at a time',
     })
     VELDORA.events.register(GOD, {
-      id: 'collect', run: evCollect, hostile: false, cooldown: 1, weight: wAlways(4), tiers: ALL,
+      // ⭐ `attack` - RULED by Ethan 2026-08-24. Her chart is duel:2, boon:4,
+      // attack:3, support:1, contract:3, and `attack` is the ONLY kind in it where
+      // she acts ON the player unasked. Every other kind she has is either a gift
+      // (boon/support) or an ask (duel/contract); collecting a debt is neither, and
+      // it is the one thing she does that the player cannot decline.
+      id: 'collect', kind: 'attack', run: evCollect, hostile: false, cooldown: 1, weight: wAlways(4), tiers: ALL,
       does: 'COLLECTS an outstanding debt - takes up to 4 levels. Only fires if you owe',
     })
     VELDORA.events.register(GOD, {
-      id: 'sample', run: evSample, hostile: false, cooldown: 2, weight: wPoor(4), tiers: ALL,
+      // ⭐ `boon` - a free buff at no cost is the definition of one, and boon is her
+      // heaviest weight (4), which suits a trader whose generosity IS the hook.
+      id: 'sample', kind: 'boon', run: evSample, hostile: false, cooldown: 2, weight: wPoor(4), tiers: ALL,
       does: 'FREE - speed + night vision, no cost. The first one always is. Heaviest ' +
         'at low harness',
     })
@@ -729,7 +736,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         'She is not cheating; that IS the stranger price',
     })
     VELDORA.events.register(GOD, {
-      id: 'tipoff', run: evTipoff, hostile: false, cooldown: 2, weight: wRich(3), tiers: ALL,
+      // ⭐ `boon` too. `support` was the alternative - it would keep this rare at
+      // weight 1 - but support in this pack means helping a RIVAL (forge/lend), and
+      // a free tip is a gift to YOU. Its own wRich(3) weight already gates it to good
+      // customers, so scarcity did not need the kind to enforce it.
+      id: 'tipoff', kind: 'boon', run: evTipoff, hostile: false, cooldown: 2, weight: wRich(3), tiers: ALL,
       does: 'FREE - a guidance line at no cost. Good customers only, which makes it ' +
         'the most suspicious thing she does',
     })
