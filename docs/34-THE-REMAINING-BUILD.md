@@ -583,25 +583,36 @@ a player and will not be until a fresh world (or a deliberate flag reset).
 
 ---
 
-## ⚠️ OPEN — the respawn mechanic may need to go
+## ✅ CLOSED — the respawn mechanic was diagnosed and cut
 
 *Ethan, 2026-08-15: **"i think the death mechanic may need to go. the one that messes
 with respawns because it bugs the server down."***
 
-`instant_respawn.js` (E2a) — wakes you where you fell in ~0.75s rather than at the bed.
+🔴 **This section said "Not yet diagnosed" for nine days. It had been diagnosed and
+deleted the same week** — measured 2026-08-24, and the evidence is in the tree:
 
-**Not yet diagnosed.** Before it is cut, measure: it schedules a respawn on a delay,
-runs a detarget sweep over `getEntitiesWithin(inflate(24))` at the death site, and E0
-P8 measured **seven hostiles** at a death site against one at a bed — so the sweep runs
-in the worst place at the worst time, repeatedly, and that is the obvious suspect.
+> **Ethan's diagnosis:** *"the issue is stemming from anything that messes with respawn
+> mechanics. Not necessarily what happens after a respawn."*
 
-⚠️ **It is load-bearing for the design as written.** `23` PART I(b) is *"death costs
-the run, never the base"*, which depends on waking where you fell. Cutting it returns
-death to a bed teleport and makes dying cheaper again — the exact complaint the whole
-path system was built to answer.
+`instant_respawn.js` **no longer exists** (deleted in `eb900e3`). That line drew the
+boundary: it INTERCEPTED the respawn and moved the player, so it went. Blade's
+**Broken Rung** only *reads* that a respawn happened and then sends a wave — it never
+touches where or whether you respawn — so it was re-enabled, behind `RESPAWN_HOOK`,
+because *"it only reacts" is a claim about code, not a guarantee about a client.*
 
-**Options, cheapest first:** raise the sweep interval or shrink its radius · sweep once
-rather than repeatedly · keep the instant respawn and drop only the detarget · cut it.
+### ⚠️ WHAT THE CUT LEFT BEHIND — still Ethan's call
+
+`23` PART I(b) is **"death costs the run, never the base"**, and that depended on
+waking where you fell. Death now returns you to your bed, so:
+
+* the **cost** survives — `[death] E2b active - death costs 5 levels, once per 5s,
+  never during a Harvest`
+* the **position** does not. A death is now a full trip back rather than a fight you
+  wake up inside
+
+Whether that still satisfies "costs the run, never the base" is a design question
+nobody has answered — it was never re-litigated after the cut, because the cut was an
+emergency fix for a server hang. **Flagged, not decided.**
 
 ---
 

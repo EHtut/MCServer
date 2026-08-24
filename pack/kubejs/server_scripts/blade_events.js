@@ -360,8 +360,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var server = null
     try { server = p.server } catch (e) { }
     if (!server) return
-    // Delayed so it lands after the respawn settles rather than over the top of it,
-    // and so instant_respawn has finished moving the player.
+    // Delayed so it lands after the respawn settles rather than over the top of it.
+    // ⚠️ The second half of this note used to read "and so instant_respawn has
+    // finished moving the player" - that file was DELETED in eb900e3 and nothing
+    // moves a respawning player any more. The delay is still right, for the first
+    // reason alone.
     server.scheduleInTicks(120, function () {
       try {
         if (!p.isAlive()) return

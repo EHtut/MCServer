@@ -347,6 +347,57 @@ def section_d(src):
             problems.append('speaker/abandoned is defined by five speakers and consumed by nothing')
 
 
+def section_e():
+    """Can every script still be READ by the tools that audit it?
+
+    🔴 nemesis_tally.js carried a single stray NUL byte for weeks. It parsed,
+    it ran, and it behaved correctly - the byte sat inside a sentinel that is only
+    ever compared against itself. But ONE such byte is enough for grep and ripgrep
+    to stop printing matches and say "Binary file matches" instead, so every
+    tree-wide search in this project silently skipped that file.
+
+    🔑 A FILE THAT CANNOT BE GREPPED CANNOT BE AUDITED, and it fails in the
+    worst direction: the search comes back clean because the file was skipped,
+    which is indistinguishable from the file being fine. It was found only because
+    an audit looking for something else tripped over it.
+
+    ⚠️ This checks the property that actually bit us - readable as text - and not
+    "is it valid JavaScript", which node already answers and which stayed TRUE the
+    entire time the file was invisible.
+    """
+    hdr('E. every script is readable as text')
+    NUL = bytes([0])
+    NL = bytes([10])
+    bad = []
+    for p in sorted(glob.glob(os.path.join(SS, '*.js'))):
+        name = os.path.basename(p)
+        try:
+            raw = open(p, 'rb').read()
+        except Exception as e:
+            bad.append((name, 'could not be read :: %s' % e))
+            continue
+        if NUL in raw:
+            n = raw.count(NUL)
+            i = raw.index(NUL)
+            line = raw[:i].count(NL) + 1
+            bad.append((name,
+                        '%d null byte(s), first at line %d - grep reads this file '
+                        'as BINARY and silently skips it' % (n, line)))
+            continue
+        try:
+            raw.decode('utf-8')
+        except Exception as e:
+            bad.append((name, 'not valid UTF-8 :: %s' % e))
+
+    if bad:
+        for name, why in bad:
+            print('  ' + R + 'BINARY' + X + '  %s' % name)
+            print(DIM + '    ' + why + X)
+            problems.append('%s is not readable as text: %s' % (name, why))
+    else:
+        print('  ' + G + 'all scripts are plain UTF-8 text - every one is greppable' + X)
+
+
 def main():
     src = allsrc()
     print(B + 'VELDORA COMPLETENESS AUDIT' + X)
@@ -355,11 +406,12 @@ def main():
     section_b(src)
     section_c(src)
     section_d(src)
+    section_e()
 
     hdr('VERDICT')
     if not problems:
         print('  ' + G + 'no gaps found by the checks above.' + X)
-        print(DIM + '  This is not "Veldora is finished" — it is "these four questions' + X)
+        print(DIM + '  This is not "Veldora is finished" — it is "these five questions' + X)
         print(DIM + '  came back clean". Open design rulings are tracked in docs, not here.' + X)
         return 0
     print('  ' + R + '%d finding(s):' % len(problems) + X)
