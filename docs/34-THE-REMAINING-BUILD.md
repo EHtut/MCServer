@@ -37,9 +37,17 @@ It had been mathematically unreachable for weeks.
 
 ## 📍 STATE AT 2026-08-24 (end of session)
 
-**Server is UP, 0 errors.** 🔴 **Nine files are DEPLOYED BUT NOT LOADED** — Ethan is
-calling the restart himself, and Liam has been mid-session all evening. Everything
-below is committed and harness-green; **none of it is verified live.**
+> 🔴 **RE-MEASURED 2026-08-29, after six untouched days.** The server has been
+> **OFF since 2026-08-23 22:34**, the tree is clean at `a90d900`, and there are no
+> commits from anyone since. Nothing has changed on its own.
+
+**Server is OFF.** 🔴 **ELEVEN files are DEPLOYED BUT HAVE NEVER BEEN LOADED** —
+`latest.log` holds exactly one boot (17:21:53) and every script deployed from 17:23
+onward missed it. `[sound]`, `[wallaura]` and `[nemesis]` appear nowhere in that log.
+
+⚠️ **Everything below is committed, harness-green, and has never run.** 427 assertions
+across 13 harnesses prove the pure functions; they cannot prove liveness, and this
+project has sat green through two subsystems that produced nothing.
 
 ### Landed this session
 
@@ -81,8 +89,22 @@ ear. That is the same answer `_probe_patron.js` gave to the same problem.
 
 ### 🔴 WHAT NEEDS ETHAN
 
-1. **The restart.** Nine files are waiting. `/patronsound` should be the first thing
-   run after it — a silent god means a wrong id.
+1. **The restart — and it is now FREE.** The server has been **off since
+   2026-08-23 22:34** and nobody is on it, so there is no playtime to spend.
+
+   🔴 **ELEVEN files are deployed and have never been loaded.** Measured, not
+   remembered: `latest.log` holds exactly one boot, at **17:21:53**, and every script
+   deployed from **17:23 onward** missed it —
+
+   `fall.js` · `blade_voice.js` · `salvage_voice.js` · `patron_sound.js` ·
+   `voice.js` · `wall_aura.js` · `salvage_events.js` · `paths.js` · `phase.js` ·
+   `blade_events.js` · `nemesis_tally.js`
+
+   Confirmed from the other side too: `[sound]`, `[wallaura]` and `[nemesis]` appear
+   **nowhere** in that log. **Nothing built on the 23rd has ever run.**
+
+   ⚠️ **`/patronsound` should be the first thing run after the boot** — the sound ids
+   cannot be verified from the server, and a silent god means a wrong id.
 2. **~370 `[CLAUDE-DRAFT]` lines** (`docs/51`, 128 pools / 446 lines across 6 gods).
    The 11 new pools are placeholder and marked as such.
 3. **Salvage's register** (`7b`) — her trade voice and her collection voice are
@@ -99,7 +121,10 @@ ear. That is the same answer `_probe_patron.js` gave to the same problem.
   regenerated world.** ⚠️ Measured side effect: the band −40 to −63 becomes nearly solid
 - **the Lootr config has never been observed working in play** — available in the
   current world, no reset needed
-- **the respawn mechanic** — still undiagnosed, still open
+- ~~**the respawn mechanic**~~ ✅ **closed — see the CLOSED section below.** This
+  bullet still said "still undiagnosed, still open" in the same commit that
+  closed the question 480 lines further down. ⚠️ What the cut LEFT is still
+  open and is tracked there: death keeps its cost but no longer its position
 - **naming rot accepted** — a `harvest` band and `harvest_*` pools in a game with no
   Harvest. Cosmetic; deliberately not ridden along with a behavioural change
 - 90+ commits ahead of `origin/main`, unpushed
