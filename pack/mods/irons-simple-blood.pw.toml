@@ -1,0 +1,13 @@
+name = "Iron's Simple Blood"
+filename = "simpleblood-1.21.1-1.0.4.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/l7Ddlxg5/versions/YStIsByV/simpleblood-1.21.1-1.0.4.jar"
+hash-format = "sha512"
+hash = "61f297f80036b6ccf6ba00e4b0855ca88aed7de3aee4d64f8e585eb5dd1dfc4224581e3eb32930fd3dcb118cd18d730b1762ed0984aae7ad8dfa47c85c1e4b42"
+
+[update]
+[update.modrinth]
+mod-id = "l7Ddlxg5"
+version = "YStIsByV"

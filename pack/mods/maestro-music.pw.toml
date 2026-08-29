@@ -1,0 +1,13 @@
+name = "Maestro"
+filename = "maestro-neoforge-1.21.1-4.0.0.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/jcZX6rvP/versions/zI6nkjfn/maestro-neoforge-1.21.1-4.0.0.jar"
+hash-format = "sha512"
+hash = "675ffdf2356093ed6b14cfcd384c594165f5a7c8e7978ce28b56e31866dac097fbacba3e819ffef95c4918b685a6f67f1f8fdbe9452ba82fb74a7565d6ecf68c"
+
+[update]
+[update.modrinth]
+mod-id = "jcZX6rvP"
+version = "zI6nkjfn"

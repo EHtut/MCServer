@@ -313,3 +313,111 @@ condition requires that they hear *her*.
 
 ⚠️ **Steps 1 and 2 are independent** — the verification does not need the dimension
 answer, and vice versa. Step 1 can happen tonight.
+
+---
+
+# THE BUILD — chunked, 2026-08-29
+
+## ✅ The mods are IN THE MANIFEST (not yet installed)
+
+`pack/mods/` **275 → 298** entries, `pack/index.toml` **281 → 304**, and
+`install_mods.py --dry-run` resolves **304 mods, 239 server-side** (was 218) with no
+errors. Every entry is pinned to a sha512 the registry reported.
+
+⚠️ **The instance is still at 218 jars.** Manifest ≠ installed. Nothing has been
+downloaded and the live pack has not changed.
+
+### 🔴 FOUR MODS COULD NOT BE ADDED — and the pattern matters
+
+| mod | why |
+|---|---|
+| **Iron's Arms 'n Artifice** | supports **MC 26.1.2 only** — four majors ahead |
+| **Just Enough Guns** | **1.20.1 Forge only**; no NeoForge, no 1.21.x |
+| **Ominous Mansions** | **1.21.6+** only — too new |
+| **Tetra** | **no 1.21.x at all** — stopped at 1.20 |
+
+🚨 **Two too new, two too old. 1.21.1 is now a narrow window**, and this is the second
+time today a wanted mod was unavailable for version reasons. That is a standing tax on
+every future mod request, and at some point it becomes a question about the pack's
+version rather than about any one mod. **Not a decision to make casually — 304 entries.**
+
+⚠️ **Tetra's loss has a knock-on.** `67` justified moving `chosen` off item ids partly
+because *"Tetra changes what a tool IS"*. That reason is gone. **The other reason stands
+on its own and was always the better one** — an inventory check is not a character test.
+
+⚠️ **Two entries are pre-release builds**, pinned deliberately because they are the only
+1.21.1 builds: `bountiful 8.0.0-beta.2` and `MCA 7.7.36-beta.3`.
+
+---
+
+## The chunks
+
+Each is independently shippable and reversible. **Order is by dependency, then risk.**
+
+### A — verify what already exists · *no new code*
+
+| | |
+|---|---|
+| **A1** | Boot the current world, load **the eleven**, run `/patronsound`. Confirm `[sound]`, `[wallaura]`, `[nemesis]` banner and Blade's four held events fire. **Falsified if:** any banner is absent, or a god is silent |
+
+⭐ **A1 blocks nothing and nothing blocks it.** It is two sessions of unverified work and
+it can be done tonight.
+
+### B — the pack
+
+| | |
+|---|---|
+| **B1** | `install_mods.py --side server`, boot, read the log. 23 new mods at once. **Falsified if:** boot fails or the log carries new errors. ⚠️ If it breaks, bisect rather than guess — Terralith and Nyctophobia are already proven in `testgen`, so start from the other 21 |
+| **B2** | **In Control**: lift the `hostile: true` deny above y=40. 🔴 **Required by D4** — it currently suppresses exactly the spawns the night tide creates |
+
+### C — the world · *the one-shot*
+
+| | |
+|---|---|
+| **C1** | `tectonic.json` `min_y` back to **−64** |
+| **C2** | **Generate.** ⚠️ Everything in B must be settled first |
+| **C3** | Free with the reset: Crown → Wall · The Arrival · `/path forcereset` |
+
+### D — the night (`70`) · *the big new system*
+
+| | |
+|---|---|
+| **D1** | 🔑 **THE KEYSTONE.** Night detection + the god-silencing gate. Blade and Salvage go quiet; Wall, Forge and Art do not. **Touches every god system** — voice, idle, events, sounds, the aura. **Falsified if:** a silenced god speaks at night, or a permitted one goes quiet |
+| **D2** | The deep Speaker's introduction on the **30th night** |
+| **D3** | Night danger scaling by the highest god's trust. **No inversion** |
+| **D4** | The night tide — the tide, on the surface, night-only. **Depends on B2** |
+| **D5** | Tide modifiers: pure horde / specialist / miniboss+horde / general |
+| **D6** | Minibosses. ⚠️ `supreme_bonecaller` needs the registry probe first; The Taker stays **rare and deliberate** because it is a clue, not a spawn |
+
+🔴 **D1 is the riskiest chunk in the plan.** It is a cross-cutting gate over systems that
+currently assume they may always speak. It wants its own harness and a negative control —
+prove a silenced god *cannot* speak, not merely that a permitted one can.
+
+⚠️ **Still unsolved and it gates D3's value:** the danger has to reach indoors.
+
+### E — being chosen (`67`)
+
+| | |
+|---|---|
+| **E1** | Blade — a **lifetime, never-reset** kill counter. ⚠️ Do not borrow the trust counter |
+| **E2** | Salvage — five no-upside deals. The **writing** is the work |
+| **E3** | Wall — killed by a pathed player, or 30 days godless |
+| **E4** | Art — 50 levels, she takes them all. 🔴 **Needs new machinery**: `speakerFor()` returns null for the pathless, so they hear nobody |
+| **E5** | Forge — the dialogue tree, long cooldown, per-prompt timer |
+
+### F — voice
+
+| | |
+|---|---|
+| **F1** | The Nether and End ambient lines (`69`) — **their own channel, no speaker, not `voice.js`** |
+| **F2** | Ethan's pass on 446 draft lines · Salvage's register · Blade's Challenge rebalance |
+
+---
+
+## ⚠️ What is still open
+
+* **the indoors problem** (D3/D4)
+* **Wall's 30-day clock** — world days or played time
+* **a godless early game** — partly answered by the Iron's suite
+* **the bounty board** — does a godless player get to use it?
+* the **1.21.1 version question** raised by four unavailable mods

@@ -1,0 +1,13 @@
+name = "The Day Of The Beast"
+filename = "TheDayoftheBeast-1.21.1-1.1.1.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/AG1mMSbb/versions/nAVLw4N7/TheDayoftheBeast-1.21.1-1.1.1.jar"
+hash-format = "sha512"
+hash = "17a39a5d0fb5d1352d56bda8572980d55305deeaae9985ac4456bb454235d329a9a21e33997f353d5b183fb8e470af71a0bb5efa56026b58002275d6b884cf2a"
+
+[update]
+[update.modrinth]
+mod-id = "AG1mMSbb"
+version = "nAVLw4N7"

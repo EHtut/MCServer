@@ -6,6 +6,11 @@ hash = "c1f98a1e9d7201f0b6ddc3f705f43a53f7539978f48425de5c1177a310fe7b86"
 metafile = true
 
 [[files]]
+file = "mods/accents.pw.toml"
+hash = "23a56a6a2054167c1b834a8bed6e547369ea171d0a7ba7dc3ebf318bad7c1b45"
+metafile = true
+
+[[files]]
 file = "mods/accessories.pw.toml"
 hash = "19cbfb37dc29169b50599dfa328fe12a0ec9caaec8ac02627b5846f3bd9d1425"
 metafile = true
@@ -171,8 +176,8 @@ hash = "74143850a12b0f9daf3ef2c503e61141319f3715a48a2fde53bc31b3c9719788"
 metafile = true
 
 [[files]]
-file = "shaderpacks/bsl-shaders.pw.toml"
-hash = "f91c2ec79366b4607d93928a07c223cbaa4a2e18fe0c110e68a3fc064e69b65a"
+file = "mods/bountiful.pw.toml"
+hash = "ba3b9990bc44bedb8eacbe11b2beffb7457cc6ddd854e78fcaf8d73d8f2578db"
 metafile = true
 
 [[files]]
@@ -188,6 +193,11 @@ metafile = true
 [[files]]
 file = "mods/camerapture.pw.toml"
 hash = "a5202c7c26a0de8a614c52bdfdc61b540b7a6b4dbad4a7497480aea03fcf65ac"
+metafile = true
+
+[[files]]
+file = "mods/capitals-a-monarchy-mod-for-mca-reborn.pw.toml"
+hash = "df2da64efc503a5cef7f2f96549ba25d1fc4e646923796af4b4579382c9ed28c"
 metafile = true
 
 [[files]]
@@ -243,11 +253,6 @@ metafile = true
 [[files]]
 file = "mods/comforts.pw.toml"
 hash = "36f2f6e74b7dbeccb504572d47006582207544fa234a095093b97adfc7ecd5ac"
-metafile = true
-
-[[files]]
-file = "shaderpacks/complementary-reimagined.pw.toml"
-hash = "ea258ed5bf495d9017eeadc3cbf9bd67b1e672d843826bc077135548b5bc699e"
 metafile = true
 
 [[files]]
@@ -446,8 +451,18 @@ hash = "b1ec14892ade3126c6238f82a2adbd9154e8cb68891e3f41d61746c08aea07ab"
 metafile = true
 
 [[files]]
+file = "mods/death-count.pw.toml"
+hash = "47a2c19ab58b6c98398c4bd531babe4ac5b42d86fb19e4095fc925b4cdcdfcea"
+metafile = true
+
+[[files]]
 file = "mods/deimos.pw.toml"
 hash = "8fa452b9f04851f6c190c5e77caa0b81023e9f99b2c969ca28e92bca48748f02"
+metafile = true
+
+[[files]]
+file = "mods/distant-friends.pw.toml"
+hash = "0a9cfda308779f1c006144a6e1797ebf42b628477bcbb233bbba8d10af15075c"
 metafile = true
 
 [[files]]
@@ -488,6 +503,11 @@ metafile = true
 [[files]]
 file = "mods/easy-magic.pw.toml"
 hash = "1aa75105514780685caab9b945db2a2ea7c0594ced8c01e12f2a3e331f1af4e6"
+metafile = true
+
+[[files]]
+file = "mods/easy-npc.pw.toml"
+hash = "26c47783c412717b8c38795cbf06a06c931c7538901fbb36922a1327b944247b"
 metafile = true
 
 [[files]]
@@ -566,11 +586,6 @@ hash = "00ec91db9928c4da54bb3843eb8eba7c918aa65ffdc90b69f93bd52e41387eb1"
 metafile = true
 
 [[files]]
-file = "resourcepacks/faithful-32x.pw.toml"
-hash = "e0a6012ba9dad43bbcc771bb65c9ed857cb959d1ac36b5d4924ad036b4ffb07a"
-metafile = true
-
-[[files]]
 file = "mods/fallingleavesforge.pw.toml"
 hash = "e5125f8f2709fd20f8182fade3d7f9e7129872c63f042c5489c6eba4733b6b49"
 metafile = true
@@ -638,11 +653,6 @@ metafile = true
 [[files]]
 file = "mods/framedblocks.pw.toml"
 hash = "20eee73cffcd55bfe041b16bbc3adc64c38859bf928486bf1db1368b6dba2058"
-metafile = true
-
-[[files]]
-file = "resourcepacks/fresh-animations.pw.toml"
-hash = "6a1556a0e4fcb411b33efafc3382b4abd9a6e671f140dc0d42e9aad2808e24f3"
 metafile = true
 
 [[files]]
@@ -741,6 +751,11 @@ hash = "75b43f1a86593360f10703b7625da4e0a3c435bf13bf8b5b75fa383a0338dade"
 metafile = true
 
 [[files]]
+file = "mods/immersive-snow.pw.toml"
+hash = "759ebd337fa67f558a204baef57041ca0392fd206c786a3e7643a5c6b27f4cee"
+metafile = true
+
+[[files]]
 file = "mods/improved-pillager-outpost.pw.toml"
 hash = "b26d5949e773596d56bb310234f8682f8a9dafd377b2b5fb1bbdebb372e2a8fb"
 metafile = true
@@ -761,8 +776,33 @@ hash = "e7e6b3effe3022cf1fdb900c857111fdcbfd6b385c2d5bd28c914efaed436ecb"
 metafile = true
 
 [[files]]
+file = "mods/inventory-pets.pw.toml"
+hash = "17165c65683990704d03c588c0c155a55d7cdba250f2aeecff9daa8639e59794"
+metafile = true
+
+[[files]]
 file = "mods/iris.pw.toml"
 hash = "db1c1e6382878b78e994dba1b9026935f8d1c5ca685c89d2437858e0a0dcab58"
+metafile = true
+
+[[files]]
+file = "mods/irons-jewelry.pw.toml"
+hash = "42fc720ae8e49004d59c46ee3bfd0579b65048c06a51aa65883b114f71560dde"
+metafile = true
+
+[[files]]
+file = "mods/irons-lib.pw.toml"
+hash = "1b84f2dda2014252ffb0b792f4850fa3b3b396a49f39cac7b11c8cb88bf1a1e4"
+metafile = true
+
+[[files]]
+file = "mods/irons-simple-blood.pw.toml"
+hash = "adf945224f27dae32902e21466da01ba0803d1ecba8e6a6fdb20178619cfd2ff"
+metafile = true
+
+[[files]]
+file = "mods/irons-spells-n-spellbooks.pw.toml"
+hash = "4623bbc102dd3b7648a96569a1ab49b868774d46355b305ac40c4c79ad1c74e2"
 metafile = true
 
 [[files]]
@@ -846,6 +886,11 @@ hash = "35725a7bee95c5f0df1eeccd3ed406036c35fae26a7d7864fae1127a85957fdb"
 metafile = true
 
 [[files]]
+file = "mods/loot-journal.pw.toml"
+hash = "e0d110681ecc91f26f5d82bf654a37a963e4754eb07df0ee15e366d292cd6d5e"
+metafile = true
+
+[[files]]
 file = "mods/lootr.pw.toml"
 hash = "a0a2036a901c1d61589768d62bc92d0cd630a40e9dfe92f45aefdc835c0c808d"
 metafile = true
@@ -858,6 +903,11 @@ metafile = true
 [[files]]
 file = "mods/macaws-roofs.pw.toml"
 hash = "b5f1c37740051774214d8dd035df9bac68ddd4d8c71ed8949fdaabd5949829de"
+metafile = true
+
+[[files]]
+file = "mods/maestro-music.pw.toml"
+hash = "e8e05c82d3c0d83cf0fbd306445052832b9923caeb1b0176276bb70a944d331f"
 metafile = true
 
 [[files]]
@@ -878,6 +928,11 @@ metafile = true
 [[files]]
 file = "mods/medieval-siege-machines.pw.toml"
 hash = "96892a94024be0a16de0f65bb3388bd07d19cb43a7179cd5bedcedfe4023d13e"
+metafile = true
+
+[[files]]
+file = "mods/minecraft-comes-alive-reborn.pw.toml"
+hash = "21fd5aa24c3dcd3da912d6f0fd37df905c108bf613a18bafe9bb97ee2576b42c"
 metafile = true
 
 [[files]]
@@ -953,6 +1008,16 @@ metafile = true
 [[files]]
 file = "mods/numismatics.pw.toml"
 hash = "f0a5a2604c8d733222a25e9c19dcf443d853864ed76a388b26982be97fdea71f"
+metafile = true
+
+[[files]]
+file = "mods/nyctophobia.pw.toml"
+hash = "ec7daea7c89e4c6095b644b64eb4017732de0906708ba92e4d54484f8df83446"
+metafile = true
+
+[[files]]
+file = "mods/obscure-tooltips.pw.toml"
+hash = "4ea27e021d02d575bf7f4feb1f6ec65b9e097f3a2d9cfccad92d594b1594c037"
 metafile = true
 
 [[files]]
@@ -1051,6 +1116,11 @@ hash = "c0014740246a7e9427afe968d43e129f4d21b899e0e04fa036bab758bc11f713"
 metafile = true
 
 [[files]]
+file = "mods/realm-rpg-treasure-balloons.pw.toml"
+hash = "65b08ef670a2838ca8a97b7acb100de8d2cf21bf8ebdfd14d78b725fd7a6df7e"
+metafile = true
+
+[[files]]
 file = "mods/reeses-sodium-options.pw.toml"
 hash = "0f465bf38b13f887dbde506c859c9b5439ee9151ae5f3a98078b9f6c3a2c89ad"
 metafile = true
@@ -1131,6 +1201,11 @@ hash = "ce9ddada6ffd55a512149cc474c6a453281a997a5fdf1b7b4a2cc73f875e704a"
 metafile = true
 
 [[files]]
+file = "mods/seasonal-decorations.pw.toml"
+hash = "3755d51aca97b23d841fd48c95b84594846ad97cee19b2a35bf6edfa0a490521"
+metafile = true
+
+[[files]]
 file = "mods/seasonhud.pw.toml"
 hash = "c7929a9b349aa542cfb3d825ab8229b359ae02633f0f31614983d337ca24b1a4"
 metafile = true
@@ -1161,6 +1236,11 @@ hash = "ceb471279e065147d4caf9ea6e5d59db1b85b67c708c40e3fa2ef124e643147a"
 metafile = true
 
 [[files]]
+file = "mods/simple-hats.pw.toml"
+hash = "e49e5bbd1acba6a50c445e3d087552bc134e3559eae8a29da2332b4d11588228"
+metafile = true
+
+[[files]]
 file = "mods/simple-voice-chat.pw.toml"
 hash = "cca4b10598ae8cedcc2a6531a422453d624ceb4d1de1163ce46255415ccda045"
 metafile = true
@@ -1168,11 +1248,6 @@ metafile = true
 [[files]]
 file = "mods/skills.pw.toml"
 hash = "87ce844ff87267bc95027b95c970c58298d4a6882bb2b620551c8a309f1c8e81"
-metafile = true
-
-[[files]]
-file = "resourcepacks/skyrim-music-pack.pw.toml"
-hash = "b9f2a5fb9366773e51641a3b4418f3e91c571a6d52abfbab1f6b69c6e58ac426"
 metafile = true
 
 [[files]]
@@ -1286,6 +1361,16 @@ hash = "15962183bec2468058c70e87aa32e902a08489b0f86741088cdc9aa958ba4931"
 metafile = true
 
 [[files]]
+file = "mods/terralith.pw.toml"
+hash = "81c5c05f9ed4c07b9f027ff6c421939bb04e476075091f135d34aaa05af1f950"
+metafile = true
+
+[[files]]
+file = "mods/the-day-of-the-beast.pw.toml"
+hash = "bcbbdd3188547471c62b6dd94b884b9044868fea4927c37a61973992a0b005b2"
+metafile = true
+
+[[files]]
 file = "mods/the-knocker.pw.toml"
 hash = "a96d14bcc58f21a1b1af5e0147543ea224342f7e636106c1a73c0818fd69eeb6"
 metafile = true
@@ -1311,13 +1396,13 @@ hash = "72c0db4d726a16d80c2337cc9dc4d220ba8298deb5db5d9d58082d15a245ea3f"
 metafile = true
 
 [[files]]
-file = "resourcepacks/tras-fresh-player.pw.toml"
-hash = "32fe0fe8941110f8fba07ce7768faa1797de6b28e961ab65b483c380fc0a365a"
+file = "mods/travelers-titles.pw.toml"
+hash = "01cab903b1a7f77aa4f28c7fab24e7fa09b376b18c77b487b7ba34e0afc57813"
 metafile = true
 
 [[files]]
-file = "mods/travelers-titles.pw.toml"
-hash = "01cab903b1a7f77aa4f28c7fab24e7fa09b376b18c77b487b7ba34e0afc57813"
+file = "mods/tyzs-skills.pw.toml"
+hash = "71d2e7aa272dfcfa20e8ea6cbe316d25e17624af84e8201708b0f435b5ff1767"
 metafile = true
 
 [[files]]
@@ -1403,4 +1488,34 @@ metafile = true
 [[files]]
 file = "mods/zeta.pw.toml"
 hash = "cb474b6c0dde741836ed4f796f3b6ab0b9d3cdc0453e651122cd002d5d1f8df8"
+metafile = true
+
+[[files]]
+file = "resourcepacks/faithful-32x.pw.toml"
+hash = "e0a6012ba9dad43bbcc771bb65c9ed857cb959d1ac36b5d4924ad036b4ffb07a"
+metafile = true
+
+[[files]]
+file = "resourcepacks/fresh-animations.pw.toml"
+hash = "6a1556a0e4fcb411b33efafc3382b4abd9a6e671f140dc0d42e9aad2808e24f3"
+metafile = true
+
+[[files]]
+file = "resourcepacks/skyrim-music-pack.pw.toml"
+hash = "b9f2a5fb9366773e51641a3b4418f3e91c571a6d52abfbab1f6b69c6e58ac426"
+metafile = true
+
+[[files]]
+file = "resourcepacks/tras-fresh-player.pw.toml"
+hash = "32fe0fe8941110f8fba07ce7768faa1797de6b28e961ab65b483c380fc0a365a"
+metafile = true
+
+[[files]]
+file = "shaderpacks/bsl-shaders.pw.toml"
+hash = "f91c2ec79366b4607d93928a07c223cbaa4a2e18fe0c110e68a3fc064e69b65a"
+metafile = true
+
+[[files]]
+file = "shaderpacks/complementary-reimagined.pw.toml"
+hash = "ea258ed5bf495d9017eeadc3cbf9bd67b1e672d843826bc077135548b5bc699e"
 metafile = true

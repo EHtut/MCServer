@@ -1,0 +1,13 @@
+name = "Nyctophobia"
+filename = "nyctophobia-neoforge-mc1.21.1-2.0.0.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/k5jeNqWg/versions/JCC0cnaN/nyctophobia-neoforge-mc1.21.1-2.0.0.jar"
+hash-format = "sha512"
+hash = "6e71f4cfc458051cfe66f39168fb44cbe407dfe42ecaf028f94acb7e3d6fe0429f272cacdf5ecd6ad783313d077bc087229f2f9d4b9fabd95dbe6541182eeb83"
+
+[update]
+[update.modrinth]
+mod-id = "k5jeNqWg"
+version = "JCC0cnaN"

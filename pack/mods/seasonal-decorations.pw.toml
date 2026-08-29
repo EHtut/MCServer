@@ -1,0 +1,13 @@
+name = "[🎄] Seasonal Decorations"
+filename = "seasonal_decorations-1.0712-neoforge-1.21.1.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/lcQpdCeI/versions/MXnKohiV/seasonal_decorations-1.0712-neoforge-1.21.1.jar"
+hash-format = "sha512"
+hash = "e8b4905817d384cbd89f65efb70140dea30bf28f2a2e99f7131d8c0312122875ab1fc695b9b94d4576ae7637e2f6b6dff9349cf769396e04fa9174e10ef2ada4"
+
+[update]
+[update.modrinth]
+mod-id = "lcQpdCeI"
+version = "MXnKohiV"
