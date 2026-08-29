@@ -29,7 +29,42 @@ gated on a much shorter list than it looks.
 
 ## §0 🔴 DECISIONS THAT BLOCK — nothing generates until these are answered
 
-### 0.1 ⛔ THE DIMENSION QUESTION IS REOPENED, AND IT IS THE BIG ONE
+### 0.1 ✅ ANSWERED 2026-08-29 — and a candidate already exists
+
+> Ethan: *"We find a mod that generates nether and end biomes in the overworld?"*
+
+⭐ **`tectonic-layers` is exactly that, and it is built for the mod we already run.**
+
+> *"Stacks Nether and End layers inside the Overworld"* — the Nether deep below, the
+> Overworld in the middle, the End high above, via a **custom layered chunk generator**
+> with correct biomes by height and **native terrain generation, not biome swaps.**
+
+| | |
+|---|---|
+| loader | **NeoForge 1.21.1 only** — no version guessing |
+| requires | **Tectonic** ✅ already in the pack · **Lithostitched** ✅ already in the pack · **Amplified Nether** ❌ new (2.17M downloads, mature) |
+| new jars needed | **two** — `tectonic-layers` and `amplified-nether` |
+
+🔑 **It answers the goal without any of option C's damage.** Nether and End content
+generates natively, so blaze rods, wither skeletons, Elytra and shulkers all remain
+reachable and Create's mid-game is untouched.
+
+### ⚠️ Three things to be honest about before it goes in
+
+1. 🔴 **DISTANT HORIZONS IS UNMENTIONED IN ITS DOCS — and DH is exactly what killed One
+   Dimension** (88 exceptions in one generation run, `66`). This is the same risk in the
+   same place and it is the single thing worth testing first.
+2. ⚠️ **It is BETA**, with only ~1,300 downloads. Its own page says *"back up your
+   worlds before installing or updating."* Very little field testing.
+3. ⭐ **Its other caveat costs us nothing.** *"Use with new worlds for best results"* —
+   we are generating a new world anyway.
+
+**Next step: the same testgen harness used for One Dimension**, which is still warm.
+Two jars, one generation, and the question is whether DH throws.
+
+---
+
+### 0.1b ⛔ THE ORIGINAL QUESTION, kept for the record
 
 The original ask was *"remove the nether and the end and all other dimensions,
 replacing them with naturally spawning biomes."* **One Dimension was the mechanism, and
@@ -54,19 +89,28 @@ composed with Tectonic exactly — Nether ceiling −129, Overworld floor −128
 It was cut for the Distant Horizons conflict (88 exceptions in one generation run), not
 because the concept failed. **If B is chosen, that is the shape to aim at.**
 
-### 0.2 Tectonic's `min_y`
+### 0.2 ✅ RULED — Tectonic stays at `min_y: -128` as staged
 
-`tectonic.json` is staged at **`min_y: -128, ore_fix: true`** and measured: solid ground
-to −127 with real caves (8.7% air at −100 vs 10.5% at y=0).
+Accepted with the side effect known: the band **−40 to −63 is nearly solid**, because
+the taper moved down with the floor.
 
-⚠️ **Measured side effect:** the band **−40 to −63 becomes nearly solid** — the taper
-moved down with the floor. Accept, or retune before generating.
+⭐ **That band is arguably a feature, not a cost.** It puts a dense barrier between the
+ordinary cave layer and the deep — which is exactly the boundary Wall's depth-diving and
+Art's entry condition both want to mean something. Crossing it should feel like work.
 
-### 0.3 The four remaining `chosen` questions (`67`)
+⚠️ It also composes with §0.1: One Dimension placed its Nether ceiling at **−129**,
+directly beneath this floor, with zero gap. Whatever mechanism lands, that is the seam.
 
-Not strictly blocking generation, but they block the build that should land with it:
-Wall's clock, Art's aftermath, Forge's timer and retry policy, and what a godless early
-game looks like now.
+### 0.3 Two remaining `chosen` questions (`67`)
+
+Neither blocks generation. **Blade 500 · Wall a pathed player · Art the deep speaker's
+introduction, 50 levels, she takes all of them · Salvage no-upside deals · Forge a long
+cooldown, timer per prompt** are all ruled.
+
+Left: **which clock Wall's 30 days uses** (`fall.js` counts world days, `ranks.js`
+counts played sweeps online-only — 30 world days pass while you are logged out, so
+played time is the fairer measure and is the working default until told otherwise), and
+**what a godless early game looks like** now that every route got materially harder.
 
 ---
 
@@ -115,13 +159,31 @@ land.
 | **tyzs-skills** | the talent-tree pick of the three. NeoForge 1.21.1, 100% data-driven JSON, **KubeJS support**. ⭐ Keep it **small, slow and permanent** against god power that is **large, fast and revocable** — get that backwards and nobody bothers with the gods |
 | **minecraft-comes-alive-reborn** | ⚠️ Ethan's call. Motivation is sound (*"the world above isn't dead and i don't like villagers"*) but MCA is a family sim, and marriage-and-children sits badly against ambient horror |
 
+### ⭐ `bountiful` — KEPT, and it should be hers
+
+Ethan, 2026-08-29: *"we can cut daily quests but keep bounty boards."*
+
+🔑 **The distinction that makes this the right call:** a *daily quest* is a treadmill
+handed out by nobody, which is exactly what competes with the gods. A **bounty board is
+a place in the world** — it sits somewhere, you travel to it, and it can belong to
+someone.
+
+⭐ **Give it to Salvage.** She is already the commission god (`salvage_events.js` runs
+`commission`, a kill order on the nearest other player, settled for levels and harness).
+A board she runs is not a second economy competing with the pantheon — it is her economy
+with a physical location, and it is already her voice.
+
+⚠️ **Open, and worth deciding before it lands:** does a *godless* player get to use the
+board? If yes, it becomes a natural on-ramp for the long pathless stretch that `67` now
+creates. If no, it is a perk of being hers.
+
 ### Deferred — costs nothing to add later
 `easy-npc` — touches no worldgen, so it is not a reset decision.
 
 ### Recommended against
 | mod | why |
 |---|---|
-| **daily-quests** + **bountiful** | the gods already run 45 events including contracts, kill orders, commissions and errands. A quest board competes for the same slot and is *impersonal*. ⭐ **Counter-proposal: give the board to Salvage** — she is already the commission god and it is already her voice |
+| **daily-quests** | ⛔ **CUT 2026-08-29.** The gods already run 45 events including contracts, kill orders, commissions and errands — a daily quest board competes for that slot and is *impersonal*, which is the opposite of the whole design |
 | **creaturechat** | the authored voice IS the signature here. 446 drafted lines and twenty-odd docs of canon; letting a small local model give every zombie a line puts a second register in the world and makes speech ordinary. **The gods should be the only things that talk** |
 | **heart-crystals** | `power.js` already grants max health scaled by trust. Two ladders to the same stat, and the gods' one is the point |
 | **tensura-reincarnated** / **-mysticism** | ⛔ **CUT.** Total conversion — own races, skills, boss gates, dual progression paths, **and its own dimensions**, which contradicts §0.1 |

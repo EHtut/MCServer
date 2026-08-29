@@ -38,7 +38,7 @@ god takes.
 | **Blade** | **500 mobs slain** | you already fight. He takes the proven |
 | **Salvage** | She randomly offers godless players deals. **All of them suck.** Accept **5** | you keep saying yes to bad terms. That is how she gets everyone |
 | **Wall** | **Killed by another god's champion** (a pathed player), OR **no god for 30 days** | something took you, or nobody else wanted you. Both are hers |
-| **Art** | As a godless player, go deep enough that **the deep speaker introduces herself** (below y0, no sky), then **take her deal — which kills you. She tells you this first** | you went too deep and accepted anyway, knowing |
+| **Art** | As a godless player **with 50+ levels**, go deep enough that **the deep speaker introduces herself** (below y0, no sky), then **take her deal — it takes every level you have and kills you. She tells you this first** | you went too deep and accepted anyway, knowing |
 | **Forge** | At a crafting bench **after the 6th night**, survive her conversation (below) | you can charm her. Nothing else |
 
 ⭐ **Nobody is chosen for being strong.** Blade is the only one who even looks at
@@ -202,18 +202,63 @@ five conditions that requires new machinery rather than new wiring.
 
 ---
 
+## ⭐ RULED 2026-08-29 — Forge's retry, and Art's price
+
+### Forge: **retry after a long cooldown**, and the timer is **per prompt**
+
+Not one-attempt-ever, and not next-night. **Days.**
+
+🔑 That is the only answer that survives the tree's own design. It is deliberately
+opaque on a first read, so first-try failure is the *expected* outcome — making it
+permanent would turn the most characterful entry condition in the game into a coin
+flip nobody gets to learn from. A long cooldown keeps failure expensive without making
+it final, and it is slow enough that brute-forcing all 32 combinations is not a
+weekend's work.
+
+⚠️ **The 5-minute timer is PER PROMPT**, not for the whole conversation — which is how
+Ethan's note reads in place, and it is the forgiving reading. Five prompts at five
+minutes each is a 25-minute ceiling; a whole-conversation timer would punish someone
+who walked away once.
+
+### Art: **50 levels to take the deal, and she takes every one of them**
+
+> Ethan: *"Chosen on respawn, however she takes all your levels. im adding a
+> requirement of 50"*
+
+| | |
+|---|---|
+| **gate** | you must be at **50+ levels** to accept |
+| **price** | **all of them.** Not 50 — everything you are carrying |
+| **then** | it kills you, and you are chosen **on respawn** (symmetric with Wall's, 100t) |
+
+⭐ **This is the strongest condition in the document, and it is the most Art.** It is
+not a test of survival or skill — it is a test of **preparation and willingness**. You
+have to grind to 50, carry it down past y0 into the dark, and then hand the whole pile
+to something that has already told you it will kill you.
+
+🔑 **And "all of them" rather than "50" is the character.** A god who took exactly
+the price would be a trader — that is Salvage. Art takes what you have because she is
+appraising you, and the appraisal is *what were you willing to bring*. Arriving with
+80 costs you 80.
+
+⚠️ **`death_cost.js` becomes moot for this one death** — its 5-level charge cannot
+apply to a player she has already emptied. Make sure that reads as intentional in the
+log rather than as the death cost silently failing.
+
+⚠️ **50 is a real wall for a godless player**, who has no path drops, no trust buffs and
+no coefficient. That is presumably the point, but it makes Art's route the slowest of
+the five by some distance — worth watching in play rather than assuming.
+
+---
+
 ## 🔴 STILL OPEN
 
 1. **Wall: which clock is "30 days"?** `fall.js` counts **world days**; `ranks.js`
    counts **played sweeps, online only**. They are not the same clock and the
    difference has bitten this project before. Played time is the fairer measure — 30
    world days pass while you are logged out.
-2. **Art: after she kills you, what?** Chosen on respawn, the way Wall's offer lands
-   100t later? And does that death take its usual 5 levels — or is being killed by a
-   god exempt?
-3. **Forge: is the 5-minute timeout per prompt or for the whole conversation?** And
-   **may you retry after a fail** — next night, never, or after a cooldown? ⚠️ "Never"
-   is harsh given the tree is deliberately unguessable on a first read.
+2. ~~**Art: after she kills you, what?**~~ ✅ **RULED** — see above.
+3. ~~**Forge: timeout and retry?**~~ ✅ **RULED** — see above.
 4. **What does a godless early game look like now?** Every condition is much harder
    than carrying an item. `pathless.js` already has the pantheon arguing overhead so
    the wait is not silent, but it is now considerably longer.
