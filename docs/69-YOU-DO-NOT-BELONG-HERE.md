@@ -208,3 +208,78 @@ is it reachable or sealed?
 Both jars removed; `testgen` back to 218 and `depthtest` restored. **Terralith and
 Nyctophobia are cleared for the real install** — they boot, they compose, and they cost
 nothing in depth.
+
+---
+
+# ADDENDUM 2 — the deep layer, measured
+
+The open question from the last addendum: *what generates the ~20% air layer at −550, and
+is it reachable or sealed?* Answered on a fresh baseline world (218 jars).
+
+## The actual shape of the world
+
+```
+  y   575  ┬── ceiling  (576 = "out of this world")
+           │
+           │   ORDINARY WORLD — surface, then caves
+  y  ~-60  ┤   caves begin      0.3% air
+  y  -140  ┤   cave peak        5.2% air
+  y  -200  ┤   caves END        0.0% air
+           │
+           │   🔴 DEAD ROCK — 315 blocks of solid deepslate, 0% air
+           │
+  y  -515  ┤
+           │   ⭐ A CAVERN LAYER — 45 blocks tall, up to 38.5% air
+  y  -560  ┤
+           │   solid again
+  y  -592  ┴── BEDROCK
+```
+
+**World bounds pinned exactly: `min_y -592`, `max_y 575`, height 1168.**
+
+## The per-slice profile (32×32 = 1024 blocks each)
+
+| y | air | | y | air |
+|---|---|---|---|---|
+| −490 | 0.0% | | −545 | 29.6% |
+| −500 | 0.0% | | −550 | 35.2% |
+| −510 | **0.2%** | | −555 | 38.3% |
+| −520 | 19.4% | | −560 | **38.5%** |
+| −530 | 18.8% | | −565 | 0.0% |
+| −540 | 12.6% | | −580 | 0.0% |
+
+## What it is — and is not
+
+⭐ **It is not a mod's deep biome.** Tested against `yungscavebiomes:lost_caves`,
+`frosted_caves`, `deep_dark`, `dripstone_caves`, `lush_caves` — all valid registered ids
+(a fake id errors with a parse caret; these returned a clean *Test failed*), and none of
+them is the biome down there. It reports only `#minecraft:is_overworld`, i.e. the
+ordinary surface biome extended downward.
+
+**So the cavern is a byproduct of the noise settings at the bottom of an unusually tall
+world, not an intentional layer anyone built.**
+
+⚠️ **Effectively sealed, in this sample.** −500 and −490 are 0.0%; −510 has **2 air
+blocks out of 1024**. That is not a passage, but it is not literally zero either, and a
+32×32 column cannot prove anything about connections a few hundred blocks away.
+**"Unreachable by digging straight down from the cave layer" is proven; "unreachable"
+is not.**
+
+## 🔑 What this means for the plan
+
+There is already **a 45-block cavern system at the bottom of the world that no player
+has ever seen**, behind 315 blocks of solid rock, in a world nobody knew was 1168 blocks
+tall.
+
+⭐ That is not a defect to fix. **It is the deep layer the design has been asking for,
+and it already generates.** Art's entry condition wants somewhere that counts as "the
+deepest layer"; Wall's depth-diving wants somewhere worth diving to; the artifacts want
+somewhere to be. This is the room, and it is free.
+
+⚠️ **What it needs is a way in and a reason to go** — neither of which exists today.
+Nothing generates a shaft, nothing hints it is there, and 315 blocks of blind digging is
+not an expedition, it is a chore.
+
+⚠️ **And `min_y: -128` in `tectonic.json` is now clearly not doing what was assumed.**
+The floor is −592 regardless. That setting should be re-examined rather than carried
+into the reset on the strength of a measurement taken against a stale world.
