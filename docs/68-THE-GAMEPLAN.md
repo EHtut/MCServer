@@ -143,6 +143,54 @@ with a physical location, and it is already her voice.
 board? If yes, it becomes a natural on-ramp for the long pathless stretch that `67` now
 creates. If no, it is a perk of being hers.
 
+### 🔴 NOTHING IS INSTALLED YET — measured 2026-08-29
+
+**Zero of the approved mods are in the pack manifest.** `pack/mods/` holds 275 entries
+and the instance holds 218 jars — the same numbers as before this session started.
+Everything below is a DECISION, not a deployment. Terralith and Nyctophobia existed only
+inside `testgen` and were removed after the test.
+
+⚠️ **This is the honest state and it is easy to lose track of**, because the decisions
+have been detailed enough to feel like progress. They are not the same thing.
+
+### ⭐ PARKED FOR LATER — CreatureChat as *custom companions*
+
+Ethan, 2026-08-29: *"remember when i recommended the mod creature chat? What if we used
+that to implement actual custom companions?"* — **parked, not rejected.**
+
+🔑 **The reframe dissolves the original objection.** I argued against it because
+letting every mob talk makes speech ordinary in a game whose signature is authored
+voice. But CreatureChat has **whitelist/blacklist by entity type**, so it can be scoped
+to companions alone — and that objection was about ubiquity, not about the technology.
+
+Verified: NeoForge 1.21.1 builds exist (188k downloads, two required deps), it runs
+against a **local endpoint via Ollama/LiteLLM** so nothing leaves the machine, `/story
+set` gives a global frame, and it already tracks **relationships and past interactions**
+— which is the companion mechanic, prebuilt.
+
+**⚠️ The real problem, if it is ever picked up: REGISTER INVERSION.** The gods speak in
+fixed authored pools — rare, weighty. A companion on an LLM speaks fluently and
+contextually, forever. If the chatty thing is more responsive than the divine thing, the
+pantheon becomes the less alive half of the game.
+
+⭐ **The fix is a design rule, not a config:** make the companion *ordinary on purpose*.
+Gods are rare and enormous; a companion natters about the cold and the thing that just
+bit it. The contrast strengthens both — a god's single line lands harder beside someone
+who talks constantly and says nothing.
+
+🚨 **And the hard rule that keeps it safe:** the companion must NEVER speak about the
+gods, the paths, or Veldora's lore. An LLM confabulates into gaps and will invent a
+pantheon. The `/story` prompt should define what it does **not** know — *"You are an
+ordinary person. You have never spoken to a god. You do not know what they want."*
+Which is also characterful: everyone else here is as ignorant as you were.
+
+**Unverified, and it decides how far this can scale:** whether per-entity personalities
+exist at all. The docs describe a *global* story, not per-entity prompts — if that is
+right, every companion shares one character. Fine for one; weak for a village.
+
+**Also unresolved:** a local model in the loop needs a timeout and a mute-fallback, or a
+stalled generation becomes a server hitch.
+
 ### Deferred — costs nothing to add later
 `easy-npc` — touches no worldgen, so it is not a reset decision.
 
