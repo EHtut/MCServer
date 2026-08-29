@@ -124,3 +124,71 @@ execute if block 0 -321 0 #minecraft:air           → That position is out of t
 
 Previous worlds preserved, not deleted: `depthtest.pre-onedimension` (the depth test)
 and `depthtest.vanilla-notstacked` (the silent-failure run, kept as the counter-example).
+
+---
+
+# ADDENDUM 2026-08-29 — `tectonic-layers` tested, and it is WORSE
+
+Run in the same `testgen` instance, immediately after. Two jars added
+(`tectoniclayers-2.0.1`, `Amplified_Nether_26.2_v1.2.16`, both sha512-verified);
+`tectonic` and `lithostitched` were already present.
+
+## ⭐ Its design is better than One Dimension's
+
+No world-type trap. It overrides `data/minecraft/dimension/overworld.json` directly with
+a `tectoniclayers:layered` generator composing three vanilla biome sources and three
+noise settings. **Nothing to set in `server.properties`** — it either applies or the mod
+failed to load. That is a genuinely better shape than One Dimension's silent
+`preselectWorldType` failure.
+
+## 🔴 And it crashed twice, for two independent reasons
+
+### Crash 1 — ModernFix × the layered generator's codec
+
+```
+NullPointerException at Objects.requireNonNull -> Optional.of
+  KeyDispatchCodec.encode
+  ChunkGeneratorStructureState.makeCacheKey
+  [modernfix perf.cache_strongholds mixin]
+```
+
+The game serialises the chunk generator to build a stronghold cache key, and
+`tectoniclayers:layered`'s codec lookup returns null. **Worked around** by setting
+`mixin.perf.cache_strongholds=false`.
+
+### Crash 2 — Biolith × `LayeredBiomeSource`. NOT worked around.
+
+```
+NullPointerException: Cannot invoke
+  "com.terraformersmc.biolith.impl.noise.OpenSimplexNoise2.sample(double,double)"
+  because "this.temperature..." is null
+    at tectoniclayers.worldgen.LayeredBiomeSource.getNoiseBiome(LayeredBiomeSource.java:76)
+    at ChunkAccess.fillBiomesFromNoise
+```
+
+🚨 **This is in chunk generation itself.** Biolith's noise fields are never initialised
+for the custom biome source, so **no chunk can be generated at all**.
+
+⚠️ **Biolith is not optional here — it is Regions Unexplored's biome API**, and Regions
+Unexplored is the mod carrying the tall trees that started this whole thread. Biolith
+was already visibly opinionated in the earlier run (*"Ignoring world
+'grim_and_bleak:soulsrealm'; unknown dimension type"*).
+
+## 🔑 THE COMPARISON FLIPS — One Dimension was the better candidate
+
+| | One Dimension | Tectonic Layers |
+|---|---|---|
+| generated a world | ✅ **yes** — all three bands, real terrain, netherrack and end_stone confirmed | 🔴 **no** — crashes during chunk generation |
+| composed with Tectonic | ✅ exactly — Nether ceiling −129 against Overworld floor −128 | untested; never got that far |
+| the problem | 88 Distant Horizons exceptions in **LOD sky-lighting** | NPE in **terrain generation** |
+| severity | cosmetic subsystem, world unaffected | fatal, nothing generates |
+
+⭐ **One Dimension was cut for a visual-subsystem conflict. Tectonic Layers cannot make
+a chunk.** That is not a close call, and it means the cut deserves revisiting rather
+than the replacement being adopted.
+
+⚠️ Tectonic Layers is beta with ~1,300 downloads. Both collisions are with *established*
+mods in this pack (ModernFix, Biolith). This is not a tuning problem.
+
+**State after the test:** both jars removed, the ModernFix config reverted, 218 jars,
+`depthtest` restored from `depthtest.plain`. Nothing was left changed.
