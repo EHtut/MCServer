@@ -140,3 +140,71 @@ Regions Unexplored is already in the pack on Biolith doing a third version of th
 Test in `testgen` before the real reset — Terralith + Tectonic + Regions Unexplored +
 Nyctophobia, generated together, and confirm both that it boots and that the terrain is
 actually deep.
+
+---
+
+# ADDENDUM 2026-08-29 — the Terralith test PASSED, and found something bigger
+
+Four generations in `testgen`: Terralith + Nyctophobia, then without Terralith, then a
+clean 218-jar baseline. Live pack untouched; both jars removed again afterwards.
+
+## ✅ The test itself passed
+
+**Terralith + Nyctophobia + Tectonic + Regions Unexplored + TerraBlender + Biolith +
+Lithostitched all compose.** `Done (34.889s)`, **zero crashes**, TerraBlender registered
+`nyctophobia:biome_provider` alongside the existing overworld regions.
+
+⚠️ Terralith is datapack-based (it ships its own
+`data/minecraft/worldgen/noise_settings/overworld.json`) rather than TerraBlender-based,
+so it does not appear in the region registry. That is expected, not a failure.
+
+## 🔴 THE REAL FINDING: the depth diagnosis was WRONG
+
+Air fraction, same 32×32×16 volumes, measured by `fill … replace air`:
+
+| y | baseline (218 jars) | + Terralith & Nyctophobia |
+|---|---|---|
+| −60 | 0.3% | 0.8% |
+| −100 | 1.8% | 1.7% |
+| −140 | **5.2%** | **5.2%** |
+| −200 | 0.0% | 0.0% |
+| −300 | **0%** | **0%** |
+| −450 | **0%** | **0%** |
+| −550 | 20.3% | 21.4% |
+
+**Identical.** The biome mods change nothing about depth or caves, exactly as biome mods
+should not.
+
+⭐⭐ **But look at the baseline column.** The pack ALREADY generates a world spanning
+roughly **−592 to ~512** — about 1100 blocks — and the band from **−200 to −500 is
+completely solid.** A quarter of a kilometre of deepslate with no caves at all, then a
+~20% air void layer at the very bottom.
+
+### 🔑 So the original complaint was right about the symptom and wrong about the cause
+
+> Ethan, 2026-08-24: *"the world is not deep enough. like at all. we have a cave that
+> paths down to the bottom of the world and it just sorta ends in lava lakes."*
+
+**The world is not shallow. It is EMPTY.** There is plenty of depth — the caves simply
+stop around −200 and nothing exists between there and the void at the bottom. Digging
+down does not run out of world; it runs out of *reasons*.
+
+⚠️ **Which means `min_y: -128` was never the fix**, and the earlier measurement that
+appeared to confirm it (`64`, "solid to −127") was taken against a world generated in a
+previous session under different settings — **not a valid baseline.** Corrected here.
+
+### ⭐ And it re-points the depth work at exactly what is already planned
+
+The fix is not more depth. It is **content in the depth that exists** — which is
+precisely what Wall's depth-diving, her artifacts, Art's "deepest layer" entry
+condition, and the tide were all designed to put there. The −200..−500 band is not a
+problem to solve before that work; **it is the room that work has been asking for.**
+
+⚠️ Open, and worth its own measurement: what generates the ~20% air layer at −550, and
+is it reachable or sealed?
+
+## State
+
+Both jars removed; `testgen` back to 218 and `depthtest` restored. **Terralith and
+Nyctophobia are cleared for the real install** — they boot, they compose, and they cost
+nothing in depth.
