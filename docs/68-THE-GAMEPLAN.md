@@ -29,65 +29,31 @@ gated on a much shorter list than it looks.
 
 ## §0 🔴 DECISIONS THAT BLOCK — nothing generates until these are answered
 
-### 0.1 ✅ ANSWERED 2026-08-29 — and a candidate already exists
+### 0.1 ✅ CLOSED 2026-08-29 — the dimensions STAY, and are reframed
 
-> Ethan: *"We find a mod that generates nether and end biomes in the overworld?"*
+Both merge candidates failed on their mechanics (`66`): One Dimension generated a
+correct world but threw 88 Distant Horizons LOD-lighting exceptions; **Tectonic Layers
+could not generate a chunk at all** — an NPE in Biolith's noise sampler inside
+`fillBiomesFromNoise`, and Biolith is Regions Unexplored's biome API, so it is not
+removable.
 
-⭐ **`tectonic-layers` is exactly that, and it is built for the mod we already run.**
+**Ruled: keep the Nether and the End.** Create's mid-game is safe, blaze rods and
+elytra stay reachable, and nothing has to be rebuilt.
 
-> *"Stacks Nether and End layers inside the Overworld"* — the Nether deep below, the
-> Overworld in the middle, the End high above, via a **custom layered chunk generator**
-> with correct biomes by height and **native terrain generation, not biome swaps.**
+⭐ **And the reframe makes it the better answer rather than a concession** — see `69`.
+Ethan: *"we can add an ambient line of how wrong those dimensions feel and you don't
+belong here."* A Nether you cannot reach says nothing; a Nether you **can** reach, which
+tells you that you are trespassing, states the thesis out loud. **The gods' world is
+Veldora, and their reach ends at the portal.**
 
-| | |
-|---|---|
-| loader | **NeoForge 1.21.1 only** — no version guessing |
-| requires | **Tectonic** ✅ already in the pack · **Lithostitched** ✅ already in the pack · **Amplified Nether** ❌ new (2.17M downloads, mature) |
-| new jars needed | **two** — `tectonic-layers` and `amplified-nether` |
+The "otherworldly places" half of the original goal is served instead by **biomes** —
+Terralith and Nyctophobia — which arrive through the machinery Regions Unexplored
+already runs. No custom chunk generator, no codec, no biome source, no height change:
+none of the three things that broke today.
 
-🔑 **It answers the goal without any of option C's damage.** Nether and End content
-generates natively, so blaze rods, wither skeletons, Elytra and shulkers all remain
-reachable and Create's mid-game is untouched.
-
-### ⚠️ Three things to be honest about before it goes in
-
-1. 🔴 **DISTANT HORIZONS IS UNMENTIONED IN ITS DOCS — and DH is exactly what killed One
-   Dimension** (88 exceptions in one generation run, `66`). This is the same risk in the
-   same place and it is the single thing worth testing first.
-2. ⚠️ **It is BETA**, with only ~1,300 downloads. Its own page says *"back up your
-   worlds before installing or updating."* Very little field testing.
-3. ⭐ **Its other caveat costs us nothing.** *"Use with new worlds for best results"* —
-   we are generating a new world anyway.
-
-**Next step: the same testgen harness used for One Dimension**, which is still warm.
-Two jars, one generation, and the question is whether DH throws.
-
----
-
-### 0.1b ⛔ THE ORIGINAL QUESTION, kept for the record
-
-The original ask was *"remove the nether and the end and all other dimensions,
-replacing them with naturally spawning biomes."* **One Dimension was the mechanism, and
-it is now cut** (`66`) — but cutting the mechanism did **not** answer the goal.
-
-Three options, and this has to be settled before generation:
-
-| | what it means | cost |
-|---|---|---|
-| **A. Keep them** | Nether and End stay ordinary dimensions. The "no other realms" idea is dropped | none — but the thesis goes |
-| **B. Another mechanism** | find a different stacking/merging mod, or datapack the Nether/End biomes into deep Overworld bands by hand | unknown; the hand-rolled version is a large job |
-| **C. Close the portals** | dimensions exist but are unreachable | 🔴 **breaks Create.** Blaze burners gate its mid-game, and four installed mods become dead weight |
-
-⚠️ **The measured argument against C stands:** this is a Create pack — 25+ Create
-addons. Without blaze rods there are no blaze burners, so no Basin heating, so most of
-the pack's automation stops. Also lost: the Wither and therefore beacons, plus Elytra
-and shulkers.
-
-⭐ **What the One Dimension test proved is still worth having** (`66`): the idea *works*.
-It generated genuine Nether and End terrain with real structures at −320..1279, and it
-composed with Tectonic exactly — Nether ceiling −129, Overworld floor −128, zero gap.
-It was cut for the Distant Horizons conflict (88 exceptions in one generation run), not
-because the concept failed. **If B is chosen, that is the shape to aim at.**
+🔴 **One thing still to test before generating:** Terralith and Tectonic both reshape
+overworld terrain, and Regions Unexplored is already doing a third version of that job.
+**Three worldgen mods composing is exactly the shape that has failed twice today.**
 
 ### 0.2 ✅ RULED — Tectonic stays at `min_y: -128` as staged
 
