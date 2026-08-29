@@ -35,10 +35,10 @@ god takes.
 
 | god | condition | what it tests |
 |---|---|---|
-| **Blade** | **Mobs slain** — a lot | you already fight. He takes the proven |
+| **Blade** | **500 mobs slain** | you already fight. He takes the proven |
 | **Salvage** | She randomly offers godless players deals. **All of them suck.** Accept **5** | you keep saying yes to bad terms. That is how she gets everyone |
-| **Wall** | **Killed by a god character**, OR **no god for 30 days** | something took you, or nobody else wanted you. Both are hers |
-| **Art** | As a godless player, **enter the deepest layer**, then **take her deal — which kills you. She tells you this first** | you went too deep and accepted anyway, knowing |
+| **Wall** | **Killed by another god's champion** (a pathed player), OR **no god for 30 days** | something took you, or nobody else wanted you. Both are hers |
+| **Art** | As a godless player, go deep enough that **the deep speaker introduces herself** (below y0, no sky), then **take her deal — which kills you. She tells you this first** | you went too deep and accepted anyway, knowing |
 | **Forge** | At a crafting bench **after the 6th night**, survive her conversation (below) | you can charm her. Nothing else |
 
 ⭐ **Nobody is chosen for being strong.** Blade is the only one who even looks at
@@ -136,25 +136,87 @@ becoming suspicious.
 
 ---
 
-## 🔴 OPEN — needed before any of this is built
+## ⭐ RULED 2026-08-29 — three of the six answered
 
-1. **Blade: how many is "a lot"?** It should be a number nobody hits by accident and
-   most players hit eventually. `counter_hooks.js` already counts mob kills.
-2. ~~**Salvage: what do the bad deals COST?**~~ ✅ **RULED 2026-08-29** — see
-   §"Salvage's deals" above. Not blocking any more.
-3. **Wall: what counts as "a god character"?** The tagged actors
-   (`veldora_*_actor`), another god's champion, or both? And is 30 days in-game or
-   real? (`fall.js` uses world days; `ranks.js` uses played sweeps — they are not the
-   same clock, and this project has been bitten by that.)
-4. **Art: where is "the deepest layer"** now that One Dimension is cut? Presumably a
-   Y threshold against Tectonic's −128. And **after she kills you — what?** Chosen on
-   respawn, like Wall's offer? Does the death cost its usual 5 levels?
-5. **Forge: is the 5-minute timeout per prompt or for the whole conversation?** And
-   **may you retry after a fail** — next night, never, or after a cooldown?
-6. **Every one of these is harder than carrying an item.** Nothing here says what a
-   *godless* player's early game looks like while they work toward one. Worth a
-   thought: the pathless already overhear the pantheon arguing (`pathless.js`), so the
-   wait is not silent — but it is now much longer.
+### Blade: **500 mobs**
+
+`counter_hooks.js` already counts mob kills off `EntityEvents.death` +
+`victim.isMonster()`, so the counter exists and no new bookkeeping is needed.
+
+⚠️ **Check the existing counter's semantics before wiring it.** Blade's live counter is
+his *trust* counter and may be reset, decayed or scoped per-Trial. A chosen condition
+needs a **lifetime, never-reset** tally — probably its own key rather than a borrowed
+one. Reusing a counter that resets would make the condition unreachable, silently.
+
+### Wall: a **champion of a god** — i.e. another *player* who holds a path
+
+Not the tagged mob actors. **A character who is a champion of a god**, which on this
+server means a pathed player killing a pathless one.
+
+🔴 **THIS TIGHTENS THE LIVE BEHAVIOUR AND SHRINKS IT A LOT.** `chosen.js` today says
+*"somebody kills you while you walk no path... **The killer is not checked.**"* Adding
+the check is correct — being killed by a zombie should not hand you a god — but on a
+four-player server, **PvP between a pathed and a pathless player may essentially never
+happen**.
+
+⚠️ So Wall's real route becomes the **30-day fallback**, and the fast route is close to
+decorative. That is not necessarily wrong — *nobody else wanted you* is the most Wall
+thing in the document, and a rare alternate route is fine. But it should be a decision
+rather than a discovery, so it is written down here.
+
+### Art: **when the deep speaker introduces themself**
+
+⭐ **The threshold already exists in code and does not need inventing.**
+`deep_speaker.js`:
+
+```js
+var DEPTH_Y = 0        // below y 0 AND no sky above - both must hold
+var CUTOFF_Y = -64     // fallback ONLY if this build cannot read sky
+function metKey(s) { return 'veldora_spk_met_' + s.id }
+```
+
+Ethan's own ruling, 2026-08-22: *"when you go into the depths at all, you get the
+speaker. anything that's no ceilling and in negative y"* — and **y alone was never
+enough**; the sky test is what means *underground*, the y test is what means *deep*.
+
+**So Art's condition is: a pathless player crosses that threshold, and her introduction
+fires.** The `met` flag is the exact hook — it already exists and already persists.
+
+### 🔴 BUT A PATHLESS PLAYER CURRENTLY GETS NO SPEAKER AT ALL
+
+```js
+function speakerFor(p) {
+  var path = VELDORA.paths ? (VELDORA.paths.pathOf(p) || '') : ''
+  return path ? (SPEAKERS[path] || null) : null   // <- pathless returns null
+}
+```
+
+Art's condition therefore needs **one new behaviour**: the pathless hear *her* in the
+depths. Small, and thematically it is the best fit in the pantheon — she is **her own
+speaker** (`deep_speaker.js` §375, Ethan 2026-08-22: *"she is her own depth speaker"*),
+she is the one who hunts you down there, and she is exactly the sort to talk to someone
+nobody else has claimed.
+
+⚠️ It is still a real addition, not a config change, and it is the only part of the
+five conditions that requires new machinery rather than new wiring.
+
+---
+
+## 🔴 STILL OPEN
+
+1. **Wall: which clock is "30 days"?** `fall.js` counts **world days**; `ranks.js`
+   counts **played sweeps, online only**. They are not the same clock and the
+   difference has bitten this project before. Played time is the fairer measure — 30
+   world days pass while you are logged out.
+2. **Art: after she kills you, what?** Chosen on respawn, the way Wall's offer lands
+   100t later? And does that death take its usual 5 levels — or is being killed by a
+   god exempt?
+3. **Forge: is the 5-minute timeout per prompt or for the whole conversation?** And
+   **may you retry after a fail** — next night, never, or after a cooldown? ⚠️ "Never"
+   is harsh given the tree is deliberately unguessable on a first read.
+4. **What does a godless early game look like now?** Every condition is much harder
+   than carrying an item. `pathless.js` already has the pantheon arguing overhead so
+   the wait is not silent, but it is now considerably longer.
 
 ---
 
