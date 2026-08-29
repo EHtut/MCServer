@@ -148,7 +148,7 @@ parse caret for a fake one. **A lang entry is not proof of registration.**
 |---|---|---|
 | **MCA Reborn** | ✅ **IN.** *"There is a world outside the gods after all, just no incentive to touch it"* | ⚠️ 1.21.1 build is `7.7.36-beta.3` |
 | **MCA Capitals** | monarchy for MCA — a **rival authority** to the pantheon | 31.8k dl, 1.21.1 NeoForge ✅ |
-| **Just Enough Guns** | gives guns to mobs — balanced as **specialist waves** | ⚠️ **CurseForge, not Modrinth**; version unverified |
+| ~~Just Enough Guns~~ | ⛔ **CUT 2026-08-29** — *"nevermind for my mobs with guns"* | replaced by the Iron's suite |
 | **Distant Friends** | see below | 848k dl, 1.21.1 NeoForge ✅, 53 KB |
 
 ⭐ **The framing that settled MCA** — and it is stronger than the tonal objection it
@@ -196,3 +196,109 @@ exists, in `deep_speaker.js`:
 ⭐ Spawning is a **biome modifier** (`data/distantfriends/neoforge/biome_modifier/`), so
 it is datapack-controllable — which means they can be made **night-only**, and the night
 is now the Speaker's.
+
+
+---
+
+# ADDENDUM — the Iron's suite, and the collisions resolved (2026-08-29)
+
+## 🔴 Iron's Arms 'n Artifice CANNOT BE USED
+
+> Ethan: *"We are using this for low level salvage gameplay without being chosen."*
+
+**It does not support Minecraft 1.21.1.** Measured from the registry:
+
+```
+loaders      : ['neoforge']
+game_versions: ['26.1.2']        <- the ONLY version. Published 2026-08-16.
+```
+
+🚨 **This is a hard blocker, not a risk.** The mod that was going to carry godless
+gameplay targets a Minecraft version four majors ahead of this server. There is no build
+to install and no config that fixes it.
+
+⚠️ **And it raises a question nobody has asked yet:** whether this pack ever moves off
+1.21.1. That is an enormous decision — 218 jars, most of which would need new builds —
+and it should be asked deliberately rather than arrived at because one mod wanted it.
+
+## The rest of the suite
+
+| mod | 1.21.1 + NeoForge | note |
+|---|---|---|
+| **Iron's Spells 'n Spellbooks** | ✅ 24 builds, 5.26M dl | re-added after being ruled out |
+| **Iron's Gems 'n Jewelry** | ✅ 1 build, **1,485 dl** | needs `curios` ✅ in pack, and `irons-lib` ❌ new |
+| **Iron's Simple Blood** | ✅ 4 builds, 15k dl | cosmetic, no dependencies |
+
+⭐ **Iron's Spells stops competing with Goety once the split is by PERSON, not by
+system.** It was ruled out in August as a replacement (*"too deep into goety to
+switch"*). It comes back as an **addition**, and the framing is what makes that work:
+**Iron's is what the godless do; Goety is Wall's.** Two magic systems separated by who
+you are rather than overlapping for the same player.
+
+🔑 **And it fills the hole `67` opened.** Every entry condition got much harder, so the
+pathless stretch got much longer — open question 4 in that doc was *"what does a godless
+early game look like now?"* This is the answer: it looks like Iron's.
+
+---
+
+## ⭐ The miniboss collisions — RESOLVED, and one of them is better than resolved
+
+| | ruling |
+|---|---|
+| `missioner` (Crown) | ✅ **free — Crown is dead.** No conflict to resolve |
+| `fallen_chaos_knight` (Blade) | ⛔ **stays his.** Taken |
+| `lifestealer_true_form` (Art) | ⭐ **allowed — and it is a TELL** |
+
+> Ethan: *"Art is just kayer and she is already secretly aligned with the goddess of
+> death."*
+
+🔑 **The tide is the goddess of death's army** (`tide.js`: *"i want only undead mobs to
+be apart of the tide... not apart of the goddess of death's army or control"*). So The
+Taker marching in that army is not a dilution of Art's signature — **it is evidence of
+the alliance**, visible to anyone paying attention.
+
+⚠️ **Which means it should be RARE AND DELIBERATE, not part of the random roster.** A
+clue that appears every fourth tide is not a clue, it is set dressing. If a player sees
+The Taker in the goddess of death's army, that should be a moment they remember and
+misread until much later.
+
+---
+
+## ⚠️ Reaching indoors — three candidates, none chosen
+
+> Ethan: *"what if we do it so the darktide can only happen if the player is outside for
+> a set amount of time to catch them unaware? But it has a forced timer that if the
+> player never leaves their home the tide happens, and they player gets a significant
+> debuff. Or we can just give the mobs the ability to open doors."*
+
+| option | assessment |
+|---|---|
+| **(a) only after time outside** | rewards being out, punishes nothing — but **fully avoidable.** Never go out, never see a tide |
+| **(b) forced timer + debuff for hiding** | ⭐ **the strongest.** Hiding costs something, so you cannot win by not playing |
+| **(c) mobs open doors** | ⚠️ weakest — players wall up with solid blocks instead, and it makes bases unsafe at *all* times rather than at night |
+
+### 🔴 But (b) punishes Forge's champion specifically
+
+Her whole path is **crafting indoors**. A debuff for staying home is a debuff aimed at
+the one class the design asks to stay home.
+
+### ⭐ The exception that may already be written
+
+**Forge is one of the three gods who keeps her voice at night.** She is the builder. So
+the natural shape is that **shelter is her domain** — her champion is the one the night
+cannot reach indoors, because she is still there and it is still hers.
+
+That gives each path a different night from rules already ruled:
+
+| path | the night |
+|---|---|
+| **Forge** | protected in what you built |
+| **Wall** | keeps her aura — armed, not sheltered |
+| **Art** | speaks; her own antagonist |
+| **Blade / Salvage** | 🔇 **genuinely abandoned** |
+
+⭐ **And the debuff should be reframed, not just applied.** Not a punishment for hiding —
+**her presence.** The Speaker is not a mob; walls are not an argument against her. That
+turns (b) from a nag into the horror it is supposed to be.
+
+⚠️ **Still not designed**, and this is a proposal rather than a ruling.
