@@ -114,8 +114,23 @@ ear. That is the same answer `_probe_patron.js` gave to the same problem.
 
 ### Carried, unfixed
 
-- **Wall's playstyle redo** — mod stays Goety (`43` §0b); `35` is invalidated
-  (MineColonies is not installed). The redo itself is unscoped
+- **Wall's playstyle redo** — ✅ **MOD SETTLED 2026-08-29: she stays on Goety.**
+  Ethan: *"ok fine we can leave wall with goety for now"*, closing the search for a
+  Tensura replacement. `35` remains invalidated (MineColonies is not installed) and
+  the redo itself is still unscoped, but it is now a redo **in KubeJS on the mod she
+  already has**, not a mod swap.
+
+  🔑 The search is what settled it. Tensura would have colonised the pack (its own
+  races, skills, boss gates, dual progression paths, **and its own dimensions**), and
+  the honest alternatives all carry the same problem in miniature — Vampirism and
+  Werewolves each bring a second level system, and Werewolves is lupine besides, which
+  is a poor fit for The Spider. ⭐ Werewolves was tempting for one reason worth
+  recording: its transformation is INVOLUNTARY LOSS OF CONTROL, which is the possession
+  mechanic already designed for her. That idea survives; the mod does not.
+
+  ⚠️ **Direction: build it, do not buy it.** `tyzs-skills` is the only abilities-unlock
+  mod on this loader and it is data-driven JSON with KubeJS support, so her
+  monstrousness can be authored in her own voice against mechanics that already exist.
 - **the world refresh.** Diagnosed (`64`): Tectonic owns terrain; the fixed config
   generates solid ground to −127 with real caves. **Staged, applies only to a
   regenerated world.** ⚠️ Measured side effect: the band −40 to −63 becomes nearly solid

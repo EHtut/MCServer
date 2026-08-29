@@ -104,14 +104,44 @@ push.
 
 ---
 
+## ⭐ Salvage's deals — ruled 2026-08-29
+
+> Ethan: *"all of salvage deals will be deals that sound good on paper but are just
+> her taking health, hunger, putting a bad satus effect on you with no upside."*
+
+**No items. Ever.** That satisfies the standing rule (*"we don't take items from
+players, that is how you cause them to quit"*) while still making every deal a real
+loss.
+
+🔑 **AND IT IS HER OWN TRADE, WITH THE PAYOUT REMOVED.** Her live trades in
+`salvage.js` already charge **hunger and levels** and pay **Strength II + Speed**,
+night vision, resistance. The godless deals are the same shape with nothing coming
+back — which is exactly what a predator offers somebody who has no protector yet.
+The machinery is already built; only the payout is deleted.
+
+### ⚠️ "SOUND GOOD ON PAPER" IS LOAD-BEARING, AND IT IS THE WHOLE WRITING JOB
+
+A deal that visibly costs health for nothing gets accepted **once**. Then the player
+learns, stops accepting, and Salvage never gets a champion — the condition would be
+self-defeating.
+
+So the pitch has to be convincing **five separate times**, and the five have to be
+varied enough that pattern-matching takes a while. Her existing register already knows
+how to do this — *"First one's easy. They always are."* — but these five are the
+hardest lines in the whole spec, because they have to work on a reader who is
+becoming suspicious.
+
+⭐ That is also the fiction working: five accepted bad deals is not gullibility, it is
+**grooming**. She is not tricking you once, she is teaching you to say yes.
+
+---
+
 ## 🔴 OPEN — needed before any of this is built
 
 1. **Blade: how many is "a lot"?** It should be a number nobody hits by accident and
    most players hit eventually. `counter_hooks.js` already counts mob kills.
-2. **Salvage: what do the bad deals COST?** ⚠️ Ethan's standing rule is *"No we don't
-   take items from players, that is how you cause them to quit."* So the five deals
-   must be bad in some currency that is not inventory — levels, a debt written against
-   you, a temporary handicap. **This one genuinely blocks the build.**
+2. ~~**Salvage: what do the bad deals COST?**~~ ✅ **RULED 2026-08-29** — see
+   §"Salvage's deals" above. Not blocking any more.
 3. **Wall: what counts as "a god character"?** The tagged actors
    (`veldora_*_actor`), another god's champion, or both? And is 30 days in-game or
    real? (`fall.js` uses world days; `ranks.js` uses played sweeps — they are not the
