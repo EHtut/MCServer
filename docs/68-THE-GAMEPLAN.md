@@ -421,3 +421,72 @@ prove a silenced god *cannot* speak, not merely that a permitted one can.
 * **a godless early game** — partly answered by the Iron's suite
 * **the bounty board** — does a godless player get to use it?
 * the **1.21.1 version question** raised by four unavailable mods
+
+---
+
+# ✅ A1 and B1 DONE — 2026-08-29
+
+## A1 — the eleven are live
+
+Booted the current world. **54/54 KubeJS scripts, 0 errors, 0 warnings**, 0 real errors
+in the whole boot.
+
+| check | result |
+|---|---|
+| `[sound]` · `[wallaura]` | ✅ both banner |
+| Blade's four held events | ✅ registered, **no "HELD until" text** |
+| pools refused as empty | **0** — all eleven registered |
+| Blade / Salvage lines | 211 fixed / 54 tags · 160 fixed / 60 tags |
+| salvage untagged-events warning | ✅ **gone** |
+| `[fall]` | ✅ *"UNREACHABLE — every god is mode:never"*, derived from the registry |
+| `[nemesis]` | no banner **by design** — it only logs on failure |
+
+⚠️ **Three checks still need a player** and cannot be done over rcon, because they read
+`ctx.source.player`: **`/patronsound`** (the sound ids cannot be validated server-side —
+a silent god is the only signal), `/path`'s Notice cap, and `/phase`'s factor.
+
+## B1 — 22 mods installed, 218 → 246 jars
+
+World backed up first (585 MB, `world-2026-08-29_165224.zip`). Final boot: **0 errors,
+54/54 scripts**, every god subsystem bannering normally.
+
+### 🔴 It took three failed boots, and each one taught something
+
+**1. Transitive dependencies.** The first boot died on **five at once** — `atlas_api`,
+`kambrik`, `fragmentum`, `easy_npc`, `easy_npc_config_ui`. The resolver had walked only
+**direct** dependencies. ⭐ **Dependency resolution is a fixpoint, not a lookup.**
+
+**2. Duplicate jar versions.** `install_mods.py` downloaded newer `spell_engine`,
+`spell_power` and `waystones` while the **older jars stayed in place** — two versions of
+three mods, which is a crash waiting to happen. The installer *reports* unmanaged jars
+but does not remove them without `--prune`, and 🚨 **`--prune` is all-or-nothing**: it
+would also have deleted **JEI**. The three superseded jars were removed by hand instead.
+
+**3. 🔴 MODRINTH'S DEPENDENCY DATA IS NOT AUTHORITATIVE — THE JAR IS.**
+`irons-jewelry` declares only `curios` and `irons-lib` on Modrinth. Its actual
+`neoforge.mods.toml` demands:
+
+```toml
+modId="atlas_api"
+versionRange="[1.21.1-1.1.0,1.21.1-2.0.0)"
+```
+
+`atlas_api` is **not on Modrinth**. `atlas-lib` looked like it and is not — its mod id
+is `atlaslib` at version `1.21.0-1.1.14`, which fails both the id and the range.
+⛔ **Iron's Jewelry is DROPPED** (1,485 downloads, the least valuable of the set)
+rather than blocking the install on a dependency that cannot be fetched.
+
+### ⚠️ Four unmanaged jars deliberately left alone
+
+`jei` · `createbionics` · `more_rpg_library` · `runes` are installed but absent from the
+manifest — **pre-existing drift, not caused here.** Pruning them would remove **JEI**,
+which nobody asked for. Worth reconciling one day; not today, and not silently.
+
+### Final state
+
+| | |
+|---|---|
+| manifest | **307** entries |
+| server jars | **246** (was 218) |
+| installed | 22 of 23 requested, plus 4 dependency mods |
+| dropped | `irons-jewelry` |

@@ -506,6 +506,16 @@ hash = "1aa75105514780685caab9b945db2a2ea7c0594ced8c01e12f2a3e331f1af4e6"
 metafile = true
 
 [[files]]
+file = "mods/easy-npc-config-ui.pw.toml"
+hash = "5708378207a578e9951f652bbf506e6e8ffcbe9f799bb8d7bafb8119d7874ca7"
+metafile = true
+
+[[files]]
+file = "mods/easy-npc-core.pw.toml"
+hash = "dc9043ed4e91cd9300b1ccd425bd55b1b23fe04724673955ff532070271d0bc8"
+metafile = true
+
+[[files]]
 file = "mods/easy-npc.pw.toml"
 hash = "26c47783c412717b8c38795cbf06a06c931c7538901fbb36922a1327b944247b"
 metafile = true
@@ -651,6 +661,11 @@ hash = "5ef9f8145b84ad59bc9cd7759d5a05bd0345a3266df8a290f2bdcbaaab18c6bb"
 metafile = true
 
 [[files]]
+file = "mods/fragmentum.pw.toml"
+hash = "4d5756b0229f397d4de87b46749442eed754feea6af7a207d8d534850151c428"
+metafile = true
+
+[[files]]
 file = "mods/framedblocks.pw.toml"
 hash = "20eee73cffcd55bfe041b16bbc3adc64c38859bf928486bf1db1368b6dba2058"
 metafile = true
@@ -786,11 +801,6 @@ hash = "db1c1e6382878b78e994dba1b9026935f8d1c5ca685c89d2437858e0a0dcab58"
 metafile = true
 
 [[files]]
-file = "mods/irons-jewelry.pw.toml"
-hash = "42fc720ae8e49004d59c46ee3bfd0579b65048c06a51aa65883b114f71560dde"
-metafile = true
-
-[[files]]
 file = "mods/irons-lib.pw.toml"
 hash = "1b84f2dda2014252ffb0b792f4850fa3b3b396a49f39cac7b11c8cb88bf1a1e4"
 metafile = true
@@ -833,6 +843,11 @@ metafile = true
 [[files]]
 file = "mods/justenoughbreeding.pw.toml"
 hash = "97bfd3ab26e1336b77e9f78daf3f82dce9ad03a1adf9dc4f563f620e91d5fd6a"
+metafile = true
+
+[[files]]
+file = "mods/kambrik.pw.toml"
+hash = "8a5e76693f22343bb2306011ad8018337971256a6f3b25cb03680b1d7d7470c1"
 metafile = true
 
 [[files]]
