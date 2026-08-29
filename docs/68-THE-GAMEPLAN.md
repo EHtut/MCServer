@@ -55,7 +55,18 @@ none of the three things that broke today.
 overworld terrain, and Regions Unexplored is already doing a third version of that job.
 **Three worldgen mods composing is exactly the shape that has failed twice today.**
 
-### 0.2 ✅ RULED — Tectonic stays at `min_y: -128` as staged
+### 0.2 🔴 REVERSED 2026-08-29 — `min_y` goes BACK to −64
+
+> Ethan: *"for min y, yea move it back to its original."*
+
+The staged `-128` is dropped. `69` addendum 2 measured why it never mattered: the world
+already generates to **−592** regardless of that setting, and the earlier measurement
+that appeared to justify it was taken against a world from a previous session.
+
+⭐ **And the goal it served moved.** The depth was never shallow, only empty — and rather
+than fill it, the danger relocates to **the night** (`70`). No worldgen change at all.
+
+### ~~0.2 RULED — Tectonic stays at `min_y: -128` as staged~~ (superseded)
 
 Accepted with the side effect known: the band **−40 to −63 is nearly solid**, because
 the taper moved down with the floor.
