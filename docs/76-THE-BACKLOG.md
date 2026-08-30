@@ -287,6 +287,47 @@ treat it as a floor and let the real extractor produce the true number — the f
 already undercounted by 176 because it only matched bare array entries and missed every
 `pitch: "..."` field.
 
+## ⭐ THE DELIVERY LAYER — settled 2026-08-30, and what it cost to settle
+
+Recorded because these were argued three times each and the answers are not obvious
+from the numbers alone.
+
+| | |
+|---|---|
+| **on screen** | **12s** floor, growing to 14.2s for the longest sentence. Tried 10s, then 7s (too quick in play), settled at 12 |
+| **Forge** | `beatScale: 0.72` — the ONLY per-god pace dial. She reads at 8.7s |
+| **typing** | ON, and the rate is **not settable by any route** |
+| **colour** | emphasis only; Caebrim is the standing exception (borrowed font) |
+| **chat copy** | OFF |
+| **sound** | three registers — Normal / Heightened / Enraged |
+
+### 🔴 Three things the mod will not let us do
+
+Read out of the jar with `javap`, and probed live with `/improbe`. **Do not re-attempt
+any of these without new information** — each cost a testing round:
+
+1. **`typewriterSpeed`** — a public float with a setter, and no tag key on the command.
+2. **`obfuscateSpeed`** — same shape. ⚠️ This one has a live consequence: the mod's
+   obfuscate is a **decode animation**, so a garbled line never resolves inside our
+   durations. That is why a non-aligned listener sees a scene that never finishes a word.
+3. **`shadow`** — a public boolean with a setter, no tag key. Art's thin serif is the
+   worst case and nothing can be done from here.
+
+⛔ The Java API is closed for all three: the direct static call fails because Rhino will
+not expose statics on a loaded class, and reflection via `Class.getMethod` fails the same
+way — it cannot reach `java.lang.Class` either. D-123 was narrower than its headline; it
+now covers both routes.
+
+⭐ **The only remaining lever is a client-side mixin or a fork of the mod's command.** That
+is real work and wants its own decision, not a tuning pass.
+
+### ⚠️ And one rendering constraint that is easy to forget
+
+**Anything overlapping the chat bar is NOT RENDERED** — not clipped, not drawn. It is
+indistinguishable from a god having nothing to say. The scatter box is asymmetric because
+of it (as high as it likes, 60px below centre at most), and the interior voice sits 170
+above the bottom rather than 60.
+
 ## C3 · Player action pass — ✅ **SCOPED 2026-08-30**
 
 > Ethan: *"Action pass is things like 'You hold your breath' which are your character

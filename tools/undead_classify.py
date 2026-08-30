@@ -138,14 +138,35 @@ def role(rec, eid):
     # ⚠️ NOT filed as ranged. An archer that arrives with empty hands is a melee mob
     # until something puts a bow in them - see RANGED_IF_EQUIPPED.
 
-    # ⚠️ Thresholds read off this pack's own distribution: hp median 25, upper
-    # quartile 40; dmg median 3, upper quartile 5.
+    # 🔴 THE FODDER BOUNDARY IS ETHAN'S NOW, NOT THIS PACK'S DISTRIBUTION.
+    # It was `arm < 4 and hp < 45 and dmg < 7`, read off the median and quartiles - a
+    # reasonable statistical guess and NOT what he means by fodder. 2026-08-30:
+    #
+    #   "All enemies above 1-2 armor are not fodder those are specialists, fodder is
+    #    defined by enemies you kill in 1-2 swings and just drag you down."
+    #   "all baby enemies are considered specialists"
+    #
+    # ⚠️ THIS TABLE IS WHAT SOMEBODY PICKS THE NEXT ROSTER FROM. While it classified on
+    # one rule and waves.js composed on another, the two disagreed about `bone_imp`,
+    # `baby_skeleton` and `draugr` - the two-sources-of-truth failure this project keeps
+    # paying for, inside the document written to prevent it.
     if hp >= 100 or dmg >= 14:
         return 'Miniboss', 'measured'
+    # ⭐ HIS BABY RULE OUTRANKS THE STAT BANDS. `baby_skeleton` is 10 hp / 1 armour and
+    # is textbook fodder on numbers alone; he ruled otherwise and the ruling wins.
+    if 'baby' in eid:
+        return 'Specialist - Other', 'ruled: all babies are specialists'
     if arm >= 8 or hp >= 45:
         return 'Specialist - Tank', 'measured'
-    if dmg >= 7 or arm >= 4:
+    if arm > 2:
+        return 'Specialist - Other', 'his armour rule: above 1-2 armour is not fodder'
+    if hp > 30:
         return 'Specialist - Other', 'measured'
+    # ⚠️ FLAGGED AS AN INFERENCE, not his words. "Drag you down" is what fodder does;
+    # `goety:reaper` is 24 hp with no armour and hits for 8 - a threat rather than a
+    # drag. Kept, and labelled so it stays arguable instead of becoming invisible.
+    if dmg > 5:
+        return 'Specialist - Other', 'INFERRED damage clause, not his words - arguable'
     return 'Fodder', 'measured'
 
 

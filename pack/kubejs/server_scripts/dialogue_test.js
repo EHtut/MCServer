@@ -254,7 +254,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
     if (what === 'all') {
       head(p, 'everything')
-      tell(p, '§8this runs for about a minute. Watch the SCREEN, not the chat.')
+      tell(p, '§8several minutes - every line now holds 12s. Watch the SCREEN.')
       var steps = [
         [0, 'gods'], [500, 'interior'], [640, 'whispers'],
         [1180, 'caebrim'], [1600, 'crash'], [1900, 'bicker'],

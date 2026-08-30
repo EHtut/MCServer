@@ -229,9 +229,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   //
   //     sendcustom Rehykt {...,typewriter:1b} 2.6 Do not run deeper.
   //
-  // Eighteen characters, 2.6 seconds, and he sees one or two of them. That is ~1
-  // character per SECOND, not per tick. At that rate the median line (72 chars) needs
-  // seventy-two seconds and the longest (161) needs nearly three minutes.
+  // Eighteen characters, 2.6 seconds, and he sees one or two of them.
+  //
+  // ⚠️ THIS WAS READ AS "~1 character per second" AND THAT WAS ALSO WRONG. It was an
+  // inference from a symptom, made while the only instrument was broken. When that was
+  // fixed - one message, nothing else queued - 50 characters took "a few seconds", so the
+  // real rate is usable and typing is ON. The symptom had another cause entirely: three
+  // messages were queued and the one on screen was not the one being timed.
   //
   // 🚨 HOW THE WRONG NUMBER GOT WRITTEN DOWN. This file claimed *"the speed WAS MEASURED.
   // /gd type on 2026-08-30 showed a character costs a TICK, not a second - Ethan: 'yes
@@ -627,14 +631,22 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         anchor: st.anchor || 'BOTTOM_CENTER',
         y: (sc ? (st.y || 0) + sc.y : st.y),
         x: (sc ? sc.x : st.x),
-        // ⭐ TYPING IS ON, AND THE SPEED WAS MEASURED. `/gd type` on 2026-08-30
-        // showed a character costs a TICK, not a second - Ethan: "yes both tests works".
+        // ⭐ TYPING IS ON. The rate is whatever the mod does by default, and the only
+        // reading ever taken of it is Ethan's: 50 characters "takes a few seconds", which
+        // is roughly the 15/sec in TYPE_CHARS_PER_SEC. That is an ESTIMATE and is labelled
+        // as one everywhere it is used.
         //
-        // ⚠️ The speed itself is NOT reachable from this route: the command hardcodes
-        // typewriter(1.0f, false), and tickTypewriter reveals one character per
-        // `1.0 / typewriterSpeed`. It happens to be usable at the hardcoded value. If a
-        // slower, deliberate crawl is ever wanted - Wall's flat line in docs/75 asks for
-        // exactly that - it needs the Java API, not this command.
+        // ⛔ THE SPEED IS NOT SETTABLE, by any route. `sendcustom` has no typewriterSpeed
+        // tag key (read from ImmersiveMessagesCommands, not guessed), the direct Java call
+        // fails because Rhino will not expose statics on a loaded class, and reflection
+        // via Class.getMethod fails the same way - it cannot reach java.lang.Class either.
+        // /improbe tested all of it. Changing the rate needs a client mixin or a fork.
+        //
+        // 🚨 THIS COMMENT PREVIOUSLY CLAIMED THE SPEED "WAS MEASURED" and cited Ethan
+        // saying "yes both tests works" - a confirmation he gave about the Y-SIGN fix, in
+        // a different message. It survived here for hours AFTER being corrected forty
+        // lines up, because that fix went to the mention being read rather than to every
+        // instance. A sweep is done when the tree is empty.
         typewriter: TYPEWRITER,
         seconds: o.seconds,
         // 🔑 A GOD'S STYLE OVERRIDES ITS TONE, INCLUDING TO SWITCH SOMETHING OFF.
@@ -1276,7 +1288,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         p.tell(Text.of('§750 characters, ONE message, 60s. Nothing else is queued.'))
         p.tell(Text.of('§8· finishes almost instantly §7-> typing is fast, and usable'))
         p.tell(Text.of('§8· takes a few seconds      §7-> usable, tune the durations'))
-        p.tell(Text.of('§8· still crawling at 30s    §7-> ~1 char/sec, and unusable'))
+        p.tell(Text.of('§8· still crawling at 30s    §7-> far slower than 15/sec; tell me'))
         p.tell(Text.of('§8· never appears at all     §7-> the typewriter flag does nothing'))
         p.tell(Text.of('§eTell me which of those four it was.'))
         return 1

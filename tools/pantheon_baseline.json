@@ -694,7 +694,7 @@
   "garbled": false,
   "style": {
    "anchor": "CENTER_CENTER",
-   "beatScale": 0.45,
+   "beatScale": 0.72,
    "font": "veldora:forge",
    "scatter": {
     "x": 190,

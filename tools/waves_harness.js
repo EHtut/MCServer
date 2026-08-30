@@ -260,10 +260,17 @@ grp('⛔ WHAT WAS DELIBERATELY LEFT OUT')
   }))
   Object.keys(W.gods).forEach(g => all.push.apply(all, W.gods[g].fodder.concat(W.gods[g].spec)))
 
-  // 🚨 docs/72 flagged that goety necromancers RAISE MORE UNDEAD - a multiplier inside
-  // a multiplier. That risk was flagged and never cleared.
-  ok('🚨 no necromancer, lord or summoner anywhere',
-    all.some(id => /necromancer|skull_lord|bone_lord.*summon/i.test(id)), false)
+  // ⛔ THE NO-SUMMONER ASSERTION WAS DELETED HERE, 2026-08-30, ON HIS RULING:
+  // *"No summoner rule no longer applies that is redundant, cut it from everywhere it
+  // is mentioned."*
+  //
+  // It read: `no necromancer, lord or summoner anywhere`. ⚠️ It is removed rather than
+  // relaxed, because a test kept in a weakened form is a test somebody re-tightens
+  // later without knowing it was ruled away.
+  //
+  // 🔑 What actually bounds the risk it was written for is `MAX_ALIVE_NEAR` in
+  // tide.js - a real ceiling on live tide mobs near a player, measured and enforced -
+  // not a ban on a category. That ceiling is asserted in tide_harness.js.
   // ⛔ All twelve occultism wild_* are Wild Hunt event mobs.
   ok('⛔ no occultism wild_* event mobs', all.some(id => /occultism:wild/.test(id)), false)
 }
@@ -302,43 +309,141 @@ grp('⭐ pick() RESPECTS THE DIFFICULTY GATE')
   let sawGod = false
   for (let i = 0; i < 300; i++) {
     const w = W.pick('general', 0, 1.0)     // godChance 1.0, but Uprising
-    if (w.variant === 'god') sawGod = true
+    if (w.god) sawGod = true
   }
   ok('🚨 godChance 1.0 at Uprising still yields NO god wave', sawGod, false)
 
   const gods = {}
   for (let i = 0; i < 300; i++) {
     const w = W.pick('miniboss', 3, 1.0)
-    if (w.variant === 'god') gods[w.god] = true
+    if (w.god) gods[w.god] = true
   }
   ok('⭐ at Damnation all three appear', Object.keys(gods).sort(),
     ['art', 'blade', 'wall'])
 
-  // 🔴 RELAXED FOR EXACTLY ONE GOD, AND ONLY BECAUSE HIS BOSS DOES NOT EXIST IN PLAY.
-  // Art's `dark_vortex` measured 0/3 against a control that passed 3/3 - it answers
-  // `summon` and is gone before the next command (D-112). waves.js now reports
-  // `boss: null` for him and tide.js substitutes HER miniboss, so the wave still has
-  // one. ⚠️ The relaxation is bounded to gods whose roster genuinely declares no boss;
-  // any OTHER god losing its boss still fails here.
+  // 🔴 THIS WAS RELAXED FOR ONE GOD FOR A FEW HOURS AND IS TIGHT AGAIN.
+  // Art's `dark_vortex` measured 0/3 against a control that passed 3/3, so waves.js
+  // reported `boss: null` and tide.js substituted hers. ✅ Ethan then RULED the
+  // replacement - *"it should always just be born in chaos' lifestealer"* - so every
+  // god declares a boss and the exception is gone rather than lingering as a permanent
+  // allowance nobody re-reads.
   let bossless = []
   for (let i = 0; i < 200; i++) {
     const w = W.pick('miniboss', 3, 1.0)
-    if (w.variant === 'god' && !w.boss) bossless.push(w.god)
+    if (w.god && !w.boss) bossless.push(w.god)
   }
-  ok('🚨 a god MINIBOSS wave has a boss - except a god who declares none',
-    bossless.filter(g => W.gods[g].boss), [])
-  ok('⚠️ ...and the only god without one is art (D-112, awaiting his ruling)',
-    Array.from(new Set(bossless)).sort(), ['art'])
+  // ✅ D-117 RULED 2026-08-30: Art is the Lifestealer. So EVERY god declares a boss
+  // again and the relaxation is spent - asserted at zero, which is stricter than what
+  // it replaced and fails the moment another roster loses one.
+  ok('🚨 a god MINIBOSS wave ALWAYS has a boss', bossless, [])
+  ok('⭐ ...and Art is led by the Lifestealer - the same mob as the Taker',
+    W.gods.art.boss, 'born_in_chaos_v1:lifestealer')
 
   // ...and a god GENERAL wave must not sprout one.
   let extra = 0
   for (let i = 0; i < 200; i++) {
     const w = W.pick('general', 3, 1.0)
-    if (w.variant === 'god' && w.boss) extra++
+    if (w.god && w.boss) extra++
   }
   ok('🚨 a god GENERAL wave has no boss', extra, 0)
 
   ok('every pick is themed', !!W.pick('horde', 2, 0.5).theme, true)
+}
+
+grp('🔴🔴 AUGMENTED MEANS ADDED TO, NOT SWAPPED FOR — his correction, 2026-08-30')
+{
+  // > "All tides have the general mobs in them, god augmented tides are Augmented!
+  // >  with that gods' mobs, They do not overwrite the existing tide cast at all."
+  //
+  // 🔴 THE FIRST BUILD REPLACED HER ROSTER, and every test passed because they all
+  // checked that a god wave contained THAT GOD's mobs - which was true, and was not
+  // the question. Nothing asked whether HERS were still in it. A whole mechanic was
+  // inverted under a green suite.
+  const hers = new Set([].concat(
+    W.fodderPools.bone, W.fodderPools.ghost,
+    W.specPools.boneLight, W.specPools.ghostLight,
+    W.specPools.boneTank, W.specPools.ghostTank, W.specPools.ranged))
+
+  for (const g of Object.keys(W.gods)) {
+    const gd = W.gods[g]
+    const godMobs = new Set(gd.fodder.concat(gd.spec))
+    let sawHers = 0, sawTheirs = 0, n = 0
+    for (const type of W.types) {
+      for (let i = 0; i < 60; i++) {
+        const w = W.pick(type, 3, 0, g)          // forced, so every roll is this god
+        if (w.god !== g) continue
+        n++
+        const all = w.fodder.concat(w.spec)
+        if (all.some(id => hers.has(id))) sawHers++
+        if (all.some(id => godMobs.has(id))) sawTheirs++
+      }
+    }
+    ok('🚨 ' + g + ": HER cast is still in every one of his waves", sawHers, n)
+    ok('⭐ ' + g + ': ...and his mobs are added on top', sawTheirs, n)
+  }
+
+  // ⭐ THE STRICT FORM: an augmented wave is a SUPERSET of the same wave without him.
+  // Pinning Math.random makes the base variant identical, so the only difference is
+  // the augmentation - which is exactly the claim.
+  {
+    const real = Math.random
+    Math.random = () => 0.25                      // -> the NORMAL variant, no god roll
+    try {
+      const base = W.pick('general', 3, 0)
+      const aug = W.pick('general', 3, 0, 'wall')
+      ok('🚨 augmenting only ADDS - every base fodder id survives',
+        base.fodder.every(id => aug.fodder.indexOf(id) !== -1), true)
+      ok('🚨 ...and every base specialist too',
+        base.spec.every(id => aug.spec.indexOf(id) !== -1), true)
+      ok('⭐ ...and the wave is strictly bigger',
+        aug.fodder.length > base.fodder.length, true)
+      ok('⭐ ...and the ratio is untouched - adding mobs must not move his numbers',
+        aug.specFrac, base.specFrac)
+      ok('⭐ the base variant is still named, not replaced by "god"',
+        [base.variant, aug.variant], ['normal', 'normal'])
+      // ⚠️ CONTAINS, not starts-with. `forceGod` prepends "[BENCH] ", so a starts-with
+      // test fails on CORRECT output - the theme does keep her line, just not at index
+      // 0. Caught by printing the string instead of trusting the assertion's shape.
+      ok('   ...and the theme keeps HER line and appends his',
+        aug.theme.indexOf(base.theme) !== -1 && aug.theme.indexOf('wall') !== -1, true)
+      ok('   ...and a forced wave is marked [BENCH] so it is never read as live',
+        aug.theme.indexOf('[BENCH]') === 0, true)
+    } finally { Math.random = real }
+  }
+
+  // 🚨 THE ONE THING THAT DOES OVERRIDE: the miniboss. D-108, ruled.
+  {
+    const real = Math.random
+    Math.random = () => 0.25
+    try {
+      const base = W.pick('miniboss', 3, 0)
+      const aug = W.pick('miniboss', 3, 0, 'wall')
+      ok('🚨 a god miniboss REPLACES hers - a wave cannot have two (D-108)',
+        [base.boss !== aug.boss, aug.boss], [true, W.gods.wall.boss])
+    } finally { Math.random = real }
+  }
+}
+
+grp('🕷 WALL IS SPIDERS ONLY — his ruling, 2026-08-30')
+{
+  // > "wall's tide has flies and a crab... it should only be spiders."
+  // > "only take things with the naming of spider"
+  //
+  // ⚠️ ASSERTED ON THE NAME, WHICH IS UNUSUAL HERE AND DELIBERATE. This repo has been
+  // burned three times by matching names - but a FACTION is authorship, not anatomy,
+  // and he defined it by the word. His rule, so his test.
+  const wall = W.gods.wall
+  const all = wall.fodder.concat(wall.spec, [wall.boss])
+  ok('🚨 every mob in Wall\'s roster is named "spider"',
+    all.filter(id => String(id).indexOf('spider') === -1), [])
+  // ⛔ The four he named, by name, so a re-add fails loudly rather than quietly.
+  for (const gone of ['corpse_fly', 'thornshell_crab', 'diamond_termite', 'silverfish',
+                      'scuttler']) {
+    ok('⛔ no ' + gone + ' in Wall\'s tide',
+      all.some(id => String(id).indexOf(gone) !== -1), false)
+  }
+  ok('⭐ and it is still a complete roster - fodder, a specialist, a boss',
+    wall.fodder.length > 0 && wall.spec.length > 0 && !!wall.boss, true)
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

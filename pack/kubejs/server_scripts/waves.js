@@ -11,14 +11,33 @@
 //      Malice (Blade), heresy (wall), damnation (Art). No special god waves for forge
 //      or salvage."
 //
+// ── 🔴🔴 AUGMENTED MEANS ADDED TO, NOT SWAPPED FOR ────────────────────────────
+// Ethan, 2026-08-30, correcting a misreading that had been built and shipped:
+//
+//     "All tides have the general mobs in them, god augmented tides are Augmented!
+//      with that gods' mobs, They do not overwrite the existing tide cast at all."
+//
+// 🔑 THE FIRST BUILD REPLACED HER ROSTER WITH THE GOD'S, and that is a different
+// mechanic wearing the same name. A "Blade wave" was a wave of zombies INSTEAD of her
+// dead — so the tide stopped being hers exactly when another god touched it, which
+// inverts the whole thesis. It is now HER wave with his mobs mixed through it.
+//
+// ⚠️ ONE THING STILL OVERRIDES RATHER THAN ADDS: the miniboss. D-108, ruled — a god
+// miniboss wave is led by that god's boss. A wave cannot have two, since the cap is one
+// per tide.
+//
+// ⭐ AND IT MAKES A THIN GOD ROSTER FINE. Wall is four spiders. Under replacement that
+// was a thin wave; under augmentation it is her full tide with spiders in it, which is
+// what "Wall reached into her water" should feel like.
+//
 // ── ⭐ THE VARIANT AXIS IS THE SUBFACTION AXIS ─────────────────────────────────
-// "Normal / Alternate / God-augmented" needed a rule, and the four subfactions he asked
-// for the day before ARE that rule:
+// "Normal / Alternate" is her own split, and a god is a THIRD axis on top of it rather
+// than a third value of the same one:
 //
 //     NORMAL     the SKELETON faction   — the thesis. She is the goddess of death.
 //     ALTERNATE  the GHOST faction      — still hers. The dead who did not stay in a
 //                                         body, which is a different dread entirely
-//     GOD        that god's own roster  — somebody else reached into her water
+//     + a god    that god's mobs ADDED  — somebody else reached into her water
 //
 // 🔑 AND IT EXPLAINS THE MISSING FAMILY. Zombies are almost absent from her tides, and
 // that is not an oversight: *"She has a focus on skeletons, not zombies."* The zombies
@@ -26,9 +45,19 @@
 // which is exactly what a god-augmented wave is supposed to feel like.
 //
 // ── ⚠️ WHAT IS DELIBERATELY NOT IN HERE ────────────────────────────────────────
-// ⛔ NECROMANCERS. `docs/72` flagged that goety's necromancers RAISE MORE UNDEAD and
-// that a summoner inside a 24-mob wave is a multiplier on top of a multiplier. That
-// risk was flagged and never cleared, so nothing that summons is in any roster.
+// ⛔ THE NO-SUMMONER RULE IS RETIRED — Ethan, 2026-08-30: *"No summoner rule no longer
+// applies that is redundant, cut it from everywhere it is mentioned."*
+//
+// It said nothing that summons may be in any roster, on the reasoning that a summoner
+// inside a 24-mob wave is a multiplier on top of a multiplier. ⭐ It was never measured
+// and it was blocking things that are simply GOOD — a dire wolf pack led by something
+// that calls the pack is what a pack is, and the tide already has a hard ceiling
+// (MAX_ALIVE_NEAR) that bounds the real risk far better than a blanket ban did.
+//
+// ⚠️ The headstone is kept because the rule shaped several rosters. Anything excluded
+// SOLELY for summoning is eligible again and simply has not been re-evaluated:
+// goety `wight` / `grave_golem` / `skull_lord` / `wither_necromancer`, the goety
+// `bound_*` casters, and `irons_spellbooks:necromancer`.
 //
 // ⛔ THE 150-320 hp MINIBOSSES. `docs/73` noted that both of the tide's minibosses
 // measure as tanks and that seven heavier mobs sit unused. Ethan RULED the two - Supreme
@@ -75,15 +104,30 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     'born_in_chaos_v1:siamese_skeletons',   // 20 hp /  2 arm / 3 dmg — was "light"
     'goety:bone_lord',                      // 20 hp /  0 arm / 3 dmg
     'goety:rattled',                        // 20 hp /  0 arm / 2 dmg
-    'goety:skeleton_wolf',                  // 10 hp /  0 arm / 4 dmg — fast, low
-    'iceandfire:dread_thrall',              // 20 hp /  2 arm / 2 dmg
   ]
+  // 🔴 `goety:skeleton_wolf` WENT WITH IT, caught by the screen written for the
+  // dread mobs on its very first run. It is a goety SERVANT - its texture lives under
+  // `entity/servants/` and its class carries `Summoned$NaturalAttackGoal`, a goal for
+  // attacking non-summoned mobs. Placed by /summon it has no owner to defer to, so
+  // every other mob in the wave is a target. Added today, same as the dread pair.
+  // 🔴 `iceandfire:dread_thrall` WAS REMOVED FROM HERE, 2026-08-30. Ethan, from play:
+  // *"there were skeletons with glowing blue eyes that immediately started attacking
+  // and killing all the other enemies in the tide."* Glowing blue eyes are the Ice and
+  // Fire DREAD army's signature, and `DreadThrallEntity` carries
+  // `DreadAITargetNonDreadGoal` — an AI goal that exists to attack everything that is
+  // not dread. Her own skeletons are not dread.
+  //
+  // ⚠️ A MOB THAT FIGHTS THE WAVE IT ARRIVES IN IS WORSE THAN A MISSING MOB: the tide
+  // thins itself, and from the player's side it reads as the tide being broken.
+  // I added it today; it was never in a wave he had fought before. D-124.
   // ⚠️ `stray` AND `bogged` ARE HERE AS MELEE, ON PURPOSE. Both measured 0 bows in 12
   // summons — they are not in epicknights' equipment config and /summon does not run
   // the vanilla equip step. As archers they were a fiction; as skeleton fodder they are
   // honest. ⭐ `bone_lord` and `rattled` were checked in the jar before being trusted:
-  // both extend AbstractSkeleton and neither calls addFreshEntity, so neither is a
-  // summoner. The names suggested otherwise and the class files settled it.
+  // both extend AbstractSkeleton and neither spawns anything. The names suggested
+  // otherwise and the class files settled it - a method worth keeping now that the
+  // no-summoner rule is gone, because it answers "what IS this" rather than "is it
+  // allowed".
 
   // ⭐ GHOST FODDER — the Alternate. Lower armour, stranger silhouettes.
   var GHOST_FODDER = [
@@ -98,7 +142,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // It DOES NOT SURVIVE BEING SUMMONED — measured 4 separate times, against a working
   // control, both with and without AI. It answers `summon` with "Summoned new Haunted
   // Armor" and is gone a second later. It had been shipped in this list, so one slot of
-  // every ghost wave was spawning nothing at all. See D-111 and spawn_persist_check.py.
+  // every ghost wave was spawning nothing at all. See D-116 and spawn_persist_check.py.
 
   // ⚠️ RANGED IS THREE MOBS AND ONE OF THEM IS UNRELIABLE. `minecraft:skeleton` arrives
   // holding a bow only ~30% of the time (measured, docs/73) because
@@ -119,12 +163,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // a mod that is gone spawns nothing and reads as correct code. Replacements are
   // measured, not guessed.
   var BONE_TANK = [
-    'born_in_chaos_v1:skeleton_thrasher',   // 50 hp / 10 arm /  8 dmg — Ethan's tank
-    'iceandfire:dread_knight',              // 40 hp / 20 arm /  2 dmg — replaces
-    //                                         grim_and_bleak:damned_templar. ⭐ 20 armour
-    //                                         and 2 damage: a WALL, not a killer, which
-    //                                         is what a tank specialist is for.
+    'born_in_chaos_v1:skeleton_thrasher',   // 50 hp / 10 arm / 8 dmg — Ethan's tank
+    'cataclysm:royal_draugr',               // 30 hp /  5 arm / 5 dmg — a draugr, skeletal
   ]
+  // 🔴 `iceandfire:dread_knight` WAS THE PICK HERE AND IT IS OUT FOR THE SAME REASON AS
+  // dread_thrall: it carries `DreadAITargetNonDreadGoal` and would fight her own wave.
+  // ⚠️ It was the better tank on paper — 20 armour against royal_draugr's 5 — and that
+  // is the point: the stat line was never the problem.
   var GHOST_TANK = [
     'cataclysm:ignited_revenant',           // 80 hp / 12 arm /  6 dmg
     'cataclysm:ignited_berserker',          // 65 hp /  8 arm / 7.5 dmg — replaces
@@ -190,42 +235,68 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // MEASURED REASON, not because of the mod they came from: both summon and then
       // vanish before the next tick, against a control that survived the identical
       // command. Arachnids, right theme, and they cannot be placed.
+      // 🔴 CUT TO SPIDERS ONLY, 2026-08-30. Ethan, from play: *"wall's tide has flies
+      // and a crab... it should only be spiders."* — then the rule, verbatim:
+      // *"only take things with the naming of spider."*
+      //
+      // ⛔ REMOVED: corpse_fly (a fly), diamond_termite (a termite), thornshell_crab
+      // (a crab), silverfish, wither_scuttler, dread_scuttler. I had selected them off
+      // `#minecraft:arthropod` and their stat lines, which is how a spider faction ends
+      // up containing a crab: the TAG is arthropods, and he asked for spiders.
+      //
+      // ⚠️ AND THE RULE IS HIS NAME RULE, NOT MY LEG COUNT. I had started measuring
+      // model bones to settle the two "scuttlers" — 8 legs on one, 6 on the other — and
+      // he cut that short with a simpler rule that is his to make. A faction is
+      // authorship. It is defined by what he calls a spider, not by anatomy.
       fodder: [
         'minecraft:spider',                 // 16 hp / 0 arm / 2 dmg — the archetype
         'minecraft:cave_spider',            // 12 hp / 0 arm / 2 dmg
-        'born_in_chaos_fc:wither_scuttler', // 15 hp / 0 arm / 2 dmg
-        'born_in_chaos_v1:corpse_fly',      // 10 hp / 0 arm / 2 dmg
-        'minecraft:silverfish',             //  8 hp / 0 arm / 1 dmg — the swarm
       ],
       spec: [
-        'born_in_chaos_v1:baby_spider',     // 10 hp /  0 arm — BABY rule, was "fodder"
-        'born_in_chaos_v1:diamond_termite', // 14 hp /  8 arm
-        'born_in_chaos_v1:thornshell_crab', // 25 hp / 14 arm / 0.8 kb-res
-        'iceandfire:dread_scuttler',        // 40 hp / 10 arm / 7 dmg
+        'born_in_chaos_v1:baby_spider',     // 10 hp / 0 arm — BABY rule, was "fodder"
       ],
       boss: 'born_in_chaos_v1:mother_spider',   // 90 hp / 6 dmg / kb-res 1
+      // ⭐ FOUR MOBS IS ENOUGH NOW, AND IT WOULD NOT HAVE BEEN AN HOUR AGO. A god
+      // roster used to REPLACE her cast, so a thin one made a thin wave. It AUGMENTS
+      // it now — his correction below — so Wall's four spiders arrive inside her full
+      // tide rather than instead of it.
+      // ⛔ occultism's `wild_spider`/`wild_cave_spider` are spider-named and stay out:
+      // all twelve occultism `wild_*` are Wild Hunt event mobs, ruled out earlier.
+      // ⛔ `crittersandcompanions:jumping_spider` is a passive pet.
     },
     art: {
       at: 3, tier: 'Damnation',
-      // 🔴 TWO OF HIS THREE MOBS AND HIS BOSS DO NOT SPAWN. Measured 0/3 each against a
-      // control that passed 3/3: `restless_spirit` and `dark_vortex` answer `summon`
+      // 🔴 TWO OF HIS THREE MOBS AND HIS BOSS DID NOT SPAWN. Measured 0/3 each against
+      // a control that passed 3/3: `restless_spirit` and `dark_vortex` answer `summon`
       // and are gone before the next command. `dark_vortex` was his BOSS, so Art's
-      // miniboss wave has been arriving with no miniboss at all. See D-112.
+      // miniboss wave arrived with no miniboss at all. D-117.
       //
-      // ⛔ NOT RE-AUTHORED HERE. The god rosters are Ethan's — he gave them verbatim —
-      // and inventing Art two replacement mobs is a lore call, not a bug fix. The
-      // broken ids are REMOVED so his waves are not part-empty, and `boss: null` makes
-      // the wave fall back to HER miniboss, which needs no invention and is exactly
-      // what this file did before D-108.
+      // ✅ RULED 2026-08-30: *"it should always just be born in chaos' lifestealer."*
       //
-      // ⭐ MEASURED CANDIDATES FOR HIS RULING, all persistence-checked:
-      //     born_in_chaos_v1:swarmer        40 hp /  4 arm /  4 dmg
-      //     born_in_chaos_v1:zombie_clown   35 hp /  4 arm /  3 dmg
-      //     cataclysm:aptrgangr            160 hp / 10 arm / 18 dmg   (boss-weight)
-      //     cataclysm:kobolediator         180 hp / 10 arm / 14 dmg   (boss-weight)
+      // ⭐⭐ AND THAT IS THE SAME MOB AS THE TAKER, which is not a coincidence worth
+      // losing. `tide.js` already sends the Lifestealer into HER waves 6% of the time
+      // as a TELL — on the note *"Art is just kayer and she is already secretly aligned
+      // with the goddess of death"*. So the rare thing marching in her army and the
+      // thing leading HIS wave are one creature. The alliance is stated twice, in two
+      // mechanics, and nowhere in words.
+      //
+      // ⚠️ Consequence worth knowing: the Taker substitution in composeFor is a no-op
+      // on an Art miniboss wave, because it would replace the Lifestealer with itself.
+      //
+      // ⭐⭐ ONE MOB, AND IT IS THE LORE RATHER THAN A GAP. Ethan, 2026-08-30, asked
+      // whether Art should be thickened and answered his own question:
+      //
+      //     "Good, its thematic. The Matriarch is aligned to the goddess of death
+      //      secretly, why would she spend time building up an army of her own?"
+      //
+      // 🔑 The Matriarch LEADS the pantheon (docs/15) and is secretly the goddess of
+      // death's. She does not need an army because she is already standing next to one.
+      // ⛔ So DO NOT "fix" this by adding mobs. A thin Art roster is the most-told part
+      // of the whole system: her wave is almost entirely the goddess's own dead, led by
+      // the Lifestealer, and nothing in the game says why.
       fodder: ['born_in_chaos_v1:scarlet_persecutor'],  // 35 hp / 0 arm / 5 dmg
       spec: [],
-      boss: null,
+      boss: 'born_in_chaos_v1:lifestealer',
     },
   }
 
@@ -365,31 +436,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // tide.js turns specFrac into exact counts. Keeping the split intact all the way to
   // placement is what lets a ranged wave arm ONLY its archers — the old flat list
   // forced one NBT onto the whole wave, which would now put a bow in the fodder.
-  function pick(type, diffIndex, godChance) {
+  // ⭐ `forceGod` IS FOR THE BENCH ONLY. A god wave is 8-25% of waves and gated by
+  // difficulty on top of that, which makes Wall's spiders and Art's Lifestealer very
+  // nearly untestable in play - you would grind tides waiting for one. /tide_god names
+  // the god directly. ⚠️ It BYPASSES the difficulty gate on purpose, and says so in the
+  // returned theme, so a bench result is never mistaken for a live one.
+  function pick(type, diffIndex, godChance, forceGod) {
     var slot = WAVES[type]
     if (!slot) return null
     var frac = SPEC_FRAC[type]
     if (typeof frac !== 'number') frac = 0
 
-    var available = godsAt(diffIndex)
-    if (available.length && Math.random() < godChance) {
-      var g = available[Math.floor(Math.random() * available.length)]
-      var gs = GODS[g]
-      // ⚠️ A god roster with no specialists must not silently borrow hers - it draws
-      // its whole wave from its own fodder instead. Art is in exactly that state.
-      var gspec = (gs.spec && gs.spec.length) ? gs.spec : []
-      return {
-        type: type, variant: 'god', god: g,
-        theme: 'A ' + gs.tier + ' wave — ' + g + ' reached into her water.',
-        fodder: gs.fodder, spec: gspec, specFrac: gspec.length ? frac : 0,
-        bow: false,
-        // 🔴 A GOD WITH NO WORKING BOSS FALLS BACK TO HERS (null here; tide.js
-        // substitutes). Art's boss does not spawn - D-112 - and a miniboss wave with
-        // no miniboss is worse than one led by the goddess whose tide it is.
-        boss: (type === 'miniboss') ? (gs.boss || null) : null,
-      }
-    }
-
+    // ⭐⭐ HER WAVE IS BUILT FIRST, ALWAYS. See the AUGMENT note above: a god never
+    // replaces this, only adds to it.
     var which = (Math.random() < 0.5) ? 'normal' : 'alternate'
     var v = slot[which]
 
@@ -403,12 +462,37 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       spec = (allowed <= 0) ? [] : spec.slice(0, allowed)
     }
 
+    var fodder = v.fodder
+    var boss = v.boss
+    var god = null
+    var theme = v.theme
+
+    // ── the augmentation ───────────────────────────────────────────────────────
+    var available = godsAt(diffIndex)
+    if (forceGod && GODS[forceGod]) available = [forceGod]
+    if (available.length && (forceGod ? true : Math.random() < godChance)) {
+      god = available[Math.floor(Math.random() * available.length)]
+      var gs = GODS[god]
+      // 🔑 CONCAT, NOT REPLACE. Her cast stays and his is added on top, so the god's
+      // mobs arrive INSIDE her tide. His fodder joins her fodder and his specialists
+      // join hers, which keeps the role split - and therefore his 90/10, 95/5, 80/20,
+      // 95/5 - exactly as it was.
+      fodder = fodder.concat(gs.fodder || [])
+      spec = spec.concat(gs.spec || [])
+      // ⚠️ THE BOSS IS THE ONE THING THAT DOES OVERRIDE. D-108, ruled: a god miniboss
+      // wave is led by THAT god's boss. That is a substitution rather than an addition
+      // because a wave cannot have two minibosses - the per-tide cap is one.
+      if (type === 'miniboss' && gs.boss) boss = gs.boss
+      theme = (forceGod ? '[BENCH] ' : '') + v.theme +
+        '  ⚡ ' + gs.tier + ' — ' + god + ' reached into her water.'
+    }
+
     return {
-      type: type, variant: which, god: null, theme: v.theme,
-      fodder: v.fodder, spec: spec,
+      type: type, variant: which, god: god, theme: theme,
+      fodder: fodder, spec: spec,
       specFrac: spec.length ? frac : 0,
       bow: v.bow === true,
-      boss: v.boss,
+      boss: boss,
     }
   }
 
@@ -451,8 +535,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     console.info(TAG + '!! ranged waves FORCE a bow via NBT on the ARCHERS ONLY - ' +
       'measured, minecraft:skeleton arrives armed ~30% of the time (docs/73).')
     if (!GODS.art.boss) {
-      console.warn(TAG + '!! ART HAS NO BOSS - his dark_vortex does not survive being ' +
-        'summoned (0/3, D-112). His miniboss wave falls back to HERS until ruled.')
+      console.warn(TAG + '!! ART HAS NO BOSS - regressed. He was RULED the Lifestealer ' +
+        'on 2026-08-30 (D-117); a null here means somebody removed it.')
     }
+    console.info(TAG + 'art is led by the Lifestealer - the SAME mob the tide sends ' +
+      'into HER waves as the Taker. The alliance is stated by mechanics, never in words.')
   })
 })();

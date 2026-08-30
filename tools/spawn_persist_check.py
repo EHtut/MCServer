@@ -84,11 +84,19 @@ def rcon(cmds, timeout=180):
     return p.stdout
 
 
+# ⚠️ EVERY FILE THAT NAMES A MOB, NOT JUST THE TIDE'S TWO.
+# `spawn_pressure.js` was missing from this list for exactly one chunk, and six wolves
+# were added to Salvage's roster during it - so the sweep reported "every rostered mob"
+# green while six of them had never been checked. The gap was invisible: the tool said
+# OK, and it was OK about a smaller set than anyone thought it covered.
+ROSTER_FILES = ('waves.js', 'tide.js', 'spawn_pressure.js')
+
+
 def rostered():
-    """Every entity id named in the wave files. Deliberately over-broad - a false
+    """Every entity id named in the roster files. Deliberately over-broad - a false
     positive costs one summon, a false negative costs a silently smaller wave."""
     ids = set()
-    for f in ('waves.js', 'tide.js'):
+    for f in ROSTER_FILES:
         path = os.path.join(SS, f)
         if os.path.exists(path):
             ids |= set(ID.findall(io.open(path, encoding='utf-8').read()))
@@ -99,8 +107,20 @@ def rostered():
                                        'minecraft:music', 'minecraft:ui.')))
 
 
+NOT_AN_ENTITY = re.compile(r'Unknown entity type|<--\[HERE\]|Invalid or unknown', re.I)
+
+
 def check(ids, batch_size=6):
-    out, broken = {}, []
+    # 🔴 THREE STATES, NOT TWO. The roster scan is deliberately over-broad, so it picks
+    # up ids that are not entities at all - `minecraft:overworld` came through from
+    # spawn_pressure.js as a DIMENSION and was reported as "vanishes on arrival",
+    # which is alarming, wrong, and exactly the kind of noise that teaches somebody to
+    # stop reading this tool.
+    #
+    # ⭐ A blocklist of known non-entities would need maintaining and would go stale.
+    # Asking the SUMMON whether the id is an entity does not: "Unknown entity type" is
+    # a different answer from "gone a second later", and they must not share a bucket.
+    out, broken, not_entity = {}, [], []
     ids = [i for i in ids if i != CONTROL]
     for i in range(0, len(ids), batch_size):
         batch = ids[i:i + batch_size] + [CONTROL]
@@ -116,9 +136,19 @@ def check(ids, batch_size=6):
         # that work, on evidence produced by the instrument rather than the game.
         # SPREAD is wider than any mob's hitbox and every position is still well within
         # @e range of the console.
-        rcon(['summon %s %d %d %d {NoGravity:1b,Silent:1b,PersistenceRequired:1b,'
-              'Tags:["%s"]}' % (e, X + n * SPREAD, Y, Z, t)
-              for n, (e, t) in enumerate(zip(batch, tags))])
+        summon_out = rcon(
+            ['summon %s %d %d %d {NoGravity:1b,Silent:1b,PersistenceRequired:1b,'
+             'Tags:["%s"]}' % (e, X + n * SPREAD, Y, Z, t)
+             for n, (e, t) in enumerate(zip(batch, tags))])
+        # ⭐ Did the SUMMON itself refuse? Attribute the reply to its own command by
+        # splitting on the echo, not by position - a dropped line would otherwise shift
+        # every verdict after it.
+        sparts = summon_out.split('> ')
+        refused = set()
+        for e in batch:
+            seg = next((s for s in sparts if s.startswith('summon %s ' % e)), '')
+            if seg and NOT_AN_ENTITY.search(seg):
+                refused.add(e)
         time.sleep(SETTLE)
         txt = rcon(['attribute @e[tag=%s,limit=1] minecraft:generic.max_health get' % t
                     for t in tags])
@@ -133,9 +163,12 @@ def check(ids, batch_size=6):
             sys.stderr.write('  !! batch %d CONTROL FAILED - no verdicts taken\n' % i)
         else:
             for e, t in zip(batch[:-1], tags[:-1]):
-                out[e] = got[t]
+                if e in refused:
+                    not_entity.append(e)     # a dimension, a tag, a config key - not a mob
+                else:
+                    out[e] = got[t]
         sys.stderr.write('  %d/%d\n' % (min(i + batch_size, len(ids)), len(ids)))
-    return out, broken
+    return out, broken, sorted(set(not_entity))
 
 
 def main():
@@ -164,11 +197,12 @@ def main():
     print('=' * 66)
     print('SPAWN PERSISTENCE - %d id(s), control %s' % (len(ids), CONTROL))
     print('=' * 66)
-    res, broken = check(ids)
+    res, broken, not_entity = check(ids)
 
     gone = sorted(k for k, v in res.items() if not v)
     ok = sorted(k for k, v in res.items() if v)
-    untested = sorted(set(i for i in ids if i != CONTROL) - set(res))
+    untested = sorted(set(i for i in ids if i != CONTROL)
+                      - set(res) - set(not_entity))
 
     print('\n  SURVIVES: %d' % len(ok))
     if gone:
@@ -176,6 +210,15 @@ def main():
         print('     smaller, and every other check in this repo passes them:')
         for g in gone:
             print('       ' + g)
+    if not_entity:
+        # ⚠️ NOT A FAILURE. The roster scan is over-broad on purpose, so a dimension id
+        # or a sound key landing in it is expected. What is NOT acceptable is filing
+        # that under "vanishes on arrival" - which is alarming, wrong, and the kind of
+        # noise that teaches somebody to stop reading the tool.
+        print('\n  .  not entities at all (the scan is over-broad by design): %d'
+              % len(not_entity))
+        for x in not_entity:
+            print('       ' + x)
     if untested:
         print('\n  !  UNTESTED - their batch control failed. NOT a pass: %d' % len(untested))
         for u in untested:
@@ -187,7 +230,8 @@ def main():
         print('\n  !  cleanup killed leftovers: %s' % left.strip()[:120])
 
     io.open(a.out, 'w', encoding='utf-8').write(json.dumps(
-        {'survives': ok, 'vanishes': gone, 'untested': untested}, indent=1))
+        {'survives': ok, 'vanishes': gone, 'untested': untested,
+         'not_entity': not_entity}, indent=1))
     print('\n  wrote %s' % a.out)
 
     if gone:

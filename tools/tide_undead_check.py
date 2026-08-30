@@ -246,7 +246,7 @@ def main():
         print("      %-10s %d mob(s), %d not-undead  %s"
               % (g, len(ids), len(off), ", ".join(off) if off else ""))
         if not gods[g]["boss"]:
-            print("                 !! no boss declared - her miniboss leads it (D-112)")
+            print("                 !! no boss declared - her miniboss leads it (D-117)")
     print("     Another god reaching into her water is BY DEFINITION not her undead -")
     print("     that is the whole point of the wave. Testing these against the tag")
     print("     would be testing the wrong rule.")

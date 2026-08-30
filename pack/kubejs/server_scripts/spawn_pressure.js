@@ -64,12 +64,46 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     blade: ['born_in_chaos_v1:barrel_zombie', 'born_in_chaos_v1:door_knight',
       'born_in_chaos_v1:zombie_bruiser', 'born_in_chaos_v1:skeleton_thrasher'],
     wall: ['born_in_chaos_v1:baby_spider', 'born_in_chaos_v1:mother_spider'],
-    salvage: ['born_in_chaos_v1:dread_hound'],
+    // ⭐⭐ SALVAGE'S DIRE WOLVES — the faction run, 2026-08-30. `docs/68` R2 gives her
+    // dire wolves and she had ONE mob. There is no `#minecraft:wolf` tag to census, so
+    // this was enumerated from every jar's lang file by name (13 candidates), then
+    // shortlisted, registry-probed with a known-fake control, measured live, and
+    // persistence-checked. All six below survive being summoned.
+    //
+    //   hostile_black_wolf  10 hp / 0 arm / 4 dmg      winter_wolf   10 / 0 / 4
+    //   hellhound           10 hp / 0 arm / 4 dmg      hunter_wolf    8 / 0 / 4
+    //   stormhound          10 hp / 0 arm / 4 dmg      dread_hound   17 / 0.5 / 5
+    //
+    // ⚠️ ALL SIX ARE FODDER on his rule, and that is the finding rather than an
+    // oversight: the wolves in this pack are 8-17 hp with no armour. Salvage has NO
+    // specialist tier and no tank. Her pressure is numbers and speed, which suits a
+    // pack — but if she should hit harder, the mobs for it do not currently exist.
+    //
+    // ⛔ `goety:black_wolf` EXCLUDED — extends `Summoned`, i.e. a servant entity;
+    //    `hostile_black_wolf` is the same statline without that. Same-looking mob,
+    //    different class, and only one of them is a hostile.
+    // ⛔ `goety:skeleton_wolf` EXCLUDED — it is HERS, in BONE_FODDER. A mob cannot be
+    //    two factions or the faction says nothing.
+    // ⛔ `minecraft:wolf` EXCLUDED — tameable and neutral.
+    // ⛔ `ars_nouveau:summon_wolf`, `archers:spirit_wolf` EXCLUDED — summons.
+    //
+    // ⭐⭐ THE PACK LEADER CALLS ITS PACK, AND THAT IS NOW THE POINT.
+    // `born_in_chaos_v1:dire_hound_leader` — 100 hp / 10 dmg / 0.7 knockback-resist —
+    // spawns Dread Hounds (its class references `DreadHound` + `EntityType` + `spawn` +
+    // `finalizeSpawn`). It was held back pending a ruling and Ethan gave one on
+    // 2026-08-30: *"Yes that. No summoner rule no longer applies that is redundant."*
+    //
+    // 🔑 So a dire wolf pack arrives WITH a leader that grows it, which is what a pack
+    // is. Salvage's whole pressure is numbers and speed (D-119) and this is the shape
+    // of that rather than an exception to it.
+    salvage: ['born_in_chaos_v1:dread_hound', 'goety:hostile_black_wolf',
+      'goety:hellhound', 'goety:stormhound', 'goety:winter_wolf',
+      'rottencreatures:hunter_wolf', 'born_in_chaos_v1:dire_hound_leader'],
     forge: ['born_in_chaos_v1:krampus_henchman'],
     // 🔴 TWO OF ART'S THREE DO NOT SPAWN, so this list has been two-thirds inert for
     // his OWN attacks, not only for the tide. `restless_spirit` and `dark_vortex`
     // measured 0/3 each against a control that passed 3/3 - they answer `summon` and
-    // are gone before the next command (tools/spawn_persist_check.py, D-112).
+    // are gone before the next command (tools/spawn_persist_check.py, D-117).
     // ⚠️ Removed rather than kept "in case": an id that spawns nothing makes an attack
     // quietly smaller and every other check in this repo passes it.
     art: ['born_in_chaos_v1:scarlet_persecutor'],
