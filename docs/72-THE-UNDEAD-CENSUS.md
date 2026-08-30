@@ -112,11 +112,14 @@ wave alone, which is why a tide reads the same every time. Everything below adds
 | `occultism:wild_skeleton` ⚠️ | if the Wild Hunt concern is dismissed |
 | ~~`goety:skeleton_pillager`~~ 🔴 | **WITHDRAWN.** I proposed it, then the name column revealed its lang entry reads *"Skeleton Pillager Servant"* — it is a summon. My own proposal recommended a mob my own filter later excluded |
 
-### B. A second archer, so `specialist` is not two mobs
+### B. ~~A second archer~~ 🔴 **WITHDRAWN — MEASURED AND WRONG**
 
-`minecraft:bogged` and `minecraft:stray` are unambiguously ranged undead and were in the
-old deep roster. ⚠️ They were removed with the depth pools; they would come back **as
-archers**, not as bulk.
+I proposed `minecraft:bogged` and `minecraft:stray` as *"unambiguously ranged undead"*.
+**They are not, when summoned.** Measured 2026-08-29: **0 bows in 6 summons each.**
+
+⚠️ They are archers in the wild, but `/summon` does not run the vanilla equip step, and
+the tide summons. Adding them would have added **zero** ranged pressure while looking
+like a fix. ⭐ See `docs/73` for the full bow measurement and the proven NBT workaround.
 
 ### C. A third miniboss, so the pair does not become predictable
 

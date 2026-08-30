@@ -12,26 +12,53 @@
 ## 🚨 THE BOW PROBLEM - read this before trusting "Ranged"
 
 
-Measured 2026-08-29:
+**The tide summons**, so the only question that matters is whether a mob arrives
+**holding a bow**. Measured 2026-08-29:
 
 
 ```
-10 summoned skeletons  ->  1 bow, 3 swords, 2 shields, 4 empty
- 6 natural  skeletons  ->  2 bows, 4 swords + shields
+minecraft:skeleton   6 bows / 20 summons  (~30%)
+minecraft:stray      0 bows /  6 summons
+minecraft:bogged     0 bows /  6 summons
 ```
 
 
-🔴 **`magistuarmory` re-equips skeletons.** Only about a quarter carry a bow; the rest are
-melee. So `minecraft:skeleton` is **not reliably an archer in this pack**, and a wave built
-on the assumption that it is delivers a fraction of the ranged pressure intended.
+### 🚨 Two causes, and only one is a mod's doing
 
 
-⭐ This is very likely the real answer to *"why are ranged enemies not spawning?"* - the
-roster was fixed, but the archers are not archers.
+**1. `config/epicknights/mobs_equipment.json5`** lists `minecraft:skeleton` against ~13
+possible items, **exactly one of which is `minecraft:bow`**. That is the 30%, and it is a
+config line rather than a mystery — editable, and the melee entries could simply be
+removed from the skeleton row.
 
 
-⚠️ Ranged is therefore marked **measured** (a bow was actually seen), **ruled** (Ethan said
-so), or **unknown** - never blended.
+**2. Stray and bogged are not in that config at all.** They arrive empty-handed because
+`/summon` does not run the vanilla equip step. **In the wild they are archers; summoned
+into a tide they are melee.** ⚠️ This refutes an earlier proposal of mine in `docs/72`,
+which suggested adding them *as archers*. They would have added none.
+
+
+### ⭐ A fix exists and is proven
+
+
+`spawner.js` already accepts an `nbt` option. This puts a bow in a stray:
+
+
+```
+{Tags:[...],NoAI:1b,HandItems:[{id:"minecraft:bow",count:1},{}]}
+```
+
+
+⚠️ **Key order matters** — putting `Tags` *after* `HandItems` silently dropped the tag,
+which cost a round of debugging.
+
+
+⭐ This is very likely the real answer to *"why are ranged enemies not spawning?"* — the
+roster was fixed in T1, but **the archers are not archers**.
+
+
+⚠️ Ranged is therefore marked with its **measured rate**, or as **ruled by Ethan** (for mobs
+whose ranged attack is mod code rather than a held bow) — never blended.
 
 
 ⚠️ **Numbers are "as spawned", not base.** Equipment is randomised, so a re-run can differ.
@@ -59,7 +86,7 @@ the melee bruisers you would most want to rank. Treat damage as a floor, not a m
 ---
 
 
-## Fodder  — 45
+## Fodder  — 47
 
 
 | family | mob | hp | armor | dmg | mod | id |
@@ -78,10 +105,12 @@ the melee bruisers you would most want to rank. Treat damage as a floor, not a m
 | Other | Preserved | 20.0 | 2.0 | 4.0 | Galosphere | `galosphere:preserved` |
 | Other | Bound Iceologer | 20.0 | 0.0 | 2.0 | Goety | `goety:bound_iceologer` |
 | Other | Phantom | 20.0 | 0.0 | 2.0 | Minecraft (vanilla) | `minecraft:phantom` |
+| Other | Stray ⚠️ | 20.0 | 0.0 | 2.0 | Minecraft (vanilla) | `minecraft:stray` |
 | Other | Possessed Phantom | 20.0 | 2.0 | 3.0 | Occultism | `occultism:possessed_phantom` |
 | Other | Ashen | 20.0 | 2.0 | 3.0 | Regions Unexplored | `regions_unexplored:ashen` |
 | Other | Barbed | 20.0 | 0.0 | 2.0 | Spawn | `spawn:barbed` |
 | Other | Bound Geomancer | 18.0 | 0.0 | 2.0 | Goety | `goety:bound_geomancer` |
+| Other | Bogged ⚠️ | 16.0 | 0.0 | 2.0 | Minecraft (vanilla) | `minecraft:bogged` |
 | Other | Haunt | 6.0 | 0.0 | 2.0 | Goety | `goety:haunt` |
 | Other | Crypt Slime | 1.0 | 0.0 | 1.0 | Goety | `goety:crypt_slime` |
 | Skeleton | Possessed Skeleton | 30.0 | 0.0 | 4.0 | Occultism | `occultism:possessed_skeleton` |
@@ -110,16 +139,14 @@ the melee bruisers you would most want to rank. Treat damage as a floor, not a m
 | Zombie | Zombified Piglin | 20.0 | 2.0 | 5.0 | Minecraft (vanilla) | `minecraft:zombified_piglin` |
 | Zombie | Wild Horde Drowned | 20.0 | 0.0 | 3.0 | Occultism | `occultism:wild_horde_drowned` |
 
-## Specialist - Ranged  — 5
+## Specialist - Ranged  — 3
 
 
 | family | mob | hp | armor | dmg | mod | id |
 |---|---|--:|--:|--:|---|---|
-| Other | Stray | 20.0 | 0.0 | 2.0 | Minecraft (vanilla) | `minecraft:stray` |
-| Other | Bogged | 16.0 | 0.0 | 2.0 | Minecraft (vanilla) | `minecraft:bogged` |
 | Skeleton | Bonescaller | 25.0 | 1.0 | 3.0 | Born in Chaos  | `born_in_chaos_v1:bonescaller` |
 | Skeleton | Skeleton Demoman | 25.0 | 2.0 | 3.0 | Born in Chaos  | `born_in_chaos_v1:skeleton_demoman` |
-| Skeleton | Skeleton | 20.0 | 0.0 | 2.0 | Minecraft (vanilla) | `minecraft:skeleton` |
+| Skeleton | Skeleton ⚠️ | 20.0 | 0.0 | 2.0 | Minecraft (vanilla) | `minecraft:skeleton` |
 
 ## Specialist - Tank  — 21
 

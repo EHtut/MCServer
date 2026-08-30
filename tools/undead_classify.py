@@ -14,18 +14,29 @@ ROLE is driven by MEASURED attributes - health, armour and attack damage read of
 entities. The thresholds are read off the actual distribution of this pack (median 25 hp,
 median 3 damage), not invented.
 
-⚠️ RANGED IS THE ONE ROLE ATTRIBUTES CANNOT SETTLE, and this pack makes it worse than
-usual. Measured 2026-08-29:
+⚠️ RANGED IS THE ONE ROLE ATTRIBUTES CANNOT SETTLE, and this pack breaks it twice over.
+Measured 2026-08-29 by summoning and reading HandItems:
 
-    10 summoned skeletons  ->  1 bow, 3 swords, 2 shields, 4 empty
-     6 natural  skeletons  ->  2 bows, 4 swords+shields
+    minecraft:skeleton   6 bows / 20 summons  (~30%)
+    minecraft:stray      0 bows /  6 summons
+    minecraft:bogged     0 bows /  6 summons
 
-🚨 `magistuarmory` RE-EQUIPS SKELETONS. Roughly a quarter of them carry a bow; the rest
-are melee. So "minecraft:skeleton" is NOT reliably an archer in this pack, and a wave
-built on the assumption that it is delivers a fraction of the ranged pressure intended.
+🚨 TWO CAUSES, AND ONLY ONE IS A MOD'S DOING:
 
-So ranged is marked `measured` (a bow was actually seen), `ruled` (Ethan said so), or
-`unknown` - and NEVER blended.
+  1. `config/epicknights/mobs_equipment.json5` lists `minecraft:skeleton` against ~13
+     possible items, exactly ONE of which is `minecraft:bow`. That IS the 30%, and it
+     is a config line rather than a mystery.
+  2. stray and bogged are not in that config at all. They arrive empty-handed because
+     `/summon` does not run the vanilla equip step - so in the wild they are archers,
+     and summoned into a tide they are melee.
+
+⭐ The tide summons, so the table classifies by what a WAVE actually gets. A fix exists
+and is proven: `spawner.js` already accepts an `nbt` option, and
+`{Tags:[...],NoAI:1b,HandItems:[{id:"minecraft:bow",count:1},{}]}` puts a bow in a stray.
+⚠️ Key order matters - putting `Tags` after `HandItems` silently dropped the tag.
+
+⚠️ STABILITY WAS CHECKED. Six mobs summoned three times each returned identical health
+every time, so the numbers here are reproducible rather than a single lucky sample.
 
 FAMILY is by name and id, which is a heuristic and is labelled as one.
 """
@@ -41,9 +52,33 @@ STATS = os.path.join(HERE, '.cache', 'undead_stats.json')
 REG = os.path.join(HERE, '.cache', 'undead_registered.json')
 
 # ── ranged evidence ──────────────────────────────────────────────────────────
-# `measured` = a bow or crossbow was actually observed in hand.
-RANGED_MEASURED = {'minecraft:skeleton', 'minecraft:stray', 'minecraft:bogged'}
+# 🔴 CLASSIFIED BY WHAT HAPPENS IN A TIDE, which is the only context that matters here.
+# The tide summons (`spawner.js` uses /summon), so "is it an archer in the wild" is the
+# wrong question - the question is whether it arrives holding a bow.
+#
+# MEASURED 2026-08-29, by summoning and reading HandItems:
+#     minecraft:skeleton   6 bows / 20 summons   (~30%)
+#     minecraft:stray      0 bows / 6  summons
+#     minecraft:bogged     0 bows / 6  summons
+#
+# 🚨 TWO SEPARATE CAUSES, AND ONLY ONE IS A MOD'S FAULT:
+#   · `config/epicknights/mobs_equipment.json5` lists minecraft:skeleton against ~13
+#     possible items, exactly ONE of which is minecraft:bow. That is the 30%.
+#   · stray and bogged are NOT in that config at all - they come out empty-handed
+#     because /summon does not run the vanilla equip step. In the wild they are
+#     archers; summoned into a tide they are melee.
+RANGED_SUMMONED = {
+    'minecraft:skeleton': '~30% (6/20 summons carried a bow)',
+}
+# ⚠️ ARCHERS BY DESIGN THAT ARRIVE UNARMED WHEN SUMMONED. They are filed by their
+# measured STATS instead, because that is what a tide would actually get.
+RANGED_IF_EQUIPPED = {
+    'minecraft:stray': '0/6 summons carried a bow - needs forced NBT',
+    'minecraft:bogged': '0/6 summons carried a bow - needs forced NBT',
+}
 # `ruled` = Ethan classified it, and his ruling outranks any inference of mine.
+# ⚠️ These two show EMPTY hands, and that is expected rather than contradictory: their
+# ranged attacks are mod code (summoned bones, thrown charges), not a held bow.
 RANGED_RULED = {
     'born_in_chaos_v1:bonescaller': True,
     'born_in_chaos_v1:skeleton_demoman': True,
@@ -81,9 +116,11 @@ def role(rec, eid):
 
     # Ranged first: it is a role, not a tier, and it outranks the stat bands.
     if eid in RANGED_RULED and RANGED_RULED[eid]:
-        return 'Specialist - Ranged', 'ruled'
-    if eid in RANGED_MEASURED:
-        return 'Specialist - Ranged', 'measured (partly - see the bow note)'
+        return 'Specialist - Ranged', "ruled by Ethan (attack is mod code, not a bow)"
+    if eid in RANGED_SUMMONED:
+        return 'Specialist - Ranged', RANGED_SUMMONED[eid]
+    # ⚠️ NOT filed as ranged. An archer that arrives with empty hands is a melee mob
+    # until something puts a bow in them - see RANGED_IF_EQUIPPED.
 
     # ⚠️ Thresholds read off this pack's own distribution: hp median 25, upper
     # quartile 40; dmg median 3, upper quartile 5.
@@ -129,6 +166,7 @@ def main():
         rows.append({
             'name': name, 'mod': mod, 'id': eid, 'role': r, 'conf': conf,
             'fam': family(eid, name),
+            'note': RANGED_IF_EQUIPPED.get(eid, '') or (RANGED_SUMMONED.get(eid, '') if eid in RANGED_SUMMONED else ''),
             'hp': rec['hp'], 'armor': rec.get('armor'), 'dmg': rec.get('dmg'),
             'speed': rec.get('speed'), 'kb': rec.get('kb_res'),
         })
@@ -151,18 +189,35 @@ def main():
                  % len(rows))
         L.append('\n---\n')
         L.append('\n## 🚨 THE BOW PROBLEM - read this before trusting "Ranged"\n')
-        L.append('\nMeasured 2026-08-29:\n')
-        L.append('\n```\n10 summoned skeletons  ->  1 bow, 3 swords, 2 shields, 4 empty'
-                 '\n 6 natural  skeletons  ->  2 bows, 4 swords + shields\n```\n')
-        L.append('\n🔴 **`magistuarmory` re-equips skeletons.** Only about a quarter '
-                 'carry a bow; the rest are\nmelee. So `minecraft:skeleton` is **not '
-                 'reliably an archer in this pack**, and a wave built\non the assumption '
-                 'that it is delivers a fraction of the ranged pressure intended.\n')
+        L.append('\n**The tide summons**, so the only question that matters is whether a '
+                 'mob arrives\n**holding a bow**. Measured 2026-08-29:\n')
+        L.append('\n```\nminecraft:skeleton   6 bows / 20 summons  (~30%)\n'
+                 'minecraft:stray      0 bows /  6 summons\n'
+                 'minecraft:bogged     0 bows /  6 summons\n```\n')
+        L.append('\n### 🚨 Two causes, and only one is a mod\'s doing\n')
+        L.append('\n**1. `config/epicknights/mobs_equipment.json5`** lists '
+                 '`minecraft:skeleton` against ~13\npossible items, **exactly one of '
+                 'which is `minecraft:bow`**. That is the 30%, and it is a\nconfig line '
+                 'rather than a mystery — editable, and the melee entries could simply '
+                 'be\nremoved from the skeleton row.\n')
+        L.append('\n**2. Stray and bogged are not in that config at all.** They arrive '
+                 'empty-handed because\n`/summon` does not run the vanilla equip step. '
+                 '**In the wild they are archers; summoned\ninto a tide they are '
+                 'melee.** ⚠️ This refutes an earlier proposal of mine in `docs/72`,\n'
+                 'which suggested adding them *as archers*. They would have added none.\n')
+        L.append('\n### ⭐ A fix exists and is proven\n')
+        L.append('\n`spawner.js` already accepts an `nbt` option. This puts a bow in a '
+                 'stray:\n')
+        L.append('\n```\n{Tags:[...],NoAI:1b,HandItems:[{id:"minecraft:bow",count:1},{}]}'
+                 '\n```\n')
+        L.append('\n⚠️ **Key order matters** — putting `Tags` *after* `HandItems` '
+                 'silently dropped the tag,\nwhich cost a round of debugging.\n')
         L.append('\n⭐ This is very likely the real answer to *"why are ranged enemies '
-                 'not spawning?"* - the\nroster was fixed, but the archers are not '
-                 'archers.\n')
-        L.append('\n⚠️ Ranged is therefore marked **measured** (a bow was actually seen), '
-                 '**ruled** (Ethan said\nso), or **unknown** - never blended.\n')
+                 'not spawning?"* — the\nroster was fixed in T1, but **the archers are '
+                 'not archers**.\n')
+        L.append('\n⚠️ Ranged is therefore marked with its **measured rate**, or as '
+                 '**ruled by Ethan** (for mobs\nwhose ranged attack is mod code rather '
+                 'than a held bow) — never blended.\n')
         L.append('\n⚠️ **Numbers are "as spawned", not base.** Equipment is randomised, '
                  'so a re-run can differ.\n')
         L.append('\n## 🚨 Two things the numbers say that the current tide does not\n')
@@ -189,8 +244,8 @@ def main():
             L.append('|---|---|--:|--:|--:|---|---|')
             for x in sorted(sub, key=lambda z: (z['fam'], -z['hp'])):
                 L.append('| %s | %s | %s | %s | %s | %s | `%s` |'
-                         % (x['fam'], x['name'], x['hp'], x['armor'], x['dmg'],
-                            x['mod'], x['id']))
+                         % (x['fam'], x['name'] + (' ⚠️' if x['note'] else ''),
+                            x['hp'], x['armor'], x['dmg'], x['mod'], x['id']))
         L.append('\n---\n')
         L.append('\n## By family\n')
         for f in ['Skeleton', 'Zombie', 'Other']:
