@@ -1001,11 +1001,6 @@ hash = "6d3ff3b7bbcc97fa06bdddcf2b3b7646168497ba6d7104bdea376f1bc65f9a93"
 metafile = true
 
 [[files]]
-file = "mods/modernnetworking.pw.toml"
-hash = "d03bd41228478e18873d574620479c1863a86170a2b94d903a906ceb44713e93"
-metafile = true
-
-[[files]]
 file = "mods/modonomicon.pw.toml"
 hash = "f35e905918b2694a543ca4bef5e90be9a84f966b80a5f486dbbab6cc015f07e8"
 metafile = true
@@ -1448,11 +1443,6 @@ metafile = true
 [[files]]
 file = "mods/tacz-1.21.1.pw.toml"
 hash = "64a5ad1bbb2ca9e94053e4e6b7f0e5d762c2c7bea7674c168a6819e5782a99d6"
-metafile = true
-
-[[files]]
-file = "mods/talk-balloons.pw.toml"
-hash = "21087ad678d202fc9b20872857be3344482e1a2ed8a7f1598177deaf3f402c14"
 metafile = true
 
 [[files]]

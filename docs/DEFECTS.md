@@ -155,3 +155,40 @@ and *"I could not call it"* must never look like *"nobody said anything"*.
 `garble.js` → `ObfuscateMode` · the action-bar sting → an anchored message · **god
 dialogue itself** — ⚠️ and that last one keeps chat as the record, because chat is still
 the only surface that survives being missed mid-fight.
+
+---
+
+## ⛔ D-103 — `talk-balloons` cut. Its channel would not handshake. 2026-08-29
+
+> Ethan: *"Same error, i cannot log in and im tired of troubleshooting. we cut it."*
+
+```
+Channel name  talk_balloons:create_balloon  [+2 more]
+Reason        This channel is missing on the server side, but required on the client!
+```
+
+⚠️ **Everything checked out and it failed anyway.** The mod was marked `both`, its jar was
+installed on the server, it appeared in the mod list as `Talk Balloons 1.6.1
+(talk_balloons)`, and all three of its declared dependencies were satisfied —
+`neoforge [21.1.141,)` (have 21.1.247), `minecraft [1.21,1.21.1]`, `modernnetworking
+[2.0.0,)` (have 2.0.1), all `side="BOTH"` and all present. Two clean boots and a full
+packwiz regeneration did not shift it.
+
+⭐ **It was a nice-to-have** — his own justification was *"same as above"* — and **no
+amount of ambience is worth a login.** Cut rather than debugged further.
+
+`modernnetworking` went with it: it was pulled in **only** as its dependency, and nothing
+else in the pack requires it. ⚠️ **Verified before removing**, not assumed.
+
+### 🔴 The process failure underneath it
+
+This cost several restarts of a **shared** server while other agents were working on it.
+
+> Ethan: *"You restart the server way too much over the smallest fixes… you are directly
+> harming the work of other agents… It is no longer something you can restart whenever
+> you feel like, you need to confirm with me."*
+
+🔑 **The reason it kept happening is the reason it needed writing down:** the cost of a
+restart is invisible from inside any one chat, so each one looked individually justified.
+Now in `CLAUDE.md` at the repo root, where every agent reads it — along with *always
+regenerate packwiz*, which was the other half of the same complaint.

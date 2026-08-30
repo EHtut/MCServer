@@ -7,8 +7,8 @@
 
 ## Summary
 
-- **327 / 450** mod slots used
-- **291** stable releases, **36** beta/alpha
+- **325 / 450** mod slots used
+- **289** stable releases, **36** beta/alpha
 - **3** entries carry a known hazard (see below)
 
 ---
@@ -28,6 +28,8 @@ spends an evening re-checking.
 | `ledger` | Fabric only - block audit logging has no NeoForge equivalent |
 | `configured` | Went Fabric-only; no in-game config editor for NeoForge 1.21.1 |
 | `zoniex` | MISLABELLED ON MODRINTH. Tagged 1.21.1 + neoforge, but the jar contains only a legacy Forge mods.toml declaring mc=[1.20.1]. Proven by reading the jar (tools/check_jars.py), not guessed. It would not have loaded. |
+| `talk-balloons` | CUT 2026-08-29. Its create_balloon channel would not handshake - "missing on the server side, but required on the client" - with the mod present, loaded and its deps satisfied on BOTH sides. Two clean boots and a full packwiz regeneration did not shift it. Ethan: "Same error, i cannot log in and im tired of troubleshooting. we cut it." It was a nice-to-have ("same as above"), and no amount of it is worth a login. |
+| `modernnetworking` | Removed with talk-balloons 2026-08-29 - it was pulled in ONLY as its dependency and nothing else in the pack requires it. Verified before removing. |
 
 **This is the cost of choosing 1.21.1 over 1.20.1.** It was a real cost -
 the gun and horror catalogues on 1.20.1 Forge are deeper - but the

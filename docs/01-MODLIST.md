@@ -4,11 +4,11 @@
 > `tools/modlist.json` + the resolution cache. Do not hand-edit -
 > change `tools/modlist.json` and regenerate.
 
-**327 mods** for Minecraft 1.21.1 / neoforge, 1,193 MB total.
+**325 mods** for Minecraft 1.21.1 / neoforge, 1,191 MB total.
 
 | side | count | meaning |
 |---|---:|---|
-| both | 237 | installed on the server *and* every client |
+| both | 235 | installed on the server *and* every client |
 | client | 65 | client-only; the server never loads them |
 | server | 25 | server-only; players do not need them |
 
@@ -226,7 +226,7 @@ Building blocks and furniture. Four players sharing a world need a deep palette 
 | [Every Compat (Wood Good)](https://modrinth.com/mod/every-compat) | `1.21-2.11.48` | both | major | Generates the missing wood-type variants across every mod in the pack |
 | [FramedBlocks](https://modrinth.com/mod/framedblocks) | `10.6.1` | both | major | Framed blocks - any shape, any texture |
 | [Handcrafted](https://modrinth.com/mod/handcrafted) | `4.0.3` | both | major | Furniture with craft appeal |
-| [Supplementaries](https://modrinth.com/mod/supplementaries) | `1.21.1-3.9.5` | both | major | Decoration. Ethan: "Decorations." |
+| [Supplementaries](https://modrinth.com/mod/supplementaries) | `1.21.1-3.8.9` | both | major | Decoration. Ethan: "Decorations." |
 | [Macaw's Furniture](https://modrinth.com/mod/macaws-furniture) | `3.4.1` | both | minor | Furniture |
 | [Macaw's Roofs](https://modrinth.com/mod/macaws-roofs) | `2.3.2` | both | minor | Roofs |
 | [Storage Delight](https://modrinth.com/mod/storage-delight) | `26.07.01a-1.21-neoforge` | both | minor | Kitchen and storage furniture |
@@ -312,7 +312,7 @@ APIs and shared code. Listed explicitly rather than left to transitive resolutio
 | [Prickle](https://modrinth.com/mod/prickle) | `21.1.11` | both | minor | Config library |
 | [Searchables](https://modrinth.com/mod/searchables) | `1.0.2` | client | minor | Search-field library |
 
-## auto-deps (54)
+## auto-deps (53)
 
 Required dependencies discovered by resolving the pack's declared dependency graph (tools/resolve.py deps). These were being pulled in implicitly; listing them explicitly means a dependency appearing or disappearing is a reviewable diff rather than a surprise at boot. Fabric API and QSL were correctly excluded - multiloader jars declare them even though no NeoForge build needs them.
 
@@ -369,7 +369,6 @@ Required dependencies discovered by resolving the pack's declared dependency gra
 | [Zeta](https://modrinth.com/mod/zeta) | `1.1-40` | both | core | Required by quark |
 | [Collective](https://modrinth.com/mod/collective) | `1.21.1-8.39-fabric+forge+neo` | both | major | Required by village-spawn-point. |
 | [Kiwi 🥝](https://modrinth.com/mod/kiwi) | `15.8.7+neoforge` | both | major | Required by snow-real-magic and companion. |
-| [Modern Networking](https://modrinth.com/mod/modernnetworking) | `2.0.1+1.21.1-neoforge` | both | major | Required by talk-balloons. |
 | [PandaLib](https://modrinth.com/mod/pandalib) | `0.6.0` *beta* | both | major | Required by pandas-falling-trees. |
 | [TxniLib](https://modrinth.com/mod/txnilib) | `neoforge-1.21.1-1.0.24` | both | major | Required by immersive-messages-api. |
 
@@ -402,7 +401,7 @@ Client-only visual polish. Ethan, 2026-08-16: 'im just making an attempt to make
 | [Smooth Skies](https://modrinth.com/mod/smooth-skies) | `2.10.4` | client | minor | Fixes skybox colour banding at long render distances. Specifically relevant here: Distant Horizons IS in this pack, and banding is exactly what DH's extra distance exposes. |
 | [Visuality: Reforged](https://modrinth.com/mod/visuality-forge) | `3.0.0` | client | minor | Ambient particles on mobs and blocks. Reforged port, client-only. |
 
-## media-ambience (5)
+## media-ambience (4)
 
 Shared media and world ambience. Ethan, 2026-08-02: 'we also need more ambient sounds, the world is just quiet' and an earlier ask for watching video / importing images together. AmbientSounds is by the CreativeCore author, so its dependency is already in the pack.
 
@@ -410,7 +409,6 @@ Shared media and world ambience. Ethan, 2026-08-02: 'we also need more ambient s
 |---|---|---|---|---|
 | [Companion 🐕](https://modrinth.com/mod/companion) | `6.2.2+neoforge` | server | major | Ethan: "Gives the world a bit more life, personally." |
 | [Immersive Messages API](https://modrinth.com/mod/immersive-messages-api) | `neoforge-1.21.1-1.0.18` | both | major | In-world text API. Ethan wants ALL god dialogue moved onto it - its own chunk. |
-| [Talk Balloons](https://modrinth.com/mod/talk-balloons) | `1.6.1+1.21.1-neoforge` | both | major | Speech bubbles over speakers. |
 | [What Are They Up To (Watut)](https://modrinth.com/mod/what-are-they-up-to) | `1.21.0-1.2.7` | both | major | Shows what other players are doing. |
 | [Camerapture](https://modrinth.com/mod/camerapture) | `1.10.12+mc1.21.1-neoforge` | both | minor | Take, place and share photographs between players - the social half of a 4-player world |
 
