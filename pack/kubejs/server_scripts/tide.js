@@ -172,22 +172,41 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // 🚨 EVERY MULTIPLIER IS >= 1. Standing rule: *"we should never have a coeffecient go
   // under 1 it should always be an increase."* Trust never makes a night SAFER than the
   // baseline; it only ever makes it worse.
+  // 🔴 RENAMED 2026-08-30 to Ethan's four. `specialist` is gone; `ranged` replaces
+  // it, and `horde` now means fodder + TANKS rather than bulk only. The trust ladder
+  // still decides WHICH types are available and how big; difficulty.js decides the
+  // composition inside them and which gods may reach in.
   var TIERS = [
-    { at: 0, mods: ['horde'],                                      mult: 1.00 },
-    { at: 2, mods: ['horde', 'general'],                           mult: 1.15 },
-    { at: 3, mods: ['horde', 'general', 'specialist'],             mult: 1.30 },
-    { at: 4, mods: ['horde', 'general', 'specialist', 'miniboss'], mult: 1.50 },
-    { at: 5, mods: ['horde', 'general', 'specialist', 'miniboss'], mult: 1.75 },
+    { at: 0, mods: ['horde'],                                   mult: 1.00 },
+    { at: 2, mods: ['horde', 'general'],                        mult: 1.15 },
+    { at: 3, mods: ['horde', 'general', 'ranged'],              mult: 1.30 },
+    { at: 4, mods: ['horde', 'general', 'ranged', 'miniboss'],  mult: 1.50 },
+    { at: 5, mods: ['horde', 'general', 'ranged', 'miniboss'],  mult: 1.75 },
   ]
+
+  // ⛔ `GOD_WAVE_CHANCE = 0.15` LIVED HERE FOR ONE CHUNK AND WAS WRONG.
+  // A flat rate silently replaced the pathed/pathless split further down this file
+  // (VARY_PATHED 0.08 vs VARY_PATHLESS 0.25). See `godChanceFor` - that is the rate
+  // `composeFor` passes to waves.js. Two numbers for one thing is how one of them ends
+  // up being the one nobody maintains.
+
+  // ⚠️ Mirrored from waves.js rather than duplicated as a literal - it is read at
+  // load, and falls back to 1 (his ruling) if that file is missing.
+  var BOSS_PER_RUN = 1
+  var WAVES_WARNED = false
 
   // ⚠️ "higher (NOT high)" is Ethan's phrasing for the specialist wave and it is doing
   // real work: ranged enemies stack in a way melee does not, because they all reach you
   // at once from cover. 0.40 is "you are being shot at"; 0.75 would be unplayable.
+  // ⚠️ WHAT IS LEFT OF THE OLD TABLE. Composition moved to waves.js; these entries
+  // survive ONLY as labels and as the `boss` flag the announcement bar reads. Keeping a
+  // ranged number here would be two sources of truth for the same thing, and the one
+  // nobody updated would win.
   var MODS = {
-    horde:      { ranged: 0.00, boss: false, label: 'a pure horde' },
-    general:    { ranged: 0.15, boss: false, label: 'a general wave' },
-    specialist: { ranged: 0.40, boss: false, label: 'a specialist wave' },
-    miniboss:   { ranged: 0.10, boss: true,  label: 'a miniboss and a horde' },
+    horde:    { boss: false, label: 'a horde' },
+    general:  { boss: false, label: 'a general wave' },
+    ranged:   { boss: false, label: 'a ranged wave' },
+    miniboss: { boss: true,  label: 'a miniboss and a horde' },
   }
 
   // ── the ranged pool ────────────────────────────────────────────────────────
@@ -380,17 +399,25 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     art: ['born_in_chaos_v1:restless_spirit', 'born_in_chaos_v1:scarlet_persecutor',
       'born_in_chaos_v1:dark_vortex'],
   }
-  var GOD_KEYS = ['blade', 'wall', 'salvage', 'forge', 'art']
+  // ⛔ `GOD_KEYS` (all five) was deleted 2026-08-30 with `poolFor`. waves.js picks the
+  // god now and only THREE send waves - Forge and Salvage send nothing at anyone, his
+  // ruling. A five-name list sitting here would read as the roster and is not.
+  // GOD_ROSTERS itself stays: spawn_pressure.js uses all five for their OWN events.
 
 
   // Named here so the harness can assert the exception is exactly this and has not
   // quietly grown. If a mob is added to the rosters above and is neither tagged
   // undead nor listed here, the test fails.
-  var UNTAGGED_UNDEAD = [
-    'rottencreatures:undead_miner', 'rottencreatures:zombie_lackey',
-    'rottencreatures:skeleton_lackey', 'rottencreatures:burned',
-    'rottencreatures:immortal',
-  ]
+  // ⭐ EMPTIED 2026-08-30, AND THE REASON IS WORTH KEEPING. It held five Rotten
+  // Creatures ids, and `tide_undead_check.py` reported all five as used by no roster -
+  // the 08-29 rewrite dropped them and nobody swept the exemption behind it.
+  //
+  // ⚠️ THE PREMISE IS STILL TRUE, MEASURED TODAY: Rotten Creatures tags NOTHING into
+  // `#minecraft:undead` despite being an undead mod, so anything from it needs a name
+  // here. Re-add the specific id if a Rotten Creatures mob rejoins a roster. Do not
+  // pre-emptively list the whole mod - an allowlist that covers mobs nobody uses is a
+  // permanently amber check, and an amber check is one people stop reading.
+  var UNTAGGED_UNDEAD = []
 
   var SOUND_TELL = 'minecraft:entity.warden.nearby_closest'
   var SOUND_WAVE = 'minecraft:entity.wither.spawn'
@@ -441,8 +468,24 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return out
   }
 
+  // 🔴 REWIRED 2026-08-30 onto waves.js + difficulty.js.
+  //
+  // ⚠️ THE NAMES CHANGED AND THAT IS NOT COSMETIC. The old set was
+  // horde/general/specialist/miniboss; Ethan's is general/horde/RANGED/miniboss.
+  // `specialist` is GONE, and `horde` flipped meaning from "bulk only" to "fodder +
+  // tanks". A rename plus a re-composition, so the old MODS table is retired rather
+  // than renamed - a half-migrated table would compose waves nobody designed.
+  function diffIndex(p) {
+    try {
+      if (VELDORA.difficulty && typeof VELDORA.difficulty.index === 'function') {
+        return VELDORA.difficulty.index(p)
+      }
+    } catch (e) { }
+    return 0            // ⚠️ gentlest on failure, same as difficulty.js itself
+  }
+
   function pickMod(server, p, forced) {
-    if (forced && MODS[forced]) return forced
+    if (forced) return forced
     var tier = tierFor(server, p)
     return tier.mods[Math.floor(Math.random() * tier.mods.length)]
   }
@@ -454,51 +497,76 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // that found no archers must still be a wave - spawning nothing would read exactly
   // like the tide being broken, which is the failure this project keeps paying for.
   function composeFor(server, p, y, modName) {
-    var mod = MODS[modName] || MODS.horde
+    // ⭐ waves.js owns composition now. This function's job shrank to: ask for a wave,
+    // weight the id list, and decide whether a boss is allowed.
+    var spec = null
+    try {
+      if (VELDORA.waves && typeof VELDORA.waves.pick === 'function') {
+        spec = VELDORA.waves.pick(modName, diffIndex(p), godChanceFor(p))
+      }
+    } catch (e) { spec = null }
 
-    // ⭐ THE MODIFIER PICKS THE POOL NOW, not the depth. `horde` draws BULK only,
-    // because a pure horde with an archer in it is not a pure horde.
-    var pool = poolFor(modName)
-
-    // ⭐ AND THEN, RARELY, ANOTHER GOD REACHES IN. A varied wave REPLACES the
-    // skeletons rather than mixing with them - half a wave of spiders reads as a bug,
-    // a whole one reads as Wall.
-    //
-    // 🚨 THE MINIBOSS IS UNAFFECTED. Her bosses stay hers even in a varied wave: the
-    // variation is who came, not who sent them, and a Krampus Henchman leading a tide
-    // would make the tide his.
-    var varied = null
-    try { varied = variedRoster(p) } catch (e) { varied = null }
-    if (varied) {
-      pool = varied.ids
-      console.info(TAG + p.username + ' - VARIED WAVE: ' + varied.god + " reached into " +
-        'her water (' + varied.ids.length + ' id(s))')
+    // ⚠️ FAILS TO A HORDE OF HER BULK rather than to nothing. A tide that spawns
+    // nothing reads exactly like the tide being broken, which is the failure this file
+    // has paid for before.
+    if (!spec) {
+      if (!WAVES_WARNED) {
+        WAVES_WARNED = true
+        console.error(TAG + '!! waves.js is MISSING or refused - falling back to a plain ' +
+          'bulk horde. This is a FAILURE, not a design choice.')
+      }
+      spec = { type: modName, variant: 'fallback', god: null, theme: 'fallback',
+        fodder: BULK, light: [], tank: [], ranged: 0, boss: null }
     }
+
+    if (spec.god) {
+      console.info(TAG + p.username + ' - ' + spec.god.toUpperCase() + ' WAVE (' +
+        modName + ') - they reached into her water')
+    }
+
+    var pool = [].concat(spec.fodder, spec.light, spec.tank)
+    if (!pool.length) pool = BULK.slice()
+
     var melee = [], ranged = []
     for (var i = 0; i < pool.length; i++) {
       if (RANGED[pool[i]]) ranged.push(pool[i]); else melee.push(pool[i])
     }
+    // ⭐ A RANGED WAVE BRINGS ITS OWN ARCHERS. The fodder pool is bone, not archers,
+    // so a ranged wave has to add them - otherwise "65% ranged" weights an empty list
+    // and silently degrades to melee, which is exactly the bug Ethan noticed.
+    if (spec.ranged > 0) {
+      var rp = (VELDORA.waves && VELDORA.waves.rangedPool) || []
+      for (var q = 0; q < rp.length; q++) {
+        if (ranged.indexOf(rp[q]) === -1) ranged.push(rp[q])
+      }
+    }
     if (!melee.length) melee = pool.slice()
 
     var ids = []
-    if (mod.ranged > 0 && ranged.length) {
+    if (spec.ranged > 0 && ranged.length) {
       // Weight the list rather than the roll: `spawner.wave` picks uniformly from
       // `ids`, so repeating an entry is how a proportion is expressed.
       var slots = 20
-      var nR = Math.max(1, Math.round(slots * mod.ranged))
+      var nR = Math.max(1, Math.round(slots * spec.ranged))
+      if (nR > slots) nR = slots
       for (var r = 0; r < nR; r++) ids.push(ranged[r % ranged.length])
       for (var m = 0; m < slots - nR; m++) ids.push(melee[m % melee.length])
     } else {
       ids = melee.slice()
     }
 
-    var boss = null
-    if (mod.boss && BOSSES.length) {
-      boss = BOSSES[Math.floor(Math.random() * BOSSES.length)]
-      if (Math.random() < TAKER_CHANCE) boss = TAKER
-    }
+    // 🔴 ONE MINIBOSS PER TIDE, NOT PER WAVE. Ethan, measured in play: *"the
+    // minibosses themselves are usually incredibly hard to fight on their own."*
+    //
+    // ⚠️ A tide is MANY waves, so a per-wave boss meant a long run could stack
+    // several. The cap lives on the RUN, and composeFor only proposes - sendWave is
+    // what spends it, because a proposal that is never placed must not consume the cap.
+    var boss = spec.boss || null
+    if (boss && Math.random() < TAKER_CHANCE) boss = TAKER
+
     return { ids: ids, boss: boss, mod: modName, rangedAvailable: ranged.length,
-      varied: varied ? varied.god : null }
+      varied: spec.god, variant: spec.variant, theme: spec.theme,
+      wantsRangedNbt: (spec.ranged > 0) }
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -535,19 +603,26 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return BULK
   }
 
-  // The pool a given modifier draws from. 🚨 `horde` is BULK ONLY - a pure horde with
-  // an archer in it is not a pure horde, and that distinction is the whole reason the
-  // modifier system exists.
-  function poolFor(modName) {
-    if (modName === 'horde') return BULK
-    if (modName === 'general') return BULK.concat(ARCHERS)
-    if (modName === 'specialist') return BULK.concat(SPECIALISTS)
-    if (modName === 'miniboss') return BULK.concat(SPECIALISTS)
-    return BULK
-  }
+  // ⛔ `poolFor` WAS DELETED HERE, 2026-08-30, and this note is the headstone.
+  //
+  // It mapped a modifier to a draw pool, and `waves.js` owns that entirely now. It is
+  // recorded rather than quietly removed because it still carried a branch for
+  // `specialist` - a modifier that no longer exists - and dead code naming a retired
+  // concept is how a retired concept comes back. If something needs a pool it asks
+  // `VELDORA.waves.pick()`. There is no second answer.
 
-  // ⭐ THE VARIATION ROLL. Rare, and rarer still if you have a god.
-  function variedRoster(p) {
+  // ⭐ THE VARIATION ROLL, NOW A RATE RATHER THAN A ROSTER.
+  //
+  // 🔴 REWRITTEN, NOT DELETED, AND THE DIFFERENCE MATTERS. `waves.js` chooses WHICH god
+  // reaches in; what it cannot know is that a GODLESS player is reached for three times
+  // as often (0.25 vs 0.08) - that rule is this file's and it lives nowhere else. The
+  // first pass of this rewiring passed a flat GOD_WAVE_CHANCE and dropped it on the
+  // floor: it still compiled, it still played, and the pathless half of the design was
+  // gone with nothing red to show for it.
+  //
+  // ⚠️ Unreadable -> treat as PATHED, i.e. the rarer branch. A read failure must not
+  // quietly make every tide somebody else's.
+  function godChanceFor(p) {
     var pathless = null
     try {
       if (VELDORA.paths && typeof VELDORA.paths.pathOf === 'function') {
@@ -559,14 +634,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         pathless = (path === null || path === undefined) ? null : (String(path) === '')
       }
     } catch (e) { }
-    // ⚠️ Unreadable -> treat as PATHED, i.e. the rarer branch. A read failure must
-    // not quietly make every tide a varied one.
-    var chance = (pathless === true) ? VARY_PATHLESS : VARY_PATHED
-    if (Math.random() >= chance) return null
-    var g = GOD_KEYS[Math.floor(Math.random() * GOD_KEYS.length)]
-    var pool = GOD_ROSTERS[g]
-    if (!pool || !pool.length) return null
-    return { god: g, ids: pool }
+    return (pathless === true) ? VARY_PATHLESS : VARY_PATHED
   }
 
   // ⭐⭐ THE MATRIARCH'S CHAMPION DRAWS THE TIDE. Ethan, 2026-08-24:
@@ -833,10 +901,29 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
               //
               // ⚠️ TIGHT RING ON PURPOSE. 5-11 blocks is close enough to be in the
               // same corridor and far enough not to materialise on top of him.
+              // 🔴 A RANGED WAVE FORCES A BOW. Measured 2026-08-29: a summoned
+              // minecraft:skeleton arrives holding one only ~30% of the time, because
+              // config/epicknights/mobs_equipment.json5 offers it ~13 items and one bow
+              // - and /summon does not run the vanilla equip step at all. A "65% ranged"
+              // wave of bowless skeletons is a melee wave wearing the wrong label.
+              //
+              // ⚠️ TAGS FIRST. Putting them after HandItems silently DROPPED the tag,
+              // which cost a round of debugging - and an untagged mob outlives the tide
+              // because the leave-check cannot find it.
+              var waveNbt = '{Tags:["' + TIDE_TAG + '"]}'
+              if (comp.wantsRangedNbt && VELDORA.waves && VELDORA.waves.rangedNbt) {
+                // ⚠️ NO REGEX. Three files in this repo have been mangled by escaping a
+                // JS regex through a shell heredoc, and stripping two braces does not
+                // need one. slice() cannot be mangled.
+                var inner = String(VELDORA.waves.rangedNbt)
+                if (inner.charAt(0) === '{') inner = inner.slice(1)
+                if (inner.charAt(inner.length - 1) === '}') inner = inner.slice(0, -1)
+                waveNbt = '{Tags:["' + TIDE_TAG + '"],' + inner + '}'
+              }
               VELDORA.spawner.wave(p, {
                 ids: ids, count: per, minDist: 5, maxDist: 11,
                 behind: true, reachable: true,
-                nbt: '{Tags:["' + TIDE_TAG + '"]}',
+                nbt: waveNbt,
               })
 
               // ⭐ THE BOSS ARRIVES ONCE, WITH THE FIRST PULSE, and slightly further
@@ -845,12 +932,31 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
               //
               // ⚠️ Tagged like everything else so the census counts it and the
               // leave-check can clean it up - an untagged boss would outlive the tide.
+              // 🔴 ONE MINIBOSS PER TIDE, NOT PER WAVE. Ethan, measured in play
+              // 2026-08-30: *"it should also be 1 miniboss per tide because the
+              // minibosses themselves are usually incredibly hard to fight on their
+              // own."*
+              //
+              // ⚠️ A tide is MANY waves, and this ran per wave - a long run stacked
+              // one boss per miniboss wave it happened to roll. The cap lives on the
+              // RUN and is spent HERE, at the moment of placement, not when the wave
+              // was composed: a boss that was proposed and never placed must not
+              // consume it.
               if (first && comp.boss) {
-                VELDORA.spawner.wave(p, {
-                  ids: [comp.boss], count: 1, minDist: 9, maxDist: 14,
-                  behind: true, reachable: true,
-                  nbt: '{Tags:["' + TIDE_TAG + '"]}',
-                })
+                var st3 = runs[String(p.uuid)]
+                var cap = BOSS_PER_RUN
+                var had = (st3 && typeof st3.bosses === 'number') ? st3.bosses : 0
+                if (had >= cap) {
+                  console.info(TAG + p.username + ' - a second miniboss was due and was ' +
+                    'REFUSED. One per tide (had ' + had + '/' + cap + ').')
+                } else {
+                  if (st3) st3.bosses = had + 1
+                  VELDORA.spawner.wave(p, {
+                    ids: [comp.boss], count: 1, minDist: 9, maxDist: 14,
+                    behind: true, reachable: true,
+                    nbt: '{Tags:["' + TIDE_TAG + '"]}',
+                  })
+                }
               }
             }
           } catch (e) { console.warn(TAG + 'pulse threw :: ' + e) }
@@ -868,7 +974,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         var uuid = null
         try { uuid = String(p.uuid) } catch (e) { continue }
         var st = runs[uuid]
-        if (!st) { st = runs[uuid] = { active: false, in: 0, out: 0, waves: 0, next: 0, age: 0 } }
+        if (!st) { st = runs[uuid] = { active: false, in: 0, out: 0, waves: 0, bosses: 0, next: 0, age: 0 } }
 
         var enc = enclosed(p)
         if (enc === null) continue          // cannot read sky: do nothing, ever
@@ -913,6 +1019,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
             st.mode = 'night'
             st.age = 0
             st.waves = 0
+            st.bosses = 0
             st.next = GRACE
             console.info(TAG + p.username + ' is OUT AFTER DARK and a tide is due - ' +
               'the night tide begins')
@@ -924,6 +1031,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
             st.mode = 'deep'
             st.age = 0
             st.waves = 0
+            st.bosses = 0
             // GRACE is the in-run FLOOR only. What actually schedules a tide is the
             // persistent countdown above.
             st.next = GRACE
@@ -968,14 +1076,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           if (!isNightNow(server)) {
             console.info(TAG + p.username + ' - dawn. The night tide ends after ' +
               st.waves + ' wave(s), ' + Math.round(st.age / 1200) + ' min')
-            runs[uuid] = { active: false, in: 0, out: 0, waves: 0, next: 0, age: 0, waveEnds: 0, toldEscape: false }
+            runs[uuid] = { active: false, in: 0, out: 0, waves: 0, bosses: 0, next: 0, age: 0, waveEnds: 0, toldEscape: false }
           }
         } else if (!enc) {
           st.out += SWEEP
           if (st.out >= LEAVE_TICKS) {
             console.info(TAG + p.username + ' surfaced - tide ends after ' +
               st.waves + ' wave(s), ' + Math.round(st.age / 1200) + ' min')
-            runs[uuid] = { active: false, in: 0, out: 0, waves: 0, next: 0, age: 0, waveEnds: 0, toldEscape: false }
+            runs[uuid] = { active: false, in: 0, out: 0, waves: 0, bosses: 0, next: 0, age: 0, waveEnds: 0, toldEscape: false }
           }
           continue
         }
@@ -1014,7 +1122,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (st && st.active) {
         console.info(TAG + p.username + ' died - tide ends after ' + st.waves + ' wave(s)')
       }
-      runs[uuid] = { active: false, in: 0, out: 0, waves: 0, next: 0, age: 0 }
+      runs[uuid] = { active: false, in: 0, out: 0, waves: 0, bosses: 0, next: 0, age: 0 }
     } catch (e) { }
   })
 
@@ -1032,8 +1140,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     enclosed: enclosed,
     rosters: { bulk: BULK, archers: ARCHERS, specialists: SPECIALISTS, bosses: BOSSES,
       gods: GOD_ROSTERS, allowlist: UNTAGGED_UNDEAD },
-    _poolFor: poolFor,
-    _variedRoster: variedRoster,
+    _godChanceFor: godChanceFor,
     varyChance: { pathed: VARY_PATHED, pathless: VARY_PATHLESS },
     // ⭐ D3, exposed for tools/tide_harness.js. The tier ladder and the composition are
     // pure functions of trust and depth, which makes them exactly the part worth
@@ -1097,7 +1204,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           return 0
         }
         var st = runs[String(p.uuid)]
-        if (!st) { st = { active: true, waves: 0, next: 0, in: 0 }; runs[String(p.uuid)] = st }
+        if (!st) { st = { active: true, waves: 0, bosses: 0, next: 0, in: 0 }; runs[String(p.uuid)] = st }
         p.tell(Text.of('§7forcing §f' + (MODS[mod].label) + '§7...'))
         sendWave(p, st, mod)
         return 1
@@ -1169,13 +1276,34 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // ⭐ The roster, said out loud. This changed shape completely on 2026-08-29 -
       // from three depth pools of twenty mixed mobs to one authored skeleton roster -
       // and a change that large should be visible from the boot log, not from a diff.
-      console.info(TAG + 'SHE IS SKELETONS. bulk ' + BULK.length + ' · archers ' +
-        ARCHERS.length + ' · specialists ' + SPECIALISTS.length + ' · minibosses ' +
-        BOSSES.length + '. Depth no longer changes WHO comes, only how many.')
+      //
+      // 🔴 AND THIS LINE WAS ITSELF A LIE FOR ONE CHUNK. It went on reciting bulk /
+      // archers / specialists counts after waves.js took composition over, so the boot
+      // log described a roster that no longer picked a single mob. Ten lying banners
+      // have been caught in this repo by reading boot logs; this one was written by the
+      // same person who caught the other nine. It now reports the LIVE source, and says
+      // so out loud when that source is missing.
+      if (VELDORA.waves && typeof VELDORA.waves.pick === 'function') {
+        console.info(TAG + 'SHE IS SKELETONS. Composition comes from waves.js (' +
+          VELDORA.waves.types.join('/') + '), NOT from this file. The rosters below ' +
+          'survive only as the miniboss list and the ranged lookup.')
+      } else {
+        console.error(TAG + '!! waves.js DID NOT LOAD. Every wave will fall back to a ' +
+          'plain bulk horde - no variants, no god waves, no ranged. This is broken, ' +
+          'not quiet.')
+      }
+      console.info(TAG + 'minibosses ' + BOSSES.length + ', capped at ' + BOSS_PER_RUN +
+        ' PER TIDE (not per wave) - measured in play, they are hard enough alone.')
+      // 🔴 THE SECOND HALF OF THIS LINE WAS OUT OF DATE THE MOMENT waves.js LANDED.
+      // It said "the miniboss stays hers either way". A god miniboss wave is now led
+      // by THAT GOD's boss. Open with Ethan as D-108 - the log states what the code
+      // does, and says the question is open, rather than reciting the old answer.
       console.info(TAG + 'variation: another god reaches in ' +
         Math.round(VARY_PATHED * 100) + '% of waves if you have a god, ' +
-        Math.round(VARY_PATHLESS * 100) + '% if you have NONE. The miniboss stays hers ' +
-        'either way - the variation is who came, not who sent them.')
+        Math.round(VARY_PATHLESS * 100) + '% if you have NONE - and only from ' +
+        'difficulty Malice upward.')
+      console.info(TAG + 'a GOD miniboss wave is led by that god\'s own boss; hers ' +
+        'still comes from her list. That reverses an older note - see D-108.')
       console.info(TAG + 'herald: your god above y0, the Speaker below it, and a ' +
         'sound ALWAYS - so a wave is never unannounced even with no lines written.')
     })

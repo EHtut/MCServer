@@ -163,23 +163,48 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         fodder: GHOST_FODDER, light: [], tank: [], ranged: 0.75, boss: null,
       },
     },
+    // 🔴 MEASURED IN PLAY, 2026-08-30. Ethan: *"i did a test on miniboss waves and
+    // they genuinly should not have specialists, at the lower tiers. we can have very
+    // small amounts in the higher tiers."*
+    //
+    // ⚠️ So `light` is EMPTY here and filled in by difficulty at pick() time - see
+    // MINIBOSS_LIGHT. A miniboss is already the hardest thing in the wave; anything
+    // standing between you and it is a second fight you did not agree to.
     miniboss: {
       normal: {
         theme: 'The Supreme — a crowd thick enough that you cannot reach the thing ' +
           'that matters, and the thing that matters knows it.',
-        fodder: BONE_FODDER, light: BONE_LIGHT, tank: [], ranged: 0.10,
+        fodder: BONE_FODDER, light: [], tank: [], ranged: 0.10,
         boss: BOSS_NORMAL,
       },
       alternate: {
         theme: 'The Fallen — a fallen version of the Warrior at the head of her dead. ' +
           'Nothing in the game explains why, and nothing should.',
-        fodder: BONE_FODDER, light: GHOST_LIGHT, tank: [], ranged: 0.10,
+        fodder: BONE_FODDER, light: [], tank: [], ranged: 0.10,
         boss: BOSS_ALT,
       },
     },
   }
 
   var TYPES = ['general', 'horde', 'ranged', 'miniboss']
+
+  // 🔴 HOW MANY LIGHT SPECIALISTS A MINIBOSS WAVE MAY CARRY, by difficulty index.
+  // Ethan tested it: none at the bottom, "very small amounts in the higher tiers".
+  //
+  //   Uprising  0   nothing between you and it
+  //   Malice    0   still nothing
+  //   Heresy    1   one, and only one
+  //   Damnation 2
+  var MINIBOSS_LIGHT = [0, 0, 1, 2]
+
+  // 🔴 ONE MINIBOSS PER TIDE, NOT PER WAVE. Ethan: *"it should also be 1 miniboss
+  // per tide because the minibosses themselves are usually incredibly hard to fight on
+  // their own."*
+  //
+  // ⚠️ A tide is MANY waves. Nothing here can enforce that on its own - this file
+  // composes one wave and has no memory - so the cap lives in tide.js's per-run state
+  // and this constant is what it reads. Named here so the number has one home.
+  var BOSS_PER_RUN = 1
 
   // ── which gods may reach in at this difficulty ───────────────────────────────
   // ⭐ CUMULATIVE, and that is a choice worth naming. At Damnation all three are
@@ -211,9 +236,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     }
     var which = (Math.random() < 0.5) ? 'normal' : 'alternate'
     var v = slot[which]
+
+    // ⭐ A miniboss wave's light specialists are a function of difficulty, not of the
+    // variant. At Uprising and Malice there are NONE - measured in play.
+    var light = v.light
+    if (type === 'miniboss') {
+      var allowed = MINIBOSS_LIGHT[diffIndex]
+      if (typeof allowed !== 'number') allowed = 0
+      if (allowed <= 0) light = []
+      else {
+        var pool = (which === 'normal') ? BONE_LIGHT : GHOST_LIGHT
+        light = pool.slice(0, allowed)
+      }
+    }
+
     return {
       type: type, variant: which, god: null, theme: v.theme,
-      fodder: v.fodder, light: v.light, tank: v.tank,
+      fodder: v.fodder, light: light, tank: v.tank,
       ranged: v.ranged, boss: v.boss,
     }
   }
@@ -223,6 +262,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     table: WAVES,
     gods: GODS,
     rangedNbt: RANGED_NBT,
+    minibossLight: MINIBOSS_LIGHT,
+    bossPerRun: BOSS_PER_RUN,
     rangedPool: RANGED,
     pick: pick,
     godsAt: godsAt,

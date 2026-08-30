@@ -40,6 +40,7 @@ import zipfile
 REPO = pathlib.Path(__file__).resolve().parent.parent
 MODS = pathlib.Path(r"C:\MCServer\instance\mods")
 TIDE = REPO / "pack" / "kubejs" / "server_scripts" / "tide.js"
+WAVES = REPO / "pack" / "kubejs" / "server_scripts" / "waves.js"
 
 # Vanilla's own undead. Not in any mod jar, so it is stated here.
 VANILLA = {
@@ -50,36 +51,119 @@ VANILLA = {
 }
 
 
-def read_tag():
-    found = set()
-    jars = 0
-    for jar in MODS.glob("*.jar"):
+# 🔴 THIS READER DROPPED NESTED TAGS AND MANUFACTURED FOUR FALSE FINDINGS.
+#
+# It kept only ids and threw away every value starting with "#". But goety's
+# contribution to `#minecraft:undead` is almost entirely nested:
+#
+#     data/minecraft/tags/entity_type/undead.json
+#         values: ["#goety:reapers", "#goety:wraiths", "goety:haunted_armor", ...]
+#
+# So wraith / border_wraith / muck_wraith / reaper ARE undead in the running game, and
+# this tool reported all four as "NOT THE GODDESS'S". ⚠️ Minecraft resolves nested tags
+# transitively; a reader that does not is not reading the same set the game is.
+#
+# 🔑 MEASURE AT THE POINT OF USE. Third time this exact class of error has cost this
+# project a day: a value written one way and read another, and the read is wrong.
+def read_all_tags():
+    """Every entity_type tag in every jar, keyed '#ns:path'. Un-resolved."""
+    raw, jars = {}, 0
+    pat = re.compile(r"data/([a-z0-9_.-]+)/tags/entity_type/(.+)\.json$")
+    for jar in sorted(MODS.glob("*.jar")):
         try:
             z = zipfile.ZipFile(jar)
         except Exception:
             continue
         for n in z.namelist():
-            if not re.search(r"data/minecraft/tags/entity_type/undead\.json$", n):
+            m = pat.search(n)
+            if not m:
                 continue
             try:
                 d = json.loads(z.read(n))
             except Exception:
                 continue
-            jars += 1
+            key = "#%s:%s" % (m.group(1), m.group(2))
+            if key == "#minecraft:undead":
+                jars += 1
+            # ⚠️ MERGE, never replace. Entity tags merge across jars - that is how
+            # vanilla's tag gets contributions from ten different mods at once.
+            bucket = raw.setdefault(key, set())
             for v in d.get("values", []):
                 vid = v if isinstance(v, str) else v.get("id", "")
-                if vid and not vid.startswith("#"):
-                    found.add(vid)
-    return found, jars
+                if vid:
+                    bucket.add(vid)
+    return raw, jars
+
+
+def read_tag():
+    raw, jars = read_all_tags()
+
+    # Resolve "#ns:path" references transitively. `seen` is cycle protection: a tag
+    # that references itself would otherwise recurse forever, and mod data does that.
+    def expand(key, seen):
+        if key in seen:
+            return set()
+        seen.add(key)
+        out = set()
+        for v in raw.get(key, ()):
+            if v.startswith("#"):
+                out |= expand(v, seen)
+            else:
+                out.add(v)
+        return out
+
+    return expand("#minecraft:undead", set()), jars
+
+
+# Which file each roster lives in, and whether an empty read is survivable.
+# 🔴 THIS TOOL VERIFIED NOTHING FOR A DAY, AND IT REPORTED THAT AS SUCCESS.
+# It read SHALLOW / DEEP / DEEPER - three depth bands DELETED on 2026-08-29 when the
+# roster was rewritten. `re.search` returned None, the bands read as empty lists, every
+# loop over them ran zero times, and the summary was "OK - every mob in every band is
+# undead". Zero mobs checked, printed as a clean bill of health. It only exited non-zero
+# by accident, on an unrelated allowlist branch.
+#
+# ⭐ THE RULE THAT WOULD HAVE CAUGHT IT IS THE PROJECT'S OWN, AND IT IS NOW ENFORCED
+# BELOW: "I failed" and "I found nothing" must never share a return value. A band that
+# reads empty is a FAILURE TO READ. There is no roster in this game that is legitimately
+# empty, so there is no case where silence is the right answer.
+BANDS = [
+    ("BULK", "tide"), ("ARCHERS", "tide"), ("SPECIALISTS", "tide"), ("BOSSES", "tide"),
+    ("BONE_FODDER", "waves"), ("GHOST_FODDER", "waves"),
+    ("BONE_LIGHT", "waves"), ("GHOST_LIGHT", "waves"),
+    ("BONE_TANK", "waves"), ("GHOST_TANK", "waves"),
+    ("RANGED", "waves"),
+]
 
 
 def read_rosters():
-    src = TIDE.read_text(encoding="utf-8")
-    out = {}
-    for band in ("SHALLOW", "DEEP", "DEEPER", "UNTAGGED_UNDEAD"):
-        m = re.search(r"var %s = \[(.*?)\]" % band, src, re.S)
-        out[band] = re.findall(r"'([a-z_0-9]+:[a-z_0-9]+)'", m.group(1)) if m else []
-    return out
+    src = {
+        "tide": TIDE.read_text(encoding="utf-8"),
+        "waves": WAVES.read_text(encoding="utf-8"),
+    }
+    out, unread = {}, []
+    for band, where in BANDS:
+        m = re.search(r"var %s = \[(.*?)\]" % band, src[where], re.S)
+        ids = re.findall(r"'([a-z_0-9]+:[a-z_0-9]+)'", m.group(1)) if m else []
+        if not ids:
+            unread.append("%s (expected in %s.js)" % (band, where))
+        out[band] = ids
+
+    m = re.search(r"var UNTAGGED_UNDEAD = \[(.*?)\]", src["tide"], re.S)
+    out["UNTAGGED_UNDEAD"] = (
+        re.findall(r"'([a-z_0-9]+:[a-z_0-9]+)'", m.group(1)) if m else [])
+
+    # ⭐ THE GOD ROSTERS ARE EXEMPT, DELIBERATELY, AND REPORTED RATHER THAN HIDDEN.
+    # Ethan's god-augmented waves are the OTHER gods reaching into her water - Wall's
+    # spiders, Blade's zombies. A mob that is not hers is the entire point of that wave,
+    # so testing it against #minecraft:undead would be testing the wrong rule. It is
+    # listed in the output so the exemption stays visible; an exemption nobody can see
+    # is an allowlist.
+    gods = {}
+    for m in re.finditer(r"(\w+): \{\s*at: \d+, tier: '(\w+)',\s*ids: \[(.*?)\]",
+                         src["waves"], re.S):
+        gods[m.group(1)] = re.findall(r"'([a-z_0-9]+:[a-z_0-9]+)'", m.group(3))
+    return out, unread, gods
 
 
 def main():
@@ -89,7 +173,7 @@ def main():
         print("That is a FAILURE TO READ, not a pass - nothing was verified.")
         return 2
     undead = tag | VANILLA
-    r = read_rosters()
+    r, unread, gods = read_rosters()
     allow = set(r["UNTAGGED_UNDEAD"])
 
     print("=" * 66)
@@ -99,10 +183,25 @@ def main():
           % (len(undead), jars))
     print()
 
+    # ⛔ EMPTY IS A FAILURE, AND IT COMES FIRST. This is the exact bug that made this
+    # tool certify nothing for a day: bands renamed out from under it, read as empty,
+    # counted as clean. Nothing below this point is trustworthy if a band did not parse.
+    if unread:
+        print("  !! %d ROSTER(S) COULD NOT BE READ - THIS IS A FAILURE, NOT A PASS."
+              % len(unread))
+        for u in unread:
+            print("       " + u)
+        print()
+        print("     A roster that reads empty means the source moved or was renamed,")
+        print("     NOT that it contains nothing objectionable. Nothing was verified.")
+        return 2
+
     bad = []
-    for band in ("SHALLOW", "DEEP", "DEEPER"):
+    used = set()
+    for band, _where in BANDS:
         ids = r[band]
-        print("  %-8s %d mob(s)" % (band, len(ids)))
+        used |= set(ids)
+        print("  %-14s %d mob(s)" % (band, len(ids)))
         for i in ids:
             if i in undead:
                 mark = "undead"
@@ -114,8 +213,18 @@ def main():
             print("      %-44s %s" % (i, mark))
         print()
 
-    stray = sorted(a for a in allow
-                   if a not in set(r["SHALLOW"] + r["DEEP"] + r["DEEPER"]))
+    # ⭐ THE GOD ROSTERS, EXEMPT AND SAID OUT LOUD.
+    print("  GOD WAVES - exempt by design, listed so the exemption is visible:")
+    for g in sorted(gods):
+        off = [i for i in gods[g] if i not in undead and i not in allow]
+        print("      %-10s %d mob(s), %d not-undead  %s"
+              % (g, len(gods[g]), len(off), ", ".join(off) if off else ""))
+    print("     Another god reaching into her water is BY DEFINITION not her undead -")
+    print("     that is the whole point of the wave. Testing these against the tag")
+    print("     would be testing the wrong rule.")
+    print()
+
+    stray = sorted(a for a in allow if a not in used)
     wrong_mod = sorted(a for a in allow if not a.startswith("rottencreatures:"))
 
     if bad:
@@ -129,8 +238,14 @@ def main():
         print("     That is the rule being worked around rather than followed.")
 
     if not (bad or stray or wrong_mod):
-        print("  OK - every mob in every band is undead, and the one exception is")
-        print("       exactly Rotten Creatures, whose whole roster is undead.")
+        print("  OK - %d mobs across %d rosters, every one of them undead."
+              % (len(used), len(BANDS)))
+        if allow:
+            print("       %d allowlisted exception(s), all Rotten Creatures." % len(allow))
+        else:
+            # ⚠️ Do not print "the one exception is Rotten Creatures" when there is no
+            # exception. The summary line is the only part of this most people read.
+            print("       No allowlisted exceptions at all - the rule holds outright.")
         return 0
     return 1
 

@@ -108,12 +108,28 @@ const rw = console.warn, ri = console.info, re = console.error
 const hush = () => { console.warn = console.info = console.error = () => { } }
 const speak = () => { console.warn = rw; console.info = ri; console.error = re }
 
+// 🔴 THIS HARNESS USED TO LOAD tide.js ALONE, AND THAT MADE IT LIE.
+// When composition moved into waves.js, `composeFor` started asking for
+// `VELDORA.waves` - which did not exist here - and correctly took its fallback path:
+// a plain bulk horde, no ranged, no boss. Five assertions went red against CORRECT
+// code, and had the fallback been silent instead of loud they would have gone GREEN
+// against a game where every wave was the same horde.
+//
+// ⚠️ So load the real dependencies, in dependency order, and prove each one published.
+// A missing file here must fail as a missing file, not as a composition result.
 hush()
-try { (0, eval)(fs.readFileSync(path.join(SS, 'tide.js'), 'utf8')) }
-catch (e) { speak(); console.error('FAIL: tide.js threw :: ' + e); process.exit(1) }
+for (const f of ['difficulty.js', 'waves.js', 'tide.js']) {
+  try { (0, eval)(fs.readFileSync(path.join(SS, f), 'utf8')) }
+  catch (e) { speak(); console.error('FAIL: ' + f + ' threw :: ' + e); process.exit(1) }
+}
 
 const T = global.VELDORA.tide
 if (!T) { speak(); console.error('FAIL: VELDORA.tide not published'); process.exit(1) }
+const W = global.VELDORA.waves
+if (!W) { speak(); console.error('FAIL: VELDORA.waves not published'); process.exit(1) }
+if (!global.VELDORA.difficulty) {
+  speak(); console.error('FAIL: VELDORA.difficulty not published'); process.exit(1)
+}
 
 function mkP(name) {
   return {
@@ -318,7 +334,22 @@ grp('🔴 THE TIDE IS HERS AT EVERY DEPTH — reversed 2026-08-29')
   }
   Math.random = realRandom
   ok('🚨 every depth draws the same author', new Set(Object.values(seen)).size, 1)
-  ok('⭐ ...and that author is skeletons', /skeleton/i.test(seen.deeper), true)
+  // 🔴 WAS `/skeleton/i.test(seen.deeper)`, and it failed against CORRECT code.
+  // Math.random is pinned to 0.99 four lines up (to suppress the god roll), and 0.99
+  // also selects the ALTERNATE variant - her GHOSTS. A wraith is not spelled
+  // "skeleton". ⭐ Both are hers: Normal is the skeleton faction, Alternate is the
+  // ghosts, and only a GOD variant is somebody else's. So assert what the design
+  // actually claims - the author is HER - instead of matching one faction's name.
+  const HERS = new Set([].concat(
+    W.table.general.normal.fodder, W.table.general.alternate.fodder,
+    W.table.horde.normal.fodder, W.table.horde.alternate.fodder,
+    W.table.ranged.normal.fodder, W.table.ranged.alternate.fodder))
+  ok('⭐ ...and that author is HERS - skeleton or ghost, never a god\'s',
+    HERS.has(seen.deeper), true)
+  // ⚠️ NEGATIVE CONTROL. `HERS` is built from waves.js, so an empty or broken table
+  // would make the assertion above vacuous rather than red.
+  ok('   (control: a god\'s mob is NOT in her factions)',
+    HERS.has(W.gods.wall.ids[0]), false)
   ok('🚨 no zombie is the bulk of a tide any more',
     Object.values(seen).some(id => /zombie|ghoul|husk|drowned/i.test(id)), false)
 }
@@ -495,8 +526,15 @@ grp('D3 - WHAT EACH TIER MAY SEND')
 {
   const modsAt = (t) => { TRUST = t; return T._tierFor({}, tp).mods }
   ok('tier 0 sends ONLY a pure horde', modsAt(0), ['horde'])
-  ok('specialists do not appear before trust 3', modsAt(2).indexOf('specialist'), -1)
-  ok('...and do at 3', modsAt(3).indexOf('specialist') >= 0, true)
+  // 🔴 `specialist` IS A RETIRED NAME, 2026-08-30. Ethan's four are
+  // general/horde/ranged/miniboss. Renamed here rather than deleted: the RULE - that
+  // the shooting wave is not available to a low-trust player - is unchanged, and a
+  // deleted assertion is an untested rule.
+  ok('ranged waves do not appear before trust 3', modsAt(2).indexOf('ranged'), -1)
+  ok('...and do at 3', modsAt(3).indexOf('ranged') >= 0, true)
+  // ⚠️ The retired name must not come back through a tier table nobody re-read.
+  ok('⛔ no tier still offers the retired `specialist`',
+    T.tiers.every(t => t.mods.indexOf('specialist') === -1), true)
   ok('minibosses do not appear before trust 4', modsAt(3).indexOf('miniboss'), -1)
   ok('...and do at 4', modsAt(4).indexOf('miniboss') >= 0, true)
 }
@@ -516,24 +554,61 @@ grp('D3 - COMPOSITION')
   // a god's roster, which has no archers - so the ranged ratio legitimately collapses
   // and these assertions failed about one run in five. FLAKY IS WORSE THAN ABSENT: it
   // teaches you to re-run instead of to look.
-  const frac = (mod) => {
+  //
+  // ⚠️ AND THE PINNED VALUE NOW PICKS THE VARIANT TOO. `pick()` rolls twice off the
+  // same function: once against the god chance (0.08 here, since the path stub answers
+  // "wall"), then once against 0.5 for normal-vs-alternate. So 0.25 is NORMAL - her
+  // skeletons - and 0.99 is ALTERNATE - her ghosts. Both must be measured: the old
+  // single-value version only ever tested one half of the table and would not have
+  // noticed the other half being empty.
+  const ROLL = { normal: 0.25, alternate: 0.99 }
+  const frac = (mod, which) => {
     const realRandom = Math.random
-    Math.random = () => 0.99                  // above both VARY_ chances
+    Math.random = () => ROLL[which || 'alternate']
     try {
       const c = T._composeFor({}, tp, deep, mod)
       const r = c.ids.filter(id => T.ranged[id]).length
-      return { r: r / c.ids.length, boss: c.boss, n: c.ids.length }
+      return { r: r / c.ids.length, boss: c.boss, n: c.ids.length, v: c.variant }
     } finally { Math.random = realRandom }
   }
-  ok('a pure horde has NO ranged at all', frac('horde').r, 0)
-  const sp = frac('specialist')
-  ok('a specialist wave is ~40% ranged', Math.abs(sp.r - 0.40) < 0.06, true)
-  const gen = frac('general')
-  ok('a general wave is lighter than a specialist one', gen.r < sp.r, true)
-  ok('...but not zero', gen.r > 0, true)
+  ok('the roll really does select the variant', frac('general', 'normal').v, 'normal')
+  ok('   ...and the other one', frac('general', 'alternate').v, 'alternate')
 
-  ok('only the miniboss modifier brings a boss', frac('horde').boss, null)
-  ok('...and miniboss does', typeof frac('miniboss').boss, 'string')
+  for (const which of ['normal', 'alternate']) {
+    // ⭐ EXPECTED RATIOS ARE READ FROM waves.js, NOT COPIED. Ethan's numbers live in
+    // one place; a literal here would be a second source of truth, and the one nobody
+    // updated would be the one this harness certified.
+    const want = (mod) => W.table[mod][which].ranged
+    ok(which + ': a pure horde has NO ranged at all', frac('horde', which).r, 0)
+    ok('   ...and waves.js agrees that is deliberate', want('horde'), 0)
+
+    const rg = frac('ranged', which)
+    ok(which + ': a RANGED wave matches its spec (' + want('ranged') + ')',
+      Math.abs(rg.r - want('ranged')) < 0.06, true)
+    const gen = frac('general', which)
+    ok(which + ': a general wave is lighter than a ranged one', gen.r < rg.r, true)
+    ok('   ...but not zero', gen.r > 0, true)
+
+    ok(which + ': only the miniboss modifier brings a boss', frac('horde', which).boss, null)
+    ok('   ...and miniboss does', typeof frac('miniboss', which).boss, 'string')
+  }
+
+  // 🔴 THE RULING THAT CAME OUT OF PLAY, ASSERTED. Ethan: *"i did a test on miniboss
+  // waves and they genuinly should not have specialists, at the lower tiers."*
+  // MINIBOSS_LIGHT is [0,0,1,2] by difficulty index, and 0 must mean ZERO - not "few".
+  {
+    const realRandom = Math.random
+    Math.random = () => 0.99
+    try {
+      for (let d = 0; d < 4; d++) {
+        const spec = W.pick('miniboss', d, 0)
+        ok('miniboss light specialists at difficulty ' + d,
+          spec.light.length, W.minibossLight[d])
+      }
+    } finally { Math.random = realRandom }
+    ok('⭐ ...and the two lowest tiers get NONE',
+      W.minibossLight[0] === 0 && W.minibossLight[1] === 0, true)
+  }
 }
 
 grp('D3 - THE FALLBACK, AND WHO IS NOT IN THE ROSTER')
@@ -542,8 +617,17 @@ grp('D3 - THE FALLBACK, AND WHO IS NOT IN THE ROSTER')
   // wave. Spawning nothing reads exactly like the tide being broken.
   TRUST = 5
   for (const y of [10, -20, -60, -200]) {
-    const c = T._composeFor({}, tp, y, 'specialist')
-    ok('a specialist wave at y' + y + ' is never empty', c.ids.length > 0, true)
+    const c = T._composeFor({}, tp, y, 'ranged')
+    ok('a ranged wave at y' + y + ' is never empty', c.ids.length > 0, true)
+  }
+  // ⚠️ AND AN UNKNOWN MODIFIER MUST STILL BE A WAVE. `waves.pick` returns null for a
+  // type it does not know, and composeFor's fallback is the only thing standing
+  // between a typo'd modifier and a tide that spawns nothing - which reads to a player
+  // exactly like the tide being broken.
+  {
+    const c = T._composeFor({}, tp, -20, 'specialist')   // the retired name, on purpose
+    ok('⛔ the RETIRED modifier name still produces a wave, not silence',
+      c.ids.length > 0, true)
   }
 
   // 🔴 A REAL GAP, ENCODED SO IT IS VISIBLE AND WILL FAIL LOUDLY WHEN FIXED.
@@ -562,17 +646,32 @@ grp('D3 - THE FALLBACK, AND WHO IS NOT IN THE ROSTER')
     // tide depth there were none: rosterFor returns DEEPER below y-40, DEEPER held no
     // archer, and the composer correctly fell back to melee. The mechanism was right
     // and the roster was empty. Now it asserts the FIX instead.
-    // ⚠️ WAS "DEEPER now HAS archers". The depth pools are gone, but the DEFECT it
-    // guards against is not: a specialist wave whose pool contains no archer degrades
-    // silently into a horde, which is exactly what Ethan noticed. Same intent, new
-    // structure - the SPECIALIST pool is now the one that must never be archerless.
-    const specialistRanged = T._poolFor('specialist').filter(id => T.ranged[id])
-    ok('🚨 the SPECIALIST pool has archers - or the wave degrades to a horde',
-      specialistRanged.length >= 1, true)
-    ok('🚨 ...and a PURE HORDE has none, or it is not a pure horde',
-      T._poolFor('horde').filter(id => T.ranged[id]).length, 0)
+    // ⚠️ WAS "DEEPER now HAS archers", then "the SPECIALIST pool must not be
+    // archerless". Both structures are gone - `poolFor` was deleted with the rename -
+    // but THE DEFECT IS NOT: a ranged wave whose pool contains no archer degrades
+    // silently into a horde, which is exactly what Ethan noticed in play. Third
+    // structure, same rule, asserted against the pool waves.js actually publishes.
+    ok('🚨 the RANGED pool is not empty - or every ranged wave degrades to a horde',
+      W.rangedPool.length >= 1, true)
+    ok('🚨 ...and every one of them is actually classed ranged by tide.js',
+      W.rangedPool.every(id => !!T.ranged[id]), true)
+    // 🚨 A pure horde must contain no archer, measured on the COMPOSED wave rather
+    // than on a pool - the composer is what adds archers, so the pool is not where
+    // this can go wrong any more.
+    {
+      const realRandom = Math.random
+      let worst = 0
+      try {
+        for (const roll of [0.25, 0.99]) {
+          Math.random = () => roll
+          const c = T._composeFor({}, tp, -20, 'horde')
+          worst = Math.max(worst, c.ids.filter(id => T.ranged[id]).length)
+        }
+      } finally { Math.random = realRandom }
+      ok('🚨 a PURE HORDE composes with none, or it is not a pure horde', worst, 0)
+    }
     // 🚨 The bulk must be MELEE. It was listed ranged, which would have inverted
-    // every general and specialist wave - the mob meant to BE the horde becoming the
+    // every general and ranged wave - the mob meant to BE the horde becoming the
     // archers, and the archers the filler.
     ok('🚨 the BULK is melee', !!T.ranged['born_in_chaos_v1:decrepit_skeleton'], false)
 
@@ -582,11 +681,32 @@ grp('D3 - THE FALLBACK, AND WHO IS NOT IN THE ROSTER')
     ok('skeleton_thrasher is not either - a name is not an attack type',
       !!T.ranged['born_in_chaos_v1:skeleton_thrasher'], false)
 
-    // And the thing that actually failed in play: a specialist wave IN THE DEEP.
-    const deepSpec = T._composeFor({}, tp, -200, 'specialist')
-    const dr = deepSpec.ids.filter(id => T.ranged[id]).length / deepSpec.ids.length
-    ok('🚨 a specialist wave at y-200 is genuinely ranged now',
-      Math.abs(dr - 0.40) < 0.06, true)
+    // And the thing that actually failed in play: a ranged wave IN THE DEEP.
+    // ⚠️ Both variants, both against waves.js's own number.
+    {
+      const realRandom = Math.random
+      try {
+        for (const which of ['normal', 'alternate']) {
+          Math.random = () => (which === 'normal' ? 0.25 : 0.99)
+          const deepR = T._composeFor({}, tp, -200, 'ranged')
+          const dr = deepR.ids.filter(id => T.ranged[id]).length / deepR.ids.length
+          ok('🚨 a ' + which + ' ranged wave at y-200 is genuinely ranged',
+            Math.abs(dr - W.table.ranged[which].ranged) < 0.06, true)
+        }
+      } finally { Math.random = realRandom }
+    }
+
+    // 🔴 THE ROOT CAUSE ETHAN'S QUESTION ACTUALLY HAD, ASSERTED.
+    // Measured over rcon (docs/73): `minecraft:skeleton` arrives holding a bow only
+    // ~30% of the time - 6 of 20 - because `config/epicknights/mobs_equipment.json5`
+    // offers it ~13 items with ONE bow in them, and stray/bogged came up 0 for 12
+    // because they are not in that config at all and /summon does not run the vanilla
+    // equip step. A "ranged wave" of unarmed archers is a horde with extra steps.
+    ok('🚨 a ranged wave FORCES a bow rather than hoping for one',
+      T._composeFor({}, tp, -20, 'ranged').wantsRangedNbt, true)
+    ok('   ...and a horde does not', T._composeFor({}, tp, -20, 'horde').wantsRangedNbt, false)
+    ok('   ...and the NBT it forces is actually a bow',
+      String(W.rangedNbt).indexOf('minecraft:bow') !== -1, true)
   }
 
   // 🔴 REVERSED BY ITS AUTHOR, 2026-08-29. This asserted the opposite - "Blade's
@@ -672,29 +792,51 @@ grp('⭐ THE VARIATION — rare, and rarer if you have a god')
   const realPathOf = VELDORA.paths.pathOf
   const realRandom = Math.random
 
-  function rateFor(path, n) {
-    VELDORA.paths.pathOf = () => path
-    let hits = 0
-    for (let i = 0; i < n; i++) if (T._variedRoster(tp)) hits++
-    return hits / n
-  }
+  // 🔴 `_variedRoster` BECAME `_godChanceFor` ON 2026-08-30. waves.js chooses WHICH
+  // god reaches in; tide.js keeps only the RATE, because the pathed/pathless split is
+  // this file's design and waves.js cannot see a player's path.
+  //
+  // ⭐ AND THE RATE IS NOW TESTED DIRECTLY RATHER THAN SAMPLED. The old version rolled
+  // 8000 times and compared frequencies - which is slow, and which passes or fails on
+  // the RNG. Reading the number is exact.
+  function rateFor(p) { VELDORA.paths.pathOf = () => p; return T._godChanceFor(tp) }
 
-  const pathed = rateFor('wall', 4000)
-  const pathless = rateFor('', 4000)
-  VELDORA.paths.pathOf = realPathOf
-
-  ok('⭐ a pathed player rarely sees one',
-    Math.abs(pathed - T.varyChance.pathed) < 0.03, true)
+  ok('⭐ a pathed player rarely sees one', rateFor('wall'), T.varyChance.pathed)
   ok('🚨 a GODLESS player sees them far more often - his weighting',
-    pathless > pathed * 2, true)
-  ok('...and it is still rare even for them', pathless < 0.35, true)
+    rateFor('') > rateFor('wall') * 2, true)
+  ok('...and it is still rare even for them', rateFor('') < 0.35, true)
 
   // 🚨 An unreadable path must take the RARER branch. A read failure that made every
-  // tide a varied one would erase the thesis by accident.
-  VELDORA.paths.pathOf = () => undefined
-  Math.random = () => (T.varyChance.pathed + T.varyChance.pathless) / 2   // between the two
+  // tide somebody else's would erase the thesis by accident.
   ok('🚨 an unreadable path is treated as PATHED, not godless',
-    T._variedRoster(tp), null)
+    rateFor(undefined), T.varyChance.pathed)
+  ok('   ...and so is a thrown one', (() => {
+    VELDORA.paths.pathOf = () => { throw new Error('boom') }
+    return T._godChanceFor(tp)
+  })(), T.varyChance.pathed)
+
+  // 🔴 THE END-TO-END RATE, WHICH IS WHAT ACTUALLY REGRESSED. The first pass of the
+  // rewiring passed waves.js a FLAT 0.15 and this whole distinction stopped reaching
+  // the game - `_godChanceFor` would still have returned the right numbers while
+  // nothing consumed them. So sample the COMPOSED wave, not the helper.
+  //
+  // ⚠️ Difficulty 3 (Damnation), because at Uprising no god is available at all and
+  // both rates would correctly measure zero - a green result meaning nothing.
+  const realDiff = VELDORA.difficulty.index
+  VELDORA.difficulty.index = () => 3
+  const seenRate = (p) => {
+    VELDORA.paths.pathOf = () => p
+    let hits = 0
+    for (let i = 0; i < 3000; i++) if (T._composeFor({}, tp, -20, 'general').varied) hits++
+    return hits / 3000
+  }
+  const ePathed = seenRate('wall'), ePathless = seenRate('')
+  ok('🚨 END TO END: a godless player really is reached for more often',
+    ePathless > ePathed * 2, true)
+  ok('   ...and the pathed rate matches the constant, not a flat 0.15',
+    Math.abs(ePathed - T.varyChance.pathed) < 0.03, true)
+  VELDORA.difficulty.index = realDiff
+
   Math.random = realRandom
   VELDORA.paths.pathOf = realPathOf
 }
@@ -703,26 +845,96 @@ grp('🚨 A VARIED WAVE IS ONE GOD, AND THE BOSS STAYS HERS')
 {
   const tp = { username: 'V', uuid: 'v2' }
   const realPathOf = VELDORA.paths.pathOf
+  const realDiff = VELDORA.difficulty.index
   VELDORA.paths.pathOf = () => ''             // godless: the common case
+  VELDORA.difficulty.index = () => 3          // Damnation: all three unlocked
+
   let sawGod = {}
   let mixed = 0
-  for (let i = 0; i < 400; i++) {
-    const v = T._variedRoster(tp)
-    if (!v) continue
-    sawGod[v.god] = true
+  for (let i = 0; i < 1200; i++) {
+    const c = T._composeFor({}, tp, -20, 'general')
+    if (!c.varied) continue
+    sawGod[c.varied] = true
     // Every id must belong to that ONE god - a wave that mixes two gods reads as a bug.
-    if (!v.ids.every(id => T.rosters.gods[v.god].indexOf(id) !== -1)) mixed++
+    if (!c.ids.every(id => W.gods[c.varied].ids.indexOf(id) !== -1)) mixed++
   }
-  VELDORA.paths.pathOf = realPathOf
   ok('🚨 a varied wave never mixes two gods', mixed, 0)
-  ok('⭐ all five gods can reach in', Object.keys(sawGod).sort(),
-    ['art', 'blade', 'forge', 'salvage', 'wall'])
 
-  // 🚨 THE MINIBOSS STAYS HERS. The variation is who CAME, not who sent them - a
-  // Krampus Henchman leading a tide would make the tide his.
-  const src = fs.readFileSync(path.join(SS, 'tide.js'), 'utf8')
-  ok('🚨 the boss is chosen from BOSSES, never from the varied pool',
-    src.indexOf('boss = BOSSES[Math.floor(Math.random() * BOSSES.length)]') !== -1, true)
+  // 🔴 REVERSED, 2026-08-30, AND THIS IS THE SECOND TIME THIS ASSERTION HAS FLIPPED.
+  // It read `all five gods can reach in`. Ethan's ruling for the wave table was
+  // *"No special god waves for forge or salvage"* - she sends nothing at anyone and
+  // Salvage deals rather than attacks - so THREE reach in, and the other two having no
+  // wave is the design rather than a missing roster.
+  ok('⭐ exactly THREE gods send waves - forge and salvage send none, ruled',
+    Object.keys(sawGod).sort(), ['art', 'blade', 'wall'])
+
+  // ⭐ AND THEY UNLOCK BY DIFFICULTY, CUMULATIVELY. At Uprising nobody reaches in at
+  // all, which is the assertion that makes the one above mean something: without it,
+  // "three gods" could be true while the gate that admits them never opened.
+  for (const [d, want] of [[0, []], [1, ['blade']], [2, ['blade', 'wall']],
+                           [3, ['art', 'blade', 'wall']]]) {
+    ok('difficulty ' + d + ' admits ' + (want.length ? want.join('+') : 'NOBODY'),
+      W.godsAt(d).sort(), want)
+  }
+  {
+    VELDORA.difficulty.index = () => 0
+    let any = 0
+    for (let i = 0; i < 800; i++) if (T._composeFor({}, tp, -20, 'general').varied) any++
+    ok('🚨 at UPRISING no god reaches into her water, ever', any, 0)
+    VELDORA.difficulty.index = () => 3
+  }
+
+  // 🔴🔴 A RECORDED RULING WAS REVERSED HERE AND IT IS FLAGGED, NOT BURIED.
+  //
+  // This used to assert "the boss is chosen from BOSSES, never from the varied pool",
+  // on the note *"the variation is who CAME, not who sent them"*. `waves.js` gives a
+  // GOD miniboss wave the GOD's own boss - Mother Spider, Dark Vortex, the Fallen
+  // Chaos Knight - which is the opposite.
+  //
+  // ⚠️ THAT WAS MY DESIGN NOTE, NOT A QUOTED RULING FROM ETHAN, and the new behaviour
+  // is the deliberate one: a wave that Wall reached into, led by one of HER minibosses,
+  // reads as neither god's. It is asserted rather than assumed so the reversal is
+  // visible, and it is raised with him rather than settled here. DEFECTS.md D-108.
+  {
+    // ⚠️ EVERY observation, not the last one per god. `bosses[g] = ...` overwrote,
+    // so a single stray value could be masked by the next iteration - and one WAS:
+    // the Taker substitutes for any boss 6% of the time and this read as a failure
+    // against correct code. The Taker is a TELL and is allowed everywhere; what must
+    // never appear is a THIRD id.
+    let bosses = {}, strays = []
+    for (let i = 0; i < 1200; i++) {
+      const c = T._composeFor({}, tp, -20, 'miniboss')
+      if (!c.varied || !c.boss) continue
+      const b = String(c.boss)
+      bosses[c.varied] = true
+      if (b !== W.gods[c.varied].boss && b !== T.taker) strays.push(c.varied + '->' + b)
+    }
+    const godsSeen = Object.keys(bosses).sort()
+    ok('⭐ a god miniboss wave is led by THAT GOD\'s boss (reversal, D-108)',
+      strays.slice(0, 3), [])
+    // ⚠️ NEGATIVE CONTROL: an empty loop would make the line above vacuously true.
+    ok('   (control: god minibosses were actually observed)', godsSeen.length >= 2, true)
+  }
+
+  // 🚨 AND HER OWN MINIBOSS WAVES STILL DRAW FROM HER LIST. The reversal above is
+  // scoped to god waves; a normal tide handing out somebody else's champion is the
+  // failure the original assertion existed to catch, and it is still caught.
+  {
+    const realRandom = Math.random
+    let bad = []
+    try {
+      for (const roll of [0.25, 0.99]) {
+        Math.random = () => roll
+        const c = T._composeFor({}, tp, -20, 'miniboss')
+        if (!c.varied && T.bosses.indexOf(String(c.boss)) === -1 &&
+            String(c.boss) !== T.taker) bad.push(String(c.boss))
+      }
+    } finally { Math.random = realRandom }
+    ok('🚨 HER miniboss is hers - from BOSSES, or the Taker', bad, [])
+  }
+
+  VELDORA.paths.pathOf = realPathOf
+  VELDORA.difficulty.index = realDiff
 }
 
 grp('⭐ THE GOD ROSTERS ARE THE SAME LIST IN BOTH FILES')

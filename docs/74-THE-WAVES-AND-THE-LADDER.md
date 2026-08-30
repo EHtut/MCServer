@@ -1,8 +1,11 @@
 # 74 — The waves and the ladder
 
-> **STATUS: BUILT, NOT WIRED.** 2026-08-30. `difficulty.js` and `waves.js` are live and
-> harnessed (54 assertions, 4 negative controls). ⚠️ **`tide.js` does not consume them
-> yet** — that is the next chunk, and it is a real one, because the modifier names change.
+> **STATUS: WIRED AND LIVE IN THE TREE.** 2026-08-30. `difficulty.js` and `waves.js`
+> compose every tide wave; `tide.js` no longer composes anything itself. 984 assertions
+> green across 23 harnesses (139 in `tide_harness.js` alone, up from 106).
+>
+> ⛔ **NOT YET RESTARTED INTO** — deployed to the instance, restart held for the
+> coordinating channel. A wired file is a claim until a boot log agrees.
 
 ---
 
@@ -119,14 +122,41 @@ stay. An observation is not a mandate.
 
 ---
 
-## ⚠️ Two things the next chunk has to deal with
+## ✅ The two things the wiring chunk had to deal with — and a third nobody predicted
 
-**1. The modifier names change.** `tide.js` runs `horde / general / specialist / miniboss`;
-this is `general / horde / ranged / miniboss`. **`specialist` disappears**, and `horde`
-changes meaning from *bulk only* to *fodder + tanks*. That is a rename **and** a
-re-composition.
+**1. The modifier names changed.** ✅ Done. `specialist` is gone; `ranged` replaced it and
+`horde` flipped from *bulk only* to *fodder + tanks*. `poolFor` was **deleted rather than
+renamed** — it still held a `specialist` branch, and dead code naming a retired concept is
+how a retired concept comes back. `composeFor` delegates to `waves.pick()` and its only
+remaining jobs are weighting the id list and spending the boss cap.
 
-**2. 🔴 Wall's spiders are not undead.** The tide harness asserts every roster mob is
-tagged `#minecraft:undead` or allowlisted, and Baby Spider is neither. ⭐ The rule should
-**exempt god rosters** rather than allowlist the spiders — a god reaching into her water is
-by definition not-her-undead, and that is the point of the wave.
+**2. Wall's spiders.** ✅ Resolved as predicted — **god rosters are exempt**, and
+`tide_undead_check.py` now *prints* the exemption with the not-undead count per god rather
+than staying silent about it. An exemption nobody can see is an allowlist.
+
+**3. 🔴 The check that was supposed to catch the spiders had been verifying NOTHING.**
+Not predicted, and the real find of the chunk. It read three roster bands deleted on
+08-29, got empty lists, and printed *"OK — every mob in every band is undead"* over zero
+mobs. Repairing it then produced **four false findings**, because its tag reader dropped
+nested references (`#goety:wraiths`) and had been testing against 89 of the tag's 133 ids.
+**D-109 and D-110.** Both fixed; an unreadable roster is now a hard exit 2.
+
+---
+
+## ⚠️ What the wiring changed that was NOT on the plan
+
+**`GOD_WAVE_CHANCE` was a regression and lasted one chunk.** The first pass passed
+`waves.pick()` a flat 0.15 — which silently discarded the pathed/pathless split
+(0.08 vs **0.25**), a rule `waves.js` cannot see because it does not know a player's path.
+It compiled and played. The harness now samples the **composed wave** end to end, not the
+helper, because a correct helper nothing consumes is exactly what this was.
+
+**One miniboss per tide, spent at PLACEMENT.** Ethan, from play: *"the minibosses
+themselves are usually incredibly hard to fight on their own."* The cap lives on the run
+state, and `composeFor` only *proposes* — a proposal that is never placed must not consume
+it. Miniboss light-specialist counts scale `[0, 0, 1, 2]` by difficulty: **none at all**
+at Uprising and Malice, his other ruling from the same test.
+
+**🔴 A recorded ruling was reversed — D-108, open.** A god miniboss wave is led by *that
+god's* boss, contradicting a note that said the miniboss always stays hers. That note was
+mine, not his. Kept, asserted, and raised rather than absorbed.

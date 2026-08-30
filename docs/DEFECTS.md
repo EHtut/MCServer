@@ -305,3 +305,88 @@ out from here; the file was written reflectively for exactly that reason.
 
 ⛔ **Unverified until a boot.** If none of the three work, every caller stays on the boss
 bar and the log says so in one line.
+
+---
+
+## ⚠️ D-108 — a recorded ruling was reversed by the wave table, and nobody was told
+
+**OPEN — needs Ethan's word, one line either way.**
+
+`tide.js` has said in its boot log, and `tide_harness.js` has asserted, since 2026-08-24:
+
+> the miniboss stays hers either way — the variation is who came, not who sent them.
+
+`waves.js` does the opposite. A **god-augmented miniboss wave is led by that god's own
+boss**: `boss: (type === 'miniboss') ? spec.boss : null` — Wall's Mother Spider, Art's
+Dark Vortex, Blade's Fallen Chaos Knight.
+
+⚠️ **The old line was MY design note, not a quote from Ethan** — which is exactly why it
+was about to be reversed silently. A note in his voice and a note in mine look identical
+three weeks later.
+
+⭐ The new behaviour is kept and **asserted explicitly** rather than assumed, because it
+is defensible on its own: a wave Wall reached into, led by one of *her* minibosses, reads
+as neither god's. But it is a reversal of something written down, so it is filed rather
+than absorbed.
+
+⛔ **What is NOT in question:** an ordinary tide's miniboss still comes from her `BOSSES`
+list or is the Taker. The reversal is scoped to god waves and the harness proves it.
+
+---
+
+## 🔴 D-109 — `tide_undead_check.py` certified 0 mobs and printed a clean bill of health ✅ FIXED 2026-08-30
+
+The 08-29 roster rewrite deleted the `SHALLOW` / `DEEP` / `DEEPER` bands. The checker
+still looked for them:
+
+```
+m = re.search(r"var %s = \[(.*?)\]" % band, src, re.S)
+out[band] = re.findall(...) if m else []          # <- None becomes "nothing to check"
+```
+
+Every loop over those bands ran **zero times**, and the summary printed
+
+> OK - every mob in every band is undead
+
+⭐ **Zero mobs checked, reported as success.** It exited non-zero only by accident, on an
+unrelated stale-allowlist branch — so even the exit code was not evidence.
+
+🔑 **"I failed" and "I found nothing" must never share a return value.** The project's own
+rule, in the tool written to enforce a different rule. **An empty roster is now a hard
+exit 2** with the band named, because no roster in this game is legitimately empty.
+
+⚠️ **Cost:** the undead rule was unenforced for a day, across a roster rewrite that
+touched every band. That is the window in which Wall's spiders entered a wave table
+unchallenged — they turned out to be fine (god rosters are exempt by design, and the
+exemption is now printed rather than assumed), but nothing had checked.
+
+---
+
+## 🔴 D-110 — the undead tag reader dropped nested tags and invented four findings ✅ FIXED 2026-08-30
+
+Repairing D-109 immediately produced four failures:
+
+```
+GHOST_FODDER :: goety:wraith · goety:border_wraith · goety:muck_wraith
+GHOST_LIGHT  :: goety:reaper
+```
+
+**All four were wrong.** goety's contribution to `#minecraft:undead` is almost entirely
+*by reference*:
+
+```
+data/minecraft/tags/entity_type/undead.json
+    values: ["#goety:reapers", "#goety:wraiths", "goety:haunted_armor", ...]
+```
+
+and the reader kept only values that do **not** start with `#`. Minecraft resolves nested
+tags transitively; a reader that does not is not reading the set the game reads.
+
+⭐ **Measured, not argued: 89 ids flat vs 133 resolved.** The check had been testing
+against a **third of the tag missing**, so it could have passed a genuinely wrong roster
+as easily as it failed a right one.
+
+🔑 **Measure at the point of USE.** Third time this class has cost this project real time.
+The resolver is recursive with cycle protection, and is verified by controls in both
+directions — `minecraft:zombie` and `goety:wraith` in, `minecraft:creeper` and a planted
+fake out.
