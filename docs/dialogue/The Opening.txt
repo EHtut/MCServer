@@ -1,0 +1,101 @@
+The Opening
+
+FORMAT — the same one your bickering documents use, so nothing new to learn.
+Chunked dialogue is separated by a SINGLE NEWLINE and arrives as separate beats.
+A BLANK LINE ends one passage and starts the next.
+Passages are separated by ---
+A section header is a line on its own in [square brackets].
+Ask me if any of this gets in the way and I will change the parser, not your writing.
+
+THE TONE, and it is the whole thing:
+Upbeat. Life is worth living. The player is glad to be alive and pleased to be here.
+The plague is BACKSTORY - it is already over before the first line. You were sick,
+and now you are not. You were travelling, and now you have stopped somewhere good.
+
+No foreshadowing. No dread. No knowing wink at what is coming.
+There are two words at the other end of this ("You feel wrong") and they can only carry
+what this half gives them. A line that hints spends the ending early.
+
+
+[SHARED — waking up]
+
+These play for everyone, whatever life they had. This is the morning after the doctor.
+Written as the player's own voice - second person, their body, their morning.
+
+
+
+---
+
+
+
+[SHARED — the village]
+
+Where you are, and why stopping here was a good idea.
+
+
+
+---
+
+
+
+[SHARED — stronger than usual]
+
+The buff, felt rather than explained. You are not told you were healed by a god.
+You just notice that something is easier than it was.
+
+
+
+---
+
+
+[LIFE — fisherman]
+
+What you were, in your own voice. A couple of beats. It should read as a life you
+were fond of rather than a job you had.
+
+
+
+---
+
+
+[LIFE — farmer]
+
+
+
+---
+
+
+[LIFE — ]
+
+Add as many as you like. One [LIFE — name] header each, and the parser picks them up
+without any change from me.
+
+
+
+---
+
+
+[DAY 7 — the pull]
+
+⚠️ TONE SHIFT, and the only one in this document. After a week, something starts
+suggesting you go down. It is NOT a god and it is not Caebrim - the player has not
+earned either of those voices yet.
+
+It should read as YOUR OWN THOUGHT that you did not have on purpose. That is the
+unsettling part: nothing is talking to you, and you still want to go.
+
+
+
+---
+
+
+[THE DEATH — you feel wrong]
+
+⭐ This is the hinge, and it is two words plus whatever you decide it needs.
+You died in the depths. You woke up at your bed. You are not what you were.
+
+⚠️ The buff is gone here, and the player should feel that before anything explains it.
+Keep it SHORT. This is the one passage where less is more, and everything before it
+was written to make it land.
+
+

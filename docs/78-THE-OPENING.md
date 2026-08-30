@@ -21,11 +21,12 @@ Two systems called the same thing is how the wrong one gets edited at two in the
 ```
 spawn in a village, as a PERSON          no gods, no patron, no voices
     ↓                                    a randomized life: fisherman, farmer, …
-a plague you brought with you            the reason you stopped travelling
+a plague you brought with you            BACKSTORY. Already over by the time you play
     ↓
-a doctor with white hair                 she heals you overnight
+a doctor with white hair                 she healed you overnight
     ↓
-you wake STRONGER THAN USUAL             a real, mechanical buff
+you wake STRONGER THAN USUAL             ⭐ and GLAD. Life is worth living, and the
+                                         player should be happy to be in it
     ↓
         ── day 7 ──
 whispers, pulling you DOWN               not gods. something else
@@ -103,7 +104,7 @@ line, and it is doing the work of a paragraph.
    than damage — *survivable*, not *powerful*, so what you lose is safety rather than
    capability.
 
-## 5. 🔴 The death gate replaces the current routes, and they are still live
+## 5. ✅ RULED — the death gate replaces the current routes entirely
 
 Today a path is granted by:
 
@@ -113,11 +114,13 @@ Today a path is granted by:
 Neither involves the depths. Under this design **dying in the depths is the gate**, and
 the question is whether it is the *only* one.
 
-⚠️ **My concern with "only":** a solo player who never dies below the cutoff never gets a
-path, forever, with nothing in the game explaining why. The drift route exists precisely
-as the "you did not find it, so it finds you" backstop. ⭐ Keeping drift as a *long* fallback
-(and re-framing it — you sicken, you go down, you die) preserves the intent without the
-dead end.
+⚠️ I raised the stranding risk — a solo player who never dies below the cutoff never gets a
+path, forever, with nothing explaining why — and **he ruled that it is intentional.** So
+`DRIFT_DAYS` and the champion-kill route both retire, and the only door is down.
+
+⭐ It is also the door that makes Kayer's path mean something: dying in the depths is what
+makes you undead, so choosing HER means choosing it a second time, deliberately, already
+knowing the cost.
 
 ## 6. 🖊️ The randomized life
 
@@ -148,15 +151,68 @@ discover later that it went.
 
 ---
 
-# ⭐ The open questions — these change the build
+# ⭐ RULINGS, 2026-08-30
+
+## ✅ 1. Depth-death is the ONLY route, and the dead end is intentional
+
+> *"Yes the depth death is the only path... And yes only is intentional."*
+
+⛔ **So the drift route and the killed-by-a-champion route are retired.** I raised the
+stranding risk and he took it knowingly: a player who will not go down does not get a god,
+and that is the game rather than a gap in it.
+
+### 🔑 AND HE NAMED THE THING THAT MAKES IT WORK
+
+> *"since this also is kayer's path to chosen, this means the player has to choose to die
+> twice."*
+
+⭐ **That is the best structural idea in the document and it is his.** Dying in the depths
+is what makes you undead — which is Kayer's whole domain. So a player who wants HER has to
+walk back down and do it again, on purpose, already knowing what it costs. Every other god
+asks you to die once, by accident, while learning. She asks you to choose it.
+
+⚠️ Nothing needs to be built to say that. The second death is already load-bearing purely
+because the first one hurt.
+
+## ✅ 2. He writes the lives. I build the delivery.
+
+> *"I can also write the intros, you just do the visual dialogue."*
+
+The normal split, and the same one the bickering documents used: his words in
+`docs/dialogue/`, regenerated into script by an importer, delivered by the systems already
+built. 📄 **`docs/dialogue/The Opening.txt`** is the template.
+
+## ✅ 3. ⭐⭐ THE TONE: UPBEAT. Life is worth living.
+
+> *"make them more up beat, make life actually seem worth living and the player is happy
+> and excited to be alive."*
+
+🔴 **This corrects my draft, and it corrects it in the direction that makes the whole arc
+work.** I framed the opening around the plague and the suffering, which is the obvious
+reading and the wrong one — a bleak opening followed by a bleak death is just bleak, and
+nothing is lost because nothing was had.
+
+🔑 **The plague is BACKSTORY. The present tense is joy.** You were sick, and now you are
+not. You were travelling, and now you have stopped. You are strong, the village is warm,
+the morning is good, and you are *pleased to be here*. That is the state the player spends
+their first seven days in.
+
+⭐ **And that is precisely why "You feel wrong" lands.** Two words can only carry a
+paragraph if there was something to lose. The upbeat opening is not decoration on the
+design — **it is the mechanism.**
+
+⚠️ **The instruction this puts on every line of the opening:** it must be written by someone
+glad to be alive. No foreshadowing, no dread, no knowing wink at what is coming. A line
+that hints costs the ending a little, and there are only two words at the other end to
+carry it.
+
+# The questions still open
 
 | # | question | why it matters |
 |---|---|---|
-| **1** | **Is dying in the depths the ONLY route to a path?** Or does drift survive as a long backstop? | "Only" can strand a cautious solo player permanently with no explanation |
-| **2** | **What is the buff, exactly?** | It has to be noticeable and not grievable. Survivability rather than power is my instinct, but it is yours to set |
-| **3** | **"Sonnet level generate visual dialogue"** — are you asking me to DRAFT the opening text? | You normally write dialogue and I do code. This reads like an exception; I will not assume it |
-| **4** | **Does Ank land in this pass or later?** | He is a separate system (a companion NPC), and folding him in triples the size |
-| **5** | How many lives, and does the kit matter at all? | Three professions with flavour, or twelve with real kits, are different jobs |
+| **1** | **What is the buff, exactly?** | Noticeable, not grievable. Survivability rather than power is my instinct, but it is yours to set |
+| **2** | **Does Ank land in this pass or later?** | A companion NPC is a different kind of system; folding him in triples the size |
+| **3** | How many lives, and does the kit matter at all? | Three with flavour or twelve with real kits are different jobs |
 
 ## What I would build first, if you want an order
 
