@@ -1,27 +1,29 @@
 # Blade — dialogue
 
-> ⭐ **THIS IS YOURS TO WRITE IN.** Edit the lines, add lines, delete lines, rename tags,
+> ⭐ **THIS IS YOURS TO WRITE IN.** Edit lines, add lines, delete lines, rename tags,
 > add whole new tags. When you hand it back, `python tools/dialogue_doc.py check blade`
-> reports exactly what changed against what the game currently has.
+> reports exactly what changed against what the game currently has. A plain text file
+> back is fine too.
 >
-> Generated 2026-08-30 10:57 from `pack/kubejs/server_scripts/blade_voice.js` by RUNNING it, so every line
-> below is a line the game actually registers.
+> Generated 2026-08-30 11:29 from `pack/kubejs/server_scripts/blade_voice.js` by RUNNING it, so every line
+> below is one the game actually registers.
 
-## How to read the two kinds
+## How this is organised
 
-**WHOLE LINES** — a pool of complete lines. One is picked at random.
+⭐ **Grouped by the SYSTEM that fires each pool**, not alphabetically — you should not
+have to read the scripts to know whether you are writing a threat or an idle aside.
 
-**FRAGMENTS** — `opens` and `closes`, drawn from the same tag and joined with a space.
-⚠️ **Any open must read correctly against ANY close in the same tag.** That is the one
-rule the engine cannot check for you: with 64 opens and 64 closes a tag makes
-616 different lines, and every one of them has to work.
+**WHOLE** — a pool of complete lines; one is picked at random.
+
+**FRAGMENTS** — `opens` and `closes` from the same tag, joined with a space.
+⚠️ **Any open must read against ANY close in the same tag.** That is the one rule the
+engine cannot check for you.
 
 ## The format, if you add anything
 
 ```
 ## tag_name  (whole)
 - a complete line
-- another complete line
 
 ## tag_name  (fragments)
 ### opens
@@ -32,41 +34,15 @@ rule the engine cannot check for you: with 64 opens and 64 closes a tag makes
 
 ---
 
-**239 whole lines** across 47 tags · **128 fragments** across 7 tags, making **616** possible combined lines.
+**239 whole lines** across 47 tags · **7 fragment tags** making **616** combined lines · **8 systems**.
 
 ---
 
-# Whole lines
+# blade_events.js
 
-## argue_accuse  (whole)
+*also referenced in `_probe_patron.js`, `arrival.js`, `art_events.js`, `art_voice.js`, `chosen.js`, `counters.js`, `deep_speaker.js`, `godevents.js`, `grudge.js`, `pathless.js`, `patron_sound.js`, `ranks.js`, `salvage_events.js`, `voice.js`, `wall_aura.js`, `wall_events.js`, `wall_voice.js`, `warn.js`*
 
-- Your champion has put mine in the dirt three times. I am beginning to take it personally.
-- Call it off, or admit you enjoy this.
-- You are wasting a good fighter on ambushes. That is what offends me.
-
-## argue_answer  (whole)
-
-- So? That means they were weak.
-- Then it should not have died. I fail to see the complaint.
-- You are describing a fight. I do not know what you want from me.
-
-## argue_refuse  (whole)
-
-- Then let me.
-- I have been threatened by better and buried them.
-- Do what you like. I will not pretend to be frightened.
-
-## argue_threat  (whole)
-
-- Do it again and I stop being polite about it.
-- I will take it out of yours. Slowly, and where it can be seen.
-- You have one more. Spend it carefully.
-
-## argue_unanswered  (whole)
-
-- Silence. From a god. What a waste of a throne.
-- It says nothing, so it agrees with me. That is how I will take it.
-- Answer me. ...No? Then I was right, and we are done.
+*35 tag(s)*
 
 ## broken_rung  (whole)
 
@@ -126,17 +102,6 @@ rule the engine cannot check for you: with 64 opens and 64 closes a tag makes
 - You did not swing at anything. So I sent something to swing at you.
 - A minute, and no fight in you. Here is one.
 - You waited. Now you do not have to look.
-
-## guidance  (whole)
-
-- Learn one weapon until it is boring. Then learn what it does that the others cannot.
-- Every weapon swings its own way. A man who carries five has mastered none.
-- You can roll out of a blow. Learn where that is bound before you need it.
-- Nothing above the treeline will ever be worth killing. Go down.
-- Deeper corpses pay better. Descend, Champion.
-- Armour is borrowed. A weapon in your hand is not. Carry your power where it cannot be raided.
-- Two hands on it. Even that will not be enough yet.
-- Do not let short sightedness blind you. Master every blade.
 
 ## harden  (whole)
 
@@ -226,37 +191,73 @@ rule the engine cannot check for you: with 64 opens and 64 closes a tag makes
 - You will want it later. I may be busy later.
 - As you like. Standing still is also a choice.
 
-## loc_above  (whole)
+## idling  (fragments)
 
-- The goddess below rules the underworld unchecked.
-- You are growing. Good.
-- I am not disappointed in your growth. There is still room to grow.
-- I can feel your trepidation. Descend, champion.
-- The Goat god and their champion are your path to sustenance. Lean on your allies.
-- Be wary of the Wolf's deals, for one day she may offer you one. Deny her.
-- The Matriarch has led the Court for centuries. Do not mistake authority for power.
-- The spider. I despise that damnable god. She is but a step away from the evil we fight against.
+*10 x 10 = 100 lines*
 
-## loc_below  (whole)
+### opens
 
-- The minions of death swarm.
-- Be on your guard. You will be tested.
-- I want this clean. No mistakes. No retreat.
-- Grow, champion. Hone your blade against those who threaten our lands above.
-- She was banished down here for a reason, the goddess of death. We will remind her why.
+- You've been standing there a while.
+- Nothing's died by your hand today.
+- I don't see a fight near you.
+- That's a long time doing nothing.
+- The arena's empty because you're not in it.
+- Your blade hasn't moved in a while.
+- You're still here.
+- Something should be dying right now.
+- This is not what strength looks like.
+- You've gone quiet for too long.
 
-## low_gift  (whole)
+### closes
 
-- Take it. You're no use to me dead.
-- Iron. Don't waste it standing still.
-- This keeps you breathing. Use it well.
-- Armour. Put it on before you bleed.
-- You need this more than I need to give it.
-- Take the blade. Earn the next one.
-- Supplies. Spend them like they matter.
-- You can't fight with empty hands. Here.
-- This isn't strength. It's a chance to reach it.
-- Gear up. I don't waste effort on corpses.
+- Go waste it on something that fights back.
+- Stillness won't make you stronger.
+- I didn't equip you to watch.
+- Find something worth killing.
+- You're wasting what you've got.
+- Move before I lose interest.
+- Something out there is waiting to test you.
+- Go earn something.
+- Every idle moment is one you don't get back.
+- Get moving.
+
+## idling  (whole)
+
+- Then no. It costs me nothing.
+- Suit yourself. The offer was the whole of my interest.
+- Noted. I will not ask twice in a row.
+- You will want it later. I may be busy later.
+- As you like. Standing still is also a choice.
+
+## idling  (fragments)
+
+*10 x 10 = 100 lines*
+
+### opens
+
+- You've been standing there a while.
+- Nothing's died by your hand today.
+- I don't see a fight near you.
+- That's a long time doing nothing.
+- The arena's empty because you're not in it.
+- Your blade hasn't moved in a while.
+- You're still here.
+- Something should be dying right now.
+- This is not what strength looks like.
+- You've gone quiet for too long.
+
+### closes
+
+- Go waste it on something that fights back.
+- Stillness won't make you stronger.
+- I didn't equip you to watch.
+- Find something worth killing.
+- You're wasting what you've got.
+- Move before I lose interest.
+- Something out there is waiting to test you.
+- Go earn something.
+- Every idle moment is one you don't get back.
+- Get moving.
 
 ## low_push  (whole)
 
@@ -331,30 +332,6 @@ rule the engine cannot check for you: with 64 opens and 64 closes a tag makes
 - Let's see what you've actually learned.
 - I'm paying attention now. Don't waste it.
 
-## near_salvage  (whole)
-
-- The emissary of the wolf. Do not trust them.
-- That one deals before they draw. Watch which they reach for first.
-- Their might is respectable. Their patron is noise.
-
-## near_wall  (whole)
-
-- The spider's underling. Keep distance from that one, lest they bore you.
-- They fight with borrowed strength. Do not learn it from them.
-- Mercy, dressed up as devotion. Walk on.
-
-## rare_loc_above  (whole)
-
-- This land is an old one. A nameless one.
-- You have no memories of arrival. That is all right. Instead, focus on your blade.
-- I had a name in life once. That was centuries ago.
-- I am a prisoner here, like you. Know that we fight for the same cause.
-- The Spider and her consort... they are the closest to my kind. I cannot help but feel attachment.
-- What does the sun feel like on your skin? I barely remember.
-- The Spider... Why can I hear her name?
-- The goat, he has caused thousands of atrocities and yet he was deemed worthy of ascension.
-- The Matriarch once led my kind. Once. Be wary of her champion.
-
 ## tithe  (whole)
 
 - Your steel owes me. It will wear twice as fast until it has paid.
@@ -393,18 +370,31 @@ rule the engine cannot check for you: with 64 opens and 64 closes a tag makes
 - Yours. I said it would pay, and it pays.
 - Debt closed. Do not read anything into it.
 
-## warn_incoming  (whole)
+## wall  (fragments)
 
-- A champion comes for you. Ensure you win.
-- Seems a challenger approaches...
-- A challenge, one you are fit for. Win.
+*8 x 8 = 64 lines*
 
-## warn_wave  (whole)
+### opens
 
-- Something is coming up behind you. Good.
-- Do you hear that? Stand where you are.
-- Company. Earn the ground you are standing on.
-- Here. Now we find out.
+- The spider spins her nests and calls it love.
+- The Mother weeps for every champion she loses.
+- Her web holds diligently, her champions less so.
+- The spider's champions borrow their strength from her silk.
+- She calls her obsession devotion.
+- The Mother would drown this world in her mercy.
+- Her champions fight with someone else's hands.
+- The spider never lets a champion go.
+
+### closes
+
+- Weakness, dressed up as devotion.
+- Love has never won a war.
+- Strength borrowed is strength you do not own.
+- Mercy is a debt she cannot stop paying.
+- Her champions have never once stood alone.
+- That is not strength. That is dependence.
+- I have no patience for what she calls love.
+- She mistakes attachment for power.
 
 ## watcher  (whole)
 
@@ -420,7 +410,49 @@ rule the engine cannot check for you: with 64 opens and 64 closes a tag makes
 
 ---
 
-# Fragments
+# grudge.js
+
+> the gods arguing about each other, delivered as an EXCHANGE - so these have to answer one another, not merely sit in the same pool
+
+*5 tag(s)*
+
+## argue_accuse  (whole)
+
+- Your champion has put mine in the dirt three times. I am beginning to take it personally.
+- Call it off, or admit you enjoy this.
+- You are wasting a good fighter on ambushes. That is what offends me.
+
+## argue_answer  (whole)
+
+- So? That means they were weak.
+- Then it should not have died. I fail to see the complaint.
+- You are describing a fight. I do not know what you want from me.
+
+## argue_refuse  (whole)
+
+- Then let me.
+- I have been threatened by better and buried them.
+- Do what you like. I will not pretend to be frightened.
+
+## argue_threat  (whole)
+
+- Do it again and I stop being polite about it.
+- I will take it out of yours. Slowly, and where it can be seen.
+- You have one more. Spend it carefully.
+
+## argue_unanswered  (whole)
+
+- Silence. From a god. What a waste of a throne.
+- It says nothing, so it agrees with me. That is how I will take it.
+- Answer me. ...No? Then I was right, and we are done.
+
+---
+
+# art_events.js
+
+*also referenced in `_probe_patron.js`, `arrival.js`, `art_voice.js`, `chosen.js`, `counter_hooks.js`, `counters.js`, `deep_speaker.js`, `idle.js`, `pathless.js`, `patron_sound.js`, `salvage_events.js`, `tide.js`, `voice.js`*
+
+*2 tag(s)*
 
 ## art  (fragments)
 
@@ -443,6 +475,116 @@ rule the engine cannot check for you: with 64 opens and 64 closes a tag makes
 - Neutral is not the same as absent.
 - She does not need my opinion of her.
 - That is her business, not mine.
+
+## guidance  (whole)
+
+- Learn one weapon until it is boring. Then learn what it does that the others cannot.
+- Every weapon swings its own way. A man who carries five has mastered none.
+- You can roll out of a blow. Learn where that is bound before you need it.
+- Nothing above the treeline will ever be worth killing. Go down.
+- Deeper corpses pay better. Descend, Champion.
+- Armour is borrowed. A weapon in your hand is not. Carry your power where it cannot be raided.
+- Two hands on it. Even that will not be enough yet.
+- Do not let short sightedness blind you. Master every blade.
+
+---
+
+# idle.js
+
+> unprompted, on a 60s roll, chosen by CONTEXT - what you hold, where you are, combat, a champion nearby. A god with no pool for the chosen context says NOTHING rather than falling back to something generic
+
+*2 tag(s)*
+
+## loc_above  (whole)
+
+- The goddess below rules the underworld unchecked.
+- You are growing. Good.
+- I am not disappointed in your growth. There is still room to grow.
+- I can feel your trepidation. Descend, champion.
+- The Goat god and their champion are your path to sustenance. Lean on your allies.
+- Be wary of the Wolf's deals, for one day she may offer you one. Deny her.
+- The Matriarch has led the Court for centuries. Do not mistake authority for power.
+- The spider. I despise that damnable god. She is but a step away from the evil we fight against.
+
+## loc_below  (whole)
+
+- The minions of death swarm.
+- Be on your guard. You will be tested.
+- I want this clean. No mistakes. No retreat.
+- Grow, champion. Hone your blade against those who threaten our lands above.
+- She was banished down here for a reason, the goddess of death. We will remind her why.
+
+---
+
+# salvage_events.js
+
+*also referenced in `_probe_patron.js`, `arrival.js`, `chosen.js`, `counters.js`, `deep_speaker.js`, `pathless.js`, `paths.js`, `patron_sound.js`, `reckoning.js`, `salvage.js`, `salvage_deals.js`, `salvage_voice.js`, `voice.js`, `wall_events.js`*
+
+*2 tag(s)*
+
+## low_gift  (whole)
+
+- Take it. You're no use to me dead.
+- Iron. Don't waste it standing still.
+- This keeps you breathing. Use it well.
+- Armour. Put it on before you bleed.
+- You need this more than I need to give it.
+- Take the blade. Earn the next one.
+- Supplies. Spend them like they matter.
+- You can't fight with empty hands. Here.
+- This isn't strength. It's a chance to reach it.
+- Gear up. I don't waste effort on corpses.
+
+## salvage  (fragments)
+
+*8 x 8 = 64 lines*
+
+### opens
+
+- The dog barters where a blade would do.
+- The Hound strikes another deal nobody asked for.
+- Her champions hit harder than her trades ever will.
+- The dog trades favours like they mean something.
+- The Hound is loyal to a fault, and loud about it.
+- Her champions do not need her deals to win.
+- The dog collects debts nobody remembers owing.
+- The Hound calls it diplomacy. I call it noise.
+
+### closes
+
+- Tolerable. Barely.
+- A bargain never won a war.
+- Her champions earn respect. She does not.
+- That much, at least, I respect.
+- Noise, mostly. But not nothing.
+- Her bark carries further than her deals.
+- Strength does not need a contract.
+- Annoying. Her champions are not wrong to follow her.
+
+---
+
+# deep_speaker.js
+
+> met in the depths, or on the 30th night
+
+*also referenced in `tide.js`*
+
+*1 tag(s)*
+
+## warn_wave  (whole)
+
+- Something is coming up behind you. Good.
+- Do you hear that? Stand where you are.
+- Company. Earn the ground you are standing on.
+- Here. Now we find out.
+
+---
+
+# forge_events.js
+
+*also referenced in `_probe_patron.js`, `arrival.js`, `chosen.js`, `counter_hooks.js`, `counters.js`, `deep_speaker.js`, `forge_voice.js`, `pathless.js`, `patron_sound.js`, `ranks.js`, `voice.js`*
+
+*1 tag(s)*
 
 ## forge  (fragments)
 
@@ -470,35 +612,52 @@ rule the engine cannot check for you: with 64 opens and 64 closes a tag makes
 - Use it. Waste is the only sin here.
 - He has earned that much from me.
 
-## idling  (fragments)
+---
 
-*10 x 10 = 100 lines*
+# warn.js
 
-### opens
+> something is about to happen to you
 
-- You've been standing there a while.
-- Nothing's died by your hand today.
-- I don't see a fight near you.
-- That's a long time doing nothing.
-- The arena's empty because you're not in it.
-- Your blade hasn't moved in a while.
-- You're still here.
-- Something should be dying right now.
-- This is not what strength looks like.
-- You've gone quiet for too long.
+*1 tag(s)*
 
-### closes
+## warn_incoming  (whole)
 
-- Go waste it on something that fights back.
-- Stillness won't make you stronger.
-- I didn't equip you to watch.
-- Find something worth killing.
-- You're wasting what you've got.
-- Move before I lose interest.
-- Something out there is waiting to test you.
-- Go earn something.
-- Every idle moment is one you don't get back.
-- Get moving.
+- A champion comes for you. Ensure you win.
+- Seems a challenger approaches...
+- A challenge, one you are fit for. Win.
+
+---
+
+# Reached by a computed tag
+
+> The trigger builds the tag at runtime, so it is chosen in code rather than named as a literal. These are live.
+
+*rare_loc_above - from `idle.js` (`'rare_' + tag`)*
+
+## rare_loc_above  (whole)
+
+- This land is an old one. A nameless one.
+- You have no memories of arrival. That is all right. Instead, focus on your blade.
+- I had a name in life once. That was centuries ago.
+- I am a prisoner here, like you. Know that we fight for the same cause.
+- The Spider and her consort... they are the closest to my kind. I cannot help but feel attachment.
+- What does the sun feel like on your skin? I barely remember.
+- The Spider... Why can I hear her name?
+- The goat, he has caused thousands of atrocities and yet he was deemed worthy of ascension.
+- The Matriarch once led my kind. Once. Be wary of her champion.
+
+---
+
+# ⚠️ No reference found - **not** proof these are dead
+
+> Nothing anywhere names these in quotes. That is NOT the same as unused:
+> several call sites build their tag at runtime (`'near_' + path`,
+> `tier + '_gift'`, `entry.tag`), and a tag assembled from pieces cannot be
+> found by searching for it.
+>
+> 🔴 An earlier version of this tool reported 14 pools as having no
+> consumer, including every `argue_*` - all of them alive, named inside data
+> structures in `grudge.js`. **Verify before deleting anything here.**
 
 ## lore  (fragments)
 
@@ -534,6 +693,18 @@ rule the engine cannot check for you: with 64 opens and 64 closes a tag makes
 - It has done worse to better champions.
 - I have outlasted every one of them.
 
+## near_salvage  (whole)
+
+- The emissary of the wolf. Do not trust them.
+- That one deals before they draw. Watch which they reach for first.
+- Their might is respectable. Their patron is noise.
+
+## near_wall  (whole)
+
+- The spider's underling. Keep distance from that one, lest they bore you.
+- They fight with borrowed strength. Do not learn it from them.
+- Mercy, dressed up as devotion. Walk on.
+
 ## push  (fragments)
 
 *12 x 12 = 144 lines*
@@ -567,56 +738,4 @@ rule the engine cannot check for you: with 64 opens and 64 closes a tag makes
 - The sun does not wait for Phaethon either.
 - Move, or move aside.
 - I have watched better men choose worse.
-
-## salvage  (fragments)
-
-*8 x 8 = 64 lines*
-
-### opens
-
-- The dog barters where a blade would do.
-- The Hound strikes another deal nobody asked for.
-- Her champions hit harder than her trades ever will.
-- The dog trades favours like they mean something.
-- The Hound is loyal to a fault, and loud about it.
-- Her champions do not need her deals to win.
-- The dog collects debts nobody remembers owing.
-- The Hound calls it diplomacy. I call it noise.
-
-### closes
-
-- Tolerable. Barely.
-- A bargain never won a war.
-- Her champions earn respect. She does not.
-- That much, at least, I respect.
-- Noise, mostly. But not nothing.
-- Her bark carries further than her deals.
-- Strength does not need a contract.
-- Annoying. Her champions are not wrong to follow her.
-
-## wall  (fragments)
-
-*8 x 8 = 64 lines*
-
-### opens
-
-- The spider spins her nests and calls it love.
-- The Mother weeps for every champion she loses.
-- Her web holds diligently, her champions less so.
-- The spider's champions borrow their strength from her silk.
-- She calls her obsession devotion.
-- The Mother would drown this world in her mercy.
-- Her champions fight with someone else's hands.
-- The spider never lets a champion go.
-
-### closes
-
-- Weakness, dressed up as devotion.
-- Love has never won a war.
-- Strength borrowed is strength you do not own.
-- Mercy is a debt she cannot stop paying.
-- Her champions have never once stood alone.
-- That is not strength. That is dependence.
-- I have no patience for what she calls love.
-- She mistakes attachment for power.
 

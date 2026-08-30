@@ -1,23 +1,26 @@
-"""dialogue_doc.py — a god's dialogue as an editable document, and back again.
+"""dialogue_doc.py — a god's dialogue as an editable document, grouped by system.
 
     python tools/dialogue_doc.py extract blade
     python tools/dialogue_doc.py check   blade      # after editing: what changed?
 
 ⭐ WHY. Ethan writes the dialogue; the pools live inside 800-line JS files interleaved
-with implementation. Asking him to edit those is asking him to work around code. This
-pulls every line into one plain document he can write in, and reports exactly what
-changed when it comes back.
+with implementation. Asking him to edit those is asking him to work around code.
 
-🔑 IT RUNS THE FILE, IT DOES NOT PARSE IT. The god's pools are local variables inside an
-IIFE, so this loads the script with a stubbed `VELDORA.voice` that records every
-`register`/`registerLines` call. What lands in the document is therefore exactly what the
-GAME receives — not a second reading of the source that can drift from it.
+🔑 IT RUNS THE FILE, IT DOES NOT PARSE IT. The pools are local variables inside an IIFE,
+so this loads the script with a stubbed `VELDORA.voice` that records every
+`register`/`registerLines` call. What lands in the document is exactly what the GAME
+receives — not a second reading of the source that can drift from it.
 
-⚠️ The document is the SOURCE for a writing pass, never the source of truth for the
-game. Nothing here writes back into the scripts automatically: a regenerated object
-literal would throw away the comments around it, and those comments are where the
-rulings live. `check` reports the diff and a human applies it.
+⭐ AND IT IS GROUPED BY THE SYSTEM THAT FIRES EACH POOL. Ethan on the first version:
+*"Can you re sort them to the actual systems in place? Looking at blade's, its a mess."*
+He was right — it was tags in alphabetical order, which tells a writer nothing about WHEN
+a line is heard. Writing a threat is a different job from writing an idle aside.
+
+⚠️ The document is the SOURCE for a writing pass, never the source of truth for the game.
+Nothing here writes back into the scripts: a regenerated object literal would throw away
+the comments around it, and the comments are where the rulings live.
 """
+import glob
 import io
 import json
 import os
@@ -34,7 +37,6 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SS = os.path.join(REPO, "pack", "kubejs", "server_scripts")
 DOCS = os.path.join(REPO, "docs", "dialogue")
 
-# A god -> the file that registers its pools.
 FILES = {
     "blade": "blade_voice.js",
     "art": "art_voice.js",
@@ -92,30 +94,140 @@ def harvest(god):
         return None
 
 
+# ── WHERE EACH POOL IS FIRED FROM ────────────────────────────────────────────
+CALL = re.compile(r"VELDORA\.voice\.(say|sayAbout|line)\s*\(")
+
+
+def usage(god):
+    """tag -> the files that name it.
+
+    🔴 THE FIRST VERSION ONLY READ CALL ARGUMENTS and reported 14 of Blade's 56 pools as
+    having no consumer — including all five `argue_*`. Every one was alive:
+
+        grudge.js   { god: wronged, tag: 'argue_accuse' }   <- a DATA STRUCTURE
+        idle.js     return 'loc_above'                      <- a RETURN VALUE
+
+    🔑 The point of use is not only a call argument. A tag is a string the rest of the
+    pack passes around, so this looks for the quoted tag ANYWHERE outside the file that
+    defines it. Over-reporting a consumer is harmless; declaring a live pool dead sends
+    a writer to delete work that is in use.
+    """
+    exact = {}
+    own = FILES[god]
+    for path in sorted(glob.glob(os.path.join(SS, "*.js"))):
+        f = os.path.basename(path)
+        if f == own:
+            continue
+        src = io.open(path, encoding="utf-8").read()
+        for m in re.finditer(r"'([a-z0-9_]{3,})'", src):
+            exact.setdefault(m.group(1), set()).add(f)
+    return exact
+
+
+def dynamic_sites():
+    """Call sites whose tag is computed. Their literal fragment, where they have one,
+    still resolves a family: `tier + '_gift'` reaches every `*_gift` pool."""
+    out = []
+    for path in sorted(glob.glob(os.path.join(SS, "*.js"))):
+        f = os.path.basename(path)
+        src = io.open(path, encoding="utf-8").read()
+        for m in CALL.finditer(src):
+            depth, buf = 1, ""
+            for ch in src[m.end():m.end() + 300]:
+                if ch == "(":
+                    depth += 1
+                elif ch == ")":
+                    depth -= 1
+                    if depth == 0:
+                        break
+                buf += ch
+            a = [x.strip() for x in re.split(r",(?![^(]*\))", buf)]
+            if m.group(1) == "line":
+                cand = a[1] if len(a) > 1 else ""
+            else:
+                cand = a[2] if len(a) > 2 else ""
+            if cand and not re.fullmatch(r"'[a-z0-9_]+'", cand.strip()):
+                out.append((f, cand.strip()[:70], re.findall(r"'([a-z0-9_]+)'", cand)))
+    return out
+
+
+def group_tags(tags, exact, dynamic):
+    """Bucket every tag under the file(s) that name it."""
+    groups, dyn, untraced = {}, {}, []
+    for tag in tags:
+        files = exact.get(tag)
+        if files:
+            groups.setdefault(" · ".join(sorted(files)), []).append(tag)
+            continue
+        reached = []
+        for f, expr, frags in dynamic:
+            for fr in frags:
+                if fr and (tag.startswith(fr) or tag.endswith(fr)):
+                    reached.append((f, expr))
+                    break
+        if reached:
+            dyn[tag] = reached
+        else:
+            untraced.append(tag)
+    return groups, dyn, untraced
+
+
+def primary(key, god):
+    """The one file most worth naming. A tag whose NAME is a common word matches many
+    files; the writer wants the system, not a concordance."""
+    files = key.split(" · ")
+    for f in files:
+        if f.startswith(god):
+            return f, files
+    for f in files:
+        if f.endswith("_events.js"):
+            return f, files
+    return files[0], files
+
+
+SYSTEM_NOTE = {
+    "grudge.js": "the gods arguing about each other, delivered as an EXCHANGE - so these "
+                 "have to answer one another, not merely sit in the same pool",
+    "idle.js": "unprompted, on a 60s roll, chosen by CONTEXT - what you hold, where you "
+               "are, combat, a champion nearby. A god with no pool for the chosen "
+               "context says NOTHING rather than falling back to something generic",
+    "warn.js": "something is about to happen to you",
+    "tide.js": "the tide",
+    "deep_speaker.js": "met in the depths, or on the 30th night",
+    "voice.js": "the engine itself",
+    "chosen.js": "being offered a path, or taking one",
+    "arrival.js": "the arrival",
+    "harvest.js": "the Harvest",
+    "reckoning.js": "the reckoning",
+    "fall.js": "the fall",
+}
+
 HEADER = """# {Name} — dialogue
 
-> ⭐ **THIS IS YOURS TO WRITE IN.** Edit the lines, add lines, delete lines, rename tags,
+> ⭐ **THIS IS YOURS TO WRITE IN.** Edit lines, add lines, delete lines, rename tags,
 > add whole new tags. When you hand it back, `python tools/dialogue_doc.py check {god}`
-> reports exactly what changed against what the game currently has.
+> reports exactly what changed against what the game currently has. A plain text file
+> back is fine too.
 >
 > Generated {stamp} from `pack/kubejs/server_scripts/{file}` by RUNNING it, so every line
-> below is a line the game actually registers.
+> below is one the game actually registers.
 
-## How to read the two kinds
+## How this is organised
 
-**WHOLE LINES** — a pool of complete lines. One is picked at random.
+⭐ **Grouped by the SYSTEM that fires each pool**, not alphabetically — you should not
+have to read the scripts to know whether you are writing a threat or an idle aside.
 
-**FRAGMENTS** — `opens` and `closes`, drawn from the same tag and joined with a space.
-⚠️ **Any open must read correctly against ANY close in the same tag.** That is the one
-rule the engine cannot check for you: with {no} opens and {nc} closes a tag makes
-{combos} different lines, and every one of them has to work.
+**WHOLE** — a pool of complete lines; one is picked at random.
+
+**FRAGMENTS** — `opens` and `closes` from the same tag, joined with a space.
+⚠️ **Any open must read against ANY close in the same tag.** That is the one rule the
+engine cannot check for you.
 
 ## The format, if you add anything
 
 ```
 ## tag_name  (whole)
 - a complete line
-- another complete line
 
 ## tag_name  (fragments)
 ### opens
@@ -134,49 +246,95 @@ def write_doc(god, data):
         os.makedirs(DOCS)
     path = os.path.join(DOCS, "%s.md" % god)
 
-    no = sum(len(v["opens"]) for v in data["frags"].values()) or 0
-    nc = sum(len(v["closes"]) for v in data["frags"].values()) or 0
-    combos = sum(len(v["opens"]) * len(v["closes"]) for v in data["frags"].values())
-    whole_n = sum(len(v) for v in data["whole"].values())
+    whole, frags = data["whole"], data["frags"]
+    tags = sorted(list(whole) + list(frags))
+    groups, dyn, untraced = group_tags(tags, usage(god), dynamic_sites())
 
     import time
-    body = HEADER.format(
-        Name=god.capitalize(), god=god, file=FILES[god],
-        stamp=time.strftime("%Y-%m-%d %H:%M"),
-        no=no, nc=nc, combos=combos)
+    body = HEADER.format(Name=god.capitalize(), god=god, file=FILES[god],
+                         stamp=time.strftime("%Y-%m-%d %H:%M"))
 
-    body += ("**%d whole lines** across %d tags · **%d fragments** across %d tags, "
-             "making **%d** possible combined lines.\n\n---\n\n"
-             % (whole_n, len(data["whole"]), no + nc, len(data["frags"]), combos))
+    whole_n = sum(len(v) for v in whole.values())
+    combos = sum(len(v["opens"]) * len(v["closes"]) for v in frags.values())
+    body += ("**%d whole lines** across %d tags · **%d fragment tags** making "
+             "**%d** combined lines · **%d systems**.\n\n---\n\n"
+             % (whole_n, len(whole), len(frags), combos, len(set(primary(k, god)[0] for k in groups))))
 
-    if data["whole"]:
-        body += "# Whole lines\n\n"
-        for tag in sorted(data["whole"]):
-            body += "## %s  (whole)\n\n" % tag
-            for ln in data["whole"][tag]:
-                body += "- %s\n" % ln
-            body += "\n"
-
-    if data["frags"]:
-        body += "---\n\n# Fragments\n\n"
-        for tag in sorted(data["frags"]):
-            f = data["frags"][tag]
-            body += ("## %s  (fragments)\n\n*%d x %d = %d lines*\n\n"
-                     % (tag, len(f["opens"]), len(f["closes"]),
-                        len(f["opens"]) * len(f["closes"])))
-            body += "### opens\n\n"
+    def render(tag):
+        out = ""
+        if tag in whole:
+            out += "## %s  (whole)\n\n" % tag
+            for ln in whole[tag]:
+                out += "- %s\n" % ln
+            out += "\n"
+        if tag in frags:
+            f = frags[tag]
+            out += ("## %s  (fragments)\n\n*%d x %d = %d lines*\n\n"
+                    % (tag, len(f["opens"]), len(f["closes"]),
+                       len(f["opens"]) * len(f["closes"])))
+            out += "### opens\n\n"
             for ln in f["opens"]:
-                body += "- %s\n" % ln
-            body += "\n### closes\n\n"
+                out += "- %s\n" % ln
+            out += "\n### closes\n\n"
             for ln in f["closes"]:
-                body += "- %s\n" % ln
-            body += "\n"
+                out += "- %s\n" % ln
+            out += "\n"
+        return out
+
+    # 🔴 MERGE BY THE PRIMARY SYSTEM FIRST. Grouping on the raw file-SET split
+    # blade_events.js into SEVEN separate headings, because different tags matched
+    # different incidental combinations that all resolve to the same system. That is
+    # exactly the mess Ethan objected to, reproduced one level down.
+    merged = {}
+    for key in groups:
+        head, all_files = primary(key, god)
+        m = merged.setdefault(head, {"tags": [], "also": set()})
+        m["tags"].extend(groups[key])
+        m["also"].update(f for f in all_files if f != head)
+
+    # Biggest system first - that is where most of the writing is.
+    for head in sorted(merged, key=lambda h: (-len(merged[h]["tags"]), h)):
+        body += "# %s\n\n" % head
+        note = SYSTEM_NOTE.get(head)
+        if note:
+            body += "> %s\n\n" % note
+        others = sorted(merged[head]["also"])
+        if others:
+            body += "*also referenced in %s*\n\n" % ", ".join("`%s`" % f for f in others)
+        body += "*%d tag(s)*\n\n" % len(merged[head]["tags"])
+        for tag in sorted(merged[head]["tags"]):
+            body += render(tag)
+        body += "---\n\n"
+
+    if dyn:
+        body += "# Reached by a computed tag\n\n"
+        body += ("> The trigger builds the tag at runtime, so it is chosen in code rather "
+                 "than named as a literal. These are live.\n\n")
+        for tag in sorted(dyn):
+            src = sorted(set("`%s` (`%s`)" % (f, e) for f, e in dyn[tag]))
+            body += "*%s - from %s*\n\n" % (tag, ", ".join(src))
+            body += render(tag)
+        body += "---\n\n"
+
+    if untraced:
+        body += "# ⚠️ No reference found - **not** proof these are dead\n\n"
+        body += (
+            "> Nothing anywhere names these in quotes. That is NOT the same as unused:\n"
+            "> several call sites build their tag at runtime (`'near_' + path`,\n"
+            "> `tier + '_gift'`, `entry.tag`), and a tag assembled from pieces cannot be\n"
+            "> found by searching for it.\n"
+            ">\n"
+            "> \U0001f534 An earlier version of this tool reported 14 pools as having no\n"
+            "> consumer, including every `argue_*` - all of them alive, named inside data\n"
+            "> structures in `grudge.js`. **Verify before deleting anything here.**\n\n")
+        for tag in sorted(untraced):
+            body += render(tag)
 
     tmp = path + ".tmp"
     with io.open(tmp, "w", encoding="utf-8", newline="") as fh:
         fh.write(body)
     os.replace(tmp, path)
-    return path, whole_n, no + nc, combos
+    return path, whole_n, len(merged), combos
 
 
 def read_doc(god):
@@ -262,7 +420,7 @@ def check(god):
     if not changed:
         print("no changes - the document matches the game")
         return 0
-    print("%d pool(s) differ. ⚠️ Nothing was written: applying these is a deliberate edit"
+    print("%d pool(s) differ. Nothing was written: applying these is a deliberate edit"
           % changed)
     print("to the script, so the rulings in its comments survive.")
     return 0
@@ -291,10 +449,10 @@ def main():
               % god)
         print("check that %s still calls VELDORA.voice.register/registerLines." % FILES[god])
         return 1
-    path, whole_n, frag_n, combos = write_doc(god, data)
+    path, whole_n, systems, combos = write_doc(god, data)
     print("wrote %s" % path)
-    print("  %d whole lines, %d fragments, %d possible combined lines"
-          % (whole_n, frag_n, combos))
+    print("  %d whole lines, %d combined, grouped into %d systems"
+          % (whole_n, combos, systems))
     return 0
 
 
