@@ -192,3 +192,67 @@ This cost several restarts of a **shared** server while other agents were workin
 restart is invisible from inside any one chat, so each one looked individually justified.
 Now in `CLAUDE.md` at the repo root, where every agent reads it — along with *always
 regenerate packwiz*, which was the other half of the same complaint.
+
+---
+
+## 🔴 D-104 — `fog` cut after breaking BOTH sides in one day. 2026-08-29
+
+**1. It crashed the dedicated server.** It loads `net/minecraft/client/KeyMapping` during
+mod construction — an instant hard failure on `DEDICATED_SERVER`. ⚠️ Modrinth said
+`server_side: optional` **and the jar's own `neoforge.mods.toml` declares `side="BOTH"`**.
+Neither source was the code. Forced client-only.
+
+**2. Then it crashed the client.**
+
+```
+NoSuchFieldError: Polytone does not have member field 'BIOME_MODIFIERS'
+  at fog/PolytoneCompat.getFogColorsFromPolytone
+```
+
+🔑 **`fog` was unpinned and resolved to newest while `polytone` is PINNED.** That is the
+**third** unpinned-mod-against-pinned-library failure of the day, after
+supplementaries/moonlight and the Create-addon scare.
+
+⭐ It is cosmetic — *"just makes the world beautiful"* — and it cost two crashes. **Cut
+rather than pinned**, because a third attempt was not worth another restart.
+
+---
+
+## 🔴 D-105 — `level.dat` grew past the NBT depth limit and the world would not load
+
+```
+NbtAccounterException: Tried to read NBT tag with too high complexity, depth > 512
+Failed to load world data from level.dat AND level.dat_old
+```
+
+⚠️ **This is NOT corruption.** The data was intact; a nested structure exceeded
+Minecraft's 512-deep read limit, and both the live file and its `_old` fallback had
+already been written past it.
+
+⭐ **`level.dat` was 206 KB against 111 KB in the 16:52 backup — it nearly doubled in
+seven hours.** Something is accumulating nesting on every save.
+
+**Recovery:** the broken pair was copied to `C:\MCServer\backup_leveldat_2026-08-29`
+**before anything was touched**, then `level.dat` and `level.dat_old` were restored from
+the 16:52 world backup. ⭐ Only those two files — `region/`, `entities/`, `playerdata/`,
+`datapacks/` and `kubejs_persistent_data.nbt` were left current, so **no terrain, no
+player progress and no Veldora state was lost.** What reverted is world spawn, time,
+weather, gamerules and the datapack enable list.
+
+Boot after restore: **`Done (3.271s)`, 64/64 scripts, 0 errors.** `level.dat` is
+**112,070 bytes**.
+
+### 🚨 THE CAUSE IS NOT IDENTIFIED, AND IT WILL RECUR
+
+**Watch `level.dat`'s size.** 112 KB is the baseline; if it climbs toward 200 KB again the
+accumulator is still running.
+
+⚠️ Eighteen mods were installed the same day, so a new one is the obvious suspect — but
+that is a suspicion, not a finding. A hand-rolled NBT parser written to locate the deep
+branch **failed at depth 5 on a bad tag**, i.e. the parser was wrong, not the file. It was
+abandoned rather than debugged while the server was down.
+
+⚠️ **And the restart churn is a plausible contributor**: several stop/start cycles in
+quick succession, some backgrounded, and the corruption appeared in a two-minute window
+that contained one of them. Overlapping instances writing the same world would do this.
+🔑 That is a second, concrete reason for the rule in `CLAUDE.md`.

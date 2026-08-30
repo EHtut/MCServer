@@ -7,8 +7,8 @@
 
 ## Summary
 
-- **325 / 450** mod slots used
-- **289** stable releases, **36** beta/alpha
+- **324 / 450** mod slots used
+- **288** stable releases, **36** beta/alpha
 - **3** entries carry a known hazard (see below)
 
 ---
@@ -30,6 +30,7 @@ spends an evening re-checking.
 | `zoniex` | MISLABELLED ON MODRINTH. Tagged 1.21.1 + neoforge, but the jar contains only a legacy Forge mods.toml declaring mc=[1.20.1]. Proven by reading the jar (tools/check_jars.py), not guessed. It would not have loaded. |
 | `talk-balloons` | CUT 2026-08-29. Its create_balloon channel would not handshake - "missing on the server side, but required on the client" - with the mod present, loaded and its deps satisfied on BOTH sides. Two clean boots and a full packwiz regeneration did not shift it. Ethan: "Same error, i cannot log in and im tired of troubleshooting. we cut it." It was a nice-to-have ("same as above"), and no amount of it is worth a login. |
 | `modernnetworking` | Removed with talk-balloons 2026-08-29 - it was pulled in ONLY as its dependency and nothing else in the pack requires it. Verified before removing. |
+| `fog` | CUT 2026-08-29 after breaking BOTH sides in one day. (1) It loads net/minecraft/client/KeyMapping during mod construction, which is an instant hard failure on a DEDICATED_SERVER - Modrinth said server_side "optional" and the jar itself declares side="BOTH", so neither source was the code. Forced client-only. (2) Then it crashed the CLIENT: NoSuchFieldError on Polytone.BIOME_MODIFIERS from its own PolytoneCompat, because fog was unpinned and resolved to newest while polytone is PINNED - the third unpinned-vs-pinned-library failure of the day after supplementaries/moonlight. It is cosmetic ("just makes the world beautiful") and it cost two crashes, so it is out rather than pinned. |
 
 **This is the cost of choosing 1.21.1 over 1.20.1.** It was a real cost -
 the gun and horror catalogues on 1.20.1 Forge are deeper - but the

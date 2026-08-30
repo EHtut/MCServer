@@ -4,11 +4,11 @@
 > `tools/modlist.json` + the resolution cache. Do not hand-edit -
 > change `tools/modlist.json` and regenerate.
 
-**325 mods** for Minecraft 1.21.1 / neoforge, 1,191 MB total.
+**324 mods** for Minecraft 1.21.1 / neoforge, 1,191 MB total.
 
 | side | count | meaning |
 |---|---:|---|
-| both | 235 | installed on the server *and* every client |
+| both | 234 | installed on the server *and* every client |
 | client | 65 | client-only; the server never loads them |
 | server | 25 | server-only; players do not need them |
 
@@ -385,13 +385,12 @@ Ethan chose CLASSES over races 2026-08-03 - the only 1.21.1 NeoForge race mod is
 | [Archers Expansion (More RPG Classes)](https://modrinth.com/mod/archers-expansion) | `1.5.1+1.21.1-neoforge` *beta* | both | major | Extends the archer with real content |
 | [Pufferfish's Skills](https://modrinth.com/mod/skills) | `0.18.3` *beta* | both | major | Puffish skill framework - the progression spine |
 
-## client-visual (9)
+## client-visual (8)
 
 Client-only visual polish. Ethan, 2026-08-16: 'im just making an attempt to make the game more cinematic'. EVERY entry is client_side=required / server_side=unsupported, verified against the live Modrinth API - so the server never needs the jar and nobody who declines is locked out, which is the failure the_obsessed caused on 2026-08-15. NOT here: better-clouds (the client ships renderClouds:false so it would render nothing) and every snow mod (all 16 on 1.21.1/neoforge need the server; not one is client-only).
 
 | Mod | Version | Side | Tier | Why |
 |---|---|---|---|---|
-| [Fog](https://modrinth.com/mod/fog) | `1.11.0+1.21-neoforge` | both | major | Configurable fog. Ethan: "Just makes the world beautiful." |
 | [Snow! Real Magic! ⛄](https://modrinth.com/mod/snow-real-magic) | `12.2.2+neoforge` | both | major | Real snow layers. Ethan: "Snow!" |
 | [ATMOSPHERICS](https://modrinth.com/mod/atmospherics) | `2.6.5.1` *beta* | client | minor | Per-biome fog, sky, cloud and star colour in real time. The cheapest 'cinematic' win on the list - it is colour grading, not geometry. |
 | [Clear Water](https://modrinth.com/mod/clear-water) | `3.0.0` | client | minor | Configurable underwater fog. Client-only, and it pairs with make_bubbles_pop which is already installed. |
