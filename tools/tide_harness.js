@@ -163,6 +163,22 @@ function mkP(name) {
   }
 }
 
+// ⭐ ONE PULSE IS NOW ONE-OR-TWO SPAWNER CALLS. Every placement carries `pulse` and
+// `role`, so an arrival can be counted as an arrival rather than as a call. Without
+// this, "six pulses" silently became "six to twelve" and the assertion that caught a
+// real dump-instead-of-stream regression would have been re-tuned to fit the new shape.
+function pulses() {
+  const by = {}
+  for (const w of WAVES) {
+    const k = (typeof w.pulse === 'number') ? w.pulse : -1
+    by[k] = (by[k] || 0) + (w.count || 0)
+  }
+  return Object.keys(by).sort((a, b) => a - b).map(k => by[k])
+}
+function pulseCount() { return pulses().length }
+// Total mobs placed across every call, regardless of how they were split.
+function placed() { return WAVES.reduce((n, w) => n + (w.count || 0), 0) }
+
 let pass = 0, fail = 0
 function ok(n, got, want) {
   const g = JSON.stringify(got) === JSON.stringify(want)
@@ -250,15 +266,23 @@ grp('⭐ THE WAVE IS AN ARRIVAL — 30s of pulses, never a drop')
 {
   const p = fresh(); Y = -20; SKY = false; ticks(3); WAVES = []
   T.force(p); drain()
-  ok('six separate pulses, not one dump', WAVES.length, 6)
+  // 🔴 `WAVES.length` IS NO LONGER THE PULSE COUNT. Placement split into a fodder call
+  // and a specialist call on 2026-08-30 (his 90/10 etc. are exact counts now, and only
+  // the archers may be handed a bow), so ONE pulse emits one or two spawner calls.
+  // ⭐ Each call carries its `pulse` index, so the thing being asserted - six arrivals -
+  // is measured directly instead of inferred from how many calls it took.
+  ok('six separate pulses, not one dump', pulseCount(), 6)
   ok('...each within the configured per-pulse ceiling',
-    WAVES.every(w => w.count >= 1 && w.count <= MAX_PER_BATCH), true)
+    pulses().every(n => n >= 1 && n <= MAX_PER_BATCH), true)
+  ok('🚨 every placement declares which pulse and which half it is',
+    WAVES.every(w => typeof w.pulse === 'number' &&
+      (w.role === 'fodder' || w.role === 'specialist')), true)
 }
 
 grp('ESCALATION — wave five is bigger than wave one, and it caps')
 {
   const p = fresh(); Y = -20; SKY = false; ticks(3)
-  WAVES = []; T.force(p); drain(); const first = WAVES[0].count
+  WAVES = []; T.force(p); drain(); const first = pulses()[0]
   for (let i = 0; i < 8; i++) { T.force(p); TIMERS = [] }
   WAVES = []; T.force(p); drain(); const later = WAVES[0].count
   ok('it grows', later > first, true)
@@ -273,9 +297,9 @@ grp('ESCALATION — wave five is bigger than wave one, and it caps')
   //      the thing that actually matters, not what the ceiling happens to be.
   ok('🚨 ...and is capped, so a long run cannot become unfightable', later <= MAX_PER_BATCH, true)
   for (let i = 0; i < 20; i++) { T.force(p); TIMERS = [] }
-  WAVES = []; T.force(p); drain(); const late1 = WAVES[0].count
+  WAVES = []; T.force(p); drain(); const late1 = pulses()[0]
   for (let i = 0; i < 5; i++) { T.force(p); TIMERS = [] }
-  WAVES = []; T.force(p); drain(); const late2 = WAVES[0].count
+  WAVES = []; T.force(p); drain(); const late2 = pulses()[0]
   ok('...and it PLATEAUS — 20 more waves add nothing', [late1, late2], [MAX_PER_BATCH, MAX_PER_BATCH])
 }
 
@@ -349,7 +373,7 @@ grp('🔴 THE TIDE IS HERS AT EVERY DEPTH — reversed 2026-08-29')
   // ⚠️ NEGATIVE CONTROL. `HERS` is built from waves.js, so an empty or broken table
   // would make the assertion above vacuous rather than red.
   ok('   (control: a god\'s mob is NOT in her factions)',
-    HERS.has(W.gods.wall.ids[0]), false)
+    HERS.has(W.gods.wall.fodder[0]), false)
   ok('🚨 no zombie is the bulk of a tide any more',
     Object.values(seen).some(id => /zombie|ghoul|husk|drowned/i.test(id)), false)
 }
@@ -567,30 +591,75 @@ grp('D3 - COMPOSITION')
     Math.random = () => ROLL[which || 'alternate']
     try {
       const c = T._composeFor({}, tp, deep, mod)
-      const r = c.ids.filter(id => T.ranged[id]).length
-      return { r: r / c.ids.length, boss: c.boss, n: c.ids.length, v: c.variant }
+      return { f: c.specFrac, boss: c.boss, v: c.variant,
+        fodder: c.fodder, specs: c.specs }
     } finally { Math.random = realRandom }
   }
   ok('the roll really does select the variant', frac('general', 'normal').v, 'normal')
   ok('   ...and the other one', frac('general', 'alternate').v, 'alternate')
 
   for (const which of ['normal', 'alternate']) {
-    // ⭐ EXPECTED RATIOS ARE READ FROM waves.js, NOT COPIED. Ethan's numbers live in
-    // one place; a literal here would be a second source of truth, and the one nobody
-    // updated would be the one this harness certified.
-    const want = (mod) => W.table[mod][which].ranged
-    ok(which + ': a pure horde has NO ranged at all', frac('horde', which).r, 0)
-    ok('   ...and waves.js agrees that is deliberate', want('horde'), 0)
+    // ⭐⭐ THE AXIS CHANGED ON 2026-08-30 AND SO DID THESE. It used to measure "what
+    // share of the wave SHOOTS", against `table[mod][variant].ranged`. Ethan's numbers
+    // are a share of SPECIALISTS - general 90/10, horde 95/5, specialist 80/20,
+    // miniboss 95/5 - and since every archer in this pack is a specialist, the old
+    // 0.65 was a 65% specialist wave passing a test that called it "majority ranged".
+    //
+    // ⚠️ EXPECTED VALUES ARE READ FROM waves.js, NOT COPIED. His numbers live in one
+    // place; a literal here would be the copy nobody updates.
+    const want = (mod) => W.specFrac[mod]
 
-    const rg = frac('ranged', which)
-    ok(which + ': a RANGED wave matches its spec (' + want('ranged') + ')',
-      Math.abs(rg.r - want('ranged')) < 0.06, true)
-    const gen = frac('general', which)
-    ok(which + ': a general wave is lighter than a ranged one', gen.r < rg.r, true)
-    ok('   ...but not zero', gen.r > 0, true)
+    ok(which + ': a horde is ' + Math.round((1 - want('horde')) * 100) + '/' +
+      Math.round(want('horde') * 100), frac('horde', which).f, want('horde'))
+    ok(which + ': a general is ' + Math.round((1 - want('general')) * 100) + '/' +
+      Math.round(want('general') * 100), frac('general', which).f, want('general'))
+    ok(which + ': the ranged wave is the 80/20 one', frac('ranged', which).f, want('ranged'))
+    ok('   ...and it is strictly the heaviest',
+      frac('ranged', which).f > frac('general', which).f &&
+      frac('ranged', which).f > frac('horde', which).f, true)
+
+    // 🚨 A HORDE STILL SHOOTS AT NOBODY. That was the point of the old assertion and it
+    // survives the rewrite - now as a property of the POOL, which is stronger: not
+    // "few archers" but "no archer is reachable from here at all".
+    const rangedSet = new Set(W.rangedPool)
+    ok(which + ': a horde can produce NO archer',
+      frac('horde', which).specs.some(id => rangedSet.has(id)), false)
+    ok('   ...and its fodder has none either',
+      frac('horde', which).fodder.some(id => rangedSet.has(id)), false)
+    ok(which + ': the ranged wave draws archers and only archers',
+      frac('ranged', which).specs.every(id => rangedSet.has(id)), true)
 
     ok(which + ': only the miniboss modifier brings a boss', frac('horde', which).boss, null)
     ok('   ...and miniboss does', typeof frac('miniboss', which).boss, 'string')
+  }
+
+  // 🔴 THE RATIO MUST SURVIVE PLACEMENT, NOT JUST COMPOSITION. `specCount` spends the
+  // fractional part as a probability, because Math.round would floor a 6-mob horde's
+  // 0.3 specialists to zero EVERY TIME and "5%" would silently render as "never".
+  {
+    const realRandom = Math.random
+    let seq = 0
+    Math.random = () => { seq = (seq + 0.37) % 1; return seq }   // spread, not pinned
+    try {
+      for (const mod of ['general', 'horde', 'ranged', 'miniboss']) {
+        let spec = 0, total = 0
+        for (let i = 0; i < 4000; i++) {
+          const n = T._specCount(6, W.specFrac[mod])
+          spec += n; total += 6
+        }
+        const got = spec / total
+        ok('⭐ ' + mod + ' places ' + Math.round(W.specFrac[mod] * 100) +
+          '% specialists over 4000 pulses of 6',
+          Math.abs(got - W.specFrac[mod]) < 0.02, true)
+      }
+      // 🚨 THE BUG THIS GUARDS: at 5% and 6 mobs, rounding to nearest gives 0 always.
+      let anyAt5 = 0
+      for (let i = 0; i < 2000; i++) if (T._specCount(6, 0.05) > 0) anyAt5++
+      ok('🚨 a 5% wave of 6 is not silently ZERO - it is sometimes one',
+        anyAt5 > 100, true)
+      ok('   ...and never more than the wave itself', T._specCount(3, 1.0), 3)
+      ok('   ...and a zero fraction really is zero', T._specCount(6, 0), 0)
+    } finally { Math.random = realRandom }
   }
 
   // 🔴 THE RULING THAT CAME OUT OF PLAY, ASSERTED. Ethan: *"i did a test on miniboss
@@ -603,7 +672,7 @@ grp('D3 - COMPOSITION')
       for (let d = 0; d < 4; d++) {
         const spec = W.pick('miniboss', d, 0)
         ok('miniboss light specialists at difficulty ' + d,
-          spec.light.length, W.minibossLight[d])
+          spec.spec.length, W.minibossLight[d])
       }
     } finally { Math.random = realRandom }
     ok('⭐ ...and the two lowest tiers get NONE',
@@ -675,23 +744,33 @@ grp('D3 - THE FALLBACK, AND WHO IS NOT IN THE ROSTER')
     // archers, and the archers the filler.
     ok('🚨 the BULK is melee', !!T.ranged['born_in_chaos_v1:decrepit_skeleton'], false)
 
-    // ⚠️ Ethan ruled banshee and skeleton_thrasher are MELEE despite the names. They
-    // belong in the roster and must stay OUT of the ranged pool.
-    ok('banshee is not treated as ranged', !!T.ranged['grim_and_bleak:banshee'], false)
-    ok('skeleton_thrasher is not either - a name is not an attack type',
+    // ⚠️ Ethan ruled skeleton_thrasher is MELEE despite the name. It belongs in the
+    // roster and must stay OUT of the ranged pool.
+    // ⛔ The `grim_and_bleak:banshee` half of this pair was DELETED, not weakened.
+    // Ethan staged the whole mod for removal on 2026-08-30, so asserting anything
+    // about one of its mobs is asserting about a mod that will not be installed - and
+    // it would have gone on passing forever, since a missing mob is never "ranged".
+    ok('skeleton_thrasher is not ranged - a name is not an attack type',
       !!T.ranged['born_in_chaos_v1:skeleton_thrasher'], false)
+    ok('⛔ no grim_and_bleak mob survives in any roster - staged for removal',
+      JSON.stringify(T.rosters).indexOf('grim_and_bleak') !== -1, false)
 
     // And the thing that actually failed in play: a ranged wave IN THE DEEP.
-    // ⚠️ Both variants, both against waves.js's own number.
+    // 🔴 REWRITTEN FOR HIS AXIS. This measured the share of the wave that SHOOTS
+    // against `table.ranged[variant].ranged` (0.65/0.75). Both numbers are gone - the
+    // share is a SPECIALIST fraction now and it is 0.20 for either variant. ⭐ The
+    // DEFECT it guards is unchanged: a ranged wave that quietly contains no archer is
+    // exactly what Ethan noticed, so it is asserted on the pool that gets placed.
     {
       const realRandom = Math.random
       try {
         for (const which of ['normal', 'alternate']) {
           Math.random = () => (which === 'normal' ? 0.25 : 0.99)
           const deepR = T._composeFor({}, tp, -200, 'ranged')
-          const dr = deepR.ids.filter(id => T.ranged[id]).length / deepR.ids.length
-          ok('🚨 a ' + which + ' ranged wave at y-200 is genuinely ranged',
-            Math.abs(dr - W.table.ranged[which].ranged) < 0.06, true)
+          ok('🚨 a ' + which + ' ranged wave at y-200 still carries archers',
+            deepR.specs.length > 0 &&
+            deepR.specs.every(id => W.rangedPool.indexOf(id) !== -1), true)
+          ok('   ...at his 20%, not the old 65%', deepR.specFrac, W.specFrac.ranged)
         }
       } finally { Math.random = realRandom }
     }
@@ -856,7 +935,8 @@ grp('🚨 A VARIED WAVE IS ONE GOD, AND THE BOSS STAYS HERS')
     if (!c.varied) continue
     sawGod[c.varied] = true
     // Every id must belong to that ONE god - a wave that mixes two gods reads as a bug.
-    if (!c.ids.every(id => W.gods[c.varied].ids.indexOf(id) !== -1)) mixed++
+    const own = W.gods[c.varied].fodder.concat(W.gods[c.varied].spec)
+    if (!c.ids.every(id => own.indexOf(id) !== -1)) mixed++
   }
   ok('🚨 a varied wave never mixes two gods', mixed, 0)
 
@@ -895,25 +975,46 @@ grp('🚨 A VARIED WAVE IS ONE GOD, AND THE BOSS STAYS HERS')
   // is the deliberate one: a wave that Wall reached into, led by one of HER minibosses,
   // reads as neither god's. It is asserted rather than assumed so the reversal is
   // visible, and it is raised with him rather than settled here. DEFECTS.md D-108.
+  //
+  // ⭐ AND THERE IS NOW A THIRD CASE: a god whose declared boss DOES NOT SPAWN falls
+  // back to hers. Art is that case (D-112). So the rule is three-way, not two-way:
+  //     god declares a working boss  -> that god's boss
+  //     god declares none            -> HERS, and no lore has to be invented
+  //     her own wave                 -> hers
+  // The Taker may substitute for any of them, which is a tell rather than a roster.
   {
     // ⚠️ EVERY observation, not the last one per god. `bosses[g] = ...` overwrote,
     // so a single stray value could be masked by the next iteration - and one WAS:
     // the Taker substitutes for any boss 6% of the time and this read as a failure
     // against correct code. The Taker is a TELL and is allowed everywhere; what must
     // never appear is a THIRD id.
-    let bosses = {}, strays = []
+    let bosses = {}, strays = [], fellBack = {}
     for (let i = 0; i < 1200; i++) {
       const c = T._composeFor({}, tp, -20, 'miniboss')
       if (!c.varied || !c.boss) continue
       const b = String(c.boss)
       bosses[c.varied] = true
-      if (b !== W.gods[c.varied].boss && b !== T.taker) strays.push(c.varied + '->' + b)
+      const declared = W.gods[c.varied].boss
+      if (!declared) {
+        // ⭐ A god with no working boss must be led by HERS - never by nothing, and
+        // never by another god's.
+        fellBack[c.varied] = true
+        if (T.bosses.indexOf(b) === -1 && b !== T.taker) strays.push(c.varied + '->' + b)
+      } else if (b !== declared && b !== T.taker) {
+        strays.push(c.varied + '->' + b)
+      }
     }
     const godsSeen = Object.keys(bosses).sort()
     ok('⭐ a god miniboss wave is led by THAT GOD\'s boss (reversal, D-108)',
       strays.slice(0, 3), [])
-    // ⚠️ NEGATIVE CONTROL: an empty loop would make the line above vacuously true.
+    ok('⭐ ...and a god with NO working boss is led by HERS, never by none (D-112)',
+      Object.keys(fellBack).sort(), ['art'])
+    // ⚠️ NEGATIVE CONTROL: an empty loop would make the lines above vacuously true.
     ok('   (control: god minibosses were actually observed)', godsSeen.length >= 2, true)
+    ok('   (control: a miniboss wave NEVER arrives bossless)', (() => {
+      for (let i = 0; i < 400; i++) if (!T._composeFor({}, tp, -20, 'miniboss').boss) return false
+      return true
+    })(), true)
   }
 
   // 🚨 AND HER OWN MINIBOSS WAVES STILL DRAW FROM HER LIST. The reversal above is
@@ -956,7 +1057,29 @@ grp('⭐ THE GOD ROSTERS ARE THE SAME LIST IN BOTH FILES')
   ok('wall has both spiders', T.rosters.gods.wall.length, 2)
   ok('salvage has the dread hound', T.rosters.gods.salvage, ['born_in_chaos_v1:dread_hound'])
   ok('forge has the krampus henchman', T.rosters.gods.forge, ['born_in_chaos_v1:krampus_henchman'])
-  ok('art has her three', T.rosters.gods.art.length, 3)
+  // 🔴 WAS `art has her three`. It has ONE, and that is a defect being contained
+  // rather than a roster being trimmed: `restless_spirit` and `dark_vortex` do not
+  // survive being summoned - 0/3 each against a control that passed 3/3 - so two
+  // thirds of Art's own attacks were placing nothing at all. See D-112.
+  // ⚠️ Asserted at ONE so it fails the moment somebody adds a replacement without
+  // running tools/spawn_persist_check.py on it, and again when Ethan rules.
+  ok('⚠️ art is down to ONE mob until he rules on replacements (D-112)',
+    T.rosters.gods.art, ['born_in_chaos_v1:scarlet_persecutor'])
+  // ⚠️ MATCH THE FULLY-QUALIFIED QUOTED ID, NOT THE BARE NAME. Both ids are discussed
+  // in the comments that explain the removal AND named in a boot warning - a substring
+  // search flagged all of those and would have made this assertion impossible to
+  // satisfy without deleting the explanation. A roster entry is `'ns:id'`; prose is not.
+  ok('⛔ ...and neither broken id survives as a roster entry anywhere in the pack',
+    ['tide.js', 'waves.js', 'spawn_pressure.js'].some(f => {
+      const src = fs.readFileSync(path.join(SS, f), 'utf8')
+      return src.indexOf("'born_in_chaos_v1:dark_vortex'") !== -1 ||
+        src.indexOf("'born_in_chaos_v1:restless_spirit'") !== -1
+    }), false)
+  // ⚠️ CONTROL: prove the search WOULD find a roster entry, or the line above passes
+  // for the wrong reason - by looking for a pattern that never appears.
+  ok('   (control: the same search finds a mob that IS rostered)',
+    fs.readFileSync(path.join(SS, 'waves.js'), 'utf8')
+      .indexOf("'born_in_chaos_v1:scarlet_persecutor'") !== -1, true)
 
   // 🚨 The bulk is HERS and must not be in a god's list, or his attacks become
   // indistinguishable from her tide.

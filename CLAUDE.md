@@ -58,12 +58,29 @@ updated between two regenerations holds versions the server no longer has, which
 configs reach players only through `build-client.ps1`.
 
 🔴 **AND THEY DO NOT REACH THE SERVER EITHER.** `pack/config` (64 files) and
-`instance/config` (961) have no sync in either direction. **Editing a config in the repo
-changes nothing that runs.** `tectonic.json` was set to `min_y: -64` in the repo on
-08-14, C1 was marked done, and the instance was still `-128` on 08-30 — sixteen days of a
-✅ on a change the world had never seen (D-112).
+`instance/config` (961) have no automatic sync. **Editing a config in the repo changes
+nothing that runs.** `tectonic.json` was set to `min_y: -64` in the repo on 08-14, C1 was
+marked done, and the instance was still `-128` on 08-30 — sixteen days of a ✅ on a change
+the world had never seen (D-112).
 
-🔑 **The repo records intent. The instance is what runs. Measure the instance.**
+⭐ **RULED 2026-08-30 (Ethan): the LIVE INSTANCE IS THE TRUTH.** *"we just need to
+centralize, live copy is the truth as repo doesn't get updated as much."* Truth flows
+**instance → repo**, one direction:
+
+```
+python tools/config_sync.py            # report drift
+python tools/config_sync.py --pull     # refresh the repo FROM the live server
+```
+
+⚠️ **With one exception, and it is the important one.** "Live is truth" is right for
+*drift* — a repo file nobody refreshed. It is **wrong** for a *pending decision*: a change
+that was ruled, written into the repo, and simply has not been applied to the server yet.
+Pulling over one of those does not resolve a disagreement, it **deletes a ruling** and
+leaves no trace. `config_sync.py` keeps a `PENDING` list for exactly those; they are never
+pulled, and landing one is a deliberate `--push-pending <file>`. An empty PENDING list is
+the healthy state.
+
+🔑 **Measure the instance. Refresh the repo from it. Never assume a repo edit shipped.**
 
 ⛔ **Before the world reset (C2), run the gate — it is the only irreversible chunk:**
 

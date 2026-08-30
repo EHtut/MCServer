@@ -556,3 +556,103 @@ understand. ⭐ *A gate that cannot fail is a banner.*
   where it will be verified rather than assumed.
 * ⚠️ **`incontrol/spawn.json`** needs a ruling on which copy is authoritative.
 * ⚠️ **`simple-hats`** is RESOLVED but also listed under `unavailable`/`cut_for_budget`.
+
+---
+
+## 🔴 D-111 — `goety:haunted_armor` was in a shipped roster and spawns nothing ✅ FIXED 2026-08-30
+
+Measured four separate times, against a control that passed every time, with and
+without AI: it answers `summon` with **"Summoned new Haunted Armor"** and is gone a
+second later.
+
+⭐ **NOTHING ELSE IN THIS REPO COULD SEE IT.** The registry probe says the id is real —
+it is. The stats probe measured it at 25 hp — it reads faster than the mob despawns. The
+undead check says it is undead — it is. Every harness passes, because the id is a string
+in a list and it is the *right* string.
+
+🔑 **The property that matters is not "does this id exist", it is "does it still exist a
+moment after you place it".** One slot of every ghost wave was spawning nothing.
+
+New instrument: **`tools/spawn_persist_check.py`**, and it is now the gate for any
+roster change.
+
+---
+
+## 🔴 D-112 — Art's roster is two-thirds inert and his boss never spawns ⚠️ OPEN (needs a ruling)
+
+```
+born_in_chaos_v1:restless_spirit     0/3 survived     (control 3/3)
+born_in_chaos_v1:dark_vortex         0/3 survived     ← his BOSS
+born_in_chaos_v1:scarlet_persecutor  3/3 survived
+```
+
+⚠️ **This is wider than the tide.** The same three ids are `spawn_pressure.js`'s roster
+for **Art's own attacks**, so two thirds of everything Art has ever thrown at anyone has
+been placing nothing.
+
+**Done:** both broken ids removed from `tide.js`, `waves.js` and `spawn_pressure.js`. A
+god that declares no working boss now falls back to **her** miniboss — no lore invented,
+and it is what the file did before D-108.
+
+⛔ **NOT DONE, AND DELIBERATELY:** Art has not been re-rostered. The god rosters are
+Ethan's — he gave them verbatim — and picking two replacement mobs is a lore call, not a
+bug fix. Measured, persistence-checked candidates for his ruling:
+
+| id | hp | armor | dmg | |
+|---|---|---|---|---|
+| `born_in_chaos_v1:swarmer` | 40 | 4 | 4 | |
+| `born_in_chaos_v1:zombie_clown` | 35 | 4 | 3 | |
+| `cataclysm:aptrgangr` | 160 | 10 | 18 | boss-weight |
+| `cataclysm:kobolediator` | 180 | 10 | 14 | boss-weight |
+
+---
+
+## 🔴 D-113 — the wave table tuned the wrong axis, and every test agreed with it ✅ FIXED 2026-08-30
+
+> Ethan, after fighting three wave types: *"tides should be 80% fodder, 20% specalists
+> per wave."*
+
+The table had `ranged: 0.65` — **the share of the wave that SHOOTS**. But every archer in
+this pack is a *specialist* on his own table, so a 65% ranged wave was a **65% specialist
+wave**: more than three times the 20% he wants, and six times the 10% a general wave
+wants.
+
+🔑 **Fodder-vs-specialist is a ROLE axis; ranged-vs-melee is an ATTACK-TYPE axis.** One
+number was doing both jobs, and the role axis is the one he tunes by playing.
+
+⚠️ **The harness asserted the wrong axis too, and passed.** `'⭐ ranged waves are majority
+ranged'` was *true* — of a number that meant something else. A green test is not evidence
+that the thing under test is the thing you meant.
+
+Also fixed in the same pass: **rounding**. A 6-mob horde wave at 5% wants 0.3 specialists,
+and `Math.round` makes that **0 every single time** — "5%" would have rendered as "never".
+The fractional part is spent as a probability instead.
+
+---
+
+## 🔴 D-114 — `spawn_persist_check.py` crushed its own subjects and blamed the mobs ✅ FIXED 2026-08-30
+
+Its first run reported three GOOD roster entries as vanishing — `goety:haunt` (6 hp),
+`goety:reaper`, `born_in_chaos_v1:corpse_fly` (10 hp). Each then passed **5/5** summoned
+alone.
+
+The tool put a whole batch on **one block**. Seven mobs sharing a position crush the
+fragile ones, so it was measuring its own crowding and calling it a mod bug.
+
+⭐ **A SURPRISINGLY BAD RESULT IS A PROMPT TO RE-CHECK THE QUERY, exactly as a
+surprisingly clean one is.** Believing that run would have deleted three working mobs on
+evidence the instrument manufactured. Batches are spread 3 blocks apart now, and the
+tool is verified in both directions — it still catches all four known-broken ids.
+
+---
+
+## 🔴 D-115 — the undead check printed an empty god list under an "OK" ✅ FIXED 2026-08-30
+
+One day after D-109 was fixed, in the same tool. Its god-roster regex matched `ids: [...]`;
+the rosters were split into `fodder:`/`spec:` hours later, it matched nothing, and the
+exemption list **this tool exists to make visible** printed as a blank section above the
+word OK.
+
+⚠️ **Fixing the regex was the smaller half.** The shape will move again. An unparseable
+god list is now a hard exit 2 — because the only durable defence against this class is
+that **empty is never silent**, not that the current pattern happens to be right.

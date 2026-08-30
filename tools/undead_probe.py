@@ -24,6 +24,7 @@ made `minecraft:skeleton` look fake on 2026-08-29.
 `<--[HERE]` parse caret. Everything else is real. And a KNOWN-FAKE CONTROL is included in
 every run, because a detector that never fails is not a detector.
 """
+import argparse
 import io
 import json
 import os
@@ -76,11 +77,30 @@ def probe(ids, chunk=25):
 
 
 def main():
-    if not os.path.exists(SHORT):
-        sys.stderr.write('run undead_census.py then undead_shortlist.py first\n')
+    # ⭐ PARAMETERISED 2026-08-30. The technique here - detect the FAILURE, never the
+    # success, with a known-fake control in the same batch shape - is not specific to
+    # the undead, and Ethan asked for the same run over Wall's spiders. A second copy
+    # of this file would have been a second place for the control to rot.
+    global OUT
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--in', dest='src', default=SHORT,
+                    help='JSON: {"candidates": [...]} or a bare list of ids')
+    ap.add_argument('--out', dest='dst', default=OUT)
+    a = ap.parse_args()
+    OUT = a.dst
+
+    if not os.path.exists(a.src):
+        sys.stderr.write('no such id list: %s\n' % a.src)
+        sys.stderr.write('for the undead run: undead_census.py then undead_shortlist.py\n')
         return 2
-    doc = json.load(io.open(SHORT, encoding='utf-8'))
-    ids = list(doc['candidates'])
+    doc = json.load(io.open(a.src, encoding='utf-8'))
+    ids = list(doc['candidates']) if isinstance(doc, dict) else list(doc)
+    # ⚠️ An empty list is a FAILURE TO READ, not a clean run over nothing. This is the
+    # D-109 class and it is cheap to refuse here.
+    if not ids:
+        sys.stderr.write('!! %s contained NO ids - a failure to read, not a result.\n'
+                         % a.src)
+        return 2
 
     # !! The control goes in the SAME batch shape as the real work.
     res = probe(ids + [CONTROL])

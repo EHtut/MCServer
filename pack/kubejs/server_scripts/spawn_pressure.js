@@ -66,8 +66,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     wall: ['born_in_chaos_v1:baby_spider', 'born_in_chaos_v1:mother_spider'],
     salvage: ['born_in_chaos_v1:dread_hound'],
     forge: ['born_in_chaos_v1:krampus_henchman'],
-    art: ['born_in_chaos_v1:restless_spirit', 'born_in_chaos_v1:scarlet_persecutor',
-      'born_in_chaos_v1:dark_vortex'],
+    // 🔴 TWO OF ART'S THREE DO NOT SPAWN, so this list has been two-thirds inert for
+    // his OWN attacks, not only for the tide. `restless_spirit` and `dark_vortex`
+    // measured 0/3 each against a control that passed 3/3 - they answer `summon` and
+    // are gone before the next command (tools/spawn_persist_check.py, D-112).
+    // ⚠️ Removed rather than kept "in case": an id that spawns nothing makes an attack
+    // quietly smaller and every other check in this repo passes it.
+    art: ['born_in_chaos_v1:scarlet_persecutor'],
     crown: [],
   }
 

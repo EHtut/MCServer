@@ -167,20 +167,46 @@ grp('⭐ FOUR WAVE TYPES, THREE VARIANTS')
 
 grp('🚨 THE COMPOSITION RULES HE GAVE')
 {
+  // ⭐⭐ HIS RATIOS, 2026-08-30, MEASURED IN PLAY. These four numbers are the whole
+  // point of the file now, so they are asserted as VALUES rather than as inequalities:
+  //
+  //     General 90/10 · Horde 95/5 · Specialist 80/20 · Miniboss 95/5
+  //
+  // 🔴 THE OLD ASSERTIONS HERE MEASURED THE WRONG AXIS AND PASSED ANYWAY. `ranged:
+  // 0.65` meant "65% of the wave SHOOTS", and every archer in this pack is a specialist
+  // by his table - so a wave satisfying "majority ranged" was 65% SPECIALIST, more than
+  // three times what he wants. Green tests on a number that meant a different thing.
+  ok('⭐ general is 90/10', W.specFrac.general, 0.10)
+  ok('⭐ horde is 95/5', W.specFrac.horde, 0.05)
+  ok('⭐ specialist ("ranged") is 80/20 - the heaviest', W.specFrac.ranged, 0.20)
+  ok('⭐ miniboss is 95/5 + the miniboss', W.specFrac.miniboss, 0.05)
+  ok('🚨 NOTHING exceeds 20% specialist - his ceiling',
+    W.types.every(t => W.specFrac[t] <= 0.20), true)
+  ok('🚨 ...and the ranged wave is strictly the heaviest of the four',
+    W.types.every(t => t === 'ranged' || W.specFrac[t] < W.specFrac.ranged), true)
+
   // "Horder - Fodder + tank specialists / NO RANGED"
-  ok('🚨 horde/normal has ZERO ranged', W.table.horde.normal.ranged, 0)
-  ok('🚨 horde/alternate too', W.table.horde.alternate.ranged, 0)
+  // ⚠️ "No ranged" is a property of the POOL now, not of a fraction: a horde's
+  // specialists are tanks and no archer is reachable from it at all.
+  const rangedSet = new Set(W.rangedPool)
+  ok('🚨 horde/normal can produce NO archer',
+    W.table.horde.normal.spec.some(id => rangedSet.has(id)), false)
+  ok('🚨 horde/alternate too',
+    W.table.horde.alternate.spec.some(id => rangedSet.has(id)), false)
   ok('⭐ ...and horde is the type that carries the tanks',
-    W.table.horde.normal.tank.length > 0, true)
+    W.table.horde.normal.spec.length > 0, true)
+  ok('🚨 a horde never sets the bow flag', !W.table.horde.normal.bow, true)
 
   // "Ranged - Low fodder + HIGH ranged specialists"
-  ok('⭐ ranged waves are majority ranged', W.table.ranged.normal.ranged > 0.5, true)
-  ok('...and the alternate is higher still',
-    W.table.ranged.alternate.ranged > W.table.ranged.normal.ranged, true)
+  ok('⭐ the ranged wave draws its specialists from the archer pool',
+    W.table.ranged.normal.spec.every(id => rangedSet.has(id)), true)
+  ok('⭐ ...and it is the only type that forces a bow',
+    W.types.filter(t => W.table[t].normal.bow || W.table[t].alternate.bow), ['ranged'])
 
   // "General - fodder + LIGHT specialists"
-  ok('general carries light specialists, not tanks',
-    W.table.general.normal.light.length > 0 && W.table.general.normal.tank.length === 0, true)
+  ok('general carries light specialists, not tanks or archers',
+    W.table.general.normal.spec.length > 0 &&
+    !W.table.general.normal.spec.some(id => rangedSet.has(id)), true)
 
   // "Miniboss - High fodder + miniboss"
   ok('🚨 both miniboss variants actually have a boss',
@@ -192,19 +218,34 @@ grp('🚨 THE COMPOSITION RULES HE GAVE')
 
 grp('⭐ NORMAL IS BONE, ALTERNATE IS GHOST — the variant axis is the subfaction axis')
 {
-  const bone = /skeleton|bone|koboleton/i
-  const ghost = /wraith|ghost|phantom|haunt|banshee|reaper|revenant/i
-  ok('🚨 every normal-wave fodder id is bone',
-    W.types.every(t => W.table[t].normal.fodder.every(id => bone.test(id))), true)
-  ok('⭐ the general/horde/ranged alternates are ghosts',
+  // 🔴 THIS TESTED THE NAMES AND THE NAMES LIE. It was `/skeleton|bone|koboleton/i`,
+  // which failed the moment the fodder pool was re-derived from MEASURED stats and
+  // picked up `minecraft:stray`, `minecraft:bogged`, `goety:rattled` and
+  // `iceandfire:dread_thrall` - four skeletons, none of them spelled "skeleton".
+  //
+  // ⚠️ THIS REPO HAS PAID FOR NAME-MATCHING THREE TIMES: `art` matched inside "heart",
+  // a case-sensitive grep hid the worst class, and `banshee`/`skeleton_thrasher` were
+  // nearly classed ranged because of what they are called. ⭐ So assert POOL IDENTITY -
+  // every normal variant draws from the one bone list, every alternate from the one
+  // ghost list - which is the actual claim and cannot drift as ids are added.
+  ok('🚨 every normal variant draws its fodder from the ONE bone pool',
+    W.types.every(t => W.table[t].normal.fodder === W.fodderPools.bone), true)
+  ok('⭐ the general/horde/ranged alternates draw from the ONE ghost pool',
     ['general', 'horde', 'ranged'].every(t =>
-      W.table[t].alternate.fodder.every(id => ghost.test(id))), true)
+      W.table[t].alternate.fodder === W.fodderPools.ghost), true)
+  // ⚠️ NEGATIVE CONTROL: identity comparison would pass vacuously on two empty or
+  // accidentally-identical lists.
+  ok('   (control: the two pools are different, and neither is empty)',
+    W.fodderPools.bone.length > 0 && W.fodderPools.ghost.length > 0 &&
+    W.fodderPools.bone !== W.fodderPools.ghost, true)
+  ok('   (control: they share no mob)',
+    W.fodderPools.bone.some(id => W.fodderPools.ghost.indexOf(id) !== -1), false)
 
   // 🚨 "She has a focus on skeletons, NOT ZOMBIES." Her own waves must not drift.
   const herIds = []
   W.types.forEach(t => ['normal', 'alternate'].forEach(v => {
     const s = W.table[t][v]
-    herIds.push.apply(herIds, s.fodder.concat(s.light, s.tank))
+    herIds.push.apply(herIds, s.fodder.concat(s.spec))
   }))
   ok('🚨 no zombie is in ANY of her own waves',
     herIds.some(id => /zombie|husk|drowned|ghoul/i.test(id)), false)
@@ -215,9 +256,9 @@ grp('⛔ WHAT WAS DELIBERATELY LEFT OUT')
   const all = []
   W.types.forEach(t => ['normal', 'alternate'].forEach(v => {
     const s = W.table[t][v]
-    all.push.apply(all, s.fodder.concat(s.light, s.tank, s.boss ? [s.boss] : []))
+    all.push.apply(all, s.fodder.concat(s.spec, s.boss ? [s.boss] : []))
   }))
-  Object.keys(W.gods).forEach(g => all.push.apply(all, W.gods[g].ids))
+  Object.keys(W.gods).forEach(g => all.push.apply(all, W.gods[g].fodder.concat(W.gods[g].spec)))
 
   // 🚨 docs/72 flagged that goety necromancers RAISE MORE UNDEAD - a multiplier inside
   // a multiplier. That risk was flagged and never cleared.
@@ -273,13 +314,21 @@ grp('⭐ pick() RESPECTS THE DIFFICULTY GATE')
   ok('⭐ at Damnation all three appear', Object.keys(gods).sort(),
     ['art', 'blade', 'wall'])
 
-  // A god miniboss wave must still have a boss, or the type means nothing.
-  let bossless = 0
+  // 🔴 RELAXED FOR EXACTLY ONE GOD, AND ONLY BECAUSE HIS BOSS DOES NOT EXIST IN PLAY.
+  // Art's `dark_vortex` measured 0/3 against a control that passed 3/3 - it answers
+  // `summon` and is gone before the next command (D-112). waves.js now reports
+  // `boss: null` for him and tide.js substitutes HER miniboss, so the wave still has
+  // one. ⚠️ The relaxation is bounded to gods whose roster genuinely declares no boss;
+  // any OTHER god losing its boss still fails here.
+  let bossless = []
   for (let i = 0; i < 200; i++) {
     const w = W.pick('miniboss', 3, 1.0)
-    if (w.variant === 'god' && !w.boss) bossless++
+    if (w.variant === 'god' && !w.boss) bossless.push(w.god)
   }
-  ok('🚨 a god MINIBOSS wave always has a boss', bossless, 0)
+  ok('🚨 a god MINIBOSS wave has a boss - except a god who declares none',
+    bossless.filter(g => W.gods[g].boss), [])
+  ok('⚠️ ...and the only god without one is art (D-112, awaiting his ruling)',
+    Array.from(new Set(bossless)).sort(), ['art'])
 
   // ...and a god GENERAL wave must not sprout one.
   let extra = 0

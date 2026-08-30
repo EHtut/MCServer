@@ -1,11 +1,15 @@
 # 74 — The waves and the ladder
 
-> **STATUS: WIRED AND LIVE IN THE TREE.** 2026-08-30. `difficulty.js` and `waves.js`
-> compose every tide wave; `tide.js` no longer composes anything itself. 984 assertions
-> green across 23 harnesses (139 in `tide_harness.js` alone, up from 106).
+> **STATUS: WIRED, RE-TUNED TO HIS RATIOS, DEPLOYED.** 2026-08-30. `difficulty.js` and
+> `waves.js` compose every tide wave. The fodder/specialist split is his, measured in
+> play; the fodder table was re-derived from live numbers rather than edited by hand.
+> 1055 assertions green across 23 harnesses.
 >
 > ⛔ **NOT YET RESTARTED INTO** — deployed to the instance, restart held for the
 > coordinating channel. A wired file is a claim until a boot log agrees.
+>
+> 🔴 **OPEN: D-112.** Art's roster is down to one mob and he has no boss — two of his
+> three ids do not survive being summoned. Needs Ethan's ruling, not a guess.
 
 ---
 
@@ -38,6 +42,76 @@ session of play can correct them.
 
 ⚠️ **Unreadable inputs return Uprising**, the gentlest answer, and `/difficulty` names
 which ones failed. The opposite failure hands somebody Damnation because a counter broke.
+
+---
+
+## ⭐⭐ His ratios — the axis that was wrong
+
+> Ethan, 2026-08-30, after pitting Liam against three wave types:
+> *"tides should be 80% fodder, 20% specalists per wave."*
+
+| wave | fodder | specialist | its specialists are |
+|---|---|---|---|
+| **General** | 90% | 10% | light — bone imp, baby skeleton, draugr |
+| **Horde** | 95% | 5% | tanks — thrasher, dread knight |
+| **Specialist** (code: `ranged`) | **80%** | **20%** | archers, bow forced |
+| **Miniboss** | 95% | 5% + the miniboss | light, and **none** below Heresy |
+
+🔴 **The old table tuned a different axis and every test agreed with it.** It carried
+`ranged: 0.65` — the share of the wave that *shoots*. Every archer in this pack is a
+specialist on his table, so a "65% ranged" wave was a **65% specialist** wave: three
+times his number. The harness asserted `ranged waves are majority ranged` and passed, on
+a value that meant something else entirely. **D-113.**
+
+⚠️ **Rounding was the second half of it.** A 6-mob horde at 5% wants 0.3 specialists, and
+rounding to nearest gives **0 every time** — "5%" renders as "never". The fractional part
+is spent as a probability now, so it averages to his number instead of flooring away.
+
+⭐ **Placement is two calls, not one**, and that is what makes the counts exact — and the
+only way the forced bow lands on the archers instead of the whole wave.
+
+---
+
+## 🔑 What makes a mob fodder — now a measured property
+
+> *"All enemies above 1-2 armor are not fodder those are specialists, fodder is defined
+> by enemies you kill in 1-2 swings and just drag you down."* · *"all baby enemies are
+> considered specialists"* · *"i don't like piglins or zombie villagers at all same with
+> zoglins"*
+
+```
+fodder  ⇔  armor ≤ 2  AND  hp ≤ 30  AND  dmg ≤ 5  AND not a baby
+```
+
+⚠️ **The damage clause is an inference, not his words** — flagged because it is the only
+line here he did not dictate. `goety:reaper` is 24 hp with no armour and would pass an
+armour-only test; it hits for 8, which is a threat rather than a drag.
+
+Two mobs left the bulk on his armour rule alone: **`bone_imp`** (armor 3.5) and
+**`baby_skeleton`** (a baby). Both had been in every Normal wave.
+
+⭐ **`stray` and `bogged` joined as MELEE fodder**, which resolves an old fiction: both
+measured **0 bows in 12 summons**. They are not in epicknights' equipment config and
+`/summon` does not run the vanilla equip step. As archers they were a lie; as skeleton
+fodder they are honest.
+
+---
+
+## 🕷 Wall's spider run
+
+`#minecraft:arthropod` censused (42 ids) → 19 shortlisted → **all 19 registry-confirmed**
+→ 17 measured live → all persistence-checked.
+
+| role | mobs |
+|---|---|
+| **fodder** | spider · cave spider · wither scuttler · corpse fly · silverfish |
+| **specialist** | baby spider *(baby rule)* · diamond termite (8 arm) · thornshell crab (14 arm) · dread scuttler (10 arm) |
+| **boss** | mother spider — 90 hp / 6 dmg / kb-res 1 |
+
+⛔ **Both scorpions were dropped for a MEASURED reason, not because of their mod.**
+`naturalist:desert_scorpion` and `jungle_scorpion` summon and then vanish before the next
+tick, against a control that survived the identical command. Right theme, cannot be
+placed.
 
 ---
 

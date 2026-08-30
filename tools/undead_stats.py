@@ -30,6 +30,7 @@ anything left over and REPORTS what it had to clean up.
 was found" for every read. Distance from the command source is what matters, so the probe
 happens where the console is.
 """
+import argparse
 import io
 import json
 import os
@@ -63,10 +64,28 @@ def rcon(cmds, timeout=240):
 
 
 def main():
-    if not os.path.exists(REG):
-        sys.stderr.write('run tools/undead_probe.py first\n')
+    # ⭐ PARAMETERISED 2026-08-30, alongside undead_probe.py, so any faction can be
+    # measured with the same instrument. Ethan: *"you probably need to do a run for
+    # spiders too for wall."* Same safety rules, same resumability, one file.
+    global OUT
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--in', dest='src', default=REG,
+                    help='JSON: {"registered": [...]} or a bare list of ids')
+    ap.add_argument('--out', dest='dst', default=OUT)
+    a = ap.parse_args()
+    OUT = a.dst
+
+    if not os.path.exists(a.src):
+        sys.stderr.write('no such id list: %s\n' % a.src)
+        sys.stderr.write('for the undead run: tools/undead_probe.py first\n')
         return 2
-    ids = json.load(io.open(REG, encoding='utf-8'))['registered']
+    doc = json.load(io.open(a.src, encoding='utf-8'))
+    ids = doc['registered'] if isinstance(doc, dict) else list(doc)
+    # ⚠️ D-109 class: an empty list is a failure to read, not a clean run.
+    if not ids:
+        sys.stderr.write('!! %s contained NO ids - a failure to read, not a result.\n'
+                         % a.src)
+        return 2
 
     # 🔴 PREFLIGHT. The first run of this tool happened while the server was down
     # (a client-only mod had failed the boot) and it cheerfully produced 89 rows of

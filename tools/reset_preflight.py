@@ -30,6 +30,14 @@ import subprocess
 import sys
 import time
 
+# The Windows console defaults to cp1252 and raises UnicodeEncodeError on any
+# non-latin-1 character, which killed this tool AFTER it had done its work and
+# printed most of its report - a failure that looks like a crash in the logic.
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INSTANCE = r"C:\MCServer\instance"
 BACKUPS = r"C:\MCServer\backups"
@@ -348,16 +356,42 @@ def check_config_drift():
             elif norm(rp) != norm(ip):
                 diff.append(rel)
 
+    # ⭐ RULED 2026-08-30 (Ethan): *"we just need to centralize, live copy is the truth
+    # as repo doesn't get updated as much."* So drift means THE REPO IS STALE, not that
+    # the server is wrong — and the fix is a pull, not a copy-out.
+    #
+    # ⚠️ With ONE exception, which is why `config_sync.py` keeps a PENDING list:
+    # `tectonic.json` is a ruling the instance has not received yet (§0.2), and pulling
+    # over it would delete the decision rather than resolve a disagreement.
+    # 🔴 A PENDING decision is NOT stale-repo drift, and saying so is actively dangerous:
+    # this check told its reader to `--pull` tectonic.json, which is the one file a pull
+    # must never touch. Two tools of mine contradicting each other about the same file.
+    # The PENDING list is imported rather than restated so they cannot drift apart.
+    try:
+        sys.path.insert(0, os.path.join(REPO, "tools"))
+        from config_sync import PENDING as _PENDING
+    except Exception:
+        _PENDING = {}
+    held = sorted(d for d in diff if os.path.basename(d) in _PENDING)
+    diff = [d for d in diff if os.path.basename(d) not in _PENDING]
+    if held:
+        check("config pending", WARN,
+              "%s - the REPO is right and the instance has not caught up. ⛔ Do NOT "
+              "pull these; land one with `config_sync.py --push-pending <file>`."
+              % ", ".join(held))
+
     if not diff and not absent:
-        return check("config drift", OK, "every repo config matches the instance")
+        return check("config drift", OK, "every non-pending repo config matches the instance")
     detail = ""
     if diff:
-        detail += "DIFFERENT: " + ", ".join(sorted(diff)) + ". "
+        detail += "REPO IS STALE for: " + ", ".join(sorted(diff)) + " - refresh with " \
+                  "`python tools/config_sync.py --pull`. "
     if absent:
-        detail += "NOT IN INSTANCE: " + ", ".join(sorted(absent)[:6]) + ". "
+        detail += "Tracked in the repo but ABSENT from the instance: " + \
+                  ", ".join(sorted(absent)[:6]) + " (never deployed, or dead files). "
     check("config drift", WARN,
-          detail + "Config does not travel by packwiz - anything staged in the repo "
-          "reaches the world only if it is copied by hand.")
+          detail + "The live instance is the truth; the repo follows it. ⚠️ "
+          "config_sync's PENDING list is what stops a pull deleting a ruling.")
 
 
 # ---------------------------------------------------------------------------

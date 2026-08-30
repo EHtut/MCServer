@@ -25,14 +25,10 @@
   },
   {
     "mob": [
-      "born_in_chaos_v1:lord_pumpkinhead"
+      "born_in_chaos_v1:lord_pumpkinhead",
+      "born_in_chaos_v1:fallen_chaos_knight"
     ],
     "result": "deny"
-  },
-  {
-    "dimension": "minecraft:overworld",
-    "maxlight_sky": 0,
-    "result": "default"
   },
   {
     "dimension": "minecraft:overworld",
@@ -115,6 +111,11 @@
     "maxcount": 40,
     "minheight": 0,
     "maxheight": 39,
+    "result": "default"
+  },
+  {
+    "dimension": "minecraft:overworld",
+    "maxlight_sky": 0,
     "result": "default"
   }
 ]

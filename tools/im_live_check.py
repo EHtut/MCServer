@@ -31,6 +31,14 @@ import os
 import subprocess
 import sys
 
+# The Windows console defaults to cp1252 and raises UnicodeEncodeError on any
+# non-latin-1 character, which killed this tool AFTER it had done its work and
+# printed most of its report - a failure that looks like a crash in the logic.
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SS = os.path.join(REPO, "pack", "kubejs", "server_scripts")
 

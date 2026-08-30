@@ -396,8 +396,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     wall: ['born_in_chaos_v1:baby_spider', 'born_in_chaos_v1:mother_spider'],
     salvage: ['born_in_chaos_v1:dread_hound'],
     forge: ['born_in_chaos_v1:krampus_henchman'],
-    art: ['born_in_chaos_v1:restless_spirit', 'born_in_chaos_v1:scarlet_persecutor',
-      'born_in_chaos_v1:dark_vortex'],
+    // 🔴 ART IS DOWN TO ONE MOB AND IT IS NOT A BALANCE CHOICE. `restless_spirit` and
+    // `dark_vortex` were measured 0/3 each against a control that passed 3/3: both
+    // answer `summon` and are gone before the next command. They are removed from every
+    // roster in the pack rather than left to spawn nothing. See D-112; he needs to rule
+    // on replacements, and tools/spawn_persist_check.py will vet them.
+    art: ['born_in_chaos_v1:scarlet_persecutor'],
   }
   // ⛔ `GOD_KEYS` (all five) was deleted 2026-08-30 with `poolFor`. waves.js picks the
   // god now and only THREE send waves - Forge and Salvage send nothing at anyone, his
@@ -516,7 +520,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           'bulk horde. This is a FAILURE, not a design choice.')
       }
       spec = { type: modName, variant: 'fallback', god: null, theme: 'fallback',
-        fodder: BULK, light: [], tank: [], ranged: 0, boss: null }
+        fodder: BULK, spec: [], specFrac: 0, bow: false, boss: null }
     }
 
     if (spec.god) {
@@ -524,36 +528,26 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         modName + ') - they reached into her water')
     }
 
-    var pool = [].concat(spec.fodder, spec.light, spec.tank)
-    if (!pool.length) pool = BULK.slice()
-
-    var melee = [], ranged = []
-    for (var i = 0; i < pool.length; i++) {
-      if (RANGED[pool[i]]) ranged.push(pool[i]); else melee.push(pool[i])
-    }
-    // ⭐ A RANGED WAVE BRINGS ITS OWN ARCHERS. The fodder pool is bone, not archers,
-    // so a ranged wave has to add them - otherwise "65% ranged" weights an empty list
-    // and silently degrades to melee, which is exactly the bug Ethan noticed.
-    if (spec.ranged > 0) {
-      var rp = (VELDORA.waves && VELDORA.waves.rangedPool) || []
-      for (var q = 0; q < rp.length; q++) {
-        if (ranged.indexOf(rp[q]) === -1) ranged.push(rp[q])
-      }
-    }
-    if (!melee.length) melee = pool.slice()
-
-    var ids = []
-    if (spec.ranged > 0 && ranged.length) {
-      // Weight the list rather than the roll: `spawner.wave` picks uniformly from
-      // `ids`, so repeating an entry is how a proportion is expressed.
-      var slots = 20
-      var nR = Math.max(1, Math.round(slots * spec.ranged))
-      if (nR > slots) nR = slots
-      for (var r = 0; r < nR; r++) ids.push(ranged[r % ranged.length])
-      for (var m = 0; m < slots - nR; m++) ids.push(melee[m % melee.length])
-    } else {
-      ids = melee.slice()
-    }
+    // ⭐⭐ HIS RATIOS, KEPT AS TWO LISTS RATHER THAN ONE WEIGHTED ONE.
+    // Ethan, 2026-08-30: general 90/10 · horde 95/5 · specialist 80/20 · miniboss 95/5.
+    //
+    // 🔴 THE OLD CODE WEIGHTED A SINGLE 20-SLOT `ids` LIST AND LET `spawner.wave` PICK
+    // UNIFORMLY. Two things were wrong with that, and both mattered:
+    //
+    //   1. THE RATIO WAS ONLY STATISTICAL. A 6-mob wave drawing from a 90/10 list gets
+    //      0, 1 or 2 specialists at random. At 5% it is mostly 0 and occasionally 2 -
+    //      which is not "5%", it is a coin flip that averages out over a night nobody
+    //      plays twice.
+    //   2. ONE NBT FOR THE WHOLE WAVE. A ranged wave forces a bow, and with the lists
+    //      merged that bow went into the FODDER too. At the old 65% that was nearly
+    //      right by accident; at his 20% it would arm four fifths of a wave that is
+    //      supposed to be a crowd with archers behind it.
+    //
+    // ⭐ So the split survives to placement, and sendWave spends it as exact counts.
+    var fodder = (spec.fodder && spec.fodder.length) ? spec.fodder.slice() : BULK.slice()
+    var specs = (spec.spec && spec.spec.length) ? spec.spec.slice() : []
+    var frac = (typeof spec.specFrac === 'number' && spec.specFrac > 0) ? spec.specFrac : 0
+    if (!specs.length) frac = 0          // no pool, no share - never borrow from fodder
 
     // 🔴 ONE MINIBOSS PER TIDE, NOT PER WAVE. Ethan, measured in play: *"the
     // minibosses themselves are usually incredibly hard to fight on their own."*
@@ -562,11 +556,40 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // several. The cap lives on the RUN, and composeFor only proposes - sendWave is
     // what spends it, because a proposal that is never placed must not consume the cap.
     var boss = spec.boss || null
+    // ⭐ A GOD WITH NO WORKING BOSS FALLS BACK TO HERS. Art's dark_vortex does not
+    // survive being summoned (D-112), so his miniboss wave would otherwise arrive with
+    // no miniboss in it. Hers needs no lore invented for it.
+    if (!boss && modName === 'miniboss' && BOSSES.length) {
+      boss = BOSSES[Math.floor(Math.random() * BOSSES.length)]
+      if (spec.god) {
+        console.info(TAG + p.username + ' - ' + spec.god + ' has no boss that spawns; ' +
+          'HER miniboss leads this one (D-112)')
+      }
+    }
     if (boss && Math.random() < TAKER_CHANCE) boss = TAKER
 
-    return { ids: ids, boss: boss, mod: modName, rangedAvailable: ranged.length,
+    // `ids` stays for every existing consumer (the census, the harness, the bench) and
+    // is the union - but placement uses fodder/specs/frac, not this.
+    return { ids: [].concat(fodder, specs), fodder: fodder, specs: specs, specFrac: frac,
+      boss: boss, mod: modName, rangedAvailable: specs.length,
       varied: spec.god, variant: spec.variant, theme: spec.theme,
-      wantsRangedNbt: (spec.ranged > 0) }
+      wantsRangedNbt: (spec.bow === true) }
+  }
+
+  // ⭐ HOW MANY OF `count` ARE SPECIALISTS. Exact in expectation, integral in fact.
+  //
+  // ⚠️ ROUNDING IS THE WHOLE PROBLEM AT HIS NUMBERS. A 6-mob horde wave at 5% wants
+  // 0.3 specialists; `Math.round` makes that 0 EVERY TIME, so "5%" would render as
+  // "never" and the tank specialists would simply never appear. The fractional part is
+  // spent as a probability instead, so 0.3 is a 30% chance of one - which averages to
+  // his number over a tide instead of silently flooring to zero.
+  function specCount(count, frac) {
+    if (!(frac > 0) || count <= 0) return 0
+    var want = count * frac
+    var n = Math.floor(want)
+    if (Math.random() < (want - n)) n += 1
+    if (n > count) n = count
+    return n
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -749,7 +772,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var modName = pickMod(srv, p, forcedMod)
     var comp = composeFor(srv, p, y, modName)
     var tier = tierFor(srv, p)
-    var ids = comp.ids
+    // ⛔ `var ids = comp.ids` stood here and became dead the moment placement split into
+    // a fodder call and a specialist call. Removed rather than left: a live-looking
+    // local holding the UNION of two lists that are now placed separately is exactly
+    // the thing someone reaches for next time and gets a silently wrong wave from.
     st.waves++
 
     // ⭐ G1 - ANNOUNCE IT, here, after the modifier is resolved and before the mobs
@@ -833,7 +859,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // somebody who was already fighting.
     var step = Math.floor(SPAWN_WINDOW / SPAWN_BATCHES)
     for (var b = 0; b < SPAWN_BATCHES; b++) {
-      (function (delay, first) {
+      (function (delay, first, pulseNo) {
         srv.scheduleInTicks(delay, function () {
           try {
             // Re-check EVERY pulse. Somebody who surfaced, died or logged out mid
@@ -910,7 +936,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
               // ⚠️ TAGS FIRST. Putting them after HandItems silently DROPPED the tag,
               // which cost a round of debugging - and an untagged mob outlives the tide
               // because the leave-check cannot find it.
-              var waveNbt = '{Tags:["' + TIDE_TAG + '"]}'
+              var plainNbt = '{Tags:["' + TIDE_TAG + '"]}'
+              var bowNbt = plainNbt
               if (comp.wantsRangedNbt && VELDORA.waves && VELDORA.waves.rangedNbt) {
                 // ⚠️ NO REGEX. Three files in this repo have been mangled by escaping a
                 // JS regex through a shell heredoc, and stripping two braces does not
@@ -918,13 +945,46 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
                 var inner = String(VELDORA.waves.rangedNbt)
                 if (inner.charAt(0) === '{') inner = inner.slice(1)
                 if (inner.charAt(inner.length - 1) === '}') inner = inner.slice(0, -1)
-                waveNbt = '{Tags:["' + TIDE_TAG + '"],' + inner + '}'
+                bowNbt = '{Tags:["' + TIDE_TAG + '"],' + inner + '}'
               }
-              VELDORA.spawner.wave(p, {
-                ids: ids, count: per, minDist: 5, maxDist: 11,
-                behind: true, reachable: true,
-                nbt: waveNbt,
-              })
+
+              // ⭐⭐ TWO PLACEMENTS, NOT ONE, AND THAT IS HIS RATIO BEING EXACT.
+              // Ethan, 2026-08-30: general 90/10 · horde 95/5 · specialist 80/20 ·
+              // miniboss 95/5. Splitting the call is what makes those counts real
+              // rather than the outcome of `per` uniform draws from a weighted list -
+              // and it is the ONLY way the forced bow lands on the archers alone.
+              var nSpec = specCount(per, comp.specFrac)
+              var nFod = per - nSpec
+              if (nFod > 0 && comp.fodder && comp.fodder.length) {
+                VELDORA.spawner.wave(p, {
+                  ids: comp.fodder, count: nFod, minDist: 5, maxDist: 11,
+                  behind: true, reachable: true,
+                  nbt: plainNbt,
+                  // ⭐ Which pulse and which half. Placement is TWO calls now, so
+                  // anything counting arrivals - the harness, a log reader - needs to
+                  // tell "one pulse, two halves" from "two pulses".
+                  pulse: pulseNo, role: 'fodder',
+                })
+              }
+              if (nSpec > 0 && comp.specs && comp.specs.length) {
+                VELDORA.spawner.wave(p, {
+                  ids: comp.specs, count: nSpec, minDist: 5, maxDist: 11,
+                  behind: true, reachable: true,
+                  pulse: pulseNo, role: 'specialist',
+                  // ⚠️ Only this half is armed. The fodder above keeps whatever it
+                  // arrives with, which for her skeletons is nothing.
+                  nbt: bowNbt,
+                })
+              }
+              // 🚨 A PULSE THAT PLACED NOTHING IS A BUG, NOT A QUIET WAVE. If both
+              // halves were empty the tide would look broken to the player and clean
+              // in the log, which is the failure this file keeps paying for.
+              if (nFod <= 0 && nSpec <= 0) {
+                console.error(TAG + p.username + ' - PULSE PLACED NOTHING (per=' + per +
+                  ', frac=' + comp.specFrac + ', fodder=' +
+                  ((comp.fodder && comp.fodder.length) || 0) + ', specs=' +
+                  ((comp.specs && comp.specs.length) || 0) + '). This is broken.')
+              }
 
               // ⭐ THE BOSS ARRIVES ONCE, WITH THE FIRST PULSE, and slightly further
               // out so it walks in behind its own horde rather than materialising in
@@ -961,7 +1021,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
             }
           } catch (e) { console.warn(TAG + 'pulse threw :: ' + e) }
         })
-      })(b * step, b === 0)
+      })(b * step, b === 0, b)
     }
   }
 
@@ -1153,6 +1213,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     taker: TAKER,
     _tierFor: tierFor,
     _composeFor: composeFor,
+    // ⭐ Exposed because his ratios are only real if the ROUNDING is right, and that
+    // cannot be seen from one composed wave - it is a property of many pulses.
+    _specCount: specCount,
     _trustOf: trustOf,
     force: function (p) {
       var st = runs[String(p.uuid)]

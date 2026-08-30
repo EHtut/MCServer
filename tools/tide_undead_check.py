@@ -159,10 +159,26 @@ def read_rosters():
     # so testing it against #minecraft:undead would be testing the wrong rule. It is
     # listed in the output so the exemption stays visible; an exemption nobody can see
     # is an allowlist.
+    # 🔴 THIS REGEX BROKE THE DAY AFTER IT WAS WRITTEN AND PRINTED AN EMPTY SECTION
+    # UNDER AN "OK". It matched `ids: [...]`; the god rosters were split into
+    # `fodder:`/`spec:` on 2026-08-30 and it matched nothing, so the exemption list this
+    # tool exists to make VISIBLE became invisible - which is D-109 all over again, in
+    # the tool repaired for D-109, one day later.
+    #
+    # ⭐ TWO FIXES, NOT ONE. Match the real shape, AND treat "no gods parsed" as a
+    # failure below - because the regex will break again the next time the shape moves,
+    # and the only durable defence is that empty is never silent.
     gods = {}
-    for m in re.finditer(r"(\w+): \{\s*at: \d+, tier: '(\w+)',\s*ids: \[(.*?)\]",
+    for m in re.finditer(r"(\w+): \{\s*at: \d+, tier: '(\w+)',(.*?)\n    \},",
                          src["waves"], re.S):
-        gods[m.group(1)] = re.findall(r"'([a-z_0-9]+:[a-z_0-9]+)'", m.group(3))
+        body = m.group(3)
+        ids = []
+        for field in ("fodder", "spec"):
+            fm = re.search(r"%s: \[(.*?)\]" % field, body, re.S)
+            if fm:
+                ids += re.findall(r"'([a-z_0-9]+:[a-z_0-9]+)'", fm.group(1))
+        bm = re.search(r"boss: '([a-z_0-9]+:[a-z_0-9]+)'", body)
+        gods[m.group(1)] = {"ids": ids, "boss": bm.group(1) if bm else None}
     return out, unread, gods
 
 
@@ -214,11 +230,23 @@ def main():
         print()
 
     # ⭐ THE GOD ROSTERS, EXEMPT AND SAID OUT LOUD.
+    # ⛔ AN EMPTY PARSE IS A FAILURE, NOT AN EMPTY SECTION. This tool printed a blank
+    # god list under an "OK" the first time waves.js changed shape - the exact defect
+    # (D-109) it had just been repaired for. There are always gods; zero means the
+    # reader broke.
+    if not gods:
+        print("  !! COULD NOT PARSE ANY GOD ROSTER from waves.js.")
+        print("     That is a FAILURE TO READ, not a pack with no god waves. The")
+        print("     exemption list this tool exists to make visible is invisible.")
+        return 2
     print("  GOD WAVES - exempt by design, listed so the exemption is visible:")
     for g in sorted(gods):
-        off = [i for i in gods[g] if i not in undead and i not in allow]
+        ids = gods[g]["ids"]
+        off = [i for i in ids if i not in undead and i not in allow]
         print("      %-10s %d mob(s), %d not-undead  %s"
-              % (g, len(gods[g]), len(off), ", ".join(off) if off else ""))
+              % (g, len(ids), len(off), ", ".join(off) if off else ""))
+        if not gods[g]["boss"]:
+            print("                 !! no boss declared - her miniboss leads it (D-112)")
     print("     Another god reaching into her water is BY DEFINITION not her undead -")
     print("     that is the whole point of the wave. Testing these against the tag")
     print("     would be testing the wrong rule.")
