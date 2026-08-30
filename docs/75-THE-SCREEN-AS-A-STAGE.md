@@ -37,6 +37,21 @@ different medium, and the writing can now do things the chat line never could.
 | random areas | `x` and `y` (floats), any anchor |
 | rising intensity | frequency, size spread, and how broken the fragment is, all driven by wave number × difficulty |
 
+🔴 **AND "SEVERAL AT ONCE" IS NOT POSSIBLE.** Read out of `ImmersiveMessagesManager`
+on 2026-08-30: the mod holds **one** `currentTooltip` and a FIFO `tooltipQueue`. A send
+ENQUEUES; when a message expires the next is pulled, after a 0.5s `timeBetweenMessages`
+gap. Nothing displays simultaneously, nothing can be cleared, and the queue cannot be
+reordered.
+
+So the whispers are **sequential**, and the intensity curve has to be built from
+frequency, size and how broken each fragment is — not from how many are on screen. ⭐ The
+crashout is unaffected: *"several short lines in quick succession"* is exactly what a FIFO
+queue with short durations produces.
+
+⚠️ **AND THE QUEUE IS THE REAL PRIORITY PROBLEM.** A tide warning queued behind five
+whispers arrives after the tide. There is no way to jump it, so the referee has to be
+server-side: refuse or defer low-priority sends so the client queue never backs up.
+
 🔑 **Intensity is a curve, not a switch.** Early waves: one fragment, small, near the edge,
 readable. Late waves: several at once, larger, closer to centre, more of them garbled.
 The player should notice the room getting louder without being able to point at when.

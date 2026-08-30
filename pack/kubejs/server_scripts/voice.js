@@ -448,26 +448,45 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ⚠️ A single-sentence line takes the direct path with no scheduling at all. Most
   // lines are one sentence, and routing them through a scheduler would add a frame of
   // latency and a failure mode to the common case for nothing.
+  // 🔴🔴 THE MOD SHOWS ONE MESSAGE AT A TIME AND QUEUES THE REST. Read out of
+  // ImmersiveMessagesManager, not guessed:
+  //
+  //     showToPlayer(msg) -> tooltipQueue.add(msg)        ENQUEUE, never replace
+  //     render()          -> if (currentTooltip == null && !queue.isEmpty())
+  //                              currentTooltip = queue.remove()
+  //     on expiry         -> currentTooltip = null
+  //                          countdownToNextTooltip = timeBetweenMessages   (0.5s)
+  //
+  // ⚠️ SO THE QUEUE IS ALREADY THE SEQUENCER, and the first version of this fought it.
+  // It scheduled each sentence with scheduleInTicks AND gave each one the tone's full
+  // duration, so four of Forge's sentences at 5s each cost 4 x (5 + 0.5) = TWENTY-TWO
+  // SECONDS of screen with everything else stuck behind them. The harness "measured"
+  // 5s because it measured MY SCHEDULER rather than the mod's playback - the same
+  // error as every other one today: measuring the thing I control instead of the thing
+  // that happens.
+  //
+  // 🔑 SEND THEM ALL AT ONCE, EACH SHORT. The queue plays them in order, so a beat is
+  // the sentence's own DURATION rather than a delay before sending it. No scheduling at
+  // all, which also removes a failure mode: a scheduled callback firing after the
+  // player has logged out.
   function speak(player, god, s, tag, opts) {
     try {
       var parts = sentences(s)
       if (parts.length < 2) return overlay(player, god, s, tag, opts)
 
-      var server = null
-      try { server = player.server } catch (e) { }
-      if (!server) return overlay(player, god, s, tag, opts)
-
-      var first = overlay(player, god, parts[0], tag, opts)
-      var at = 0
-      for (var i = 1; i < parts.length; i++) {
-        at += beatFor(parts[i - 1], styleOf(god))
-        ;(function (part, delay) {
-          try {
-            server.scheduleInTicks(delay, function () {
-              try { overlay(player, god, part, tag, opts) } catch (e) { }
-            })
-          } catch (e) { }
-        })(parts[i], at)
+      var st = styleOf(god)
+      var first = false
+      for (var i = 0; i < parts.length; i++) {
+        // beatFor is in ticks; the command wants seconds. 0.5s of each is eaten by the
+        // mod's own gap, so the visible hold is a little shorter than this.
+        var secs = Math.max(0.6, beatFor(parts[i], st) / 20)
+        var o = {}
+        if (opts) for (var k in opts) if (opts.hasOwnProperty(k)) o[k] = opts[k]
+        // ⚠️ AFTER the copy: a caller's `seconds` was written for a WHOLE line and
+        // would put every sentence back to full length, which is the bug above.
+        o.seconds = secs
+        var okd = overlay(player, god, parts[i], tag, o)
+        if (i === 0) first = okd
       }
       return first
     } catch (e) { return false }

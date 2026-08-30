@@ -260,17 +260,32 @@ grp('* FORGE RAMBLES - and it must not look like Wall')
   s2.V.voice.setStyle('wall', w)
   const line = 'So anyway. I was thinking. You will not like it. I never do either.'
 
-  s2.delays.length = 0; s2.cmds.length = 0
-  s2.V.voice.speak(s2.player, 'forge', line, 'idle')
-  const fDelays = s2.delays.slice(), fCmds = s2.cmds.length
+  // 🔴 THIS MEASURED THE WRONG THING. It compared scheduleInTicks DELAYS - my own
+  // scheduler - while the mod ignores them entirely: it queues messages and plays them
+  // one at a time for their full DURATION. Four sentences at the tone's 5s cost 22
+  // seconds of screen, and this asserted 5. Measuring the thing I control instead of
+  // the thing that happens, one more time.
+  //
+  // 🔑 The duration IS the pacing now, so that is what gets measured.
+  const held = (god) => {
+    s2.cmds.length = 0
+    s2.V.voice.speak(s2.player, god, line, 'idle')
+    return {
+      sends: s2.cmds.length,
+      // each message costs its duration plus the mod's 0.5s timeBetweenMessages
+      screen: s2.cmds.reduce((t, c) => t + parseFloat(c.match(/\} ([0-9.]+) /)[1]) + 0.5, 0),
+    }
+  }
+  const f2 = held('forge'), w2 = held('wall')
 
-  s2.delays.length = 0; s2.cmds.length = 0
-  s2.V.voice.speak(s2.player, 'wall', line, 'idle')
-  const wDelays = s2.delays.slice()
-
-  ok('four sentences become four sends', fCmds, 4)
-  ok('🔑 forge is measurably FASTER on the same line',
-    fDelays[fDelays.length - 1] < wDelays[wDelays.length - 1], true)
+  ok('four sentences become four sends', f2.sends, 4)
+  ok('🚨 and NOTHING is scheduled - the mod queue is the sequencer', s2.delays.length, 0)
+  ok('🔑 forge holds the screen for LESS time on the same line',
+    f2.screen < w2.screen, true)
+  // ⚠️ A four-sentence line must not squat on the screen. Everything else queues behind
+  // it, and a tide warning behind a ramble is a warning that arrives after the tide.
+  ok('🚨 ...and neither of them squats - under 15s for four sentences',
+    f2.screen < 15 && w2.screen < 15, true)
   ok('...by her declared beatScale', fs_.beatScale < 1, true)
 
   // ⚠️ A floor exists so a sentence cannot vanish before it can be read. Unreadable is
