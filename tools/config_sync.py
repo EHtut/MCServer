@@ -51,6 +51,20 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RCFG = os.path.join(REPO, "pack", "config")
 ICFG = os.path.join(r"C:\MCServer\instance", "config")
 
+# 🔴 CLIENT-SIDE configs. These ship to every player but the dedicated server never
+# has them, so comparing them against the server instance reports a file that is working
+# exactly as intended as though it were missing or dead.
+#
+# ⚠️ That bucket already holds six entries and they are NOT the same thing - stale
+# cristellib structure configs, a .bak, a README. Lumping a healthy client config in with
+# them is how a real problem gets read as noise.
+CLIENT_ONLY = {
+    # Traveler's Titles draws biome/dimension names CENTRED. At the shipped default of
+    # y=-33 it landed on top of art, forge AND wall (tools/hud_zone_check.py). Moved to
+    # -200, clear of every god band. side = "client" in its own pw.toml.
+    "travelerstitles-neoforge-1_21.toml",
+}
+
 # 🔴 Files where the REPO deliberately holds a decision the instance has not received.
 # These are never pulled over. Empty is the healthy state.
 PENDING = {
@@ -72,13 +86,18 @@ def norm(path):
 
 
 def scan():
-    same, drift, pending, absent = [], [], [], []
+    same, drift, pending, absent, client = [], [], [], [], []
     for dp, _dn, fn in os.walk(RCFG):
         for f in fn:
             rp = os.path.join(dp, f)
             rel = os.path.relpath(rp, RCFG)
             ip = os.path.join(ICFG, rel)
-            if not os.path.exists(ip):
+            if os.path.basename(rel) in CLIENT_ONLY:
+                # 🔑 Classified BEFORE the existence test, because the whole point is that
+                # the server not having it is correct. Falling through to `absent` would
+                # file a healthy config under "never deployed, or dead".
+                client.append(rel)
+            elif not os.path.exists(ip):
                 absent.append(rel)
             elif norm(rp) == norm(ip):
                 same.append(rel)
@@ -86,7 +105,7 @@ def scan():
                 pending.append(rel)
             else:
                 drift.append(rel)
-    return same, drift, pending, absent
+    return same, drift, pending, absent, client
 
 
 def main():
@@ -104,7 +123,7 @@ def main():
         print("no instance config at %s" % ICFG)
         return 1
 
-    same, drift, pending, absent = scan()
+    same, drift, pending, absent, client = scan()
 
     # ── push one pending decision, deliberately ──────────────────────────────
     if args.push_pending:
@@ -143,6 +162,12 @@ def main():
             print("        %s" % rel)
         print("        (either they were never deployed, or they are dead files the "
               "repo still carries)")
+    if client:
+        print("  %3d CLIENT-SIDE - ship to players, correctly absent from the server:"
+              % len(client))
+        for rel in sorted(client):
+            print("        %s" % rel)
+        print("        (--pull leaves these alone; the server has nothing to pull FROM)")
     if pending:
         print()
         print("  🔴 %d PENDING DECISION(S) - the repo is RIGHT and the instance has not "

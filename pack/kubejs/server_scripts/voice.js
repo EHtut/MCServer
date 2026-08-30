@@ -510,18 +510,81 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // in opposite directions and only an asymmetric box satisfies both.
   var CHAT_FLOOR = 60        // max distance BELOW centre a line may be thrown
 
+  // ⭐⭐ THE BIOME TITLE IS TERRAIN, AND THE GODS GO AROUND IT. Ethan, 2026-08-30:
+  // *"Turn travelers titles back on instead make god dialogue move around it."*
+  //
+  // 🔴 MY FIRST ATTEMPT MOVED THE TITLES, AND THAT WAS THE WRONG WAY ROUND. Traveler's
+  // Titles draws biome names centred at y=-33 (size 2.1) and dimension names at y=-32
+  // (size 3.0), straight through art, forge and wall. I shifted the mod's config to -200
+  // and Ethan overruled it: the mod is a feature he chose, and it is not the thing that
+  // should give way. **Ours is the layer that knows how to move.**
+  //
+  // 🔑 SO IT IS A SECOND DEAD BAND, exactly like the crosshair one above. The numbers
+  // come from that mod's own config: a 27px dimension title centred on -32 spans roughly
+  // -46..-18, and our own line is ~14px tall at SIZE_BOOST, so the keep-out is that span
+  // widened by half a line each way.
+  //
+  // ⚠️ THESE NUMBERS ARE COUPLED TO A CONFIG WE DO NOT OWN. `tools/hud_zone_check.py`
+  // reads the live travelerstitles config and fails if it has moved out from under this
+  // band - because a dead band aimed at where a title USED to be is worse than none: it
+  // costs screen space and protects nothing.
+  var TITLE_BAND = { lo: -53, hi: -11 }
+
+  function keepOuts() {
+    return [
+      { lo: -CROSSHAIR_BAND, hi: CROSSHAIR_BAND },   // the crosshair
+      { lo: TITLE_BAND.lo, hi: TITLE_BAND.hi },      // the biome / dimension title
+    ]
+  }
+
+  // 🔴 IT RESAMPLES FROM THE ALLOWED SPACE; IT DOES NOT SHOVE THE VALUE TO AN EDGE.
+  //
+  // The obvious implementation - "if it landed in a band, push it to the nearer edge" -
+  // was measured over 200k throws and **55.6% of Wall's lines piled into one 20px strip**.
+  // Of course they did: everything ejected from a band lands on that band's rim. A row of
+  // text reappearing at a fixed height reads as a rendering fault, which is the very thing
+  // scatter exists to avoid, so the cure was producing the disease.
+  //
+  // 🔑 Building the allowed intervals and picking uniformly by LENGTH is both simpler and
+  // correct. It also degrades honestly: if the bands ever eat the whole box, there is no
+  // allowed interval to pick from and the value is left where it was rather than being
+  // silently jammed against an edge - see the fallback at the end.
   function dodgeCrosshair(y, reach) {
     var r = Math.abs(reach) || CROSSHAIR_BAND
-    // Below the band, push it to the nearer edge, keeping the side it was already on.
-    if (Math.abs(y) < CROSSHAIR_BAND) {
-      var out = CROSSHAIR_BAND + Math.round(Math.random() * Math.max(1, r - CROSSHAIR_BAND))
-      y = (y < 0 || (y === 0 && Math.random() < 0.5)) ? -out : out
+    var bands = keepOuts()
+
+    // ⚠️ THE BOX IS ASYMMETRIC. It may go as high as the god's reach allows and only as
+    // low as the chat bar, which eats anything overlapping it.
+    var lo = -r, hi = Math.min(r, CHAT_FLOOR)
+
+    // Cut the keep-outs out of [lo, hi].
+    var free = [{ lo: lo, hi: hi }]
+    for (var b = 0; b < bands.length; b++) {
+      var next = []
+      for (var f = 0; f < free.length; f++) {
+        var seg = free[f], band = bands[b]
+        if (band.hi <= seg.lo || band.lo >= seg.hi) { next.push(seg); continue }
+        if (band.lo > seg.lo) next.push({ lo: seg.lo, hi: band.lo })
+        if (band.hi < seg.hi) next.push({ lo: band.hi, hi: seg.hi })
+      }
+      free = next
     }
-    // ⚠️ AND NEVER FAR ENOUGH DOWN TO MEET THE CHAT BAR, where it would not render at
-    // all. Reflected upward rather than clamped: clamping would pile every low result on
-    // one line, which is visible as a row of text at a fixed height.
-    if (y > CHAT_FLOOR) y = -y
-    return y
+
+    var total = 0
+    for (var s = 0; s < free.length; s++) total += Math.max(0, free[s].hi - free[s].lo)
+
+    // 🚨 NO ROOM IS A REAL OUTCOME, NOT AN ERROR TO PAPER OVER. A god whose whole box is
+    // inside the keep-outs gets her original value back and the boot audit is where that
+    // should be caught - inventing a position here would hide it.
+    if (total <= 0) return y
+
+    var pick = Math.random() * total
+    for (var k = 0; k < free.length; k++) {
+      var w = Math.max(0, free[k].hi - free[k].lo)
+      if (pick < w) return Math.round(free[k].lo + pick)
+      pick -= w
+    }
+    return Math.round(free[free.length - 1].hi)
   }
 
   function scatterOf(st) {

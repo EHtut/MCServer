@@ -562,5 +562,58 @@ grp('* THE TIDE WHISPERS - the dead get louder, measured over samples')
   ok('...and NONE are unmarked', pools.length, 0)
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+grp('* THE DEAD BANDS - a scattered line never lands where it cannot be read')
+{
+  // 🔴 NEITHER BAND HAD ANY COVERAGE AT ALL until 2026-08-30, the crosshair one included -
+  // and that exists because Ethan reported it from play: *"We cannot have any text be on
+  // the cross hair... that is unreadable."* A fix made from a play report and then never
+  // tested is a fix that quietly regresses.
+  //
+  // ⭐ STATISTICAL, NOT A SPOT CHECK. `dodgeCrosshair` is random by design, so one sample
+  // proves nothing. Each god is thrown 20,000 times and the assertion is that ZERO land in
+  // a forbidden band; a single escape is a line delivered onto the crosshair in play.
+  const s = sandbox()
+  const d = s.V.voice.dodgeCrosshair
+  const CROSS = 34                        // voice.CROSSHAIR_BAND
+  const TITLE_LO = -53, TITLE_HI = -11    // voice.TITLE_BAND
+  const CHAT = 60                         // voice.CHAT_FLOOR
+  const N = 20000
+
+  for (const pair of [['wall', 70], ['forge', 95]]) {
+    const god = pair[0], reach = pair[1]
+    let onCross = 0, onTitle = 0, belowChat = 0, outOfBox = 0
+    for (let i = 0; i < N; i++) {
+      const y = d(Math.round((Math.random() * 2 - 1) * reach), reach)
+      if (y > -CROSS && y < CROSS) onCross++
+      if (y > TITLE_LO && y < TITLE_HI) onTitle++
+      if (y > CHAT) belowChat++
+      if (y < -reach) outOfBox++
+    }
+    ok('🚨 ' + god + ' never lands on the crosshair', onCross, 0)
+    // ⭐ Ethan, 2026-08-30: *"Turn travelers titles back on instead make god dialogue move
+    // around it."* The biome title is terrain; ours is the layer that moves.
+    ok('🚨 ' + god + ' never lands on the biome title', onTitle, 0)
+    ok('⛔ ' + god + ' never crosses the chat bar, where it would not render', belowChat, 0)
+    ok('...and stays inside her own declared box', outOfBox, 0)
+  }
+
+  // 🔑 THE BANDS MUST NOT EAT THE WHOLE BOX. If they ever do, dodgeCrosshair returns the
+  // value untouched rather than inventing one - so a god with no room left would silently
+  // start landing on the crosshair again. This is the assertion that catches that.
+  const free = function (reach) {
+    const seen = {}
+    let n = 0
+    for (let i = 0; i < 4000; i++) {
+      const y = d(Math.round((Math.random() * 2 - 1) * reach), reach)
+      if (!seen[y]) { seen[y] = 1; n++ }
+    }
+    return n
+  }
+  const fw = free(70), ff = free(95)
+  ok('wall still has real vertical room after both bands', fw > 20, true)
+  ok('forge has more room than wall - her box is wider on purpose', ff > fw, true)
+}
+
 console.log('\n' + B + (fail ? R + fail + ' FAILED, ' : G) + pass + ' passed' + X)
 process.exit(fail ? 1 : 0)

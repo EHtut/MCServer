@@ -20,7 +20,10 @@ const { execFileSync } = require('child_process')
 const T = __dirname
 const filter = process.argv[2] || ''
 const files = fs.readdirSync(T)
-  .filter(f => /_(harness|check)\.js$/.test(f))
+  // ⚠️ .py CHECKS COUNT TOO. hud_zone_check.py was written, run once by hand and then
+  // would never have run again - a check outside the sweep is a check that rots. The
+  // interpreter is chosen per file rather than assuming everything is node.
+  .filter(f => /_(harness|check)\.(js|py)$/.test(f))
   .filter(f => !filter || f.indexOf(filter) !== -1)
   .sort()
 
@@ -31,17 +34,19 @@ let green = 0, red = 0, crashed = 0
 const bad = []
 
 for (const f of files) {
-  const name = f.replace(/\.js$/, '')
+  const name = f.replace(/\.(js|py)$/, '')
   let out = '', code = 0
+  const py = f.endsWith('.py')
+  const exe = py ? 'python' : process.execPath
   try {
-    out = execFileSync(process.execPath, [path.join(T, f)], { encoding: 'utf8', stdio: 'pipe' })
+    out = execFileSync(exe, [path.join(T, f)], { encoding: 'utf8', stdio: 'pipe' })
   } catch (e) {
     code = e.status === undefined ? -1 : e.status
     out = (e.stdout || '') + (e.stderr || '')
   }
   const clean = strip(out)
   // The summary line each file prints, in either of the two shapes they use.
-  const sum = (clean.match(/^\s*(?:\d+\/\d+ passed\.?|\d+ passed|\d+ FAILED, \d+ passed)\s*$/m) || [''])[0].trim()
+  const sum = (clean.match(/^\s*(?:\d+\/\d+ passed\.?|\d+ passed|\d+ FAILED, \d+ passed|\d+ passed, \d+ failed)\s*$/m) || [''])[0].trim()
   // ⚠️ A missing summary on a non-zero exit is a CRASH, not a failure. They are different
   // facts and collapsing them is how a dead file passes for a failing one.
   const isCrash = code !== 0 && !sum
