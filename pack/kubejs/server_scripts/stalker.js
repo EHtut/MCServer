@@ -943,6 +943,10 @@
     var rare = Math.random() < RARE_CHANCE
     try {
       player.tell(Text.of((rare ? '§f' : '§8§o') + line))
+      // A rare line is the one you are meant to notice, so it stays brighter on
+      // screen too rather than being flattened into the usual grey.
+    try { if (VELDORA.voice && typeof VELDORA.voice.aside === 'function') VELDORA.voice.aside(player, line, rare ? { color: '#FFFFFF', seconds: 6 } : null) } catch (e) { }
+
       player.potionEffects.add('minecraft:nausea',
         rare ? RARE_NAUSEA_TICKS : NAUSEA_TICKS,
         rare ? RARE_NAUSEA_AMP : 0, false, false)
@@ -1071,6 +1075,8 @@
     var line = FRAGMENTS[Math.floor(Math.random() * FRAGMENTS.length)]
     player.tell(Text.of(''))
     player.tell(Text.of('§8§o' + line))
+    try { if (VELDORA.voice && typeof VELDORA.voice.aside === 'function') VELDORA.voice.aside(player, line) } catch (e) { }
+
     player.tell(Text.of(''))
 
     // materials: a garnish, deliberately the least interesting part

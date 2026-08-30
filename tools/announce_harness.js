@@ -412,6 +412,48 @@ grp('* THE GOD DIALOGUE PASS - 2026-08-30')
     bc.indexOf('alignedTo(ps[k], row.god)') !== -1, true)
   ok('...and the tag rides along so bickering gets a tone too',
     bc.indexOf('tag: lines[i].tag') !== -1, true)
+
+  // --- COVERAGE AUDIT 2026-08-30 -------------------------------------------
+  // Ethan: "Check that this applies to all dialogue too from your gods,
+  // deepspeakers, and your own actions."
+  //
+  // Deep speakers were already covered - deep_speaker.js routes through voice.say,
+  // so it inherited the overlay for free. Three files did NOT: they emitted real
+  // dialogue straight to chat and never reached a screen.
+  const wh = code('whispers.js')
+  const st = code('stalker.js')
+  const pl = code('pathless.js')
+
+  ok('voice publishes an interior surface', /function aside\(player, s, opts\)/.test(vo2), true)
+  ok('...which takes NO god, so it gets no colour or chime',
+    /aside\(player, s, opts\)/.test(vo2) && !/aside\(player, god/.test(vo2), true)
+
+  ok('whispers reach the overlay', /VELDORA\.voice\.aside\(p, line\)/.test(wh), true)
+  // A single match was VACUOUS: stalker has TWO emission points (its lines and the
+  // fragments it leaves) and removing one left the other matching. Count both.
+  ok('the stalker reaches the overlay at BOTH its emission points',
+    (st.match(/VELDORA\.voice\.aside\(player, line/g) || []).length, 2)
+  ok('...and its RARE line stays brighter there too',
+    /rare \? \{ color: '#FFFFFF'/.test(st), true)
+  ok('the pathless interior reaches the overlay',
+    (pl.match(/VELDORA\.voice\.aside\(p, _[fhb]\)/g) || []).length, 3)
+
+  // Gods overheard arguing ARE god dialogue, and this audience is pathless by
+  // definition - so both speakers garble.
+  ok('gods overheard arguing reach the overlay',
+    /\n\s*overheard\(p, a, opener\)/.test(pl), true)
+  ok('...both halves of the exchange, not just the opener',
+    /\n\s*overheard\(p, b, reply\)/.test(pl), true)
+  ok('...garbled unless that god is yours',
+    /mine \? null : \{ obfuscate: 'RANDOM' \}/.test(pl), true)
+
+  // Ethan: "throw in test commands aswell."
+  ok('/gd exists to test the pass by hand', /Commands\.literal\('gd'\)/.test(vo2), true)
+  ok('...covering every tone plus aside, bicker and place',
+    ['weight','bargain','quiet','plain','aside','bicker','place']
+      .every(n => vo2.indexOf("'" + n + "'") !== -1), true)
+  ok('...and it drives the REAL overlay, not a mock',
+    /var okd = overlay\(p, god, text, tag\)/.test(vo2), true)
 }
 
 console.log('\n' + B + (fail ? R + fail + ' FAILED, ' : G) + pass + ' passed' + X)

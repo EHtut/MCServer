@@ -299,8 +299,21 @@ grp('\u2b50 PATHLESS DIALOGUE ARRIVES BROKEN \u2014 75 percent readable')
   const alignStart = vo.indexOf('function alignedTo(')
   const alignEnd = vo.indexOf('function overlay(', alignStart)
   const alignBody = alignStart !== -1 ? vo.slice(alignStart, alignEnd) : ''
-  ok('\U0001f6a8 pathOf appears ONLY inside alignedTo()',
-    alignStart !== -1 && (vo.match(/pathOf/g) || []).length === (alignBody.match(/pathOf/g) || []).length, true)
+  // \u26a0\ufe0f TIGHTENED AGAIN 2026-08-30, because this fired on the /gd test command,
+  // which reads pathOf only to PRINT which path you walk. That is not the thing being
+  // guarded against. The thing being guarded against is the OVERLAY deciding
+  // obfuscation from the path, so the assertion now sits on overlay()'s own body -
+  // the actual point of use - rather than on the file.
+  const ovStart2 = vo.indexOf('function overlay(player, god, s, tag, opts)')
+  const ovEnd2 = vo.indexOf('function say(', ovStart2)
+  const ovBody2 = ovStart2 !== -1 ? vo.slice(ovStart2, ovEnd2) : ''
+  ok('\U0001f6a8 overlay() never decides obfuscation from the PATH',
+    ovStart2 !== -1 && ovBody2.indexOf('pathOf') === -1, true)
+  // Twice inside alignedTo: the `typeof` guard and the call itself. Asserting the
+  // exact number rather than ">= 1" is the point - it means a third read cannot be
+  // added here without this line noticing.
+  ok('\U0001f6a8 ...and alignedTo reads it exactly twice - the guard and the call',
+    alignStart !== -1 && (alignBody.match(/pathOf/g) || []).length, 2)
   ok('⚠️ ...and alignedTo fails OPEN, so a missing lookup never garbles',
     /catch \(e\) \{ return true \}/.test(alignBody), true)
 

@@ -146,6 +146,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   function tell(p, s) { try { p.tell(Text.of(s)) } catch (e) { } }
 
+  // One god's line of an overheard argument, on the overlay, garbled unless that
+  // god is yours. Goes through voice.overlay so it shares the hotbar lift and the
+  // tone table rather than being a second implementation that drifts.
+  function overheard(p, god, s) {
+    try {
+      if (!VELDORA.voice || typeof VELDORA.voice.overlay !== 'function') return false
+      var mine = (typeof VELDORA.voice.alignedTo === 'function')
+        ? VELDORA.voice.alignedTo(p, god) : true
+      return VELDORA.voice.overlay(p, god, s, 'about_' + god,
+        mine ? null : { obfuscate: 'RANDOM' })
+    } catch (e) { return false }
+  }
+
   // Two gods, one after the other. The first speaks from their own verdict pool
   // ABOUT the second; the second answers.
   function overheard(server, p) {
@@ -169,20 +182,39 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
     var reply = REPLIES[a] ? pick(REPLIES[a]) : null   // b answers ABOUT a
     tell(p, colourOf(a) + opener)
+
+    // ⭐ GODS OVERHEARD ARGUING, ON SCREEN. Ethan, 2026-08-30: "during god
+    // bickering, the gods you aren't aligned to should be garbled."
+    //
+    // 🔑 THIS AUDIENCE IS PATHLESS BY DEFINITION - that is the whole entry
+    // condition for this file - so BOTH speakers are garbled, always. alignedTo() is
+    // still asked rather than assumed: if this ever fires for somebody with a path,
+    // the god who is theirs comes through clean, which is the rule working, not an
+    // exception to it.
+    overheard(p, a, opener)
     if (reply) {
-      server.scheduleInTicks(PAIR_GAP, function () { tell(p, colourOf(b) + reply) })
+      server.scheduleInTicks(PAIR_GAP, function () {
+        tell(p, colourOf(b) + reply)
+        overheard(p, b, reply)
+      })
     }
     console.info(TAG + p.username + ' overheard ' + a + ' -> ' + b)
     return true
   }
 
   function feel(p) {
-    tell(p, '§7§o' + pick(FEELINGS))
+    var _f = pick(FEELINGS)
+    tell(p, '§7§o' + _f)
+    try { if (VELDORA.voice && typeof VELDORA.voice.aside === 'function') VELDORA.voice.aside(p, _f) } catch (e) { }
+
     return true
   }
 
   function how(p) {
-    tell(p, '§7§o' + pick(HOW))
+    var _h = pick(HOW)
+    tell(p, '§7§o' + _h)
+    try { if (VELDORA.voice && typeof VELDORA.voice.aside === 'function') VELDORA.voice.aside(p, _h) } catch (e) { }
+
     return true
   }
 
@@ -316,7 +348,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // Bodies more often than whispers. The gods are far away and mostly not
     // thinking about you, which is the point of the stretch.
     if (Math.random() < 0.62) {
-      tell(p, '§7§o' + pick(BODY))
+      var _b = pick(BODY)
+      tell(p, '§7§o' + _b)
+    try { if (VELDORA.voice && typeof VELDORA.voice.aside === 'function') VELDORA.voice.aside(p, _b) } catch (e) { }
+
     } else {
       tell(p, whisperLine(p))
     }

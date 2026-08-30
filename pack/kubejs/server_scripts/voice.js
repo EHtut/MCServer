@@ -304,9 +304,40 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return true
   }
 
+  // ⭐ THE INTERIOR LINES. A coverage audit on 2026-08-30 found three files emitting
+  // real dialogue straight to chat, never reaching the overlay:
+  //
+  //   whispers.js   the refrains and intrusive thoughts   `§8§o*like this*`
+  //   stalker.js    its lines and the fragments it leaves
+  //   pathless.js   FEELINGS / HOW / BODY - what it is like to walk no path
+  //
+  // 🔑 THESE ARE NOT GOD DIALOGUE and must not be dressed as it. Nobody is addressing
+  // you — it is your own head, so there is no speaker, no god colour, no chime, and no
+  // tone table. Italic and quiet, at the same place on screen, and that is all.
+  //
+  // ⚠️ It takes NO god, deliberately. Routing these through say() would have given them
+  // a colour, a chime and a silencing rule that none of them should have.
+  function aside(player, s, opts) {
+    try {
+      if (!VELDORA.im || typeof VELDORA.im.show !== 'function') return false
+      var show = {
+        anchor: 'BOTTOM_CENTER',
+        y: HOTBAR_LIFT,
+        typewriter: true,
+        italic: true,
+        fade: true,
+        seconds: 5,
+        color: '#AAAAAA',
+      }
+      if (opts) for (var k in opts) if (opts.hasOwnProperty(k)) show[k] = opts[k]
+      return VELDORA.im.show(player, VELDORA.garble ? VELDORA.garble.strip(s) : s, show)
+    } catch (e) { return false }
+  }
+
   VELDORA.voice = {
     setGarbled: setGarbled,
     garbled: function (god) { return !!GARBLED[god] },
+    aside: aside,
     // ⭐ Published for broadcast.js so the bickering exchange gets the same surface,
     // the same tones and the same hotbar lift as every other god line - rather than a
     // second copy of this that drifts. The overlay is the god dialogue system now.
@@ -327,6 +358,77 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   ServerEvents.commandRegistry(function (event) {
     var Commands = event.commands
     function ADMIN(s) { try { return s.hasPermission(2) } catch (e) { return false } }
+
+    // ------------------------------------------------------------------
+    // /gd - the god dialogue pass, testable without waiting for the game to
+    // produce each case. Ethan, 2026-08-30: "throw in test commands aswell."
+    //
+    // Every subcommand drives the REAL overlay() with a real tag, so what you see is
+    // what a god would actually produce - not a mock that can drift away from it.
+    function shot(label, god, tag, text) {
+      return Commands.literal(label).executes(function (ctx) {
+        var p = ctx.source.player
+        var okd = overlay(p, god, text, tag)
+        p.tell(Text.of('§8' + label + ' §7tag=§f' + tag +
+          ' §8-> §f' + (okd ? 'sent' : 'FAILED')))
+        return 1
+      })
+    }
+    event.register(Commands.literal('gd').requires(ADMIN)
+      // one per tone, so the table is visible rather than described
+      .then(shot('weight', 'blade', 'mark_declare',
+        'You are marked. Everything that follows is a consequence.'))
+      .then(shot('bargain', 'salvage', 'contract_offer',
+        'Something wonderful, and it will cost you almost nothing.'))
+      .then(shot('quiet', 'art', 'guidance',
+        'Go further out. You are not far enough for me to reach.'))
+      .then(shot('plain', 'forge', 'nothing_matching',
+        'This one matches no tone and should render plain.'))
+      // the interior surface - no god, no colour, no chime
+      .then(Commands.literal('aside').executes(function (ctx) {
+        var p = ctx.source.player
+        var okd = aside(p, 'You have been holding your breath again.')
+        p.tell(Text.of('§8aside -> §f' + (okd ? 'sent' : 'FAILED')))
+        return 1
+      }))
+      // ⭐ THE ONE THAT NEEDS TWO STATES. Shows the same line as YOUR god and as
+      // one that is not, so the bickering rule can be seen rather than reasoned about.
+      .then(Commands.literal('bicker').executes(function (ctx) {
+        var p = ctx.source.player
+        var mine = null
+        try { mine = VELDORA.paths && VELDORA.paths.pathOf(p) } catch (e) { }
+        var other = null
+        for (var g in COLOUR) { if (COLOUR.hasOwnProperty(g) && g !== mine) { other = g; break } }
+        p.tell(Text.of('§8your path: §f' + (mine || 'NONE') +
+          '§8   other: §f' + (other || 'none registered')))
+        if (mine) {
+          overlay(p, mine, 'This one is yours and should read clean.', 'about_' + mine,
+            alignedTo(p, mine) ? null : { obfuscate: 'RANDOM' })
+        }
+        if (other) {
+          var delay = mine ? 40 : 0
+          p.server.scheduleInTicks(delay, function () {
+            overlay(p, other, 'This one is not yours and should be garbled.',
+              'about_' + other, alignedTo(p, other) ? null : { obfuscate: 'RANDOM' })
+          })
+        }
+        if (!mine) p.tell(Text.of('§8pathless, so EVERY god garbles - that is correct'))
+        return 1
+      }))
+      // position check - the reason this needs eyes on it at all
+      .then(Commands.literal('place').executes(function (ctx) {
+        var p = ctx.source.player
+        overlay(p, 'blade', 'This line should sit ABOVE the hotbar, clear of it.', 'plain')
+        p.tell(Text.of('§8hotbar lift = §f' + HOTBAR_LIFT +
+          ' §8(one number in voice.js if it sits wrong)'))
+        return 1
+      }))
+      .executes(function (ctx) {
+        var p = ctx.source.player
+        p.tell(Text.of('§8/gd §fweight bargain quiet plain aside bicker place'))
+        p.tell(Text.of('§8tones are matched on the TAG; lift=§f' + HOTBAR_LIFT))
+        return 1
+      }))
 
     // Read a tag out loud. The only honest way to review combinatorial writing is
     // to see the JOINS, not the fragments - a pool can look fine and pair badly.

@@ -194,6 +194,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       line = pick(String(p.uuid), POOL[key][tier - 1])
     }
     try { p.tell(Text.of('§8§o*' + line + '*')) } catch (e) { }
+    try { if (VELDORA.voice && typeof VELDORA.voice.aside === 'function') VELDORA.voice.aside(p, line) } catch (e) { }
+
   }
 
   ServerEvents.loaded(function (event) {
