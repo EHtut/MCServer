@@ -222,6 +222,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // does - and it is the mechanic that unblocks docs/49 §1 B without needing the
     // ruling that has been holding it. docs/54 §4d.
     // 🔑 SHE MADE HIM (docs/58 §3 - "Gregor KAYER Court"). She will not say it, and
+    // ⚠️ QUALIFIED 2026-08-30: "will not say it" was written as never, and Ethan's
+    // bickering scenes have her say it TWICE - both times as the last line of a
+    // high-trust scene ("I will hold you to that. / Gregor." and "Mera, You are not
+    // meant to know."). That is the rule PAYING OFF rather than breaking: a name
+    // only lands like that because she has spent the whole game refusing to use one.
+    // ⛔ So the rule is "not until high trust, and then once" - do NOT "correct" his
+    // scenes back to match an absolute that was never quite the intent. docs/77 §5.
     // the last line here is as close as she comes.
     demand_blade: [
       "You don't answer to me. Answer anyway. It's faster.",
