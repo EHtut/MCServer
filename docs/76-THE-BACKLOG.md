@@ -272,6 +272,13 @@ gate and exits non-zero until it is — **an UNKNOWN counts as a failure**.
 ⭐ The fonts are delivered to Ethan's instance and to `clientpack/kubejs/assets/`, and
 KubeJS loads that as an always-active resource pack — nobody enables anything.
 
+🔴 **DELIVERED IS NOT LOADED — D-129.** Minecraft builds its font set once per resource
+reload. Ethan's client had been running since 10:27 when the fonts landed at 10:58, so it
+had never seen them, and the symptom was **missing-glyph boxes, not vanilla text**: a font
+absent from the loaded stack yields an *empty* font set rather than a fallback. Every
+delivery check passed the whole time. `build_client_assets.py` now answers the second
+question too (`OK` / `STALE` / `UNKNOWN`) on every run. **F3+T after any font change.**
+
 🔴 **But anyone whose client pack predates today sees vanilla text and no error.** And
 `docs/08` and `docs/09` both point at `.\server\scripts\build-client.ps1`, **which does not
 exist at that path**. So the documented rebuild step is already stale, and it is the step

@@ -33,10 +33,12 @@ Editing the copy is how the two drift, and the copy is the one players see.
 SIL OFL permits bundling, on condition the licence ships with the fonts. OFL.txt is
 copied alongside them, not left behind in the repo.
 """
+import datetime
 import filecmp
 import hashlib
 import io
 import os
+import re
 import shutil
 import sys
 
@@ -56,6 +58,84 @@ CLIENTPACK = os.path.join(r"C:\MCServer", "clientpack", "kubejs", "assets")
 LIVE = os.path.join(
     r"C:\Users\Ethan\AppData\Roaming\PrismLauncher\instances",
     "CogsAndCadavers-PrismInstance (4)", ".minecraft", "kubejs", "assets")
+
+
+# ⭐⭐ DELIVERED IS NOT LOADED, AND THAT COST AN EVENING.
+#
+# 2026-08-30: the fonts were copied into Ethan's instance at 11:03. His client had been
+# running since 10:27. Minecraft builds its font set ONCE per resource reload, so the
+# files were on disk, in the right folder, inside a resource pack that was genuinely in
+# the stack - and the client had never seen them.
+#
+# 🔑 THE SYMPTOM IS TOFU, NOT VANILLA TEXT. `Style.withFont` on a font that is not in the
+# loaded stack does NOT fall back to the default - it yields an EMPTY font set, and an
+# empty font set draws every codepoint as the missing-glyph box. The screen fills with
+# rectangles at the right colour, the right length, in the right place. Everything about
+# the delivery looks correct because everything about the delivery IS correct.
+#
+# ⚠️ AND NOTHING LOGS EITHER WAY. A font that loads fine logs nothing; a font that was
+# never asked for also logs nothing. They are indistinguishable in the client log, so the
+# check CANNOT be "is veldora mentioned". It has to be a timestamp comparison:
+#
+#     did the client reload resources AFTER these files landed?
+#
+# That is the only question the available evidence can actually answer.
+_LOGSTAMP = re.compile(r'^\[(\d{2}[A-Za-z]{3}\d{4} \d{2}:\d{2}:\d{2})\.\d+\]')
+
+
+def last_reload(log_path):
+    """When the client last rebuilt its resources, or None if that cannot be read."""
+    if not os.path.isfile(log_path):
+        return None
+    seen = None
+    try:
+        with io.open(log_path, encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                if "Reloading ResourceManager" not in line:
+                    continue
+                m = _LOGSTAMP.match(line)
+                if not m:
+                    continue
+                try:
+                    seen = datetime.datetime.strptime(m.group(1), "%d%b%Y %H:%M:%S")
+                except ValueError:
+                    continue
+    except Exception:
+        return None
+    return seen
+
+
+def check_loaded(dest):
+    """Has the client actually taken these files into a font set yet?
+
+    ⚠️ Returns a (status, message) pair, never a bool. "I could not tell" and "no" are
+    different answers and must not share a return value - the caller treats UNKNOWN as a
+    failure rather than quietly as a pass.
+    """
+    files = walk(dest)
+    if not files:
+        return ("UNKNOWN", "nothing delivered there yet")
+    newest = datetime.datetime.fromtimestamp(
+        max(os.path.getmtime(p) for p in files.values()))
+
+    # .../.minecraft/kubejs/assets -> .../.minecraft/logs/latest.log
+    mc = os.path.dirname(os.path.dirname(dest))
+    log = os.path.join(mc, "logs", "latest.log")
+    if not os.path.isfile(log):
+        return ("UNKNOWN", "no client log at %s - cannot tell whether it ever loaded them"
+                % log)
+
+    at = last_reload(log)
+    if at is None:
+        return ("UNKNOWN", "client log contains no resource reload")
+    if at >= newest:
+        return ("OK", "client reloaded at %s, after the files landed at %s"
+                % (at.strftime("%H:%M:%S"), newest.strftime("%H:%M:%S")))
+    return ("STALE",
+            "files landed %s, client last reloaded %s - it has NEVER seen them. "
+            "F3+T in game, or relaunch. Until then every line in these fonts renders "
+            "as MISSING-GLYPH BOXES, not as vanilla text."
+            % (newest.strftime("%H:%M:%S"), at.strftime("%H:%M:%S")))
 
 
 def sha(path):
@@ -157,6 +237,14 @@ def main():
         compare(label, dest)
         print()
 
+    # ⭐ THE HALF THAT WAS MISSING. Everything above answers "are the bytes there", which
+    # was already true on the day the screen was full of boxes.
+    print("  has the client actually LOADED them?")
+    st, msg = check_loaded(LIVE)
+    icon = {"OK": "  ok  ", "STALE": "  🔴  ", "UNKNOWN": "  ⚠️  "}.get(st, "  ?   ")
+    print("%s%s: %s" % (icon, st, msg))
+    print()
+
     if not build:
         print("=" * 78)
         print("report only. re-run with --build to copy.")
@@ -192,9 +280,18 @@ def main():
     print("delivered. KubeJS loads kubejs/assets as an always-active resource pack, so")
     print("no one has to enable anything.")
     print()
-    print("⚠️ STILL TRUE: a player whose client pack predates this will see vanilla text")
-    print("   and no error. The client pack has to be rebuilt and redistributed for")
-    print("   anyone but Ethan.")
+    print()
+    print("🔴 COPYING IS NOT LOADING. Minecraft builds its font set once per resource")
+    print("   reload. A client already running when these landed has NOT seen them, and")
+    print("   the symptom is NOT vanilla text - it is MISSING-GLYPH BOXES, because a font")
+    print("   that is not in the loaded stack yields an EMPTY font set rather than a")
+    print("   fallback. Press F3+T in game, or relaunch the client.")
+    print()
+    st, msg = check_loaded(LIVE)
+    print("   live instance: %s - %s" % (st, msg))
+    print()
+    print("⚠️ And a player whose CLIENT PACK predates this has no font files at all. The")
+    print("   pack has to be rebuilt and redistributed for anyone but Ethan (B1).")
     return 0
 
 
