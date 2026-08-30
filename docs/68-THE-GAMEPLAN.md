@@ -995,3 +995,37 @@ deals already take hunger**, and her whole character is selling you something yo
 Thirst gives her a second currency without anyone writing a line.
 
 **Nothing installed. Nothing restarted.**
+
+---
+
+# 📋 DEFERRED TO THE END — god dialogue by FONT, not colour
+
+> Ethan, 2026-08-29: *"For the god dialogue we used colors, but now he have the
+> opportunity to use font. This will need some design work so it goes to the end."*
+
+⭐ **Colour was always a compromise.** There are sixteen of them, seven are already
+claimed, `§f` had to be reserved for "nobody", and Art spoke in two of them for weeks
+without anyone noticing until he asked *"who is pink dialogue?"*
+
+**A font is a stronger identity than a colour and there are unlimited fonts.** A god
+would be recognisable before you read a word — which is what colour was reaching for and
+never quite achieved.
+
+## Why this is design work and not a jar drop
+
+⚠️ **It needs a resource pack.** Fonts resolve **client-side**, which the `/playsound`
+and `{"shake":true}` probes both proved the hard way — the server accepts any font id and
+never validates it. ⭐ The pack already ships four resource packs through packwiz, so
+distribution costs nothing; **authoring five legible typefaces does.**
+
+⚠️ **Legibility is the whole risk.** A font that says *"this is Wall"* at a glance and
+cannot be read at 1080p has traded the wrong thing. `minecraft:alt` (the enchanting
+runes) already ships in vanilla and is completely unreadable — useful as an effect,
+useless as a voice.
+
+⚠️ **And it interacts with three things built this session:** the `§k` garble, the
+`ImmersiveMessage` overlay, and the colour registry in `voice.js` that exists precisely
+to stop a god speaking in two identities.
+
+🔑 **Open question for the design pass:** does font *replace* colour, or sit alongside it?
+Replacing frees seven colours; keeping both doubles the identity signal. Not decided.

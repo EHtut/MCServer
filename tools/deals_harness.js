@@ -293,7 +293,14 @@ grp('⭐ THE LAUGHTER IS AN ACTION BAR, NOT THE BOSS BAR')
   // 🚨 It must NOT go through show() - an aftermath sting competing with a tide
   // warning would either cancel it or lose to it, and neither is right.
   const fn = ann.slice(ann.indexOf('function actionbar'), ann.indexOf('function pick'))
-  ok('🚨 it does not touch the priority slot', fn.indexOf('show(') === -1, true)
+  // ⚠️ WAS `fn.indexOf('show(') === -1`, which matched `VELDORA.im.show(` the moment
+  // the sting was migrated to the real API - a DIFFERENT function with a coincidentally
+  // similar name. The intent was never "no function called show"; it is "does not claim
+  // the one-bar priority slot". Assert THAT.
+  ok('🚨 it does not call announce.js own show()',
+    fn.indexOf('show(server,') === -1, true)
+  ok('🚨 ...and never touches the priority slot',
+    fn.indexOf('live[') === -1 && fn.indexOf('st.prio') === -1, true)
   ok('...and does not read `live`', fn.indexOf('live[') === -1, true)
 }
 
