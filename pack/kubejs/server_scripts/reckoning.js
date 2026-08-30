@@ -171,7 +171,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return '§4§l'
   }
 
-  function speak(p, s, god) { try { p.tell(Text.of(godColour(god) + s)) } catch (e) { } }
+  function speak(p, s, god) { try { VELDORA.voice.chat(p, godColour(god) + s) } catch (e) { } }
 
   function fireSalvage(server, p, a) {
     // Interest. Her own pack collects, scaled by what she has been given.

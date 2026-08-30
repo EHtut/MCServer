@@ -451,7 +451,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
             { label: 'Pull it back.', id: 'refuse' },
           ],
           onChoose: function (pl, id) {
-            pl.tell(Text.of(id === 'accept' ? '§4§lGood.' : '§4§lOf course.'))
+            VELDORA.voice.chat(pl, id === 'accept' ? '§4§lGood.' : '§4§lOf course.')
             console.info(TAG + 'test: ' + safeName(pl) + ' chose ' + id)
           },
           onTimeout: function (pl) {

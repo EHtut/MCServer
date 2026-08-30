@@ -516,7 +516,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // the only way out" - and the Harvest was cut on 2026-08-23 (docs/62), so the
         // way out did not exist; then 2026-08-24 removed endings entirely, so there is
         // no way out to describe. It now says the true thing, which is also worse.
-        p.tell(Text.of('§5§l' + nm + '§7 will never let you go.'))
+        VELDORA.voice.chat(p, '§5§l' + nm + '§7 will never let you go.')
         p.tell(Text.of('§8Nor will any of them. That is not a threat - it is the arrangement.'))
         return 1
       }

@@ -202,6 +202,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       var ps = server.players
       for (var i = 0; i < ps.length; i++) {
         var p = ps[i]
+        // ⭐ QUIET MODE - the SOURCE declines, so the backlog model stays honest.
+        try { if (VELDORA.screen && VELDORA.screen.isQuiet(p)) continue } catch (e) { }
         var waves = wavesOf(p)
         if (waves === null) continue
         var band = bandFor(waves)

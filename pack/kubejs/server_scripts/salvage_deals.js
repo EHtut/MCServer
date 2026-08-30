@@ -324,7 +324,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       return false
     }
     var deal = dealFor(p)
-    var say = function (s) { try { p.tell(Text.of(COLOUR + broken(s))) } catch (e) { } }
+    var say = function (s) { try { VELDORA.voice.chat(p, COLOUR + broken(s)) } catch (e) { } }
 
     return VELDORA.ritual.begin(p, {
       colour: COLOUR,

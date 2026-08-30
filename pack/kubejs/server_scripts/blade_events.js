@@ -707,7 +707,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     }
     // Then the world returns, and only then the order.
     server.scheduleInTicks(sceneEnd + 40, function () {
-      try { p.tell(Text.of('§4§lFace him and win.')) } catch (e) { }
+      try { VELDORA.voice.chat(p, '§4§lFace him and win.') } catch (e) { }
     })
 
     var spawnAt = sceneEnd + 80

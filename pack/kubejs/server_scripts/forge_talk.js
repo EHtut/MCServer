@@ -110,10 +110,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (VELDORA.garble && typeof VELDORA.garble.line === 'function') {
         // ⭐ She is talking to somebody with NO GOD, so she arrives broken like the
         // rest of the pathless track. See garble.js.
-        p.tell(Text.of(COLOUR + VELDORA.garble.line(s, COLOUR)))
+        VELDORA.voice.chat(p, COLOUR + VELDORA.garble.line(s, COLOUR))
         return
       }
-      p.tell(Text.of(COLOUR + s))
+      VELDORA.voice.chat(p, COLOUR + s)
     } catch (e) { }
   }
 
@@ -265,6 +265,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // Tick the timers of anyone mid-conversation.
       for (i = 0; i < ps.length; i++) {
         var p = ps[i]
+        // ⭐ QUIET MODE - the SOURCE declines, so the backlog model stays honest.
+        try { if (VELDORA.screen && VELDORA.screen.isQuiet(p)) continue } catch (e) { }
         var st = talking[String(p.uuid)]
         if (!st) continue
         if (!st.awaiting) continue

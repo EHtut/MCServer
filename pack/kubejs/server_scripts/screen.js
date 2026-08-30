@@ -263,11 +263,46 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { return false }
   }
 
+  // ⭐⭐ QUIET MODE — for testing, and it lives HERE because everything already asks
+  // this file whether it may speak.
+  //
+  // Ethan, mid-test: *"Dialogue is still playing across my screen."* Six systems roll on
+  // their own (idle 20%/min, pathless 10%/min, bickering, the dead, the stalker, Forge),
+  // and at a 12-second hold a couple of them bury whatever is actually being tested.
+  //
+  // 🔑 THE SOURCES ASK; THE REFEREE DOES NOT DROP. A source that decides not to speak
+  // costs nothing. A referee that silently discarded messages would poison the backlog
+  // model - `claim` records what was SENT, so refusing after claiming would make every
+  // later estimate wrong, and the model is already the part that cannot be verified.
+  //
+  // ⚠️ IN MEMORY, so it cannot be left on. A tester who forgets is one restart from a
+  // pantheon that has gone quiet for no discoverable reason - which is the single
+  // hardest symptom to diagnose in this project.
+  var quiet = {}
+
+  function isQuiet(player) {
+    try {
+      var k = keyOf(player)
+      return !!(k && quiet[k])
+    } catch (e) { return false }
+  }
+
+  function setQuiet(player, on) {
+    try {
+      var k = keyOf(player)
+      if (!k) return false
+      if (on) quiet[k] = true; else delete quiet[k]
+      return true
+    } catch (e) { return false }
+  }
+
   VELDORA.screen = {
     P: P,
     HOLD: HOLD,
     _audit: auditOrder,
     claim: claim,
+    isQuiet: isQuiet,
+    setQuiet: setQuiet,
     reserve: reserve,
     backlog: backlog,
     clear: clear,

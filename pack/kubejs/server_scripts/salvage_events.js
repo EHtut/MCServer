@@ -473,7 +473,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     try { y = Math.round(p.y) } catch (e) { }
     if (y === null) return false
     try {
-      p.tell(Text.of('§6§l' + (line(p, 'guidance') || 'Deeper pays. I don\'t set the rates.')))
+      VELDORA.voice.chat(p, '§6§l' + (line(p, 'guidance') || "Deeper pays. I don't set the rates."))
       p.tell(Text.of('§8She is not charging you for that. Note it.'))
     } catch (e) { return false }
     console.info(TAG + p.username + ' got a tip-off (free)')
@@ -543,7 +543,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // After the world has said what happened.
       srv.scheduleInTicks(30, function () {
         try {
-          p.tell(Text.of('§6§lTold you it would hurt less.'))
+          VELDORA.voice.chat(p, '§6§lTold you it would hurt less.')
           eff(p, 'minecraft:resistance', 30, 2)
           eff(p, 'minecraft:regeneration', 15, 1)
         } catch (e) { }

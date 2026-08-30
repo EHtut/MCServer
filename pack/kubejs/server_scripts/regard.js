@@ -183,7 +183,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   function speak(p, key, text) {
     try {
-      p.tell(Text.of(godColour(key) + text))
+      VELDORA.voice.chat(p, godColour(key) + text)
     } catch (e) { }
     console.info('[regard] ' + p.username + ' (' + key + '): ' + text)
   }

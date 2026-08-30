@@ -68,7 +68,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   function speak(p, text, key) {
-    try { p.tell(Text.of(godColour(key) + text)) } catch (e) { }
+    try { VELDORA.voice.chat(p, godColour(key) + text) } catch (e) { }
   }
 
   // ---------------------------------------------------------------------------

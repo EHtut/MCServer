@@ -267,7 +267,55 @@ def main():
                 continue
             bad_cmd.append((f, m.group(1), line_of(src, m.start())))
 
+    # -------------------------------------------------------------------
+    # 🔴 A CHARACTER LINE WRITTEN STRAIGHT TO CHAT, bypassing voice.chat().
+    #
+    # Ethan turned the chat copy off; it was implemented at say()/sayAbout() and
+    # broadcast, reported as done, and SIXTEEN other places were still writing god
+    # dialogue directly. He tested and still had dialogue in his chat bar.
+    #
+    # ⚠️ The switch was real and the sweep was not. This rule is what makes the next
+    # call site impossible to forget: any `.tell()` carrying a god colour code, or a
+    # colour helper, has to go through voice.chat.
+    #
+    # ⛔ ADMIN AND UI OUTPUT IS EXEMPT and must stay that way - a trust readout, a
+    # command's answer, a status bar. Those are the operator surface, always shown. The
+    # test is "is a CHARACTER saying this", which is why the exemption is a FILE list
+    # rather than a pattern: a pattern would eventually excuse a real line.
+    ADMIN_FILES = set([
+        'help.js', 'paths.js', 'notoriety.js', 'power.js', 'patron_sound.js',
+        'counters.js', 'harvest.js', 'chosen.js', 'godevents.js', 'tide.js',
+        'salvage.js', 'dialogue_test.js', 'opening.js', 'bicker.js', 'caebrim.js',
+        'screen.js', 'announce.js', 'guidebook.js', 'voice.js', 'broadcast.js',
+        'fall.js', 'release.js', 'salvage_events.js', 'wall_events.js',
+    ])
+    chat_leak = []
+    _COL = re.compile(r"§[0-9a-f]§l|godColour\(|colourOf\(|COLOUR \+")
+    for f in files:
+        if f in ADMIN_FILES:
+            continue
+        try:
+            src = io.open(os.path.join(SS, f), encoding='utf-8').read()
+        except Exception:
+            continue
+        for n, ln in enumerate(src.splitlines(), 1):
+            if '.tell(' not in ln:
+                continue
+            if 'voice.chat' in ln or 'ctx.source' in ln or 'Commands.' in ln:
+                continue
+            if _COL.search(ln):
+                chat_leak.append((f, n, ln.strip()[:70]))
+
     problems = 0
+
+    if chat_leak:
+        problems += len(chat_leak)
+        print("A CHARACTER LINE GOES STRAIGHT TO CHAT, bypassing voice.chat():")
+        for f, n, t in chat_leak:
+            print("  %-22s %4d  %s" % (f, n, t))
+        print("  Ethan turned the chat copy OFF. Route it through VELDORA.voice.chat(),")
+        print("  or add the file to ADMIN_FILES if it is operator output, not dialogue.")
+        print()
 
     if bad_cmd:
         print('')

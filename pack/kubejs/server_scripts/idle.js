@@ -341,6 +341,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           if (VELDORA.speaker && VELDORA.speaker.active(players[i])) odds = DEEP_CHANCE
         } catch (e) { }
         if (Math.random() > odds) continue
+        // ⭐ QUIET MODE - the SOURCE declines, so the backlog model stays honest.
+        try { if (VELDORA.screen && VELDORA.screen.isQuiet(players[i])) continue } catch (e) { }
         attempt(server, players[i], false)
       }
     } catch (e) { console.warn(TAG + 'sweep threw :: ' + e) }

@@ -193,7 +193,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } else {
       line = pick(String(p.uuid), POOL[key][tier - 1])
     }
-    try { p.tell(Text.of('§8§o*' + line + '*')) } catch (e) { }
+    try { VELDORA.voice.chat(p, '§8§o*' + line + '*') } catch (e) { }
     try { if (VELDORA.voice && typeof VELDORA.voice.aside === 'function') VELDORA.voice.aside(p, line) } catch (e) { }
 
   }

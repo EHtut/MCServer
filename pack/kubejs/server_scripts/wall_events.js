@@ -957,7 +957,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         } else {
           p.tell(Text.of('§8it is §fDAY§8. Nothing of hers touches another player.'))
           if (m > 0.9) {
-            p.tell(Text.of('§c§lShe is at fury and cannot act. She is only waiting.'))
+            VELDORA.voice.chat(p, '§c§lShe is at fury and cannot act. She is only waiting.')
           }
         }
       }

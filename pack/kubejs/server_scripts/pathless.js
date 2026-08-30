@@ -421,6 +421,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (!GATE) { schedule(server); return }
       var ps = server.players
       for (var i = 0; i < ps.length; i++) {
+        // ⭐ QUIET MODE - a tester asked for silence. The SOURCE declines rather than
+        // the referee dropping it, so the backlog model stays honest.
+        try { if (VELDORA.screen && VELDORA.screen.isQuiet(ps[i])) continue } catch (e) { }
         if (Math.random() > CHANCE) continue
         attempt(server, ps[i], false)
       }

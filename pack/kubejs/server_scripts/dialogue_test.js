@@ -9,6 +9,7 @@
 //     /dtest crash              Wall's two-movement crashout
 //     /dtest interior           the player's own voice (asides)
 //     /dtest screen             what the referee would allow right now
+//     /dtest quiet              silence the ambient systems while testing
 //     /dtest all                everything, paced so it can be watched
 //
 // Ethan, 2026-08-30: *"Build a test of the dialogue system so i can test everything."*
@@ -168,6 +169,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     tell(p, '§7crashout §8- Wall, two movements · §f/dtest crash')
     tell(p, '§7interior §8- the player as a person · §f/dtest interior')
     tell(p, '§7screen §8- the referee · §f/dtest screen')
+    tell(p, '§7quiet §8- silence ambient dialogue while testing · §f/dtest quiet' +
+      (VELDORA.screen && VELDORA.screen.isQuiet(p) ? ' §a(ON)' : ''))
     tell(p, '§8§o/dtest all §7runs everything, paced to be watchable')
 
     // 🚨 THE FONT CHECK, because it is the failure that looks like content. A font the
@@ -187,6 +190,31 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
     if (what === 'interior') { head(p, 'the player as a person'); return interior(p) }
     if (what === 'screen') { head(p, 'the referee'); return screen(p) }
+
+    // ⭐ QUIET. Ethan, mid-test: "Dialogue is still playing across my screen."
+    //
+    // Six systems roll on their own - idle at 20%/min, pathless at 10%, plus bickering,
+    // the dead, the stalker and Forge - and at a 12-second hold two of them bury whatever
+    // is being tested. This silences the SOURCES; /dtest still fires everything.
+    //
+    // ⚠️ In memory, so it cannot be left on past a restart. A tester who forgets is one
+    // reboot away from a pantheon that has gone quiet for no discoverable reason.
+    if (what === 'quiet') {
+      if (!VELDORA.screen || typeof VELDORA.screen.setQuiet !== 'function') {
+        tell(p, '§cscreen.js has no quiet mode'); return false
+      }
+      var on = !VELDORA.screen.isQuiet(p)
+      VELDORA.screen.setQuiet(p, on)
+      head(p, on ? 'quiet - ambient dialogue off' : 'ambient dialogue back on')
+      if (on) {
+        tell(p, '§8idle, pathless, bickering, the dead, the stalker and Forge will not speak.')
+        tell(p, '§8/dtest still fires everything. §7Run /dtest quiet again to undo.')
+      } else {
+        tell(p, '§8the world can talk to you again.')
+      }
+      tell(p, '§8§o⚠ in memory - a restart clears it.')
+      return true
+    }
 
     if (what === 'crash') {
       head(p, "Wall's crashout - panic, silence, flat line")
@@ -284,7 +312,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           return 1
         })
       var subs = ['gods', 'bicker', 'caebrim', 'whispers', 'crash', 'interior',
-        'screen', 'all'].concat(GODS)
+        'screen', 'quiet', 'all'].concat(GODS)
       for (var i = 0; i < subs.length; i++) {
         (function (name) {
           root = root.then(Commands.literal(name).executes(function (ctx) {

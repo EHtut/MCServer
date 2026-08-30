@@ -1042,11 +1042,37 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // the question always meant.
   var CHAT_COPY = false
 
+  // ⭐⭐ THE ONE DOOR TO CHAT, and it exists because turning the chat copy off at two
+  // chokepoints was not turning it off.
+  //
+  // 🔴 CHAT_COPY was added to say()/sayAbout() and broadcast, and reported as done. A
+  // sweep afterwards found ~16 OTHER places writing god dialogue straight to chat -
+  // stalker, whispers, regard, forge_talk, salvage_events, art_deal, reckoning, ritual,
+  // release, fall, blade_events, salvage_deals. Every one bypassed the switch, so Ethan
+  // still had dialogue in his chat bar after being told it was gone.
+  //
+  // ⚠️ SAME CLASS AS THE FALSE CITATION EARLIER THE SAME DAY: the instance in front of me
+  // got fixed and the tree did not get swept. A switch is only a switch if everything
+  // goes through it.
+  //
+  // 🔑 So every dialogue line to chat calls THIS, and `rhino_lint.py` fails the build if a
+  // new `.tell()` carrying a god colour appears outside the allowed list. The gate cannot
+  // be forgotten by the next call site, because the next call site cannot compile.
+  //
+  // ⛔ ADMIN AND UI OUTPUT DOES NOT COME THROUGH HERE. /notoriety's readout, a trust bar,
+  // a command's answer - those are the operator surface and are always shown. The test is
+  // "is a CHARACTER saying this", not "does it have a colour code in it".
+  function chat(player, text) {
+    if (!CHAT_COPY) return false
+    try { player.tell(Text.of(String(text))) } catch (e) { return false }
+    return true
+  }
+
   function say(player, god, tag) {
     if (silenced(player, god)) return false
     var s = line(god, tag, player)
     if (!s) return false
-    if (CHAT_COPY) { try { player.tell(Text.of(paint(player, god, s))) } catch (e) { } }
+    chat(player, paint(player, god, s))
     speak(player, god, s, tag)       // ⚠️ additive - a failure here costs nothing
     chime(player, god, tag)
     return true
@@ -1060,7 +1086,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (subs) for (var k in subs) {
       if (subs.hasOwnProperty(k)) s = s.split('{' + k + '}').join(String(subs[k]))
     }
-    if (CHAT_COPY) { try { player.tell(Text.of(paint(player, god, s))) } catch (e) { } }
+    chat(player, paint(player, god, s))
     // 🔴 THIS LINE DID NOT EXIST, and that was the biggest hole in the transfer.
     // `say()` has had an overlay since 08-29; `sayAbout()` never did — so the Mark,
     // the contract offer and the incoming warning were chat-only while every other
@@ -1129,6 +1155,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // false for every line over 110 characters until 2026-08-30.
     beatFor: beatFor,
     CHAT_COPY: CHAT_COPY,
+    chat: chat,
     TYPE_CHARS_PER_SEC: TYPE_CHARS_PER_SEC,
     MIN_ON_SCREEN: MIN_ON_SCREEN,
     dodgeCrosshair: dodgeCrosshair,

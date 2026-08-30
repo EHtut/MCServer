@@ -187,6 +187,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       var now = 0
       try { now = server.tickCount } catch (e) { }
       if (now - lastAt < COOLDOWN) return
+      // ⭐ QUIET MODE - if the only listeners asked for silence, do not fire. A scene
+      // is server-wide, so it is silenced when EVERY audience member is quiet.
+      try {
+        var ps = server.players, allQuiet = ps.length > 0
+        for (var q = 0; q < ps.length; q++) {
+          if (!VELDORA.screen || !VELDORA.screen.isQuiet(ps[q])) { allQuiet = false; break }
+        }
+        if (allQuiet) return
+      } catch (e) { }
       if (Math.random() > CHANCE) return
       fire(server, false)
     } catch (e) { console.warn(TAG + 'roll threw :: ' + e) }

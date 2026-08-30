@@ -95,7 +95,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return out
   }
 
-  function say(p, s) { try { p.tell(Text.of(COLOUR + broken(s))) } catch (e) { } }
+  function say(p, s) { try { VELDORA.voice.chat(p, COLOUR + broken(s)) } catch (e) { } }
   function pick(a) { return a[Math.floor(Math.random() * a.length)] }
 
   // ── eligibility ──────────────────────────────────────────────────────────────
