@@ -1,0 +1,26 @@
+Player intros, these are interchangeable and should be a cutscene on loading in. Lets say plays after about 5-10 minutes of being on for the sake of not being lost in the bootup. As usual periods mean lines.
+
+Begin (interchagable)
+You were a traveler,
+You were a fisherman,
+You were a merchant,
+
+Mid
+Traveling from a distant land, you picked up your life an set off. A life of adventure before you.
+Living in a small village, sectioned away from the world. It burned to the ground.
+Moving from place to place, never once settling down.
+
+Story beat
+You contracted a mysterious plague, forced to take refuge in nearby village. You felt the life sapping from you, your strength fading. It was that 7th night when a mysterious woman arrived in town. Her hairs as white as snow. Her eyes, like azure and ruby gemstones. She tended to your dying body, caring for your sickness. She spoke no words. Made no sounds.
+
+She left the following morning.
+
+
+End
+
+You awaken with glee, your body refreshed.
+Your mind races with confusion. Who was that?
+You strength returns to you, you flex your arms
+
+Story beat
+The world awaits you. And life seems almost brighter
