@@ -498,6 +498,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   function sendWave(p, st, forcedMod) {
     var y = depthOf(p)
     if (y === null) return
+    // ⭐ A forced modifier is the signal that this came from /tide_wave rather than the
+    // clock. The bench skips the enclosure and run-state re-checks; nothing else does.
+    var bench = !!forcedMod
     var srv = null
     try { srv = p.server } catch (e) { }
 
@@ -591,9 +594,25 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
             // wave must stop receiving it - otherwise the tide follows them into
             // daylight, which is the one thing Ethan ruled out.
             if (!p.isAlive || !p.isAlive()) return
-            var st2 = runs[String(p.uuid)]
-            if (!st2 || !st2.active) return
-            if (enclosed(p) === false) return
+
+            // 🔴 THE BENCH MUST OUTRANK THIS GUARD, AND DID NOT. Measured 2026-08-29:
+            // six /tide_wave calls logged perfect waves - right tier, right modifier,
+            // `missioner` picked as the boss - and placed NOTHING, because Ethan was
+            // standing at y104 under open sky and every pulse returned here.
+            //
+            // 🔑 The wave was never the problem. sendWave ran, composed and announced;
+            // the PULSE refused. "I forced a wave" and "the wave did nothing" looked
+            // identical from outside, which is the failure mode this project keeps
+            // paying for - and the log made it obvious the instant anyone read it.
+            //
+            // ⚠️ THE RULE ITSELF STAYS EXACTLY AS RULED. A real tide still ends the
+            // moment you surface; only an operator-forced wave ignores it, because a
+            // bench that only works underground at night is not a bench.
+            if (!bench) {
+              var st2 = runs[String(p.uuid)]
+              if (!st2 || !st2.active) return
+              if (enclosed(p) === false) return
+            }
             if (first) {
               srv.runCommandSilent('execute as ' + p.username + ' at @s run playsound ' +
                 SOUND_WAVE + ' hostile @s ~ ~ ~ 0.8 0.5')

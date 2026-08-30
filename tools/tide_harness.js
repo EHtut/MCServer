@@ -560,6 +560,32 @@ grp('D3 - THE FALLBACK, AND WHO IS NOT IN THE ROSTER')
   ok('...and it is the lifestealer', T.taker, 'born_in_chaos_v1:lifestealer')
 }
 
+grp('D3 - THE BENCH OUTRANKS THE ENCLOSURE GUARD')
+{
+  // Measured in play 2026-08-29: six /tide_wave calls logged perfect waves and placed
+  // NOTHING, because the per-pulse enclosure check fired while Ethan stood at y104
+  // under open sky. sendWave was never the problem - the PULSE refused, and "I forced
+  // a wave" looked exactly like "the wave did nothing" from outside.
+  const src = fs.readFileSync(path.join(SS, 'tide.js'), 'utf8')
+
+  ok('a forced modifier marks the call as a bench',
+    src.indexOf('var bench = !!forcedMod') !== -1, true)
+
+  // The guard must be INSIDE an if (!bench) block, not at the top level of the pulse.
+  const gi = src.indexOf('enclosed(p) === false) return')
+  const bi = src.lastIndexOf('if (!bench) {', gi)
+  ok('the enclosure re-check sits inside the !bench branch',
+    bi !== -1 && gi - bi < 260, true)
+
+  // ...and the rule itself must survive: a REAL tide still ends when you surface.
+  ok('the guard still exists for real tides', gi !== -1, true)
+
+  // isAlive is not part of the bypass - a dead player never receives a pulse.
+  const ai = src.indexOf('if (!p.isAlive || !p.isAlive()) return')
+  ok('isAlive is checked BEFORE the bench branch, so it always applies',
+    ai !== -1 && ai < bi, true)
+}
+
 grp('D3 - A PATHLESS PLAYER IS TIER 0')
 {
   const noTrust = global.VELDORA.trust
