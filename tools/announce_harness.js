@@ -239,5 +239,44 @@ grp('⛔ GOD DIALOGUE DOES NOT GO ON THE BAR')
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+grp('🔴 THE REAL SHAKE — and the fallback that must survive it')
+{
+  const im = code('immersive.js')
+  const an = code('announce.js')
+
+  // ⚠️ I told Ethan vanilla could not shake text and that "no server-side route
+  // reaches it". True of vanilla; wrong as an answer. ImmersiveMessage ships shake()
+  // AND a server-side send, both read out of the jar.
+  ok('⭐ the shim reaches ImmersiveMessage',
+    im.indexOf("'toni.immersivemessages.api.ImmersiveMessage'") !== -1, true)
+  ok('⭐ ...and asks for a REAL shake', im.indexOf('m.shake()') !== -1, true)
+  ok('⭐ ...anchored TOP_CENTER, which is what he asked for originally',
+    im.indexOf("'TOP_CENTER'") !== -1, true)
+
+  // 🚨 THE FALLBACK IS THE POINT. A dialogue system that goes silent because a mod
+  // updated is worse than one that looks plainer than intended.
+  ok('🚨 announce.js still has its bossbar path', an.indexOf('bossbar add ') !== -1, true)
+  ok('🚨 ...and only uses immersive when it SUCCEEDS',
+    an.indexOf('if (showImmersive(p, text, prio)) {') !== -1, true)
+  ok('🚨 the shim returns false rather than throwing',
+    im.indexOf('return false') !== -1 && im.indexOf('function show(p, text, opts)') !== -1, true)
+
+  // 🚨 An unreachable mod must SHOUT, or "the mod is missing" and "nobody spoke"
+  // are the same event from outside.
+  ok('🚨 an unreachable API is reported, not swallowed',
+    im.indexOf('is NOT reachable') !== -1, true)
+  ok('⚠️ ...and a send that cannot be called either way is reported too',
+    im.indexOf('could not be called with EITHER shape') !== -1, true)
+
+  // ⚠️ The immersive path has no bossbar tick to hand the priority slot back, so it
+  // must free the slot itself or the bar is dead for the rest of the session.
+  ok('🚨 the immersive path frees the priority slot on its own',
+    an.indexOf('if (st2 && st2.prio === prio) st2.prio = -1') !== -1, true)
+
+  // Ambience does not shake - it is the place talking, not something arriving.
+  ok('⭐ only ANNOUNCEMENTS shake, not ambience',
+    an.indexOf('shake: (prio >= P_ANNOUNCE)') !== -1, true)
+}
+
 console.log('\n' + B + (fail ? R + fail + ' FAILED, ' : G) + pass + ' passed' + X)
 process.exit(fail ? 1 : 0)

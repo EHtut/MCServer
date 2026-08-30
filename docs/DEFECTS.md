@@ -108,3 +108,50 @@ inside those tests, verified over 15 consecutive runs.
 
 **106 tide assertions, 3 negative controls all red. 862 passed / 0 failed across 22
 harnesses. Live 62/62, 0 errors.**
+
+---
+
+## 🔴 D-102 — "there is no shake" was true, and it was the wrong scope. 2026-08-29
+
+Asked whether god dialogue could be *"shaking stylized text on the top of the player's
+screen"*, I answered:
+
+> ⛔ *"THERE IS NO SHAKE. Vanilla cannot animate text position… Undertale-style
+> per-character motion is a client renderer feature and no server-side route reaches
+> it."*
+
+⚠️ **Every clause of that is true and the conclusion was wrong**, because the question
+was never restricted to vanilla. `immersive-messages-api` — which Ethan added on his own
+instinct — **is** that client renderer feature, and it ships a **server-side send**.
+
+`ImmersiveMessage` (read from the jar, not the wiki) exposes:
+
+| | |
+|---|---|
+| `shake()` / `shake(intensity, speed)` | the thing I said was impossible |
+| `typewriter(speed, centered)` | letter-by-letter |
+| `anchor(TextAnchor)` | **nine** anchors, including `TOP_CENTER` |
+| `ObfuscateMode.RANDOM` | exactly what `garble.js` weaves by hand |
+| `slideUp/Down/Left/Right`, `fadeIn/Out`, `size`, `background`, `sound`, `subtext` | |
+| `sendServer(ServerPlayer)` | server-side, single player or collection |
+
+⭐ **Three workarounds built this session were imitating this API**: the boss-bar
+re-sent with uneven padding to fake a wobble, the `/title actionbar` sting, and `§k`
+woven in one character at a time.
+
+### ⚠️ What was NOT done
+
+**Nothing was deleted.** `immersive.js` is a preferred *path*; every caller keeps its old
+route and falls back the moment the mod is missing, unreachable, or throws. **A dialogue
+system that goes silent because a mod updated is worse than one that looks plainer than
+intended.**
+
+⚠️ The API is reached **reflectively**, so all of it is unverified until a live boot says
+otherwise. Every accessor is probed once and the outcome logged — *"the mod is missing"*
+and *"I could not call it"* must never look like *"nobody said anything"*.
+
+### 📋 Still to migrate
+
+`garble.js` → `ObfuscateMode` · the action-bar sting → an anchored message · **god
+dialogue itself** — ⚠️ and that last one keeps chat as the record, because chat is still
+the only surface that survives being missed mid-fight.

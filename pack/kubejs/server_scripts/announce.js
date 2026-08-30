@@ -17,11 +17,20 @@
 // This file owns the mechanism. `trespass.js` wrote it first and now consumes it, so
 // there is one bar implementation rather than two that drift.
 //
-// ── ⚠️ THERE IS NO SHAKE IN VANILLA ────────────────────────────────────────────
+// ── 🔴 THERE IS NO SHAKE IN VANILLA - AND THAT WAS THE WRONG SCOPE ────────────
 // Probed 2026-08-29: the server ACCEPTS {"text":"x","shake":true} because unknown
 // component fields are silently dropped. Fake and real are byte-identical over rcon,
-// exactly like /playsound. The tremor here is a re-send with uneven padding against
-// centred bar text - a whole-line wobble, NOT per-glyph motion.
+// exactly like /playsound. So the tremor BELOW is a re-send with uneven padding against
+// centred bar text - a whole-line wobble, not per-glyph motion.
+//
+// ⚠️ ALL OF THAT IS STILL TRUE AND IT STOPPED BEING THE ANSWER THE SAME DAY. I told
+// Ethan "no server-side route reaches it"; the honest version was "no VANILLA route
+// does". `immersive-messages-api` is precisely the client renderer feature I said was
+// out of reach, and it ships a server-side send - so `ImmersiveMessage.shake()` is now
+// the preferred path and everything below is the FALLBACK.
+//
+// ⭐ The fallback stays. A boss-bar wobble is worse than a real shake and infinitely
+// better than an announcement that never arrives because a mod updated.
 var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
 ;(function () {
@@ -155,6 +164,32 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { quiet(server, 'bossbar remove ' + id); st.prio = -1 }
   }
 
+  // ════════════════════════════════════════════════════════════════════════
+  // 🔴 THE REAL ONE, AND IT DOES WHAT I SAID COULD NOT BE DONE.
+  //
+  // This file's own header still records the finding: "THERE IS NO SHAKE IN VANILLA...
+  // the wobble here is a FAKE: the bar name is re-sent every few ticks with uneven
+  // padding." That was true, and it was true of the wrong thing - ImmersiveMessage
+  // ships `shake()` and a server-side send, so the imitation has an original now.
+  //
+  // ⚠️ THE BOSS BAR IS NOT DELETED. It is the FALLBACK, and it stays the fallback: if
+  // the mod is missing, unreachable, or the send throws, the announcement still
+  // arrives - plainer, but it arrives. An announcement that vanishes because a mod
+  // updated is worse than one that looks less impressive.
+  function showImmersive(p, text, prio) {
+    try {
+      if (!VELDORA.im || typeof VELDORA.im.show !== 'function') return false
+      return VELDORA.im.show(p, text, {
+        seconds: SHOW_TICKS / 20,
+        anchor: 'TOP_CENTER',
+        // ⭐ A REAL tremor, only for announcements. Ambience does not shake - it is
+        // the place talking, not something arriving.
+        shake: (prio >= P_ANNOUNCE),
+        fade: true,
+      })
+    } catch (e) { return false }
+  }
+
   function show(server, p, text, prio) {
     if (!GATE) return false
     if (!p || !text) return false
@@ -168,6 +203,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
     st.prio = prio
     st.epoch = st.epoch + 1
+
+    // ⭐ PREFERRED PATH FIRST. The priority slot is still claimed above, so ambience
+    // still loses to an announcement whichever route renders it.
+    if (showImmersive(p, text, prio)) {
+      // ⚠️ The slot must free itself even though no bossbar tick will do it - an
+      // immersive message has no `step` loop to hand the slot back.
+      try {
+        server.scheduleInTicks(SHOW_TICKS, function () {
+          var st2 = live[String(p.uuid)]
+          if (st2 && st2.prio === prio) st2.prio = -1
+        })
+      } catch (e) { st.prio = -1 }
+      return true
+    }
+
     var id = barId(p)
 
     quiet(server, 'bossbar remove ' + id)

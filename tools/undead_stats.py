@@ -100,6 +100,10 @@ def main():
             sys.stderr.write('batch at %d failed: %s\n' % (start, e))
             continue
 
+        if start == 0 and os.environ.get('VDEBUG'):
+            sys.stderr.write('--- RAW len=%d ---\n' % len(out))
+            sys.stderr.write(out[:600])
+            sys.stderr.write('\n--- END RAW ---\n')
         # Attribute each reply to the command that produced it, by the echoed "> cmd".
         blocks = re.split(r'^> ', out, flags=re.M)
         byname = {}
