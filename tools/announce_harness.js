@@ -516,7 +516,16 @@ grp('* PER-GOD SPEAKING STYLE - 2026-08-30')
 
   // Ethan: "how possible is it to just change his dialogue to white and then give him font?"
   ok('blade is white on screen', /color: '#FFFFFF'/.test(bl), true)
-  ok('...and carries a font', /font: 'minecraft:uniform'/.test(bl), true)
+  ok('...and carries HIS OWN font, not a vanilla placeholder',
+    /font: 'veldora:blade'/.test(bl), true)
+  // The font has to actually exist in the resource pack, or the server names something
+  // no client can resolve and it silently renders as default.
+  ok('...which exists in the veldora resource pack',
+    fs.existsSync(path.join(__dirname, '..', 'pack', 'resourcepacks', 'veldora',
+      'assets', 'veldora', 'font', 'blade.json')), true)
+  ok('...with its TTF beside it',
+    fs.existsSync(path.join(__dirname, '..', 'pack', 'resourcepacks', 'veldora',
+      'assets', 'veldora', 'font', 'blade.ttf')), true)
   // The five fonts the MOD ships need the caxton mod, which is installed NOWHERE in this
   // pack - naming one would silently render as vanilla default and look like nothing
   // happened. font(String) goes to vanilla Style.withFont, so a resource-pack font needs

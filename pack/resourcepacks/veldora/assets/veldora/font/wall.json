@@ -1,0 +1,14 @@
+{
+  "providers": [
+    {
+      "type": "ttf",
+      "file": "veldora:font/wall.ttf",
+      "shift": [
+        0,
+        0
+      ],
+      "size": 10,
+      "oversample": 2
+    }
+  ]
+}

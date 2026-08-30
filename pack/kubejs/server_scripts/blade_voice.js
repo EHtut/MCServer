@@ -808,10 +808,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // anywhere in this pack, so naming one of those would silently render as vanilla
         // and look like nothing happened.
         //
-        // ⚠️ minecraft:uniform is a PLACEHOLDER - flat, even-width, visibly not
-        // Minecraft's chunky default, and free. A Veldora-owned font is the real answer
-        // and needs a resource pack this server does not have yet.
-        font: 'minecraft:uniform',
+        // ⭐ HIS OWN FONT. Cinzel - Roman inscriptional capitals, carved rather than
+        // written. Ethan's brief: *"Blade - Straight, hard"*, and *"all fonts should
+        // still be rustic"*. Built by tools/fetch_fonts.py into
+        // pack/resourcepacks/veldora; SIL OFL, so it may ship with the pack.
+        //
+        // ⚠️ FONTS ARE CLIENT-SIDE. The server only NAMES this; a player without the
+        // resource pack renders the vanilla default and nothing errors. "It works on
+        // the server" is not a statement about anybody's screen.
+        font: 'veldora:blade',
       })
     }
 
