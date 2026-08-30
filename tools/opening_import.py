@@ -8,13 +8,20 @@
 ⭐ SAME DIRECTION AS THE OTHER IMPORTERS: `docs/dialogue/Player intros.txt` is where he
 writes, and the .js is a regenerated view of it.
 
-── ⚠️ THIS FORMAT IS NOT THE BICKERING FORMAT ───────────────────────────────
-His header: *"As usual periods mean lines."*
+── ⭐ IT IS THE SAME FORMAT AS THE BICKERING DOCUMENTS ──────────────────────
+🔴 I FIRST WROTE THAT IT WAS A DIFFERENT FORMAT. It is not, and Ethan corrected it:
+*"for the format, its the same as the bickering lines. I just didn't want to format it in
+the doc."*
 
-🔑 So a BEAT IS A SENTENCE here, where in the bickering documents a beat was a single
-newline. Same author, same week, two different rules — and reading it with the wrong one
-would deliver his nine-sentence story beat as one wall of text, or his three separate
-openings as one line. The rule is per-document and is taken from what the document says.
+🔑 THE BEAT MODEL IS IDENTICAL. A beat is a beat, delivered one after another, exactly as
+in the bickering scenes. The only difference is AUTHORING CONVENIENCE: there he broke each
+beat onto its own line by hand; here he wrote prose and told the parser where the breaks
+are — *"as usual periods mean lines."*
+
+⚠️ So this is not a second format to support. It is the same format with the line-breaking
+delegated, and sentence-splitting is how that delegation is honoured. Reading it as
+genuinely different would have led somewhere worse than a wrong parse: it would have
+justified a second delivery path for content that wants the same one.
 
 ── THE SHAPE: MIX AND MATCH, NOT PER-PROFESSION BLOCKS ──────────────────────
     Begin        "You were a traveler,"        one of three
@@ -87,13 +94,13 @@ def parse():
         body = [l for l in lines[start + 1:end] if l.strip()]
         key = _ORDER[n]
         if key in ("begin", "mid"):
-            # ⚠️ ONE OPTION PER LINE, and each option then splits on his period rule.
+            # ⚠️ ONE OPTION PER LINE, and each option then splits into beats.
             #
-            # 🔴 The first version stopped at the line break, which left
-            # "Traveling from a distant land, you picked up your life an set off. A life
-            # of adventure before you." as a SINGLE beat - two sentences welded together,
-            # in a document whose header says periods are lines. The alternatives are
-            # per-line; the beats inside one are per-sentence, and both rules apply.
+            # 🔴 The first version stopped at the line break, which left "Traveling from a
+            # distant land, you picked up your life an set off. A life of adventure before
+            # you." as a SINGLE beat - two beats welded together. A line here is an
+            # ALTERNATIVE (one of three lives); the beats inside it are marked by periods,
+            # because that is where he delegated the line-breaking. Both apply.
             out[key] = [sentences(l.strip()) for l in body]
         else:
             # A passage. Joined, then split on his rule: periods are beats.
@@ -123,10 +130,10 @@ HEADER = '''// opening_lines.js — GENERATED. Do not edit by hand.
 //
 // ⭐ THE SOURCE IS `docs/dialogue/Player intros.txt`. This is a regenerated view of it.
 //
-// ── ⚠️ A BEAT IS A SENTENCE HERE ─────────────────────────────────────────────
-// His header on that document: *"As usual periods mean lines."* That is NOT the bickering
-// documents' rule, where a beat was a single newline. Same author, same week, two
-// formats — and the importer reads each document by what that document says.
+// ── ⭐ THE SAME FORMAT AS THE BICKERING DOCUMENTS ────────────────────────────
+// The beat model is identical; only the authoring differs. There he broke each beat onto
+// its own line; here he wrote prose and delegated the breaking — *"as usual periods mean
+// lines."* Not a second format, and not a second delivery path.
 //
 // ── THE SHAPE ────────────────────────────────────────────────────────────────
 //   begin + mid   the life you had. Interchangeable — see PAIRED in the importer

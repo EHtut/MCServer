@@ -4,10 +4,10 @@
 //
 // ⭐ THE SOURCE IS `docs/dialogue/Player intros.txt`. This is a regenerated view of it.
 //
-// ── ⚠️ A BEAT IS A SENTENCE HERE ─────────────────────────────────────────────
-// His header on that document: *"As usual periods mean lines."* That is NOT the bickering
-// documents' rule, where a beat was a single newline. Same author, same week, two
-// formats — and the importer reads each document by what that document says.
+// ── ⭐ THE SAME FORMAT AS THE BICKERING DOCUMENTS ────────────────────────────
+// The beat model is identical; only the authoring differs. There he broke each beat onto
+// its own line; here he wrote prose and delegated the breaking — *"as usual periods mean
+// lines."* Not a second format, and not a second delivery path.
 //
 // ── THE SHAPE ────────────────────────────────────────────────────────────────
 //   begin + mid   the life you had. Interchangeable — see PAIRED in the importer
@@ -32,7 +32,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       [
         "You were a fisherman,",
         "Living in a small village, sectioned away from the world.",
-        "It burned to the ground."
+        "It burned to the ground.",
+        "Sad, but you have never felt more free."
       ],
       [
         "You were a merchant,",
