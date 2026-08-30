@@ -387,7 +387,16 @@ grp('* THE GOD DIALOGUE PASS - 2026-08-30')
   const ovStart = vo2.indexOf('function overlay(player, god, s, tag, opts)')
   const ovEnd = vo2.indexOf('function say(', ovStart)
   const ov = ovStart !== -1 ? vo2.slice(ovStart, ovEnd) : ''
-  ok('god text ALWAYS types', /typewriter: true/.test(ov), true)
+  // \U0001f534 TYPEWRITER IS OFF BEHIND ONE SWITCH. The command hardcodes
+  // typewriter(1.0f, false) and reveals one character per `1.0 / speed`, so a 15-letter
+  // line needs 15 units and the message expires first - every god line rendered nothing.
+  // The assertion is now that it is ONE switch, not that it is on, so flipping it back
+  // after `/gd type` measures the unit is a single edit.
+  ok('typing is one named switch, not scattered literals',
+    (vo2.match(/typewriter: TYPEWRITER/g) || []).length, 2)
+  ok('...declared exactly once', (vo2.match(/var TYPEWRITER = /g) || []).length, 1)
+  ok('...and /gd type exists to measure the speed',
+    /Commands\.literal\('type'\)/.test(vo2), true)
 
   // Ethan: "lets move the location of the text to above the hotbar."
   ok('it is lifted clear of the hotbar', /y: HOTBAR_LIFT/.test(ov), true)

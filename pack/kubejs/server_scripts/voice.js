@@ -220,6 +220,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // 60 is what the sweep showed sitting clear above the armour bar. 80 is the other
   // value Ethan named and is the number to raise it to if a shaking or oversized line
   // ever clips the HUD — the `weight` tone uses both.
+  // ⛔ ONE SWITCH. Flip to true the moment `/gd type` shows the speed is usable.
+  var TYPEWRITER = false
+
   var HOTBAR_LIFT = 60
 
   // ⭐ A DIALOGUE TYPE PER WHAT THE DIALOGUE IS. Ethan, 2026-08-30: *"we can assign a
@@ -274,7 +277,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       var show = {
         anchor: 'BOTTOM_CENTER',
         y: HOTBAR_LIFT,
-        typewriter: true,          // ⭐ god text ALWAYS types. Ethan, 2026-08-30.
+        // 🔴 TYPEWRITER IS OFF, AND IT IS NOT A CHOICE - IT IS THE MOD'S SPEED.
+        // Ethan asked for typing on 2026-08-30 and this shipped with it on. Every god
+        // line then rendered nothing at all, and the reason is in tickTypewriter:
+        //
+        //     typewriterTicks += delta
+        //     if (typewriterTicks > typewriterTimes * (1.0 / typewriterSpeed)) reveal++
+        //
+        // so one character per `1.0 / speed` - and the COMMAND hardcodes
+        // typewriter(1.0f, false). The speed is not reachable from this route at all.
+        // At one character per unit, "You are marked." needs 15 of them and the message
+        // is gone long before anything readable appears.
+        //
+        // ⚠️ WORKING DIALOGUE BEATS THE EFFECT. It is off until `/gd type` measures
+        // what that unit actually is; if it is ticks the effect is free and this flips
+        // straight back, if it is seconds then typing needs the Java API rather than
+        // the command and that is a bigger piece of work.
+        typewriter: TYPEWRITER,
         seconds: o.seconds,
         shake: !!o.shake,
         italic: !!o.italic,
@@ -338,7 +357,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       var show = {
         anchor: 'BOTTOM_CENTER',
         y: HOTBAR_LIFT,
-        typewriter: true,
+        typewriter: TYPEWRITER,
         italic: true,
         seconds: 5,
         color: '#AAAAAA',
@@ -443,6 +462,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // ⚠️ THE CONTROL MATTERS MOST. The first line uses NO y at all. If that one
       // is also invisible then y is not the problem and the fault is elsewhere -
       // without it, "nothing showed" cannot tell those two apart.
+      // ⭐ THE MEASUREMENT. One character is revealed per `1.0 / speed`, and the
+      // command hardcodes speed 1.0 - so this answers whether that unit is a TICK
+      // (0.05s, effect is free) or a SECOND (effect is unusable from the command).
+      .then(Commands.literal('type').executes(function (ctx) {
+        var p = ctx.source.player
+        var line = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        VELDORA.im.show(p, 'CONTROL no typewriter - ' + line,
+          { anchor: 'TOP_CENTER', seconds: 30 })
+        VELDORA.im.show(p, 'TYPING 30s - ' + line,
+          { anchor: 'TOP_CENTER', y: 40, seconds: 30, typewriter: true })
+        VELDORA.im.show(p, 'TYPING 6s - ' + line,
+          { anchor: 'TOP_CENTER', y: 80, seconds: 6, typewriter: true })
+        p.tell(Text.of('§8Three lines, 26 letters each, at the TOP of the screen.'))
+        p.tell(Text.of('§8If TYPING 30s finishes the alphabet, a character is a TICK'))
+        p.tell(Text.of('§8and typing is usable. If it crawls a letter a second, it is not.'))
+        return 1
+      }))
       .then(Commands.literal('place').executes(function (ctx) {
         var p = ctx.source.player
         VELDORA.im.show(p, 'CONTROL - no y at all, top of screen',
@@ -461,7 +497,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       }))
       .executes(function (ctx) {
         var p = ctx.source.player
-        p.tell(Text.of('§8/gd §fweight bargain quiet plain aside bicker place'))
+        p.tell(Text.of('§8/gd §fweight bargain quiet plain aside bicker place type'))
         p.tell(Text.of('§8tones are matched on the TAG; lift=§f' + HOTBAR_LIFT))
         return 1
       }))
