@@ -204,11 +204,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // above the hotbar."* BOTTOM_CENTER sits ON the hotbar, so it is lifted clear.
   // ⚠️ ONE NUMBER, ON PURPOSE — this is the value to change if it sits wrong on screen,
   // and there is exactly one of it.
-  // ⚠️ NEGATIVE. y grows DOWNWARD in GUI space, so from a BOTTOM anchor a
-  // POSITIVE y pushes the line off the bottom of the screen. It was +40 on the first
-  // build and every god line rendered somewhere nobody could see. `/gd place` sweeps
-  // the candidates on screen so this is read off rather than guessed.
-  var HOTBAR_LIFT = -40
+  // 🔴 MEASURED ON SCREEN, and it corrected a wrong diagnosis. Ethan, 2026-08-30,
+  // after running the `/gd place` sweep: *"80 or 60, that being said negative and
+  // positive values were in the same place."*
+  //
+  // ⚠️ THE SIGN IS IGNORED. `y` is a MAGNITUDE — a distance from the anchor — so -60
+  // and +60 render identically. I had reasoned that y grows downward in GUI space and
+  // that +40 was pushing the line off the bottom edge. That was wrong. +40 was simply
+  // only 40px up, which puts it BEHIND the hearts and the hotbar: visible in principle,
+  // unreadable in practice, and indistinguishable from not rendering at all.
+  //
+  // 🔑 Reading it off the screen took one command. Reasoning about it from the
+  // bytecode produced a confident wrong answer twice.
+  //
+  // 60 is what the sweep showed sitting clear above the armour bar. 80 is the other
+  // value Ethan named and is the number to raise it to if a shaking or oversized line
+  // ever clips the HUD — the `weight` tone uses both.
+  var HOTBAR_LIFT = 60
 
   // ⭐ A DIALOGUE TYPE PER WHAT THE DIALOGUE IS. Ethan, 2026-08-30: *"we can assign a
   // type of dialogue per what the dialogue is. Tone, emotion, context, impact, etc."*
@@ -420,12 +432,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         return 1
       }))
       // position check - the reason this needs eyes on it at all
-      // 🔴 A SWEEP, NOT A SINGLE SHOT. Every /gd rendered NOTHING on the first
-      // test while /im worked, and the only difference was that /gd sets `y`. In
-      // Minecraft's GUI space y grows DOWNWARD, so a positive y from a BOTTOM anchor
-      // pushes the line below the screen edge - it renders perfectly and nobody can
-      // see it. Guessing the sign would have been another round trip, so this fires
-      // one line at each candidate and lets the screen answer.
+      // 🔴 A SWEEP, NOT A SINGLE SHOT - and it earned its keep immediately.
+      // Every /gd rendered nothing on the first test while /im worked, and the only
+      // difference was that /gd sets `y`. My reasoning from the bytecode said a
+      // positive y from a BOTTOM anchor pushes the line off the bottom edge. WRONG:
+      // the sign is ignored entirely, y is a magnitude, and +40 was simply too small
+      // a lift - the line sat behind the hearts and the hotbar.
+      //
+      // 🔑 The sweep answered in one command what two rounds of reading the jar
+      // got wrong. Keep it; the next person to move this text will need it too.
       //
       // ⚠️ THE CONTROL MATTERS MOST. The first line uses NO y at all. If that one
       // is also invisible then y is not the problem and the fault is elsewhere -
