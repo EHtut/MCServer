@@ -1151,6 +1151,11 @@ hash = "373d6893cd8876f79d1a07c0d2c60a044b78e6be3a3818c42bff5630256b3d11"
 metafile = true
 
 [[files]]
+file = "mods/reliquified-artifacts.pw.toml"
+hash = "c21360a2ad15455048c3b0f00b664dae2e81976167ecfcd86c249e8e2f968ed5"
+metafile = true
+
+[[files]]
 file = "mods/resourceful-config.pw.toml"
 hash = "27721caca5a03b743bf25888e1d984142948069dace31453f103f94f7f24d2ce"
 metafile = true

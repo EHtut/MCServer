@@ -192,6 +192,29 @@ grp('🔑 VOICE.JS CONSULTS IT — the wiring, not just the rule')
   ok('⚠️ the wrapper fails open on a throw', /catch \(e\) \{ return false \}/.test(src), true)
 }
 
+grp('\u2728 D1b - GODEVENTS CONSULTS IT TOO (action, not just speech)')
+{
+  const src = fs.readFileSync(path.join(SS, 'godevents.js'), 'utf8')
+  // 🔴 THIS ASSERTION USED TO BE `indexOf('VELDORA.night.maySpeak') !== -1` AND IT WAS
+  // TOO WEAK. That string also appears in the `typeof ... === 'function'` GUARD one line
+  // above the call, so deleting the actual call left it green. The negative control
+  // caught it. Assert the ASSIGNMENT - the point of use - not the mention.
+  ok('attempt() actually ASSIGNS from the night gate',
+    /mayAct = !!VELDORA\.night\.maySpeak\(server, p, god\)/.test(src), true)
+
+  // `force` must bypass, or /event becomes a bench that silently does nothing after
+  // dark - the same "failed and found nothing share a return value" trap.
+  const atk = src.slice(src.indexOf('function attempt('))
+  ok('...and `force` bypasses it', /if \(!force\) \{[\s\S]{0,80}mayAct/.test(atk), true)
+  ok('...it fails OPEN on a throw', atk.indexOf('mayAct = true }') !== -1, true)
+
+  // It must NOT be inside eligible(), which also backs the /events display - a silenced
+  // god has not lost its roster, only tonight.
+  const elig = src.slice(src.indexOf('function eligible('), src.indexOf('function attempt('))
+  ok('eligible() is untouched, so /events still reports the real roster',
+    elig.indexOf('VELDORA.night') === -1, true)
+}
+
 console.log('\n' + (fail === 0
   ? G + pass + '/' + (pass + fail) + ' passed' + X
   : R + fail + ' FAILED' + X + ', ' + pass + ' passed'))

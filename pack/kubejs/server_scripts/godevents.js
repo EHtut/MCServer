@@ -618,6 +618,34 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (!god || !REG[god]) return null
     try { if (VELDORA.ritual && VELDORA.ritual.active(p)) return null } catch (e) { }
 
+    // ⭐⭐ D1b - THE NIGHT GATE, THE OTHER HALF OF THE RULING. Ethan, 2026-08-29: the
+    // Speaker *"silences the god's abilities to speak to you OR ACT at night."* D1 took
+    // speech at voice.js; this takes ACTION, which is this function.
+    //
+    // 🔑 HERE RATHER THAN IN eligible(). That function also backs the `/events` display,
+    // and the events still EXIST at night - a silenced god has not lost its roster, it
+    // has lost tonight. Suppressing the listing too would misreport the god.
+    //
+    // ⭐ `force` BYPASSES, deliberately. `/event <id>` is the admin bench, and a test
+    // that silently does nothing after dark is worse than no bench at all - it is the
+    // same "I failed and I found nothing share a return value" trap this project keeps
+    // paying for.
+    //
+    // ⚠️ IT FAILS OPEN, WHICH DISAGREES WITH THIS FILE'S OTHER GUARDS ON PURPOSE.
+    // eligible()'s guards fail CLOSED (a throw means "no"), because a guard that cannot
+    // read the world should not fire an event into it. The night gate is the opposite
+    // case: a silenced god is a DELIBERATE absence, and a glitched absence looks exactly
+    // like it. Biasing toward the god acting keeps the two distinguishable.
+    if (!force) {
+      var mayAct = true
+      try {
+        if (VELDORA.night && typeof VELDORA.night.maySpeak === 'function') {
+          mayAct = !!VELDORA.night.maySpeak(server, p, god)
+        }
+      } catch (e) { mayAct = true }
+      if (!mayAct) return null
+    }
+
     var today = dayNow(server)
     if (today === null) {
       console.warn(TAG + 'no world clock - events SUPPRESSED (cannot measure a cooldown)')
