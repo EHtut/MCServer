@@ -180,7 +180,6 @@
       c('/events', 'the roster, your tier, and WHY each one is holding')
       c('/events fire <id>', 'fire one, ignoring cooldown and roll')
       c('/harvest begin | win | lose', 'the collection, forced')
-      c('/speaker confess', 'the next confession cutscene, at any depth')
       c('/idle_test', 'which contexts apply, and force a line')
 
       h('HEAR ANY LINE')
@@ -194,7 +193,7 @@
       c('/notoriety', 'the number that drives phase')
       c('/regard', 'what your patron thinks of you dying')
       c('/release', 'what would actually make them put you down')
-      c('/speaker', 'depth vs cutoff, and confession progress')
+      c('/speaker', 'depth vs cutoff, and who you meet down there')
 
       h('WHEN IT GOES WRONG')
       c('/unstuck', 'release a player stuck blind or rooted in a scene')

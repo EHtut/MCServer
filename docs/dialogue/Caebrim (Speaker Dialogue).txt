@@ -1,0 +1,222 @@
+Caebrim (Speaker Dialogue)
+
+Dialogue for Caebrim, she shares same font as Wall. Always Red. Always in random areas across your screen. Tide announcements are in the middle. Trust is essentially tide power level.
+
+Introudction
+
+A new champion walks this world.
+Once more.
+I will not introduce myself.
+You will be dead soon anyways.
+
+Lets speed that up. 
+(Begin tide)
+
+Whispers (low Trust)
+
+You have taken everything from the goddess. 
+Now all that remains is perfect hatred.
+
+You are not welcome here
+
+Your kind knows nothing of our suffering.
+
+You will meet your end in this darkness.
+
+You will not leave these caves.
+
+Whispers (Med Trust)
+
+You are growing.
+Strong.
+But not even close to enough.
+
+How do you fight against that that does not die
+
+Animal.
+
+So many of our people dead. 
+By your hand.
+
+Whispers (High Trust)
+
+You are strong.
+Strong enough to stop all of this.
+Why don't you?
+
+Do I need to keep fighting you?
+Can't you just join our side?
+
+THE GODS DO NOT CARE FOR YOU!
+They never will.
+They never will.
+
+
+
+God specific Whispers
+
+Tide
+Let us see you fight
+
+You have met your end.
+
+Our numbers swarm.
+Retribution is at hand
+
+I WANT YOU DEAD
+
+You will not progress
+
+You will not take more from my goddess
+
+DIE!
+
+Lets settle this!
+
+Tide in progress
+
+IS THAT THE BEST YOU GOT?!
+
+NOW THIS IS A FIGHT WORTHY OF GOD'S WILL
+
+I WILL SHOW YOU TRUE SPLENDOR
+
+FIGHT ME LIKE AN ANIMAL
+
+SHOW ME WHAT YOU WERE MADE FOR
+
+YES! 
+SHOW US YOUR SAVAGERY
+
+Tide end.
+
+HAHAHAHAHAHAHAHA!
+
+I HAVE ONLY KNOWN THE TASTE OF VICTORY
+
+We will meet again, Champion.
+
+God Dialogue (Can happen only at high trust and at any time)
+
+Blade
+
+Gregor, you don't need to do this. (caebrim)
+Give in.
+Come back down with us.
+
+Leave me, Shadow. (Blade)
+I will not return.
+
+We didn't have to fight.(caebrim)
+We could have stayed a family.
+
+It is too late. (Blade)
+
+---
+
+Gregor.  (caebrim)
+Come back to us.
+Alice is waiting below.
+She wants...
+She wants...
+
+Alice? (Blade)
+The most selfish of the gods?
+Please.
+She has done nothing but hurt.
+
+HERETIC! (caebrim)
+
+Name me whatever you wish. (Blade)
+
+Wall 
+
+Mera, we're waiting for you. (caebrim)
+You can hear us.
+We can hear you.
+Just come down.
+
+No.  (wall)
+
+No?
+You want to be down here. (Caebrim)
+You to be with us.
+
+Not. With. You (wall)
+
+---
+
+Mera, our goddess waits below. (caebrim)
+
+Then she may call me down herself. (wall)
+
+You can come down (caebrim)
+Willingly
+Just step down.
+
+Im not sure what you want from me here. (wall)
+
+Forge
+ 
+Mila, Im sorry. (Caebrim)
+
+Sorry? (forge)
+
+For everything I did. (Caebrim)
+For letting you lose like that.
+For letting you lose everything
+For letting...
+
+Ain'tcha supposed to be asking me to go down wit ya or somethin? (forge)
+
+I... (Caebrim)
+No.
+Not you.
+Im sorry.
+
+Can I visit? (forge)
+
+... (Caebrim)
+I can't ask that of you.
+
+---
+
+Milantros... (Caebrim)
+It's you...
+I...
+
+Caebrim? (forge)
+
+Milantros, i want to... (Caebrim)
+
+Want to...? (forge)
+
+Nevermind. (Caebrim)
+
+Art
+
+Sister. (art)
+
+Sister. (caebrim)
+
+---
+
+Are you here to beg me to return? (art)
+
+No. (caebrim)
+Not you.
+
+---
+
+Ank speaks of you. (caebrim)
+In his moments of weakness.
+he wants you back.
+He loves you.
+
+... (art)
+I...
+You know what I have to do.
+Do not tempt my return.
+
+I know...
+

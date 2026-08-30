@@ -1,5 +1,33 @@
 // deep_speaker.js - THE VOICES BELOW THE CUTOFF.  docs/15 §0b, docs/40, docs/43
 //
+// ══════════════════════════════════════════════════════════════════════════════
+// 🔴 TWO RETCONS, 2026-08-30. READ THESE FIRST — much of the history below describes
+// systems that no longer exist.
+//
+// 1. THE CONFESSION IS GONE. Ethan: *"so we remove deep speaker confession."* The
+//    staged, phase-and-trust-gated cutscene and all its machinery are removed - 366
+//    lines. ⭐ HIS WRITING IS NOT LOST: all four confession scripts are archived
+//    verbatim in `docs/archive/deep-speaker-confessions-2026-08-30.md`. Nothing reads
+//    that file; it exists so the words survive a design change.
+//
+//    ⚠️ Comments below explaining why a given speaker does or does not have a
+//    confession are now HISTORY, not spec. They are kept because they explain the
+//    CHARACTERS, and the characters did not change.
+//
+// 2. IT IS ALWAYS CAEBRIM. Ethan: *"im retconning the rule for unique deep speakers.
+//    It will always just be caebrim."* So "one speaker per patron" below is retired:
+//    there is one woman down there, and saying different things to different champions
+//    is not the same as being different people.
+//
+//    ⛔ THE `id` FIELDS STAY AS THEY ARE, deliberately rather than lazily.
+//    `voice.say(p, s.id, tag)` uses the id as the POOL NAMESPACE as well as the state
+//    key, so collapsing them would merge five sets of pools into one and destroy the
+//    per-champion writing his own Caebrim document depends on. The retcon is about
+//    IDENTITY - one name, one colour, one font, one presence - not about namespacing.
+//
+//    🖊️ Her introduction is HIS to rewrite (2026-08-30). Nothing here writes it.
+// ══════════════════════════════════════════════════════════════════════════════
+//
 // Ethan, 2026-08-15:
 //   "the gods cannot see you when you descend after a certain level. Instead
 //    dialogue is replaced by the goddess of death's speaker."
@@ -51,12 +79,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   //   -64 to -120    the deep works
   //  -120 to -128    THE SEALED FLOOR
   var CUTOFF_Y = -64
-  // ⚠️ NO LONGER A GATE. Confessions are phase-paced now (see below); this is kept
-  // only because it is the published `VELDORA.speaker.floor` and other systems and
-  // the /speaker readout still want to name the bottom of the world.
-  var CONFESSION_Y = -120           // the sealed floor, for reference
-  var CONFESSION_CHANCE = 0.10      // per sweep, once a stage is DUE
-  var CONFESSION_SWEEP = 1200       // 60s between rolls
   var CONF_GAP = 45                 // 2.25s between lines; these voices are halting
 
   var SPEAKERS = {}                 // path key -> speaker
@@ -109,8 +131,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     id: 'death_speaker',                 // ⚠️ id unchanged on purpose: it keys the met/stage
                                          // flags and the line pools, so renaming it would
                                          // reset every player's confession progress.
-    name: 'the Shadow',
-    colour: '§8',                        // was §7 grey. Now matches her forge entry.
+    name: 'Caebrim',
+    colour: '§c',                        // was §7 grey. Now matches her forge entry.
                                          // "She is not a god" was always true and is now
                                          // the tell: a falsehood, not a god.
     lines: {
@@ -146,50 +168,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         'He is still speaking, somewhere above. Not to you.',
       ],
     },
-    // Three cutscenes, one per descent, in order. She is a character who cannot
-    // finish a sentence, so being stopped three times mid-thought makes the FORM
-    // match the writing.
-    //
-    // 🔴🔴 SHE MAY BE KAYER. OPEN QUESTION, 2026-08-23 - docs/60 §2. NOT A CHANGE, AND
-    // NOT ONE LINE OF ETHAN'S TEXT BELOW HAS BEEN TOUCHED. Read against the book canon,
-    // every stanza fits the Matriarch:
-    //
-    //   "I had to make a choice"        she sees the whole future and chooses it anyway
-    //   "He was one of us. Our family."  Gregor KAYER Court - she named and bound him,
-    //                                    and he left the Court for the Church
-    //   "someone I was meant to protect, but I was too weak"
-    //                                    canon: KAYER kills him, by cutting him off
-    //                                    from the link
-    //   "rescue my goddess from that church"
-    //                                    her entire war is "because the church took Alice"
-    //   "Blinded by faith."             ⭐ the dark shepherd. This fits nothing else.
-    //
-    // ⚠️ THE COUNTER-CASE IS REAL AND IS WHY THIS IS A COMMENT, NOT AN EDIT: the header
-    // above says of the Speaker "grey. She is not a god", and Kayer already has her own
-    // entry in this file (death_matriarch, for art). Whoever rules on it should read
-    // docs/60 §2 first - and either way these lines stay exactly as written.
-    confession: [
-      [
-        'When you get up there... Tell your god I... Tell him I\'m sorry. For everything I did.',
-        'I didn\'t want to. But I had to make a choice.',
-        'He chose the wrong path. He was one of us. Our family. But he...',
-        'I never meant it to end like this.',
-      ],
-      [
-        'He was... He was someone I was meant to protect, but I was too weak.',
-        'None of this, none of what happened was his fault.',
-        'It was mine.',
-      ],
-      [
-        'I was too focused on the mission.',
-        'I had to rescue my goddess from that church to see what I was really doing.',
-        'I was destroying us.',
-        'Blinded by faith.',
-        '',
-        '',
-        'Gregor, I am sorry.',
-      ],
-    ],
   })
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -222,8 +200,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // in the game and Alice is never printed. Naming her here would spend the most
     // expensive word in the project on a debug string.
     id: 'death_doctor',
-    name: 'the Doctor',
-    colour: '§b',                        // light blue. She IS the goddess.
+    // 🔴 WAS 'the Doctor', AND THAT NAME WAS DELIBERATE. The comment above still holds
+    // as history: she IS the goddess, and docs/40 §0 says a name is the most expensive
+    // word in the game, so Alice is never printed.
+    //
+    // ⚠️ Ethan's 2026-08-30 retcon overrides it - "It will always just be caebrim" -
+    // and his own Caebrim document settles it beyond doubt: it contains a Wall section
+    // in which CAEBRIM speaks to Mera. The earlier ruling this file quotes ("alice
+    // speaks to mera") is superseded.
+    name: 'Caebrim',
+    colour: '§c',                        // always red, per her document's header
     lines: {
       // [CLAUDE-DRAFT] death_doctor/warn_wave
       // the Doctor's tide herald
@@ -257,45 +243,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         'No answer. Note the time.',
       ],
     },
-    // ⭐ Ethan's six stanzas, grouped into THREE cutscenes so the last one ends on
-    // the name. Blade's champion is asked to carry an apology to a god; Wall's
-    // champion is asked to carry a sentence to one.
-    confession: [
-      [
-        'You have come deep. Deep enough that I cannot justify hiding the truth.',
-        'You won\'t find me down here. It is no fault of your own.',
-        'You are fighting against the entire world, after all.',
-        'Truly a shame.',
-        '',
-        'For centuries I have walked this earth.',
-        'I was mortal, like you. Once.',
-        'Like the gods themselves, I was forced to ascend.',
-        'But unlike them? I was forced down here.',
-      ],
-      [
-        'In truth, how the world is, is my fault.',
-        'Centuries ago I built a machine.',
-        'I thought I could harness the energy between dimensions.',
-        'See, I lost my family in ascension. Each one becoming gods themselves.',
-        'But gods are not so easily brought back.',
-        '',
-        'The rift tore the world apart. My family lost forever.',
-        'I was hunted like a criminal.',
-        'Guilty.',
-      ],
-      [
-        'The gods above want me dead. Yea.',
-        'I want me dead too.',
-        'But the thing about being a god?',
-        'About being the god of death?',
-        'You are banished from your own domain.',
-        '',
-        'Tell Mera that... Tell her...',
-        '*You take a breath in anticipation.',
-        '',
-        'Tell Mera that it\'s her time.',
-      ],
-    ],
   })
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -325,8 +272,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // He does not know that. He thinks she simply left.
   register('salvage', {
     id: 'death_keeper',
-    name: 'the Keeper',
-    colour: '§e',                        // yellow
+    name: 'Caebrim',
+    colour: '§c',                        // yellow
     lines: {
       // [CLAUDE-DRAFT] death_keeper/warn_wave
       // the Keeper's tide herald
@@ -354,24 +301,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         "There are things down here that even scare me.",
       ],
     },
-    confession: [
-      [
-        'I did my best.',
-        'That wolf, before she ascended... I was her keeper.',
-        'Well, a keeper of all our people. But her? I knew her name.',
-      ],
-      [
-        "I was the one who named her.",
-        "She didn't have one before me, and it was my job.",
-        "But then she left. She left to find a new life away from us.",
-      ],
-      [
-        "And that was ok, because it was her choice.",
-        "I just wish I could've done more.",
-        '',
-        "Maybe I'm just weak. I've known that for a long time.",
-      ],
-    ],
   })
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -399,8 +328,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // [CLAUDE-DRAFT] art/deep_intro · art/deep_common · art/deep_abandoned · art/deep_rare
   register('art', {
     id: 'death_matriarch',
-    name: 'the Matriarch',
-    colour: '§b',                        // pale blue - hers, and colder than the rest
+    name: 'Caebrim',
+    colour: '§c',                        // pale blue - hers, and colder than the rest
     lines: {
       // [CLAUDE-DRAFT] death_matriarch/warn_wave
       // her tide herald - the only one who is ANNOYED by it
@@ -501,8 +430,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // docs/61 §1.
   register('forge', {
     id: 'death_shadow',
-    name: 'the Shadow',
-    colour: '§8',                        // dark grey. The form the depths give her.
+    name: 'Caebrim',
+    colour: '§c',                        // dark grey. The form the depths give her.
     lines: {
       // [CLAUDE-DRAFT] shadow/warn_wave
       warn_wave: [
@@ -579,51 +508,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         'There is a thing your god does not know, and I am the one who decided she would not. Do not ask again.',
       ],
     },
-    // ═════════════════════════════════════════════════════════════════════════
-    // 🚨 THE CONFESSION. Three staged cutscenes, phase-gated, one per descent.
-    //
-    // ⚠️ THIS IS THE MOST REWRITE-WORTHY THING IN THE REPO. The EVENTS are Ethan's,
-    // verbatim from docs/56 §0 - she begged, Alice did not know how, it took
-    // centuries, Alice made a choice the night before, and the ritual collapsed. The
-    // WORDING is mine and it should not survive contact with him. Blade's equivalent
-    // is his own writing and it is the best text in the game; this is a placeholder
-    // holding the mechanic open, nothing more.
-    //
-    // ⭐ THE SHAPE IS DELIBERATELY BLADE'S: three stanzas, and the name lands as the
-    // last words of the last one. "Gregor, I am sorry." / "Milantros. I am sorry."
-    // ═════════════════════════════════════════════════════════════════════════
-    // [CLAUDE-DRAFT] shadow/confession
-    // 🔴 REWRITTEN after the book dump (docs/56 §0b). The first draft had her as the
-    // one who ASKED for Milantros. She is her MOTHER - she found her standing in a
-    // village that had been burned with a letter D left in the tracks, Momma Pille
-    // insisted on keeping her, and Caebrim raised her and put a silver rifle in her
-    // hands. Stanza 2 is now built on Ethan's own beat, which he wrote for the Ank
-    // book and which is the single best thing either character has:
-    //     "you called me ugly and tripped"
-    confession: [
-      [
-        'You are the first one of hers to come this far down.',
-        'I did not expect that to matter to me. It does.',
-        'Go back up. Not because it is dangerous. Because I would like to be able to look forward to it.',
-      ],
-      [
-        'I found her in a village that had been put to the torch. There was a letter carved in the mud and she was the only thing still standing in it.',
-        'Pille said we were keeping her. I did not argue. It is the one thing I have never once regretted not arguing about.',
-        'She called me Uggo. Tripped straight over her own feet doing it, flat on her face, got up and did it again.',
-        'That is the first thing she ever said to me and I have had four hundred years to think about it.',
-      ],
-      [
-        'So when she died I went to the only person I have ever begged for anything, and I begged.',
-        'It took her centuries. She never once told me it could not be done.',
-        'The night before, she made a choice. I do not know what it cost and she would never have said.',
-        'And it worked. That is the part nobody believes - it WORKED. She woke up new and she looked right at me.',
-        'And then the whole of it came apart, and I watched her go straight up through the ceiling.',
-        '',
-        'She does not remember any of it. She is happy. I have decided that is enough.',
-        '',
-        'Milantros. I am sorry.',
-      ],
-    ],
   })
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -656,6 +540,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // mine. Rename freely; only the `id` is load-bearing (it keys the met/stage flags).
   var PATHLESS = {
     id: 'death_stranger',
+    // ⛔ NOT RENAMED, AND NOT RECOLOURED. The retcon is "no UNIQUE deep speaker per
+    // god"; the pathless case is not one of those - it is what happens when there is no
+    // god at all. And this file already reserves the name explicitly: "naming a face of
+    // the goddess is Ethan's call, not mine."
     name: 'the Stranger',
     colour: '§f',
     lines: {
@@ -790,24 +678,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   function metKey(s) { return 'veldora_spk_met_' + s.id }
-  function stageKey(s) { return 'veldora_spk_stage_' + s.id }
 
-  // ⚠️ STORED AS stage+1, so 0 means "never heard any of it". getInt() returns 0
-  // for a missing key, so a plain index would make "never started" and "heard the
-  // first one" the same number. docs/41 invariant #5.
-  function stageOf(p, s) {
-    if (!s) return 0
-    try {
-      var v = p.persistentData.getInt(stageKey(s))
-      if (typeof v === 'number' && isFinite(v) && v > 0) return v - 1
-    } catch (e) { }
-    return 0
-  }
 
-  function finished(p, s) {
-    if (!s || !s.confession) return true
-    return stageOf(p, s) >= s.confession.length
-  }
 
   // How often an ordinary deep line becomes "your god is not coming" instead.
   // Deliberately low: it is a reminder, not a theme.
@@ -873,177 +745,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return VELDORA.voice.say(p, s.id, tag || 'common')
   }
 
-  // Open the NEXT unheard confession stage.
-  //
-  // 🚨 The stage advances AFTER begin() succeeds, never before. Burning it on a
-  // refused ritual would silently cost a player a scene they can never get back,
-  // and there would be no way to tell it had happened.
-  function confess(p, why) {
-    var s = speakerFor(p)
-    if (!s || !s.confession) return false
-    if (!VELDORA.ritual || typeof VELDORA.ritual.begin !== 'function') {
-      console.error(TAG + 'ritual.js missing - a confession cannot be staged')
-      return false
-    }
-    try { if (VELDORA.ritual.active(p)) return false } catch (e) { return false }
 
-    var stage = stageOf(p, s)
-    if (stage >= s.confession.length) return false
-    var stanza = s.confession[stage]
 
-    // Her own colour; narration keeps its own. ritual.js only paints a line that
-    // has not already chosen one.
-    var lines = []
-    for (var i = 0; i < stanza.length; i++) {
-      var ln = stanza[i]
-      if (ln === '') { lines.push(''); continue }
-      lines.push(ln.charAt(0) === '*' ? '§7§o' + ln.substring(1) : s.colour + ln)
-    }
 
-    var began = false
-    try {
-      began = VELDORA.ritual.begin(p, { lines: lines, gap: CONF_GAP, options: [] })
-    } catch (e) { console.error(TAG + 'confession threw :: ' + e); return false }
-    if (!began) return false
 
-    try { p.persistentData.putInt(stageKey(s), stage + 2) } catch (e) { }
-    var last = (stage + 1 >= s.confession.length)
-    console.info(TAG + '!! ' + p.username + ' HEARD ' + s.name + ' CONFESS ' +
-      (stage + 1) + '/' + s.confession.length + ' (' + why + ') - ' + stanza.length +
-      ' lines, ' + (20 + stanza.length * CONF_GAP + 40) + 't' +
-      (last ? ' - SHE IS FINISHED' : ''))
-    return true
-  }
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // ⭐ THE CONFESSIONS ARE PACED BY THE PHASE, NOT BY DEPTH (Ethan, 2026-08-15)
-  // ═══════════════════════════════════════════════════════════════════════════
-  //   "I kinda want to stage the confessions as something that happens right
-  //    before a harvest."
-  //
-  // They used to roll at 10% a minute while you stood at y-120, which meant the
-  // story was told to whoever camped the sealed floor longest and had NO relation
-  // to what was happening to that player. Riding `phase.js` instead ties each stage
-  // to how close the god is to collecting you:
-  //
-  //   stage 1 -> companion   the phase where you stop being new
-  //   stage 2 -> absence     the phase where the god starts to lose patience
-  //   stage 3 -> harvest     the phase that IS the Harvest
-  //
-  // So the last thing you hear before something comes for you is "Gregor, I am
-  // sorry" - or, if you walk with the Spider, "Tell Mera that it's her time."
-  // That line was written to be a herald. Now it is one.
-  //
-  // ⚠️ DEPTH STILL GATES *WHO*, NEVER *WHEN*. You must have gone below y-64 at
-  // least once to have MET them - the descent is still how you find these voices.
-  // But having met them, they will reach up to you. Her breaking her own silence to
-  // finish the story is the point, not a loophole.
-  var CONFESSION_PHASES = ['companion', 'absence', 'harvest']
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // 🔴 THE PHASE GATE ALONE WAS THE WRONG QUANTITY. Ethan, 2026-08-29:
-  //
-  //     "confession for the speaker? That needs to be gated behind highest trust.
-  //      I think liam stepped into the depths and instantly got it a few sessions ago."
-  //
-  // He is right, and it was not a code fault - `confessionEligible` did exactly what it
-  // said. The fault is WHICH NUMBER it read. Phase is a band over **notoriety**, and
-  // `/path` states plainly what notoriety is: *"It rises with the levels you gain, and
-  // on its own with the days."*
-  //
-  // 🔑 A CLOCK IS NOT AN ACHIEVEMENT. A player who simply existed long enough reached
-  // `companion`, and then the only remaining condition was walking downstairs. The most
-  // guarded writing in the game - Ethan's own confession stages - was gated on the
-  // passage of time.
-  //
-  // ⭐ TRUST IS THE RIGHT NUMBER, and his reason is better than "it is harder": trust
-  // *"indicates how dangerous you are to the goddess of death."* Notoriety measures how
-  // long you have been here. Trust measures what your god has decided about you, and
-  // that is the thing she would actually weigh.
-  //
-  // ── ⚠️ WHY BOTH, AND NOT TRUST INSTEAD OF PHASE ────────────────────────────
-  // **Wall and Forge start at MAX trust and decay** (`ranks.js`). Gating on trust ALONE
-  // would hand their champions every stage on day one - the exact bug being fixed,
-  // wearing the opposite sign. Keeping the phase check means the confession needs BOTH
-  // standing with your god AND time in the world, and the half that saves the
-  // non-combatants is the half that was already there.
-  //
-  // Trust required per stage. The last is MAX on purpose: stage 3 is
-  // "Gregor, I am sorry." - the best text in the game, and it should cost everything.
-  var CONFESSION_TRUST = [2, 4, 5]
-
-  function phaseRank(ph) {
-    if (ph === 'helper') return 0
-    if (ph === 'companion') return 1
-    if (ph === 'absence') return 2
-    if (ph === 'harvest') return 3
-    return -1                                  // unreadable is NOT 'helper'
-  }
-
-  // Eligible = has met them, has stages left, and has climbed far enough that the
-  // next stage is due.
-  function confessionEligible(p, server) {
-    var s = speakerFor(p)
-    if (!s || !s.confession) return false
-    if (finished(p, s)) return false
-    try { if (!p.persistentData.getBoolean(metKey(s))) return false } catch (e) { return false }
-
-    var ph = ''
-    try {
-      if (!server) server = p.server
-      if (VELDORA.phase) ph = VELDORA.phase.of(server, p) || ''
-    } catch (e) { return false }
-    var have = phaseRank(ph)
-    if (have < 0) return false                 // no phase = no pacing = say nothing
-
-    var stage = stageOf(p, s)
-    var need = phaseRank(CONFESSION_PHASES[stage] || 'harvest')
-    if (have < need) return false
-
-    // ⭐ AND the trust gate. See CONFESSION_TRUST above for why this is an AND.
-    //
-    // ⚠️ FAILS CLOSED, unlike the night gate. An unreadable trust means she says
-    // NOTHING - the opposite bias to `night.js`, and deliberately so: there the risk was
-    // a silence nobody reports, here the risk is spending the game's best writing on
-    // somebody who has not earned it. A confession withheld can still be given later; a
-    // confession spent is gone.
-    var trust = -1
-    try {
-      if (typeof VELDORA.trust === 'function') trust = VELDORA.trust(server, p)
-    } catch (e) { return false }
-    if (typeof trust !== 'number' || !isFinite(trust) || trust < 0) return false
-    var needTrust = CONFESSION_TRUST[stage]
-    if (typeof needTrust !== 'number') needTrust = CONFESSION_TRUST[CONFESSION_TRUST.length - 1]
-    return trust >= needTrust
-  }
-
-  // The roll is still a roll - a stage that fired the instant a band changed would
-  // read as a cutscene bolted to a number. It should feel like she chose a moment.
-  function confessionSweep(server) {
-    try {
-      var players = server.players
-      for (var i = 0; i < players.length; i++) {
-        var p = players[i]
-        if (!confessionEligible(p, server)) continue
-        if (Math.random() > CONFESSION_CHANCE) continue
-        var ph = ''
-        try { if (VELDORA.phase) ph = VELDORA.phase.of(server, p) || '?' } catch (e) { ph = '?' }
-        confess(p, 'phase ' + ph)
-      }
-    } catch (e) { console.warn(TAG + 'confession sweep threw :: ' + e) }
-    server.scheduleInTicks(CONFESSION_SWEEP, function () { confessionSweep(server) })
-  }
 
   VELDORA.speaker = {
     register: register,
     speakers: SPEAKERS,
     cutoff: CUTOFF_Y,
-    floor: CONFESSION_Y,
     active: speakerActive,
     forPath: speakerFor,
     say: say,
     introduce: introduce,
-    confess: confess,
     // ⭐ E4 - "has she introduced herself to you yet". art_deal.js gates on it, and
     // without it that gate read false forever: `met` was never exported, so the deal
     // would have been silently unreachable with nothing to see in any log.
@@ -1057,9 +772,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         return !!p.persistentData.getBoolean(metKey(sp))
       } catch (e) { return false }
     },
-    confessed: function (p) { return finished(p, speakerFor(p)) },
-    stage: function (p) { return stageOf(p, speakerFor(p)) },
-    eligible: confessionEligible,
   }
 
   ServerEvents.commandRegistry(function (event) {
@@ -1078,39 +790,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         p.tell(Text.of('§8no speaker for your path - below the cutoff you get SILENCE'))
         return 1
       }
-      var st = stageOf(p, s)
-      var nowPh = ''
-      try { if (VELDORA.phase) nowPh = VELDORA.phase.of(ctx.source.server, p) || '?' } catch (e) { nowPh = '?' }
       p.tell(Text.of('§8down here you meet §f' + s.name))
-      p.tell(Text.of('§8confession §f' + st + '§8/§f' + s.confession.length +
-        '§8 · phase §f' + nowPh + '§8, next stage needs §f' +
-        (CONFESSION_PHASES[st] || 'harvest')))
-      p.tell(Text.of('§8  ' + (finished(p, s) ? '§7finished' :
-        (confessionEligible(p, ctx.source.server) ? '§aDUE - rolling ' +
-          Math.round(CONFESSION_CHANCE * 100) + '% every ' + CONFESSION_SWEEP + 't' :
-          '§8not yet - climb further'))))
-      p.tell(Text.of('§8/speaker confess §7force the next §8· /speaker reset §7forget you'))
+      p.tell(Text.of('§8/speaker reset §7forget you'))
       say(p, 'common')
       return 1
     })
     // Force the NEXT stage. Ethan tests at the end of a build, and a 10% roll at
     // y-120 is not something you can wait out during a polish pass.
-    root = root.then(Commands.literal('confess').executes(function (ctx) {
-      var p = ctx.source.player
-      if (!p) return 0
-      var s = speakerFor(p)
-      if (!s) { p.tell(Text.of('§cno speaker for your path')); return 0 }
-      // Replay the last one rather than rewinding to zero, so an ending can be
-      // re-watched without discarding the whole sequence.
-      if (finished(p, s)) {
-        try { p.persistentData.putInt(stageKey(s), s.confession.length) } catch (e) { }
-        p.tell(Text.of('§8she was finished - replaying the last one'))
-      }
-      if (!confess(p, 'forced by ' + p.username)) {
-        p.tell(Text.of('§cdid not open - already in a scene? see the log'))
-      }
-      return 1
-    }))
     root = root.then(Commands.literal('reset').executes(function (ctx) {
       var p = ctx.source.player
       if (!p) return 0
@@ -1119,7 +805,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         if (!SPEAKERS.hasOwnProperty(k)) continue
         try {
           p.persistentData.putBoolean(metKey(SPEAKERS[k]), false)
-          p.persistentData.putInt(stageKey(SPEAKERS[k]), 0)
+          // ⚠️ The stage key is DELIBERATELY still cleared even though the confession is
+          // gone (2026-08-30). Any player who progressed one before it was removed still
+          // carries the int, and leaving stale keys in persistentData is how a future
+          // system that reuses the name inherits somebody's old progress.
+          try { p.persistentData.putInt('veldora_spk_stage_' + SPEAKERS[k].id, 0) } catch (e) { }
         } catch (e) { }
       }
       p.tell(Text.of('§7they do not know you.'))
@@ -1168,6 +858,35 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       try {
       var s = SPEAKERS[path]
       VELDORA.voice.setColour(s.id, s.colour)
+
+      // ⭐⭐ HER PRESENTATION, FROM HER OWN DOCUMENT'S HEADER (2026-08-30):
+      //     "she shares same font as Wall. Always Red. Always in random areas across
+      //      your screen. Tide announcements are in the middle."
+      //
+      // 🔑 SHE HAS NO FONT OF HER OWN, AND THAT IS THE POINT. Wall's Metamorphous is
+      // scratched and gnarled; giving Caebrim the same face says they come from the same
+      // place before anyone explains that they do. It is the only shared font in the
+      // pantheon.
+      //
+      // ⚠️ AND SHE IS THE ONE EXCEPTION TO "COLOUR IS EMPHASIS, NOT IDENTITY". That rule
+      // (voice.js overlayColour) exists because a god's FONT now carries identity - and
+      // hers cannot, because hers is borrowed. Red is doing the work the typeface does
+      // for everyone else, so the exception is the rule's own logic rather than a hole
+      // in it. His header says "Always Red" and it is applied literally.
+      //
+      // ⚠️ Scatter is Wall's box, not a wider one: the same place, the same unease.
+      // Tide announcements are centred and NOT set here - that is the announcement's
+      // job, and it overrides per call.
+      if (typeof VELDORA.voice.setStyle === 'function') {
+        VELDORA.voice.setStyle(s.id, {
+          anchor: 'CENTER_CENTER',
+          scatter: { x: 150, y: 70 },
+          font: 'veldora:wall',
+          color: '#AA0000',
+          shake: false,
+          size: 0.95,
+        })
+      }
       var n = 0
       for (var k in s.lines) {
         if (!s.lines.hasOwnProperty(k)) continue
@@ -1193,12 +912,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // 🚨 The guard is not the real fix; ORDER-INDEPENDENCE is. One malformed entry
       // must cost its own registration and nothing else, so the loop body is wrapped
       // and reports the casualty by name instead of dying silently in the middle.
-      var conf = (s.confession && s.confession.length) ? s.confession : []
-      var cl = 0
-      for (var i = 0; i < conf.length; i++) cl += conf[i].length
-      console.info(TAG + path + ' -> ' + s.name + ' (' + s.id + ') - ' + n +
-        ' lines + ' + conf.length + ' confession cutscenes (' + cl + ' lines)' +
-        (conf.length ? '' : ' - NO CONFESSION, and that is deliberate for her'))
+      console.info(TAG + path + ' -> ' + s.name + ' (' + s.id + ') - ' + n + ' lines')
       names.push(path + ':' + s.name)
       } catch (e) {
         // One bad entry costs ITSELF and nothing downstream. Named loudly, because a
@@ -1212,7 +926,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       console.error(TAG + '!! ' + lost.length + ' speaker(s) lost: ' + lost.join(', ') +
         ' - their champions hear SILENCE below the cutoff. This is a bug, not a design.')
     }
-    confessionSweep(event.server)
     // ⚠️ THE FIFTH STALE BANNER IN FOUR DAYS. This announced "below y-64" for hours
     // after the rule became "below y0 AND no sky" - and it is the ONE line that
     // tells anyone what the rule is. The others were wall_events crediting minions
@@ -1225,9 +938,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // actually reads, so the two cannot disagree.
     console.info(TAG + DESCRIBE + ' - your god cannot reach you there. ' +
       names.length + ' speaker(s): ' + names.join(', ') + '.')
-    console.info(TAG + 'confessions are PHASE-PACED (' + CONFESSION_PHASES.join(' -> ') +
-      '), ' + Math.round(CONFESSION_CHANCE * 100) + '% per ' + CONFESSION_SWEEP +
-      't once due. You must have MET them there first.')
     console.info(TAG + 'a path with no speaker gets SILENCE down there, not a stand-in.')
   })
 })();

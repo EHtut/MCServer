@@ -455,7 +455,26 @@
   // 🔑 EVERY PATH IN VELDORA IS NOW CLAIMABLE. Keep the empty object rather than
   // deleting the machinery: the next god to be built needs this door, and a closed
   // path is a feature, not a leftover.
+  //
+  // ⭐⭐ ...AND THE DOOR EARNED ITS KEEP ON 2026-08-30, FOR A NEW REASON.
   var CLOSED = {
+    // 🔴 SALVAGE CLOSED. Ethan: *"lets disable salvage aswell. it will need a complete
+    // repass and not this session."*
+    //
+    // ⚠️ SHE IS NOT UNBUILT, WHICH IS WHY THIS IS DIFFERENT FROM EVERY CLOSURE ABOVE.
+    // She is the most-written god in the pack - 53 tags, 195 lines, 560 combinations,
+    // her own events, deals and drop table. Every previous closure meant "this god would
+    // give a player nothing". This one means the writing exists and he is not happy with
+    // it: he has called her creatively the worst-off twice, held her to last through the
+    // entire god pass, and she is the only god with no bickering scenes.
+    //
+    // 🔑 CLOSING IS NOT DELETING, and that distinction is the whole point of this table.
+    // Her pools, events, deals, coefficients and deep-speaker entry stay registered and
+    // keep resolving, and anyone already walking her keeps their claim. What stops is a
+    // new player being handed a god he intends to rewrite.
+    //
+    // TO OPEN: delete this key after the repass. Same bar as everyone else.
+    salvage: 'The Hound is not taking champions at present.',
   }
 
   // ── the test override ──────────────────────────────────────────────────────

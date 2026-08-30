@@ -10,15 +10,13 @@
 //   "Champion - Champion: Requires a champion of [the named god] on the other end."
 //
 // So an AGNOSTIC scene needs one online champion of either god in the pair; a GATED
-// scene needs a champion of the god named in the section header. And the section's
-// trust tier must match THAT champion's tier with THEIR OWN god.
+// scene needs a champion of the god named in the section header.
 //
-// ⚠️ THAT LAST PART IS AN INTERPRETATION, and it is the one worth arguing with. The
-// documents say "Low Trust" without saying whose. Reading it as the listening champion's
-// own trust is the only version that makes the tiers mean anything from where the player
-// is standing: at low trust you overhear Art approving of the Warrior, and at high trust
-// you overhear her extracting a promise from him. The scene escalates as YOUR
-// relationship does, which is what a trust tier is for.
+// ⭐ AND THE TIER IS THE HIGHEST ONE PRESENT - Ethan, 2026-08-30: *"Tier of is the
+// highest god's trust."* The documents say "Low Trust" without saying whose, and this is
+// the answer: the pantheon escalates with its most-trusted champion, and whoever has come
+// furthest sets how candid the gods are in front of everybody. See highestTier below for
+// what that replaced and why the earlier reading was wrong.
 //
 // ── 🚨 AN UNREADABLE TIER MATCHES NOTHING ────────────────────────────────────
 // docs/41 invariant #4. If the counter cannot be read, the champion satisfies no tier and
@@ -79,6 +77,44 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return null
   }
 
+  // ⭐⭐ THE TIER IS THE HIGHEST ONE PRESENT. Ethan ruled it 2026-08-30:
+  //     *"Tier of is the highest god's trust."*
+  //
+  // 🔴 THIS REPLACES MY INTERPRETATION, which was per-listener - each champion unlocking
+  // the scenes matching their OWN tier. That was wrong in a way worth recording: with two
+  // champions at different tiers it made the same room eligible for two different
+  // versions of the pantheon at once, and which one you got depended on which player the
+  // loop reached first. The gods' relationship is one thing, not one per observer.
+  //
+  // 🔑 SO THE PANTHEON ESCALATES WITH ITS MOST-TRUSTED CHAMPION. Whoever has come
+  // furthest sets how candid the gods are in front of everybody - which is the reading
+  // that makes a shared, overheard scene make sense at all.
+  //
+  // ⚠️ CONSEQUENCE, AND IT IS REAL: low- and med-trust scenes stop appearing once anyone
+  // reaches high. 36 of the 62 scenes are low. That is what "the highest" means and it is
+  // implemented literally; if the intent was "at or below the highest", it is one
+  // comparison to change and every scene stays reachable forever.
+  function highestTier(players, pair, needs) {
+    var RANK = { low: 1, medium: 2, high: 3 }
+    var best = null, bestP = null
+    for (var i = 0; i < players.length; i++) {
+      var p = players[i]
+      var g = godOf(p)
+      if (!g) continue                                   // pathless: overhears nothing
+      if (needs) {
+        if (g !== needs) continue
+      } else if (g !== pair[0] && g !== pair[1]) {
+        continue
+      }
+      var t = tierOf(g, p)
+      // 🚨 UNREADABLE IS NOT 'low'. docs/41 invariant #4 - a null counter must not
+      // quietly become the politest tier, or a storage hiccup reads as content.
+      if (!t) continue
+      if (!best || RANK[t] > RANK[best]) { best = t; bestP = p }
+    }
+    return { tier: best, player: bestP }
+  }
+
   /**
    * Can this scene be overheard right now?
    *
@@ -88,20 +124,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   function qualifies(sc, players) {
     var want = TIER[sc.tier]
     if (!want) return null
-    for (var i = 0; i < players.length; i++) {
-      var p = players[i]
-      var g = godOf(p)
-      if (!g) continue                                   // pathless: overhears nothing
-      if (sc.needs) {
-        if (g !== sc.needs) continue
-      } else if (g !== sc.pair[0] && g !== sc.pair[1]) {
-        continue
-      }
-      // 🚨 null (unreadable) never equals a tier name, which is the intended behaviour
-      // rather than an accident of comparison - see the header.
-      if (tierOf(g, p) === want) return p
-    }
-    return null
+    var h = highestTier(players, sc.pair, sc.needs)
+    if (!h.tier) return null
+    return (h.tier === want) ? h.player : null
   }
 
   function eligible(players) {
@@ -173,6 +198,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   VELDORA.bicker = {
     fire: fire,
+    highestTier: highestTier,
     qualifies: qualifies,
     eligible: eligible,
     stats: function () { return { played: played, skipped: skipped } },

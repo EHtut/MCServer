@@ -188,6 +188,35 @@ t('🚨 an UNREADABLE tier matches NOTHING - it is not treated as low', () => {
     'storage hiccup produce the politest scene, and read as content')
 })
 
+t('⭐ the tier is the HIGHEST present, not each listener\'s own', () => {
+  // Ethan, 2026-08-30: "Tier of is the highest god's trust."
+  // Two champions, one low and one high. The high one sets the tier for the room.
+  const env = fresh([SCENE_AGNOSTIC, SCENE_HIGH])
+  addPlayer(env, 'lo', 'blade', 0)          // low
+  addPlayer(env, 'hi', 'art', 100)          // >= 25 == high
+  const pool = env.ctx.VELDORA.bicker.eligible(env.players)
+  assert(pool.length === 1, 'exactly one tier should be live, got ' + pool.length)
+  assert(pool[0] === 1, 'the HIGH scene should be the eligible one, not the low')
+
+  // 🔑 THE CONTROL: with only the low champion present, the low scene is the live one.
+  // Without this, a rule of "always pick the high scene" would pass the assertion above.
+  const env2 = fresh([SCENE_AGNOSTIC, SCENE_HIGH])
+  addPlayer(env2, 'lo', 'blade', 0)
+  const pool2 = env2.ctx.VELDORA.bicker.eligible(env2.players)
+  assert(pool2.length === 1 && pool2[0] === 0,
+    'with only a low champion the LOW scene is live, got ' + JSON.stringify(pool2))
+})
+
+t('an unreadable champion does not drag the highest tier down', () => {
+  // ⚠️ A null tier must be SKIPPED, not ranked below low - otherwise one player with an
+  // unreadable counter would silently mute every scene for everyone else.
+  const env = fresh([SCENE_HIGH])
+  addPlayer(env, 'broken', 'blade')          // path, no counter
+  addPlayer(env, 'hi', 'art', 100)           // high
+  assert(env.ctx.VELDORA.bicker.eligible(env.players).length === 1,
+    'the readable high champion should still set the tier')
+})
+
 t('a PATHLESS player unlocks nothing', () => {
   const env = fresh([SCENE_AGNOSTIC])
   addPlayer(env, 'p1', null)
