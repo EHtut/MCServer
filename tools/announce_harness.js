@@ -404,10 +404,14 @@ grp('* THE GOD DIALOGUE PASS - 2026-08-30')
     /Commands\.literal\('type'\)/.test(vo2), true)
 
   // Ethan: "lets move the location of the text to above the hotbar."
-  ok('it is lifted clear of the hotbar', /y: HOTBAR_LIFT/.test(ov), true)
+  // These moved into DEFAULT_STYLE when the per-god registry landed. The default
+  // placement is unchanged; it is declared once instead of inline in overlay().
+  ok('the DEFAULT placement is still lifted clear of the hotbar',
+    /DEFAULT_STYLE = \{ anchor: 'BOTTOM_CENTER', y: HOTBAR_LIFT \}/.test(vo2), true)
   ok('...by exactly one tunable number',
     (vo2.match(/HOTBAR_LIFT = -?\d+/g) || []).length, 1)
-  ok('...still anchored at the bottom', /anchor: 'BOTTOM_CENTER'/.test(ov), true)
+  ok('...and a god declaring no style gets exactly that',
+    /function styleOf\(god\) \{ return STYLE\[god\] \|\| DEFAULT_STYLE \}/.test(vo2), true)
 
   // Ethan: "we can assign a type of dialogue per what the dialogue is."
   ok('a tone is chosen from the TAG', /toneFor\(tag\)/.test(ov), true)
