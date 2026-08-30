@@ -405,6 +405,32 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return { ids: ids, boss: boss, mod: modName, rangedAvailable: ranged.length }
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐⭐ D4 - THE TIDE COMES UP AT NIGHT. Ethan, 2026-08-29:
+  //
+  //     "we bring the tide system up, only at night, but to the overworld... we keep
+  //      the depths incredibly dangerous, but we also make nights as dangerous."
+  //
+  // 🔑 ONE SYSTEM, TWO MODES, AND THEY ARE MIRROR IMAGES. The deep run requires
+  // ENCLOSURE and ends when you surface. The night run requires OPEN SKY and ends at
+  // dawn. Same clock, same tiers, same wave modifiers, opposite geography.
+  //
+  // ⚠️ THE PERSISTENT CLOCK IS SHARED ON PURPOSE, so this does not double the amount of
+  // tide in the game. A tide comes due every 1-2 hours of played time and then lands
+  // wherever you happen to be catchable - underground at any hour, or outside after
+  // dark. It is not "a tide underground AND a tide every night".
+  var NIGHT_TIDE = true
+
+  // Reads night.js. ⚠️ null means "could not tell", and a null must never start a
+  // surface run - the deep tide has no such ambiguity, but out here a wrong answer
+  // means a horde in daylight.
+  function isNightNow(server) {
+    try {
+      if (!NIGHT_TIDE || !VELDORA.night || typeof VELDORA.night.isNight !== 'function') return false
+      return VELDORA.night.isNight(server) === true
+    } catch (e) { return false }
+  }
+
   function rosterFor(y) {
     if (y >= 0) return SHALLOW
     if (y > -40) return DEEP
@@ -611,7 +637,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
             if (!bench) {
               var st2 = runs[String(p.uuid)]
               if (!st2 || !st2.active) return
-              if (enclosed(p) === false) return
+              // ⭐ D4 - EACH MODE RE-CHECKS ITS OWN CONDITION. A deep pulse stops if the
+              // player surfaced; a night pulse stops at dawn. Using the deep test for
+              // both would have made every surface wave return here without spawning -
+              // which is exactly the bug the bench flag was added to fix, and it would
+              // have been reintroduced silently.
+              if (st2.mode === 'night') {
+                if (!isNightNow(srv)) return
+              } else if (enclosed(p) === false) return
             }
             if (first) {
               srv.runCommandSilent('execute as ' + p.username + ' at @s run playsound ' +
@@ -715,8 +748,28 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         if (!st.active) {
           st.out = 0
           st.in = enc ? st.in + SWEEP : 0
+
+          // ⭐ D4 - THE NIGHT DOOR. Open sky, after dark, and a tide already due. No
+          // ENTER_TICKS dwell: being outside at night IS the condition, and asking
+          // somebody to stand still in it first would only teach them to go indoors.
+          //
+          // ⚠️ `enc === false` EXPLICITLY, not `!enc`. enclosed() returns null when the
+          // sky is unreadable, and null is falsy - so `!enc` would start a surface run
+          // in a cave whenever the check glitched.
+          if (NIGHT_TIDE && enc === false && due <= 0 && isNightNow(server)) {
+            st.active = true
+            st.mode = 'night'
+            st.age = 0
+            st.waves = 0
+            st.next = GRACE
+            console.info(TAG + p.username + ' is OUT AFTER DARK and a tide is due - ' +
+              'the night tide begins')
+            continue
+          }
+
           if (st.in >= ENTER_TICKS) {
             st.active = true
+            st.mode = 'deep'
             st.age = 0
             st.waves = 0
             // GRACE is the in-run FLOOR only. What actually schedules a tide is the
@@ -752,7 +805,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // ending the run stops the arrivals on its own and no wave can ever land under
         // open sky. Whatever already followed you up stays - escaping means no MORE
         // come, not that the ones chasing you evaporate.
-        if (!enc) {
+        // ⭐ D4 - A NIGHT RUN ENDS AT DAWN, NOT BY MOVING. Going indoors or underground
+        // does not stop it, which is the whole point: the deep tide has an escape
+        // because the depths are a run you chose to enter, and the night is not.
+        //
+        // ⚠️ It is the mirror of the deep rule, not an exception to it. Each mode ends
+        // when its own condition stops holding - enclosure for one, darkness for the
+        // other.
+        if (st.mode === 'night') {
+          if (!isNightNow(server)) {
+            console.info(TAG + p.username + ' - dawn. The night tide ends after ' +
+              st.waves + ' wave(s), ' + Math.round(st.age / 1200) + ' min')
+            runs[uuid] = { active: false, in: 0, out: 0, waves: 0, next: 0, age: 0, waveEnds: 0, toldEscape: false }
+          }
+        } else if (!enc) {
           st.out += SWEEP
           if (st.out >= LEAVE_TICKS) {
             console.info(TAG + p.username + ' surfaced - tide ends after ' +
@@ -925,11 +991,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // after surfacing" after 2026-08-23 made surfacing MID-WAVE not end a run at all
       // - the exact defect this repo has caught five times in other files, caught here
       // by reading my own boot report.
-      console.info(TAG + 'THE TIDE live - enclosed only, NEVER under open sky. A run ' +
-        'begins after ' + Math.round(ENTER_TICKS / 20) + 's under, and ends ' +
-        Math.round(LEAVE_TICKS / 20) + 's after surfacing OR on death. THE SURFACE IS ' +
-        'THE ESCAPE (ruled 2026-08-24, reversing 08-23) - climbing out mid-wave ends ' +
-        'the run, and at a 1-2 hour cadence that spends the whole event.')
+      // 🔴 THIS BANNER SAID "enclosed only, NEVER under open sky" AND D4 MADE THAT A
+      // LIE THE SAME HOUR IT SHIPPED. Seventh lying banner in this project and the
+      // first one written by the change that falsified it - caught by reading the boot
+      // log after the restart, which is how the other six were caught too.
+      console.info(TAG + 'THE TIDE live in TWO MODES. DEEP: enclosed only, begins after ' +
+        Math.round(ENTER_TICKS / 20) + 's under, ends ' + Math.round(LEAVE_TICKS / 20) +
+        's after surfacing OR on death - THE SURFACE IS THE ESCAPE (ruled 2026-08-24, ' +
+        'reversing 08-23). NIGHT: ' + (NIGHT_TIDE ? 'open sky after dark, begins the ' +
+        'moment a due tide catches you outside, and ends AT DAWN - moving does not ' +
+        'stop it' : 'DISABLED') + '.')
       console.info(TAG + 'tides come every ' + Math.round(TIDE_MIN / 1200) + '-' +
         Math.round(TIDE_MAX / 1200) + ' MINUTES OF PLAY on a persistent per-player ' +
         'clock - it runs wherever you are and WAITS if you are on the surface when it ' +

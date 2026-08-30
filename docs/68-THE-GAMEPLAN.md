@@ -646,3 +646,64 @@ Every roster entry and every miniboss summoned successfully on the running serve
 registry probe cannot give — resolving is not spawning.
 
 **520 assertions across 15 harnesses. Live: 55/55 scripts, 0 errors.**
+
+---
+
+## ⏭️ DEFERRED — a fine-tuning pass on the waves
+
+Ethan, 2026-08-29: *"after we are done building everything out in the gameplan doc i
+want to do a fine tuning pass on the waves. That is after though."*
+
+⭐ **Deliberately after, not during.** The numbers that want tuning — `BASE_PER_BATCH`,
+`GROWTH`, `MAX_PER_BATCH`, the tier multipliers, the 0.40 specialist ratio, `TAKER_CHANCE`
+— are all reachable from play now that `/tide_wave` and `/tide_tier` exist. Tuning them
+before the night tide lands would mean tuning half a system twice.
+
+---
+
+# ✅ D4 DONE — the tide comes up at night. And ⛔ B2 was NOT NEEDED.
+
+## 🔑 One system, two modes, mirror images
+
+| | DEEP | NIGHT |
+|---|---|---|
+| requires | **enclosure** | **open sky** |
+| begins | 15s under | the moment a due tide catches you outside after dark |
+| ends | 10s after surfacing, or death | **at dawn** |
+| escape | surfacing — ruled 2026-08-24 | **none. Moving does not stop it** |
+
+⭐ **The persistent clock is SHARED**, so this does not double the tide in the game. One
+comes due every 1–2 hours of played time and then lands wherever you are catchable —
+underground at any hour, or outside after dark. Same tiers, same modifiers, opposite
+geography.
+
+⚠️ **The night run has no dwell time.** Being outside at night *is* the condition; asking
+for 15 seconds of standing still would only teach people to step indoors.
+
+⚠️ **`enc === false` explicitly, never `!enc`.** `enclosed()` returns **null** when the
+sky is unreadable, and null is falsy — `!enc` would start a surface run inside a cave on
+any glitch.
+
+## ⛔ B2 was unnecessary, and the evidence was already on disk
+
+The plan said In Control's `hostile: true, minheight: 40, deny` had to be lifted or it
+would suppress the night tide's spawns.
+
+🔑 **It does not, and the proof was already collected.** The D3 spawn test summoned **28
+hostiles at y=70** — above the deny threshold — with **zero failures**, because
+`spawner.js` uses `/summon` by design and `/summon` bypasses natural-spawn checks
+entirely. Its own header records why.
+
+⭐ **And leaving the rule alone is the better design.** The surface keeps no ambient
+hostiles at all, day or night, and every scrap of night danger is **authored** — tiered
+by trust, composed by modifier, announced. Lifting the rule would have layered ungoverned
+vanilla spawning on top of a system built precisely to control that.
+
+## 🔴 And I wrote the seventh lying banner
+
+`[tide] THE TIDE live - enclosed only, NEVER under open sky` — **true when written, false
+within the hour**, by the change that shipped alongside it. Caught by reading the boot log
+after the restart, which is how the other six were caught. It now names both modes and
+reads `NIGHT_TIDE` so it cannot describe a mode that is switched off.
+
+**534 assertions across 15 harnesses. Live: 55/55 scripts, 0 errors.**

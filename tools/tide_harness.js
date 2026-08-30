@@ -560,30 +560,55 @@ grp('D3 - THE FALLBACK, AND WHO IS NOT IN THE ROSTER')
   ok('...and it is the lifestealer', T.taker, 'born_in_chaos_v1:lifestealer')
 }
 
-grp('D3 - THE BENCH OUTRANKS THE ENCLOSURE GUARD')
+grp('D3/D4 - THE PULSE GUARD: bench bypasses, and each mode checks its own')
 {
   // Measured in play 2026-08-29: six /tide_wave calls logged perfect waves and placed
   // NOTHING, because the per-pulse enclosure check fired while Ethan stood at y104
-  // under open sky. sendWave was never the problem - the PULSE refused, and "I forced
-  // a wave" looked exactly like "the wave did nothing" from outside.
+  // under open sky. sendWave was never the problem - the PULSE refused.
   const src = fs.readFileSync(path.join(SS, 'tide.js'), 'utf8')
 
   ok('a forced modifier marks the call as a bench',
     src.indexOf('var bench = !!forcedMod') !== -1, true)
 
-  // The guard must be INSIDE an if (!bench) block, not at the top level of the pulse.
-  const gi = src.indexOf('enclosed(p) === false) return')
-  const bi = src.lastIndexOf('if (!bench) {', gi)
-  ok('the enclosure re-check sits inside the !bench branch',
-    bi !== -1 && gi - bi < 260, true)
+  // Isolate the pulse's guard block and reason about THAT, rather than measuring how
+  // many characters apart two strings happen to sit - the first version of this test
+  // did the latter and broke on a comment being added.
+  const bi = src.indexOf('if (!bench) {')
+  ok('the pulse has a !bench branch at all', bi !== -1, true)
+  const block = src.slice(bi, src.indexOf('}', src.indexOf('else if (enclosed(p) === false) return', bi)))
 
-  // ...and the rule itself must survive: a REAL tide still ends when you surface.
-  ok('the guard still exists for real tides', gi !== -1, true)
+  ok('the enclosure check lives INSIDE that branch',
+    block.indexOf('enclosed(p) === false) return') !== -1, true)
+
+  // D4: a night run must not be judged by the deep rule, or every surface wave would
+  // return here without spawning - the exact bug the bench flag was added to fix.
+  ok('a night run re-checks DARKNESS, not enclosure',
+    block.indexOf("st2.mode === 'night'") !== -1 && block.indexOf('isNightNow(srv)') !== -1, true)
 
   // isAlive is not part of the bypass - a dead player never receives a pulse.
   const ai = src.indexOf('if (!p.isAlive || !p.isAlive()) return')
   ok('isAlive is checked BEFORE the bench branch, so it always applies',
     ai !== -1 && ai < bi, true)
+}
+
+grp('D4 - THE TWO MODES ARE MIRROR IMAGES')
+{
+  const src = fs.readFileSync(path.join(SS, 'tide.js'), 'utf8')
+  ok('a night run can begin on the surface', src.indexOf("st.mode = 'night'") !== -1, true)
+  ok('a deep run is labelled too', src.indexOf("st.mode = 'deep'") !== -1, true)
+
+  // enc === false EXPLICITLY. enclosed() returns null when the sky is unreadable, and
+  // null is falsy - `!enc` would start a surface run inside a cave on any glitch.
+  ok('the night door tests enc === false, never !enc',
+    src.indexOf('enc === false && due <= 0 && isNightNow(server)') !== -1, true)
+
+  ok('dawn ends a night run', src.indexOf('dawn. The night tide ends after') !== -1, true)
+  ok('surfacing still ends a DEEP run - the original ruling survives',
+    src.indexOf('surfaced - tide ends after') !== -1, true)
+
+  // The clock is shared, so this does not double the tide in the game.
+  ok('a night tide still requires the persistent clock to be due',
+    src.indexOf('due <= 0 && isNightNow(server)') !== -1, true)
 }
 
 grp('D3 - A PATHLESS PLAYER IS TIER 0')
