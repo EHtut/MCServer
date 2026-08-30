@@ -570,7 +570,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // her speed is entirely how long a beat SITS once it has finished appearing.
         // At 0.45 her floor is ~3.1s against everyone else's 7s, so she is visibly the
         // fastest voice in the pantheon without a single character being typed quicker.
-        beatScale: 0.45,
+        // 🔴 0.45 -> 0.72. At 0.45 Ethan reported "Forge dialogue goes too fast" - she
+        // was clearing in ~3s while everyone else held ten, which stopped reading as
+        // excitable and started reading as text that failed to stay. Still clearly the
+        // quickest voice; no longer unreadable.
+        beatScale: 0.72,
 
         // Smallest of the five. She is chattering, not proclaiming - Art demands to be
         // heard and Blade speaks down at you; Forge is just talking.

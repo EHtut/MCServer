@@ -57,7 +57,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     WHISPER: 0.0,    // the dead muttering - only into a genuinely empty screen
     AMBIENT: 0.0,    // the place talking - same
     ASIDE: 10.0,     // your own head; may follow closely behind one thing
-    GOD: 10.0,       // a god addressing you
+    GOD: 13.0,       // a god addressing you
     ANNOUNCE: 15.0,  // something is ABOUT to happen - a warning is worth a wait
     CRASHOUT: 999,   // a god announcing their own tide. Always.
   }
@@ -119,7 +119,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // actually sent makes the model under-estimate, which is the unsafe direction.
     WHISPER: 9.5,
     AMBIENT: 1.5,
-    ASIDE: 10.5,
+    ASIDE: 12.5,
     GOD: 14.5,
     ANNOUNCE: 8.0,
     CRASHOUT: 12.0,

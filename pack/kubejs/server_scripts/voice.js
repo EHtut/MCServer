@@ -271,12 +271,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // reading over an argument.
   var TYPE_CHARS_PER_SEC = 15
 
-  // ⭐ THE MINIMUM ANY LINE STAYS ON SCREEN, in ticks. Ethan, after seeing 10s:
-  // *"7 seconds is probably the sweet spot."* Ten was long enough to read twice.
+  // ⭐ THE MINIMUM ANY LINE STAYS ON SCREEN, in ticks.
+  //
+  // 🔴 200 (10s) -> 140 (7s) -> 240 (12s). He tried seven in play and it was too quick:
+  // *"increase back to 10-15 seconds again for dialogue."* Twelve sits in the middle of
+  // the band he named twice, which is the value to keep unless play says otherwise.
   //
   // ⚠️ SCALED BY beatScale PER GOD - see beatFor. That is what makes Forge quick without
   // making anyone else quick, and without touching the typing rate, which is fixed.
-  var MIN_ON_SCREEN = 140
+  var MIN_ON_SCREEN = 240
 
   // 🔴 NEGATIVE, AND THE SIGN IS THE WHOLE BUG. y grows DOWNWARD in GUI space, so from a
   // BOTTOM anchor a POSITIVE y pushes the line off the bottom edge of the screen. It
@@ -295,7 +298,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   //
   // -60 is what the sweep showed sitting clear above the armour bar; -80 was his other
   // named value and is the number to raise it to if a shaking or oversized line clips.
-  var HOTBAR_LIFT = -60
+  // 🔴🔴 -60 -> -170. Ethan, from play 2026-08-30:
+  //     *"anything that crosses against the chat bar is no longer rendered."*
+  //
+  // ⚠️ NOT CLIPPED - NOT RENDERED AT ALL. A line overlapping the chat region silently
+  // does not appear, which is the worst failure shape this project has: it looks
+  // identical to a god having nothing to say. Every earlier "it didn't show" may have
+  // been this rather than a duration.
+  //
+  // 🔑 The interior voice sat 60px off the bottom, which is squarely in it. Lifted clear
+  // while staying LOW - being near the hotbar is the characterisation (it is your own
+  // head, not a god above you), so the fix is height, not a different anchor.
+  var HOTBAR_LIFT = -170
 
   // ⭐ A DIALOGUE TYPE PER WHAT THE DIALOGUE IS. Ethan, 2026-08-30: *"we can assign a
   // type of dialogue per what the dialogue is. Tone, emotion, context, impact, etc."*
@@ -428,14 +442,29 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // through it. The horizontal spread is untouched, because a line to the left or right
   // of the crosshair is perfectly readable - it is only the vertical overlap that ruins
   // it, since text is a horizontal band.
-  var CROSSHAIR_BAND = 34        // half-height of the region a line must never occupy
+  var CROSSHAIR_BAND = 34
+
+  // 🔴 THE CHAT BAR EATS ANYTHING THAT OVERLAPS IT (2026-08-30, from play). A scattered
+  // line thrown far enough DOWN lands in that region and is never drawn - so the box is
+  // asymmetric now: it may go as high as it likes and only so low.
+  //
+  // ⚠️ Asymmetric ON PURPOSE. Shrinking the box evenly would pull every line toward the
+  // crosshair, which is the other thing that must not happen; the two constraints push
+  // in opposite directions and only an asymmetric box satisfies both.
+  var CHAT_FLOOR = 60        // max distance BELOW centre a line may be thrown
 
   function dodgeCrosshair(y, reach) {
     var r = Math.abs(reach) || CROSSHAIR_BAND
     // Below the band, push it to the nearer edge, keeping the side it was already on.
-    if (Math.abs(y) >= CROSSHAIR_BAND) return y
-    var out = CROSSHAIR_BAND + Math.round(Math.random() * Math.max(1, r - CROSSHAIR_BAND))
-    return (y < 0 || (y === 0 && Math.random() < 0.5)) ? -out : out
+    if (Math.abs(y) < CROSSHAIR_BAND) {
+      var out = CROSSHAIR_BAND + Math.round(Math.random() * Math.max(1, r - CROSSHAIR_BAND))
+      y = (y < 0 || (y === 0 && Math.random() < 0.5)) ? -out : out
+    }
+    // ⚠️ AND NEVER FAR ENOUGH DOWN TO MEET THE CHAT BAR, where it would not render at
+    // all. Reflected upward rather than clamped: clamping would pile every low result on
+    // one line, which is visible as a row of text at a fixed height.
+    if (y > CHAT_FLOOR) y = -y
+    return y
   }
 
   function scatterOf(st) {
