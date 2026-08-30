@@ -39,7 +39,7 @@ reason that was findable.
 | `grim_and_bleak` | 3 | banshee, damned_templar, ghoul |
 | `galosphere` · `goety_cataclysm` · `irons_spellbooks` · `regions_unexplored` · `spawn` | 1 each | preserved · draugr_necromancer · necromancer · ashen · barbed |
 
-⭐ **Every one of the 91 is tagged undead**, so any of them can enter a roster **without
+⭐ **Every one of the 89 is tagged undead**, so any of them can enter a roster **without
 touching `UNTAGGED_UNDEAD`** — the harness rule that a roster mob must be tagged-or-
 allowlisted is satisfied by construction.
 
@@ -71,7 +71,7 @@ The registry confirms an id exists. **It cannot say whether something shoots.** 
 | | |
 |---|---|
 | **RULED by Ethan** | `banshee` and `skeleton_thrasher` are **melee** despite the names. `decrepit_skeleton` = bulk · `minecraft:skeleton`, `bonescaller` = ranged · `skeleton_demoman` = rare/dangerous |
-| **INFERENCE** | `skeleton_pillager` (crossbow), `bogged`/`stray` (vanilla archers) |
+| **INFERENCE** | `bogged`/`stray` (vanilla archers) |
 | **UNKNOWN** | the other ~85. Genuinely unknown |
 
 🔴 This matters more than it looks: `decrepit_skeleton` was listed **ranged** while being
@@ -82,7 +82,7 @@ before it lands, or it silently mis-weights the pool.**
 
 ## 🚨 Three risk classes I would not put in a wave without a ruling
 
-**1. NECROMANCERS SUMMON.** `goety` contributes 29 usable mobs and a large share of them
+**1. NECROMANCERS SUMMON.** `goety` contributes 27 usable mobs and a large share of them
 (`necromancer`, `cairn_necromancer`, `mossy_necromancer`, `wither_necromancer`,
 `skull_lord`, `bone_lord`, `draugr_necromancer`) **raise more undead**. In a 24-mob wave
 that is a multiplier on top of a multiplier. ⚠️ We have already been bitten this week by
@@ -110,7 +110,7 @@ wave alone, which is why a tide reads the same every time. Everything below adds
 | `born_in_chaos_v1:baby_skeleton` | small and fast — makes a horde *move* differently |
 | `cataclysm:koboleton` | skeletal, low-grade, clearly rank-and-file |
 | `occultism:wild_skeleton` ⚠️ | if the Wild Hunt concern is dismissed |
-| `goety:skeleton_pillager` ⚠️ | almost certainly ranged — belongs in ARCHERS, not bulk |
+| ~~`goety:skeleton_pillager`~~ 🔴 | **WITHDRAWN.** I proposed it, then the name column revealed its lang entry reads *"Skeleton Pillager Servant"* — it is a summon. My own proposal recommended a mob my own filter later excluded |
 
 ### B. A second archer, so `specialist` is not two mobs
 
