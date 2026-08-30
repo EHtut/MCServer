@@ -7,6 +7,12 @@
 > ⭐ **One entry per defect, with an ID, whether it is open or fixed, and what it
 > actually cost.** A fixed defect stays here - the lesson is the point, not the status.
 >
+> 🔴 **IDs COLLIDED ONCE — 2026-08-30. Take the next free ID at WRITE time, not at the
+> start of your session.** Two channels were filing in parallel; this one read the
+> highest ID before a long piece of work and filed D-111/D-112 hours later, on top of
+> another channel's D-111/D-112. Renumbered to **D-116/D-117**. ⚠️ `tools/config_sync.py`
+> still refers to the OTHER D-112 and is correct — do not "fix" it.
+>
 > ⚠️ This is not a to-do list. Work lives in `68-THE-GAMEPLAN.md`; this records what
 > was found to be WRONG, so the same class does not get rediscovered a third time.
 
@@ -308,9 +314,11 @@ bar and the log says so in one line.
 
 ---
 
-## ⚠️ D-108 — a recorded ruling was reversed by the wave table, and nobody was told
+## ✅ D-108 — a recorded ruling was reversed by the wave table ✅ RULED 2026-08-30
 
-**OPEN — needs Ethan's word, one line either way.**
+**RULED: Ethan, one word — *"d108 - yes."*** The reversal stands. `tide.js`'s boot line
+and the harness both state it as settled rather than open, and her own miniboss waves
+still draw from her own list.
 
 `tide.js` has said in its boot log, and `tide_harness.js` has asserted, since 2026-08-24:
 
@@ -559,7 +567,7 @@ understand. ⭐ *A gate that cannot fail is a banner.*
 
 ---
 
-## 🔴 D-111 — `goety:haunted_armor` was in a shipped roster and spawns nothing ✅ FIXED 2026-08-30
+## 🔴 D-116 — `goety:haunted_armor` was in a shipped roster and spawns nothing ✅ FIXED 2026-08-30
 
 Measured four separate times, against a control that passed every time, with and
 without AI: it answers `summon` with **"Summoned new Haunted Armor"** and is gone a
@@ -578,7 +586,7 @@ roster change.
 
 ---
 
-## 🔴 D-112 — Art's roster is two-thirds inert and his boss never spawns ⚠️ OPEN (needs a ruling)
+## 🔴 D-117 — Art's roster is two-thirds inert and his boss never spawns ✅ RULED 2026-08-30
 
 ```
 born_in_chaos_v1:restless_spirit     0/3 survived     (control 3/3)
@@ -594,9 +602,21 @@ been placing nothing.
 god that declares no working boss now falls back to **her** miniboss — no lore invented,
 and it is what the file did before D-108.
 
-⛔ **NOT DONE, AND DELIBERATELY:** Art has not been re-rostered. The god rosters are
-Ethan's — he gave them verbatim — and picking two replacement mobs is a lore call, not a
-bug fix. Measured, persistence-checked candidates for his ruling:
+✅ **RULED:** *"it should always just be born in chaos' lifestealer."*
+
+⭐ **And that is the same mob as the Taker.** `tide.js` already sends
+`born_in_chaos_v1:lifestealer` into *her* waves 6% of the time as a tell, on the note
+*"Art is just kayer and she is already secretly aligned with the goddess of death."* So
+the rare thing marching in her army and the thing leading his wave are one creature — the
+alliance stated twice, in two mechanics, and nowhere in words.
+
+⚠️ Consequence worth knowing before somebody reads it as a bug: the Taker substitution is
+a no-op on an Art miniboss wave, because it would replace the Lifestealer with itself.
+
+Every god declares a working boss again, so the "falls back to hers" path is now asserted
+**unused** — a safety net that is silently load-bearing is not a net.
+
+The candidates below went unused and are kept only as measured record:
 
 | id | hp | armor | dmg | |
 |---|---|---|---|---|
@@ -656,3 +676,130 @@ word OK.
 ⚠️ **Fixing the regex was the smaller half.** The shape will move again. An unparseable
 god list is now a hard exit 2 — because the only durable defence against this class is
 that **empty is never silent**, not that the current pattern happens to be right.
+
+---
+
+## ✅ D-118 — Salvage's pack boss summons its own pack ✅ RULED IN 2026-08-30
+
+The dire-wolf run turned up exactly one boss-weight candidate, and it is a good one:
+
+```
+born_in_chaos_v1:dire_hound_leader    100 hp / 0.5 armor / 10 dmg / 0.7 knockback-resist
+```
+
+Named "Dire Hound Leader", statted like a pack boss, and **its class references
+`DreadHound` + `EntityType` + `spawn` + `finalizeSpawn`: it summons its own pack.**
+
+🔑 That is the multiplier-inside-a-multiplier the no-summoner rule exists for — but that
+rule was written for a **24-mob tide wave**, and Salvage has no tide wave at all (his
+ruling). Her roster feeds her own events through `spawn_pressure.js`, which caps at 6.
+
+✅ **RULED IN, and the rule went with it:** *"Yes that. No summoner rule no longer applies
+that is redundant, cut it from everywhere it is mentioned."*
+
+⭐ A pack leader that calls its pack is what a pack is. The rule it violated was never
+measured, and what actually bounds the risk is `MAX_ALIVE_NEAR` — a real ceiling on live
+tide mobs near a player — rather than a ban on a category. Swept from waves.js,
+spawn_pressure.js, waves_harness.js, docs/72 and docs/74; the remaining mentions are
+past-tense headstones, which is the correct end state for a rule that shaped rosters.
+
+⚠️ **Anything excluded SOLELY for summoning is eligible again and has not been
+re-evaluated:** goety `wight` / `grave_golem` / `skull_lord` / `wither_necromancer`, the
+`bound_*` casters, `irons_spellbooks:necromancer`. Not added — nobody has asked for them.
+
+⚠️ **The same method cleared two mobs earlier the same day** — `goety:bone_lord` and
+`goety:rattled` both *sounded* like summoners and both turned out to extend
+`AbstractSkeleton` with no spawn calls. It discriminates in both directions, which is why
+this finding is worth acting on rather than hedging.
+
+---
+
+## ⚠️ D-119 — Salvage has no specialist tier, and the mobs for one do not exist
+
+Not a bug; a measured gap, recorded so it is not rediscovered. Every wolf in this
+300-mod pack is fodder on his own rule:
+
+```
+hostile_black_wolf 10/0/4   winter_wolf 10/0/4   hunter_wolf  8/0/4
+hellhound          10/0/4   stormhound  10/0/4   dread_hound 17/0.5/5
+```
+
+8–17 hp, no armour, 4–5 damage. **Her pressure is numbers and speed**, which suits a pack
+and is a real identity rather than a shortfall. But if she should ever hit *harder*, there
+is nothing in the pack to promote — the only heavier wolf is D-118's leader, which is now
+rostered as her BOSS rather than as a specialist.
+
+✅ **Ethan closed this on 2026-08-30 without needing a specialist tier:** *"Salvage does
+not even augment tides."* Her wolves are for her OWN events, never a tide, so the missing
+middle matters far less than it would for a god who augments.
+
+---
+
+## 🔴 D-120 — `spawn_persist_check.py` was not reading every roster file ✅ FIXED 2026-08-30
+
+It scanned `waves.js` and `tide.js`. Six wolves were added to `spawn_pressure.js` in the
+same chunk, and the sweep reported **"OK — every rostered mob"** while six of them had
+never been checked.
+
+⭐ **The gap was invisible in the worst way**: the tool did not fail, it succeeded about a
+smaller set than anyone thought it covered. Same shape as D-109 — the answer looked like
+a clean bill of health because the question had quietly narrowed.
+
+Also fixed in the same pass: the roster scan is deliberately over-broad, so
+`minecraft:overworld` (a **dimension**) came through and was reported as *"vanishes on
+arrival"*. **"Not an entity" is now a third state**, decided by asking the summon itself
+rather than by maintaining a blocklist that would go stale.
+
+---
+
+## 🔴 D-121 — "god-augmented" was built as REPLACE, and every test agreed ✅ FIXED 2026-08-30
+
+> Ethan: *"All tides have the general mobs in them, god augmented tides are Augmented!
+> with that gods' mobs, They do not overwrite the existing tide cast at all."*
+
+`pick()` returned the god's roster **instead of** hers. A "Blade wave" was a wave of
+zombies rather than her dead with his zombies in it.
+
+🔑 **That inverts the thesis at exactly the wrong moment.** The tide is the goddess of
+death's; under replacement it stopped being hers the instant another god touched it.
+
+⚠️ **EVERY TEST PASSED, and they were all asking the wrong question.** Four assertions
+checked that a god wave contained *that god's* mobs — true, and not the point. **Nothing
+asked whether hers were still in it.** A whole mechanic was inverted under a green suite,
+which is the same shape as D-113: the tests were right about a thing that meant something
+else.
+
+**Now:** her cast is built first, always; the god's fodder joins her fodder and his
+specialists join her specialists, so his ratios are untouched. Measured after the fix —
+a Blade general wave is **13 of hers + 5 of his**, Wall **13 + 3**, Art **13 + 1**.
+
+⭐ **The one thing that still overrides is the miniboss** (D-108, ruled) — a wave cannot
+have two, since the cap is one per tide.
+
+⭐ **And it retroactively fixes a sizing worry.** Wall is four spiders; under replacement
+that was a thin wave, and under augmentation it is her full tide with spiders in it —
+which is what "Wall reached into her water" should feel like.
+
+---
+
+## ⚠️ D-122 — Wall's spider faction contained a crab, two flies and a termite ✅ FIXED 2026-08-30
+
+> *"wall's tide has flies and a crab... it should only be spiders."*
+> *"only take things with the naming of spider"*
+
+I built Wall's roster off `#minecraft:arthropod` and stat lines. **The tag is arthropods;
+he asked for spiders** — so it admitted `corpse_fly`, `thornshell_crab`,
+`diamond_termite`, `silverfish` and two "scuttlers".
+
+⚠️ **AND I WAS SOLVING IT THE WRONG WAY WHEN HE STOPPED ME.** I had started counting
+model bones to adjudicate the two scuttlers — eight legs on one, six on the other — and
+he cut it short with the actual rule: **the name**. A faction is *authorship*, not
+anatomy. It is defined by what he calls a spider.
+
+🔑 **This repo has been burned three times by matching on names** (`art` inside "heart", a
+case-sensitive grep, banshee-as-archer) and the lesson does not apply here: those were
+*inferences* from names, this is a *definition* by name. Worth keeping straight, because
+the harness now asserts on a name substring and that would otherwise look like a
+regression to a rule this project spent real time learning.
+
+Wall is now `spider`, `cave_spider`, `baby_spider` and `mother_spider`.
