@@ -202,8 +202,21 @@ def gen_gap_report(rows: list[dict], meta: dict) -> str:
         "| Mod | Reason |",
         "|---|---|",
     ]
-    for slug, why in meta.get("cut_for_budget", {}).get("mods", []):
-        out.append(f"| `{esc(slug)}` | {esc(why)} |")
+    # ⚠️ TOLERANT OF A MISSING REASON, and it SAYS SO rather than inventing one.
+    #
+    # 🔴 A single malformed row - ["hollowsteve"], no reason - crashed this generator
+    # with "not enough values to unpack". Nothing else failed, so BOTH generated docs
+    # (01-MODLIST and 04-GAP-REPORT) stopped being regenerable and quietly went stale.
+    # A generator that dies on one bad row takes the whole document with it, and the
+    # document is the only thing anyone reads.
+    for row in meta.get("cut_for_budget", {}).get("mods", []):
+        if isinstance(row, str):
+            slug, why = row, ""
+        else:
+            slug = row[0] if len(row) > 0 else "?"
+            why = row[1] if len(row) > 1 else ""
+        why = esc(why) if why else "**no reason recorded** - do not restore casually"
+        out.append(f"| `{esc(slug)}` | {why} |")
 
     out += [
         "",

@@ -1,6 +1,11 @@
 # 69 — You do not belong here: the Nether and the End
 
-> **STATUS: DRAFT.** Ethan's writing, 2026-08-29. **Zero code.**
+> **STATUS: BUILT (F1).** Ethan's writing, 2026-08-29; shipped the same day as
+> `trespass.js` — eight lines, no speaker, on the announcement bar at *ambient*
+> priority. The deep Speaker is now explicitly barred from both dimensions rather than
+> barred by the accident that vanilla's Nether never goes below y0.
+>
+> ⚠️ It said `DRAFT` / "Zero code" after the code shipped.
 
 > *"So what im hearing is that we need to keep end and nether biomes in? Fine, we can
 > add an ambient line of how wrong those dimensions feel and you don't belong here."*

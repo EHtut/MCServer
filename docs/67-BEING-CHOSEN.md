@@ -1,7 +1,18 @@
 # 67 — Being chosen: the five entry conditions
 
-> **STATUS: DRAFT.** Ethan's spec, 2026-08-29. **Zero code written.** `chosen.js` is
-> live and unchanged; nothing here is built.
+> **STATUS: PARTLY BUILT.** Ethan's spec, 2026-08-29.
+>
+> | | |
+> |---|---|
+> | ✅ **E1 Blade** | 500 slain, lifetime — `slain.js`. He is off `minecraft:iron_sword` |
+> | ✅ **E2 Salvage** | ten deals, accept five — `salvage_deals.js`. She is off the crossbow |
+> | ⏳ **E3 Wall** | killed while pathless, or **30 days godless in PLAYED TIME** (ruled 2026-08-29) |
+> | 🔴 **E4 Art** | needs new machinery: `speakerFor()` returns null for the pathless, so they hear nobody |
+> | ⏳ **E5 Forge** | the dialogue tree |
+>
+> ⚠️ **This said `DRAFT` / "Zero code written" while E1 and E2 were shipping from it.**
+> `DRAFT` is an instruction — *do not build from this* — so leaving it on a doc being
+> built from makes the marker worthless everywhere else.
 
 > Ethan: *"For chosen ... i want to make that honestly harder to accomplish"*
 

@@ -105,12 +105,17 @@ ear. That is the same answer `_probe_patron.js` gave to the same problem.
 
    ⚠️ **`/patronsound` should be the first thing run after the boot** — the sound ids
    cannot be verified from the server, and a silent god means a wrong id.
-2. **~370 `[CLAUDE-DRAFT]` lines** (`docs/51`, 128 pools / 446 lines across 6 gods).
-   The 11 new pools are placeholder and marked as such.
-3. **Salvage's register** (`7b`) — her trade voice and her collection voice are
-   audibly different people.
-4. **Blade's seven Challenges want rebalancing downward** — his own file flags it as
-   "a separate pass and Ethan's call".
+2. **`[CLAUDE-DRAFT]` lines** — ⚠️ **now 135 pools / 458 lines across 10 gods**
+   (`docs/51`). The count moved because the register's own matcher carried a permanent
+   false positive that hid four real pools; see F2 in `docs/68`.
+3. ~~**Salvage's register**~~ ✅ **DONE 2026-08-29 (F2).** Countable, not a matter of
+   taste: her nine trade lines had no contractions while her own rules mandate them.
+   Fixed with contractions only — not one image changed.
+4. ~~**Blade's seven Challenges want rebalancing downward**~~ ⛔ **OBSOLETE 2026-08-29.**
+   The two-stage roll in `godevents.js` already fixed it: the roll picks a KIND from the
+   chart first, so the number of Challenges cannot move the category share. Measured on
+   the live boot at **exactly 20%**, against the 47.1% the old note recorded for the same
+   eight events.
 
 ### Carried, unfixed
 

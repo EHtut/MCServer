@@ -7,8 +7,8 @@
 
 ## Summary
 
-- **276 / 450** mod slots used
-- **248** stable releases, **28** beta/alpha
+- **309 / 450** mod slots used
+- **276** stable releases, **33** beta/alpha
 - **3** entries carry a known hazard (see below)
 
 ---
@@ -83,6 +83,8 @@ They are the first place to look when something breaks.
 | `thermoo` | `4.8.1-neoforge` | alpha |
 | `accessories` | `1.1.0-beta.53+1.21.1` | beta |
 | `archers-expansion` | `1.5.1+1.21.1-neoforge` | beta |
+| `atmospherics` | `2.6.5.1` | beta |
+| `bountiful` | `8.0.0-beta.2` | beta |
 | `corpse` | `neoforge-1.21.1-1.1.13` | beta |
 | `create-railways-navigator` | `1.21.1-beta-0.9.1-C6` | beta |
 | `create-sound-of-steam` | `0.8.2-1.21.1` | beta |
@@ -92,10 +94,13 @@ They are the first place to look when something breaks.
 | `glitchcore` | `2.1.0.2` | beta |
 | `in-control` | `1.21-10.2.6` | beta |
 | `iris` | `1.8.14-beta.1+1.21.1-neoforge` | beta |
-| `jei` | `19.43.0.393` | beta |
+| `jei` | `19.44.0.401` | beta |
+| `kambrik` | `8.0.0-beta.2` | beta |
 | `make_bubbles_pop` | `0.4.0-beta.1-neoforge` | beta |
+| `more-rpg-library` | `2.6.3+1.21.1-neoforge` | beta |
 | `moreculling` | `1.0.8` | beta |
 | `owo-lib` | `0.12.15.5-beta.1+1.21` | beta |
+| `particle-rain` | `v4-beta.10+1.21.1-neoforge` | beta |
 | `pf-neoforge` | `1.21.1-1.12.0-beta.1` | beta |
 | `playeranimator` | `2.0.4+1.21.1-forge` | beta |
 | `rrls` | `5.0.11+mc1.21.1-forge` | beta |
@@ -131,7 +136,7 @@ went. Cuts are **data, not history**: delete the entry from `CUTS` in
 | `face-of-horror` | Overlaps The Knocker and Distant Friends; weakest of the watchers. |
 | `functional-storage` | Second drawer mod alongside Storage Drawers. |
 | `happiness-is-a-warm-gun` | Redundant once Superb Warfare, Vic's Point Blank, TaCZ and Create: Gunsmithing are in. |
-| `hollowsteve` | Third boss-stalker; Obsessed and Kenny already cover escalating stalkers. |
+| `hollowsteve` | **no reason recorded** - do not restore casually |
 | `horror-faces` | Same niche as face-of-horror. |
 | `immersive-melodies` | Instrument mod competing for attention with proximity voice chat. |
 | `iron-furnaces` | Early-game smelting tiers that Create obsoletes within an hour. |

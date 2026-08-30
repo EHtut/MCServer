@@ -4,13 +4,13 @@
 > `tools/modlist.json` + the resolution cache. Do not hand-edit -
 > change `tools/modlist.json` and regenerate.
 
-**276 mods** for Minecraft 1.21.1 / neoforge, 1,028 MB total.
+**309 mods** for Minecraft 1.21.1 / neoforge, 1,152 MB total.
 
 | side | count | meaning |
 |---|---:|---|
-| both | 198 | installed on the server *and* every client |
-| client | 57 | client-only; the server never loads them |
-| server | 21 | server-only; players do not need them |
+| both | 222 | installed on the server *and* every client |
+| client | 65 | client-only; the server never loads them |
+| server | 22 | server-only; players do not need them |
 
 Every entry is pinned to an exact file and sha512 in `pack/mods/*.pw.toml`.
 The **Why** column is the reason that mod is in the pack, not a description
@@ -35,7 +35,7 @@ Pillar 1: Create and its addon family - the industrial spine. Addons WIDEN Creat
 | [Create: Numismatics](https://modrinth.com/mod/numismatics) | `1.0.20+neoforge-mc1.21.1` | both | major | Create-styled currency; groundwork for a server economy |
 | [Create: Bells & Whistles](https://modrinth.com/mod/bellsandwhistles) | `v0.4.7-1.21.1` | both | minor | Create: Bells & Whistles - adornments |
 | [Create Aeronautics](https://modrinth.com/mod/create-aeronautics) | `1.3.0+mc1.21.1` | both | risky | Buildable airships and planes - spectacular, still alpha |
-| [Create: Bionics](https://modrinth.com/mod/create-bionics) | `2.1.0` | both | minor | Three fuelled robot animals. The Anole repels spiders and insects; the Oxhauler is a rideable pack mule. A Forge-path boon - power the builder MANUFACTURES rather than is given. |
+| [Create: Bionics](https://modrinth.com/mod/create-bionics) | `2.1.1` | both | minor | Three fuelled robot animals. The Anole repels spiders and insects; the Oxhauler is a rideable pack mule. Added 2026-08-12 as a Forge-path boon - power the builder MANUFACTURES rather than is given |
 | [Create: Bits 'n' Bobs](https://modrinth.com/mod/create-bits-n-bobs) | `0.0.44` | both | minor | Decorative and mechanical Create additions |
 | [Create: Design n' Decor](https://modrinth.com/mod/create-design-n-decor) | `2.2b` | both | minor | Factory decor blocks |
 | [Create: Dreams & Desires](https://modrinth.com/mod/create-dreams-and-desires) | `2.3a-BETA` | both | minor | Broad Create content expansion |
@@ -49,7 +49,7 @@ Pillar 1: Create and its addon family - the industrial spine. Addons WIDEN Creat
 | [Create: Oxidized](https://modrinth.com/mod/create_oxidized) | `0.1.3` | server | minor | Oxidation recipes for all copper blocks |
 | [Create: Interiors](https://modrinth.com/mod/interiors) | `0.6.1` | both | minor | Create: Interiors - furniture in the Create idiom |
 
-## magic (13)
+## magic (14)
 
 Pillar 2: Ars Nouveau as the magic spine plus a deliberately chosen set of addons. Ars Creo and Create: Ars Nouveau are the explicit seam between the magic and industry pillars - spells that drive machines, machines that fuel spells. DEPTH RULING (Ethan, 2026-07-31): the Ars spine plus FOUR strong alternatives - Iron's Spells (combat magic), Goety (necromancy, feeds the horror pillar), Occultism (summoning), Theurgy (alchemy). Malum, Forbidden Arcanus and Hexerei were cut as a fifth, sixth and seventh parallel progression that four players would never finish. Ice & Fire, Vampirism and Werewolves stay as world-content rather than competing spell systems.
 
@@ -61,12 +61,13 @@ Pillar 2: Ars Nouveau as the magic spine plus a deliberately chosen set of addon
 | [Create Ars Nouveau](https://modrinth.com/mod/create-ars-nouveau) | `1.20.5` | both | major | Second Create/Ars integration - gears meet glyphs |
 | [Goety - The Dark Arts](https://modrinth.com/mod/goety) | `3.1.0` | both | major | Necromancy and dark rituals. Sits exactly on the magic/horror seam |
 | [IceAndFire Community Edition](https://modrinth.com/mod/iceandfire-ce) | `2.0` | both | major | Dragons as a late-game target |
+| [Occultism](https://modrinth.com/mod/occultism) | `1.21.1-neoforge-1.224.2` | both | major | Summoned spirits bound to jobs - mining, crushing, transport. Minion-based automation, and R7's designed fourth alternative. Wall's anchor alongside Goety: one fights for you, one works for you |
+| [Regions Unexplored](https://modrinth.com/mod/regions-unexplored) | `0.6.2-neoforge-21.1` | both | major | The biome layer - 198 biomes, 39 wood sets, one dependency. Replaced Oh The Biomes We've Gone 2026-08-14: lighter (6.1 vs 19.5 MB), more biomes, more woods, and retires three dependencies |
 | [Ars Lumos](https://modrinth.com/mod/ars-lumos) | `1.3.0` | client | minor | Emissive textures for Ars blocks |
 | [Ars Nouveau's Flavors & Delight](https://modrinth.com/mod/arsdelight) | `2.2.2` | both | minor | Ars ingredients in the Farmer's Delight cooking system |
 | [Artifacts](https://modrinth.com/mod/artifacts) | `13.2.1` | both | minor | Exploration-reward trinkets |
 | [Goety Cataclysm](https://modrinth.com/mod/goety-cataclysm) | `1.21.1-1.8.2` | both | minor | Goety and Cataclysm integration |
 | [Magic Vibe Decorations (Crystals, Halloween)](https://modrinth.com/mod/magic-vibe-decorations) | `1.0.7` | both | minor | Crystal and magical decoration |
-| [Occultism](https://modrinth.com/mod/occultism) | `1.21.1-neoforge-1.224.2` | both |  |  |
 | [Relics](https://modrinth.com/mod/relics-mod) | `0.10.7.8` | both | minor | Treasure items with unique mechanics |
 
 ## combat-guns (15)
@@ -91,7 +92,7 @@ Pillar 3a: the brother's track, rebuilt to the period ruling. PERIOD (Ethan, 202
 | [[UNOFFICIAL] TaCZ 1.21.1 NeoForge Port](https://modrinth.com/mod/tacz-1.21.1) | `1.1.8-hotfix-r6` | both | risky | Community NeoForge port of Timeless and Classics Zero. The single sanctioned anachronism; the official build never left 1.20.1 Forge |
 | [Valarian Conquest](https://modrinth.com/mod/valarian-conquest) | `4.2.1.1` | both | minor | Combat and exploration enhancement for the overworld |
 
-## horror (16)
+## horror (15)
 
 Pillar 3b: horror. Built from stalkers, atmosphere and escalating pressure rather than jump-scares, so it stays frightening over a long server. Several entries are configurable ambient systems rather than mobs - exactly the surface a future dungeon master would drive. STALKER RULING (Ethan, 2026-07-31): all six hunting entities stay, staggered in config so at most one or two can be active at a time - see docs/06-BURIED-TECH.md and pack/config. Six simultaneous stalkers is comedy, not horror; the config IS the feature. THE BROKEN SCRIPT WAS CUT ON SAFETY, NOT PERIOD: the author states the mod WILL grief the world, WILL destroy buildings, can ban you from your own save and writes files to the desktop. Disqualifying for a shared long-running world.
 
@@ -102,7 +103,6 @@ Pillar 3b: horror. Built from stalkers, atmosphere and escalating pressure rathe
 | [Born in Chaos](https://modrinth.com/mod/borninchaos) | `1.7.6` | both | major | Aggressive nightmare mobs with unusual mechanics |
 | [Corpse](https://modrinth.com/mod/corpse) | `neoforge-1.21.1-1.1.13` *beta* | both | major | Your body stays where you died - a walk back into the dark to retrieve it |
 | [Dynamic Lights](https://modrinth.com/mod/dynamic-lights) | `1.9.3+mod` | both | major | Held-torch lighting. Darkness only frightens when light is a resource you carry |
-| [The Obsessed - Advanced Psychological Horror, Arachnid Stalker](https://modrinth.com/mod/obsessed) | `1.5.1e` | both | major | A stalker whose behaviour escalates with every encounter |
 | [Rotten Creatures](https://modrinth.com/mod/rottencreatures) | `1.21.1-1.1.2` | both | major | A serious roster of new undead |
 | [Server-Side Horror](https://modrinth.com/mod/server-side-horror) | `1.21.1-neoforge-4.2` | server | major | Fully configurable ambient horror, server-side. Pure DM surface: events without client mods |
 | [Sound Physics Remastered](https://modrinth.com/mod/sound-physics-remastered) | `neoforge-1.21.1-1.4.10` *beta* | both | major | Real reverb and occlusion. The highest-value horror mod in the pack, and it is a sound mod |
@@ -114,15 +114,18 @@ Pillar 3b: horror. Built from stalkers, atmosphere and escalating pressure rathe
 | [Grim & Bleak](https://modrinth.com/mod/grim-and-bleak) | `2.5.2` | both | minor | Ambience-led horror with its own dimension |
 | [Scorchful](https://modrinth.com/mod/scorchful) | `0.15.2+1.21.1-neoforge` *alpha* | both | minor | Heat as survival pressure |
 
-## world-structures (29)
+## world-structures (33)
 
 Worldgen and structures, chosen as ONE coherent set: BWG for biomes, the YUNG suite for vanilla structure overhauls, and a small number of dungeon and settlement mods. Deliberately not stacking competing terrain generators.
 
 | Mod | Version | Side | Tier | Why |
 |---|---|---|---|---|
 | [Respawning Animals](https://modrinth.com/mod/respawning-animals) | `v21.1.2-1.21.1-NeoForge` | server | core | Animals spawn and despawn like monsters do. Near-mandatory here: with nothing hostile on the surface, hunted animals would never be replaced and the world would slowly empty |
+| [Aquaculture 2](https://modrinth.com/mod/aquaculture) | `2.7.21` | both | major | Biome-specific fishing overhaul |
 | [Cosy Critters & Creepy Crawlies](https://modrinth.com/mod/cosy-critters) | `v0.3.3+1.21.1-neoforge` | client | major | Birds, bugs and atmospheric small life. Ambient presence on a surface that no longer has monsters to fill the silence |
+| [Critters and Companions](https://modrinth.com/mod/critters-and-companions) | `2.7.0` | both | major | Small friendly creatures. Overworld animal life per the two-realm thesis |
 | [ChoiceTheorem's Overhauled Village](https://modrinth.com/mod/ct-overhaul-village) | `3.6.3` | server | major | ChoiceTheorem's Overhauled Villages. Replaced Epic Structures: Villages (9.6M downloads vs 194k) - on a surface that is now PEACEFUL and medieval, villages become the centre of play, so this layer had to be the well-trodden one |
+| [Fish of Thieves](https://modrinth.com/mod/fish-of-thieves) | `21.1.2.1-neoforge` | both | major | Fish variety and fish feasts |
 | [Friends&Foes (Forge/NeoForge)](https://modrinth.com/mod/friends-and-foes-forge) | `neoforge-4.0.26+mc1.21.1` | both | major | The mob-vote losers, well implemented |
 | [Infernal Expansion Redux](https://modrinth.com/mod/infernal-expansion-redux) | `0.3.12-1.21.1-neoforge` | both | major | Nether mobs and biomes - makes the wound hostile |
 | [Lootr](https://modrinth.com/mod/lootr) | `1.21.1-1.11.37.122` | both | major | Loot chests instanced PER PLAYER. Ends the four-player race to the treasure; everyone rolls the same chest independently |
@@ -134,6 +137,7 @@ Worldgen and structures, chosen as ONE coherent set: BWG for biomes, the YUNG su
 | [Spawn](https://modrinth.com/mod/spawn-mod) | `4.0.7` | both | major | Overworld wilderness overhaul - many animals, ambience, biome life. A surface with no hostiles needs to be FULL of something, or peaceful just reads as empty |
 | [Structory](https://modrinth.com/mod/structory) | `1.3.17` | both | major | Small atmospheric structures, very high quality |
 | [Tectonic](https://modrinth.com/mod/tectonic) | `3.0.26-neoforge-21.1` | both | major | Bigger mountains, deeper caves - Ethan's ask. Needs lithostitched, already present. WARNING: overrides minecraft:overworld noise settings, collides with mcserver_depth - see docs/16-THE-REFORGE.md D1 |
+| [Untitled Duck Mod](https://modrinth.com/mod/untitled-duck-mod) | `1.6.0+neoforge` | both | major | Ducks and geese - ambient overworld life |
 | [Weather Storms & Tornadoes](https://modrinth.com/mod/weather-storms-tornadoes) | `1.21.0-2.8.7` | both | major | Ethan's ruling 2026-08-02: the surface should be survived, not fought - 'deeper is fight. upper is survive against weather events'. Scorchful already covers deserts (sandstorms) and Frostiful the cold (freezing wind); nothing covered the temperate plains where people actually build. Adds tornadoes, severe storms and wind there. |
 | [When Dungeons Arise](https://modrinth.com/mod/when-dungeons-arise) | `2.1.68` | server | major | Large hand-built dungeons |
 | [YUNG's Better Dungeons](https://modrinth.com/mod/yungs-better-dungeons) | `1.21.1-NeoForge-5.1.4` | server | major | Vanilla dungeons made worth entering |
@@ -150,7 +154,7 @@ Worldgen and structures, chosen as ONE coherent set: BWG for biomes, the YUNG su
 | [SeasonHud](https://modrinth.com/mod/seasonhud) | `1.21.1-2.0.8` | both | minor | Shows the current season on the HUD - without it, seasonal farming is guesswork |
 | [When Dungeons Arise: Seven Seas](https://modrinth.com/mod/when-dungeons-arise-seven-seas) | `1.0.4` | server | minor | Naval dungeon set |
 
-## qol (51)
+## qol (50)
 
 Quality of life. At 400 mods this is not garnish - it is what stops the pack being unplayable. Recipe lookup, tooltips, sorting, waypoints and death recovery carry the whole experience.
 
@@ -174,14 +178,13 @@ Quality of life. At 400 mods this is not garnish - it is what stops the pack bei
 | [Emotecraft](https://modrinth.com/mod/emotecraft) | `2.4.12+1.21.1-forge` | both | major | Player-made emotes. With proximity voice chat, this is how four people actually roleplay rather than type |
 | [Explorer's Compass](https://modrinth.com/mod/explorers-compass) | `1.21.1-3.4.0-neoforge` | both | major | Find structures |
 | [Figura](https://modrinth.com/mod/figura) | `0.1.6+1.21.1` | client | major | Custom scripted player avatars. Client-side, so it costs the server nothing and each player controls their own presence |
-| [Inventory Profiles Next](https://modrinth.com/mod/inventory-profiles-next) | `neoforge-1.21.1-2.2.5` | client | major | Inventory sorting and profiles |
 | [Nature's Compass](https://modrinth.com/mod/natures-compass) | `1.21.1-3.4.0-neoforge` | both | major | Find biomes without wandering for an hour |
 | [Presence Footsteps (NeoForge)](https://modrinth.com/mod/pf-neoforge) | `1.21.1-1.12.0-beta.1` *beta* | client | major | Presence Footsteps - footstep audio that varies by the surface you are actually standing on. With Sound Physics reverberating it, this is most of what 'the world sounds real' means |
 | [Sounds](https://modrinth.com/mod/sound) | `2.4.22+lts+1.21.1-neoforge` | client | major | Sounds - 170+ replacement and new sound effects. The SFX layer under the ambience |
 | [Storage Drawers](https://modrinth.com/mod/storagedrawers) | `1.21.1-13.11.4` | both | major | Bulk storage with contents visible on the block face - storage you can read by looking at it |
 | [Trade Cycling](https://modrinth.com/mod/trade-cycling) | `neoforge-1.21.1-1.0.18` *beta* | both | major | Refresh villager trades without breaking and replacing workstations - removes the single most tedious ritual in modded Minecraft |
 | [Trading Post](https://modrinth.com/mod/trading-post) | `v21.1.1-1.21.1-NeoForge` | both | major | Trade with every villager in a village at once. With a peaceful medieval surface, villages are now central to play and vanilla trading does not scale to four people |
-| [Waystones](https://modrinth.com/mod/waystones) | `21.1.40+neoforge-1.21.1` | both | major | Fast travel between discovered points. CUT 2026-08-03 for deleting extraction, RESTORED 2026-08-04 by Ethan. Consider gating use below y0 to keep the climb-out |
+| [Waystones](https://modrinth.com/mod/waystones) | `21.1.41+neoforge-1.21.1` | both | major | Fast travel between discovered points. CUT 2026-08-03 for deleting extraction, RESTORED 2026-08-04 by Ethan. Consider gating use below y0 to keep the climb-out |
 | [3D Skin Layers](https://modrinth.com/mod/3dskinlayers) | `1.11.2` | client | minor | 3D skin layers |
 | [Advancement Plaques](https://modrinth.com/mod/advancement-plaques) | `1.6.8` | client | minor | Better advancement popups |
 | [Automaticons](https://modrinth.com/mod/automaticons) | `1.8+mod` | both | minor | Golem automation OUTSIDE Create - Ethan asked for exactly this |
@@ -327,11 +330,10 @@ Required dependencies discovered by resolving the pack's declared dependency gra
 | [Iceberg](https://modrinth.com/mod/iceberg) | `1.3.2` | both | core | Required by advancement-plaques, item-borders, legendary-tooltips |
 | [Immersive Overlays](https://modrinth.com/mod/immersive-overlays) | `1.7.3+1.21.1-neoforge` | client | core | Required by field-guide |
 | [Item Descriptions](https://modrinth.com/mod/item-descriptions) | `2.8.0+1.21.1-neoforge` | client | core | Required by field-guide |
-| [Just Enough Items (JEI)](https://modrinth.com/mod/jei) | `19.43.0.393` *beta* | both | core | REQUIRED by jurassicreborn. Its mods.toml says 'mandatory = false', but that is the legacy FORGE key - NeoForge reads 'type', and an ABSENT type defaults to REQUIRED. The client refused to launch: "Mod ID: 'jei', Requested by: 'jurassicreborn', Expected range: '[15,)', Actual version: '[MISSING]'". EMI stays as the primary recipe viewer; the two coexist |
+| [Just Enough Items (JEI)](https://modrinth.com/mod/jei) | `19.44.0.401` *beta* | both | core | REQUIRED by jurassicreborn. Its mods.toml says 'mandatory = false', but that is the legacy FORGE key - NeoForge reads 'type', and an ABSENT type defaults to REQUIRED. The client refused to launch: "Mod ID: 'jei', Requested by: 'jurassicreborn', Expected range: '[15,)', Actual version: '[MISSING]'". EMI stays as the primary recipe viewer; the two coexist |
 | [Jupiter](https://modrinth.com/mod/jupiter) | `2.3.7-1.21.1-neoforge` | both | core | Required by iceandfire-ce |
 | [Knight Lib](https://modrinth.com/mod/knight-lib) | `1.6.1` | both | core | Required by knightquest. Also undeclared on Modrinth |
 | [KotlinLangForge](https://modrinth.com/mod/kotlin-lang-forge) | `2.12.2-k2.4.10-3.0+neoforge` | both | core | Required by veinminer |
-| [libIPN](https://modrinth.com/mod/libipn) | `neoforge-1.21.1-6.6.3` | client | core | Required by inventory-profiles-next |
 | [Lionfish-API](https://modrinth.com/mod/lionfish-api) | `3.1` | both | core | Required by l_enders-cataclysm and goety-cataclysm |
 | [Lithostitched](https://modrinth.com/mod/lithostitched) | `1.7.13-neoforge-21.1` | server | core | Required by hybrid-aquatic, tectonic |
 | [MonoLib](https://modrinth.com/mod/monolib) | `neoforge-1.21.1-4.1.0` | both | core | Required by dis-enchanting-table |
@@ -344,11 +346,12 @@ Required dependencies discovered by resolving the pack's declared dependency gra
 | [Ranged Weapon API](https://modrinth.com/mod/ranged-weapon-api) | `2.3.3+1.21.1-neoforge` | both | core | Required by archers. Same undeclared-dependency case |
 | [Rhino](https://modrinth.com/mod/rhino) | `2101.2.7-build.85+Rhino-1.21` | both | core | Required by kubejs |
 | [Ritchie's Projectile Library](https://modrinth.com/mod/rpl) | `2.1.2` | both | core | Ritchie's Projectile Library - required by create-big-cannons |
-| [Runes](https://modrinth.com/mod/runes) | `1.2.2+1.21.1-neoforge` | both | core | Required by wizards |
+| [Runes](https://modrinth.com/mod/runes) | `1.3.1+1.21.1-neoforge` | both | core | Required by wizards |
 | [Sable](https://modrinth.com/mod/sable) | `2.0.3+mc1.21.1` | both | core | Required by create-aeronautics |
 | [ShatterLib \| OctoLib](https://modrinth.com/mod/shatterbyte-lib) | `0.6.2` | both | core | OctoLib - required by relics and reliquified_ars_nouveau. NOT declared in Modrinth's dependency data; found by reading the jar manifests |
 | [Sparkweave Engine](https://modrinth.com/mod/sparkweave) | `0.510.0+NeoForge` *beta* | both | core | Sparkweave Engine - required by velvet-api, which Scorchful needs |
-| [Spell Power Attributes](https://modrinth.com/mod/spell-power) | `1.5.0+1.21.1-neoforge` | both | core | Spell Power Attributes - required by spell-engine and skill-tree. Modrinth never declared it; check_deps read it out of the jar |
+| [Spell Power Attributes](https://modrinth.com/mod/spell-power) | `1.6.0+1.21.1-neoforge` | both | core | Spell Power Attributes - required by spell-engine and skill-tree. Modrinth never declared it; check_deps read it out of the jar |
+| [Structure Pool API](https://modrinth.com/mod/structure-pool-api) | `1.2.1+1.21.1-neoforge` | server | core | Required by wizards |
 | [SuperMartijn642's Config Lib](https://modrinth.com/mod/supermartijn642s-config-lib) | `1.1.8-neoforge-mc1.21` | both | core | Required by chunk-loaders, moving-elevators, rechiseled, trash-cans |
 | [SuperMartijn642's Core Lib](https://modrinth.com/mod/supermartijn642s-core-lib) | `1.1.22-neoforge-mc1.21` | both | core | Required by chunk-loaders, moving-elevators, rechiseled, trash-cans |
 | [Teal Lib](https://modrinth.com/mod/teallib) | `1.3.teal` | both | core | Required by spawn-mod |
@@ -358,24 +361,32 @@ Required dependencies discovered by resolving the pack's declared dependency gra
 | [YetAnotherConfigLib (YACL)](https://modrinth.com/mod/yacl) | `3.8.2+1.21.1-neoforge` | both | core | Required by critters-and-companions, health-indicators |
 | [Zeta](https://modrinth.com/mod/zeta) | `1.1-40` | both | core | Required by quark |
 
-## classes (5)
+## classes (6)
 
 Ethan chose CLASSES over races 2026-08-03 - the only 1.21.1 NeoForge race mod is a 6.4k-download alpha, while this family is fully supported. Three players taking three classes gives the distinct identity races were wanted for, and it fits Veldora: what you BECOME matters in a world where you cannot die but can be diminished. NOTE: more-rpg-library and several classes ship as 'beta' - that is the author's convention across a family with 400k-1.4M downloads, but the boot gate is what actually clears it.
 
 | Mod | Version | Side | Tier | Why |
 |---|---|---|---|---|
 | [AzureLib Armor](https://modrinth.com/mod/azurelib-armor) | `3.1.3` | both | core | Armor/animation lib required by Berserker |
-| [Spell Engine](https://modrinth.com/mod/spell-engine) | `1.9.15+1.21.1-neoforge` | both | core | The framework every class in this family builds on |
+| [More RPG Library](https://modrinth.com/mod/more-rpg-library) | `2.6.3+1.21.1-neoforge` *beta* | both | core | Shared library for the More RPG Classes series |
+| [Spell Engine](https://modrinth.com/mod/spell-engine) | `1.9.16+1.21.1-neoforge` | both | core | The framework every class in this family builds on |
 | [Archers (RPG Series)](https://modrinth.com/mod/archers) | `3.0.3+1.21.1-neoforge` | both | major | Base archer class |
 | [Archers Expansion (More RPG Classes)](https://modrinth.com/mod/archers-expansion) | `1.5.1+1.21.1-neoforge` *beta* | both | major | Extends the archer with real content |
 | [Pufferfish's Skills](https://modrinth.com/mod/skills) | `0.18.3` *beta* | both | major | Puffish skill framework - the progression spine |
 
-## library (2)
+## client-visual (7)
+
+Client-only visual polish. Ethan, 2026-08-16: 'im just making an attempt to make the game more cinematic'. EVERY entry is client_side=required / server_side=unsupported, verified against the live Modrinth API - so the server never needs the jar and nobody who declines is locked out, which is the failure the_obsessed caused on 2026-08-15. NOT here: better-clouds (the client ships renderClouds:false so it would render nothing) and every snow mod (all 16 on 1.21.1/neoforge need the server; not one is client-only).
 
 | Mod | Version | Side | Tier | Why |
 |---|---|---|---|---|
-| [More RPG Library](https://modrinth.com/mod/more-rpg-library) | `2.6.2+1.21.1` | both |  |  |
-| [Structure Pool API](https://modrinth.com/mod/structure-pool-api) | `1.2.1+1.21.1` | both |  |  |
+| [ATMOSPHERICS](https://modrinth.com/mod/atmospherics) | `2.6.5.1` *beta* | client | minor | Per-biome fog, sky, cloud and star colour in real time. The cheapest 'cinematic' win on the list - it is colour grading, not geometry. |
+| [Clear Water](https://modrinth.com/mod/clear-water) | `3.0.0` | client | minor | Configurable underwater fog. Client-only, and it pairs with make_bubbles_pop which is already installed. |
+| [Falling Leaves (NeoForge/Forge)](https://modrinth.com/mod/fallingleavesforge) | `1.21.1-2.5.1` | client | minor | Leaf particles from tree canopies. Cheap, and it makes a still forest look alive. |
+| [Particle Rain](https://modrinth.com/mod/particle-rain) | `v4-beta.10+1.21.1-neoforge` *beta* | client | minor | Weather as particles instead of the vanilla sheet. 19M downloads, client-only. The single biggest visual change on this list and the one Ethan asked for by name. |
+| [Particular ✨ Reforged](https://modrinth.com/mod/particular-reforged) | `1.5.7` | client | minor | Ambient environment particles - the other half of Visuality rather than a duplicate; one does entities, one does the world. |
+| [Smooth Skies](https://modrinth.com/mod/smooth-skies) | `2.10.4` | client | minor | Fixes skybox colour banding at long render distances. Specifically relevant here: Distant Horizons IS in this pack, and banding is exactly what DH's extra distance exposes. |
+| [Visuality: Reforged](https://modrinth.com/mod/visuality-forge) | `3.0.0` | client | minor | Ambient particles on mobs and blocks. Reforged port, client-only. |
 
 ## media-ambience (1)
 
@@ -385,21 +396,13 @@ Shared media and world ambience. Ethan, 2026-08-02: 'we also need more ambient s
 |---|---|---|---|---|
 | [Camerapture](https://modrinth.com/mod/camerapture) | `1.10.12+mc1.21.1-neoforge` | both | minor | Take, place and share photographs between players - the social half of a 4-player world |
 
-## mobs (4)
-
-| Mod | Version | Side | Tier | Why |
-|---|---|---|---|---|
-| [Aquaculture 2](https://modrinth.com/mod/aquaculture) | `2.7.21` | both |  |  |
-| [Critters and Companions](https://modrinth.com/mod/critters-and-companions) | `2.7.0` | both |  |  |
-| [Fish of Thieves](https://modrinth.com/mod/fish-of-thieves) | `21.1.2.1-neoforge` | both |  |  |
-| [Untitled Duck Mod](https://modrinth.com/mod/untitled-duck-mod) | `1.6.0+neoforge` | both |  |  |
-
-## resourcepack (3)
+## resourcepack (4)
 
 | Mod | Version | Side | Tier | Why |
 |---|---|---|---|---|
 | [Faithful 32x](https://modrinth.com/mod/faithful-32x) | `1.21.1-june-2026` | client | resourcepack | The shipped texture pack. Vanilla-faithful at 2x resolution, so it never fights modded art styles; 4.1M downloads and a current 1.21.1 build. |
 | [Fresh Animations](https://modrinth.com/mod/fresh-animations) | `1.10.4` *beta* | client | resourcepack | Animates VANILLA MOBS - the one Ethan described ('gives animations to general mobs'). Needs Entity Model Features, which is already installed. Ships OFF: 41M downloads but a known frame cost, and this instance is baselined for the slowest machine, so it is opt-in like the shader. |
+| [Skyrim Music Pack](https://modrinth.com/mod/skyrim-music-pack) | `1.0.2` | client | resourcepack | Ethan's pick. 72.6 MB and three 1.21.1 builds. Ships OFF like every other pack here - delivered by packwiz so enabling it is two clicks and no download. Sounds of Tamriel was the other request and is NOT included: it has no 1.21.1 build at all (latest is 1.20). Sound-only packs often survive a format bump, but that is unverified and shipping it would be a guess. |
 | [Fresh Moves](https://modrinth.com/mod/tras-fresh-player) | `3.1` *beta* | client | resourcepack | Fresh Moves - the pack Ethan named. It animates the PLAYER rather than mobs, so it complements Fresh Animations rather than replacing it. Also ships OFF. |
 
 ## shaderpack (2)
@@ -409,9 +412,36 @@ Shared media and world ambience. Ethan, 2026-08-02: 'we also need more ambient s
 | [BSL Shaders](https://modrinth.com/mod/bsl-shaders) | `10.1.3` | client | shaderpack | Added 2026-08-02 at Ethan's request - 'i personally use BSL for my shaders'. He had already installed it by hand, which is precisely the thing packwiz exists to stop: a hand-placed file is lost on the next re-import. It is the PRE-SELECTED pack in the shipped iris.properties, though shaders ship off. Note it has no native Distant Horizons support, which Complementary gets via Euphoria Patches - so if the far terrain looks wrong under BSL, that is why, and Complementary is the fallback. |
 | [Complementary Shaders - Reimagined](https://modrinth.com/mod/complementary-reimagined) | `r5.8.1` | client | shaderpack | Chosen on performance: the best frames-per-quality of the four Ethan picked, and Euphoria Patches (already in the mod list) gives it Distant Horizons support, which most shaders lack. |
 
-## worldgen (1)
+## veldora-2026-08-29 (28)
 
 | Mod | Version | Side | Tier | Why |
 |---|---|---|---|---|
-| [Regions Unexplored](https://modrinth.com/mod/regions-unexplored) | `0.6.2-neoforge-21.1` | both |  |  |
+| [Accents](https://modrinth.com/mod/accents) | `2.0.2` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Bountiful](https://modrinth.com/mod/bountiful) | `8.0.0-beta.2` *beta* | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [MCA Capitals \| A Monarchy Mod for MCA Reborn](https://modrinth.com/mod/capitals-a-monarchy-mod-for-mca-reborn) | `1.3.0` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Death Count](https://modrinth.com/mod/death-count) | `1.0+mod` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Distant Friends](https://modrinth.com/mod/distant-friends) | `0.9.5` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Easy NPC](https://modrinth.com/mod/easy-npc) | `7.10.0` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Easy NPC: Config UI](https://modrinth.com/mod/easy-npc-config-ui) | `7.10.0` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Easy NPC: Core](https://modrinth.com/mod/easy-npc-core) | `7.10.0` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Fragmentum](https://modrinth.com/mod/fragmentum) | `2.4.4` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Immersive Snow](https://modrinth.com/mod/immersive-snow) | `1.4.0` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. \| client_side forced to optional 2026-08-29: Modrinth marks it client=unsupported but it registers a client-bound network channel the server REQUIRES, so packwiz skipping it client-side made the server refuse the connection. |
+| [Inventory Pets](https://modrinth.com/mod/inventory-pets) | `2.2.8` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Iron's Lib](https://modrinth.com/mod/irons-lib) | `1.21.1-2.1.0` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Iron's Simple Blood](https://modrinth.com/mod/irons-simple-blood) | `1.21.1-1.0.4` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Iron's Spells 'n Spellbooks](https://modrinth.com/mod/irons-spells-n-spellbooks) | `1.21.1-3.16.3` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Kambrik](https://modrinth.com/mod/kambrik) | `8.0.0-beta.2` *beta* | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Loot Journal: Pickup Notifier](https://modrinth.com/mod/loot-journal) | `6.2.1` | client | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Maestro](https://modrinth.com/mod/maestro-music) | `4.0.0` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [MCA Reborn](https://modrinth.com/mod/minecraft-comes-alive-reborn) | `7.7.36+1.21.1` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Nyctophobia](https://modrinth.com/mod/nyctophobia) | `2.0.0+mc1.21.1` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Obscure Tooltips](https://modrinth.com/mod/obscure-tooltips) | `4.2.4` | client | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Put A Plug In it! (PAPI)](https://modrinth.com/mod/put-a-plug-in-it-) | `1.21.1-neoforge-1.1.1` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Realm RPG: Treasure Balloons](https://modrinth.com/mod/realm-rpg-treasure-balloons) | `1.0.0` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. \| client_side forced to optional 2026-08-29: Modrinth marks it client=unsupported but it registers a client-bound network channel the server REQUIRES, so packwiz skipping it client-side made the server refuse the connection. |
+| [Reliquified Artifacts](https://modrinth.com/mod/reliquified-artifacts) | `0.9.7` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [[🎄] Seasonal Decorations](https://modrinth.com/mod/seasonal-decorations) | `1.0712` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Simple Hats](https://modrinth.com/mod/simple-hats) | `1.21.1-Neo-0.4.0` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Terralith](https://modrinth.com/mod/terralith) | `2.6.2` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [The Day Of The Beast](https://modrinth.com/mod/the-day-of-the-beast) | `1.1.1` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
+| [Tyz's Skills](https://modrinth.com/mod/tyzs-skills) | `6.4.2` | both | major | Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. |
 

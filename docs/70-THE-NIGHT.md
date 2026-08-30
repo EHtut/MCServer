@@ -1,6 +1,11 @@
 # 70 — The Night
 
-> **STATUS: DRAFT.** Ethan's rulings, 2026-08-29. **Zero code.**
+> **STATUS: BUILT (D1–D6).** Ethan's rulings, 2026-08-29, all shipped: the night gate
+> and the god-silencing, the Speaker's 30th-night introduction, the trust-scaled tide
+> tiers, the night tide, the wave modifiers and the minibosses.
+>
+> ⚠️ It said `DRAFT` / "Zero code" after six chunks shipped from it.
+> ⛔ **Still unsolved and it gates D3's value: the danger has to reach indoors.**
 
 > *"we bring the tide system up, only at night, but to the overworld... we keep the
 > depths incredibly dangerous, but we also make nights as dangerous."*

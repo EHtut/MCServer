@@ -1,10 +1,25 @@
 # 68 — The gameplan: retiring the world and everything that rides with it
 
-> **STATUS: DRAFT.** Assembled 2026-08-29 from the session that began *"lets just take
-> this opportunity to retire the existing world."* **Zero code written from this doc.**
+> **STATUS: LIVE — being built from, right now.** Assembled 2026-08-29 from the session
+> that began *"lets just take this opportunity to retire the existing world."*
+>
+> 🔴 **It said `DRAFT` and "Zero code written from this doc" until 2026-08-29** — by
+> which point A, B, D1–D6, E1, E2, F1, F2 and G1 had all shipped from it. The most-read
+> line in the most-read document, and false. ⚠️ Corrected in a docs pass and **noted
+> rather than quietly overwritten**, because `DRAFT` is an instruction — *do not build
+> from this* — and it was being ignored by everyone, including whoever wrote it.
 >
 > This is the **build order**, not a wish list. Where something is already decided it
 > says so and links the ruling; where it is not, it is in §0 and it blocks.
+>
+> ## Where it stands
+>
+> | | |
+> |---|---|
+> | ✅ **done** | **A** the eleven · **B** the mods · **D1–D6** the night + the tide · **E1** Blade · **E2** Salvage · **F1** trespass · **F2** the register · **G1** the announcement bar |
+> | ⏳ **next** | **E3** Wall · **E4** Art (🔴 needs new machinery) · **E5** Forge |
+> | 🔒 **one-shot** | **C** the world reset — everything in B must be settled first |
+> | 📋 **staged** | **R1/R2** the refining pass · the wave-tuning pass · Ethan's writing pass on 458 lines |
 
 ---
 
@@ -84,14 +99,25 @@ Neither blocks generation. **Blade 500 · Wall a pathed player · Art the deep s
 introduction, 50 levels, she takes all of them · Salvage no-upside deals · Forge a long
 cooldown, timer per prompt** are all ruled.
 
-Left: **which clock Wall's 30 days uses** (`fall.js` counts world days, `ranks.js`
-counts played sweeps online-only — 30 world days pass while you are logged out, so
-played time is the fairer measure and is the working default until told otherwise), and
-**what a godless early game looks like** now that every route got materially harder.
+✅ **RULED 2026-08-29 — PLAYED TIME.** Ethan: *"played time."* `fall.js` counted
+world days, which pass while you are logged out; `ranks.js` counts played sweeps.
+⭐ Played time is the only measure that means *you spent thirty days with nobody* rather
+than *your server was up for thirty days*.
+
+Left: **what a godless early game looks like** now that every route got materially
+harder.
 
 ---
 
-## §1 ⚠️ FIRST, AND BEFORE ANYTHING ELSE: verify the eleven
+## §1 ✅ HISTORICAL — the eleven were verified 2026-08-29
+
+> ⚠️ **Kept for the lesson, not the instruction.** All eleven have loaded many times
+> since; the server has restarted on every chunk in this document. **Do not act on this
+> section** — the standing rule it produced is in `CLAUDE.md` and in the deploy
+> tooling's own output: *deploy, then RESTART, because `/kubejs reload` does not re-fire
+> `ServerEvents.loaded`.*
+
+### The original entry
 
 **Eleven files have been deployed since 2026-08-23 and have never been loaded.** The
 server booted at 17:21:53 that day and everything deployed from 17:23 onward missed it.
@@ -285,12 +311,16 @@ condition requires that they hear *her*.
 
 ## §6 Carried work, unblocked, any time
 
-* **446 `[CLAUDE-DRAFT]` lines** across 128 pools awaiting Ethan's pass (`51`)
-* **Salvage's register** — her trade voice and her collection voice are audibly
-  different people (`7b`)
-* **Salvage's five godless pitches** — the hardest writing in the plan. They have to
-  convince five times against a reader who is getting suspicious
-* **Blade's seven Challenges want rebalancing downward** — his own file flags it
+* **458 `[CLAUDE-DRAFT]` lines** across 135 pools awaiting Ethan's pass (`51`)
+  — ⚠️ was *"446 across 128"*, and the gap was **four real pools hidden by a
+  permanent false positive** in the register's own matcher (F2)
+* ~~**Salvage's register**~~ ✅ **DONE (F2).** The finding was countable: her nine trade
+  lines carried no contractions while her own rules mandate them
+* ~~**Salvage's five godless pitches**~~ ✅ **BUILT (E2)** — ten of them, `[CLAUDE-DRAFT]`,
+  and she gets *more honest* as you keep saying yes
+* ~~**Blade's seven Challenges want rebalancing downward**~~ ⛔ **OBSOLETE (F2).** The
+  two-stage roll already fixed it — measured live at exactly the 20% his chart asks
+  for, with the same eight events that once ran 47.1%
 * **The death-position question** — the respawn cut kept death's *cost* but not its
   *position*, and PART I(b) depended on waking where you fell. Never re-litigated
   because the cut was an emergency fix
@@ -400,9 +430,9 @@ prove a silenced god *cannot* speak, not merely that a permitted one can.
 
 | | |
 |---|---|
-| **E1** | Blade — a **lifetime, never-reset** kill counter. ⚠️ Do not borrow the trust counter |
-| **E2** | Salvage — five no-upside deals. The **writing** is the work |
-| **E3** | Wall — killed by a pathed player, or 30 days godless |
+| **E1** | ✅ **DONE.** Blade — 500 slain, lifetime, `slain.js`. The trust-counter warning was REAL: `counters.js:219` zeroes every patron counter |
+| **E2** | ✅ **DONE.** Ten deals, four costs, accept five. ⭐ She gets *more honest* as the count climbs — the answer to "convince five times against a suspicious reader" |
+| **E3** | Wall — killed by a pathed player, or **30 days godless in PLAYED TIME** (ruled 2026-08-29) |
 | **E4** | Art — 50 levels, she takes them all. 🔴 **Needs new machinery**: `speakerFor()` returns null for the pathless, so they hear nobody |
 | **E5** | Forge — the dialogue tree, long cooldown, per-prompt timer |
 
@@ -411,15 +441,16 @@ prove a silenced god *cannot* speak, not merely that a permitted one can.
 | | |
 |---|---|
 | **F1** | The Nether and End ambient lines (`69`) — **their own channel, no speaker, not `voice.js`** |
-| **F2** | Ethan's pass on 446 draft lines · Salvage's register · Blade's Challenge rebalance |
+| **F2** | ✅ **DONE.** Salvage's register fixed · Blade's rebalance proved OBSOLETE · the register was under-reporting itself by four pools. ⛔ What remains is **Ethan's writing pass on 458 lines**, which cannot be done for him |
 
 ---
 
 ## ⚠️ What is still open
 
 * **the indoors problem** (D3/D4)
-* **Wall's 30-day clock** — world days or played time
-* **a godless early game** — partly answered by the Iron's suite
+* ~~**Wall's 30-day clock**~~ ✅ **RULED 2026-08-29: played time**
+* **a godless early game** — partly answered by the Iron's suite, and by Salvage's
+  deals (E2), which are aimed at exactly that player
 * **the bounty board** — does a godless player get to use it?
 * the **1.21.1 version question** raised by four unavailable mods
 
