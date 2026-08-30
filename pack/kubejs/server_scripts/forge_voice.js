@@ -501,6 +501,50 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (!VELDORA.voice) { console.error(TAG + 'voice.js missing'); return }
     VELDORA.voice.setColour(GOD, COLOUR)
 
+    // ⭐⭐ SHE CANNOT HOLD STILL. Ethan, 2026-08-30: *"Forge - Shaking and random across
+    // your screen - She will need an overhaul to make her sentences shorter, with more
+    // periods, and more akin to rambling."*
+    //
+    // 🔴 SHAKE **AND** SCATTER, WHICH WAS ARGUED AGAINST FOR WALL - and the difference
+    // is the whole point rather than an inconsistency:
+    //
+    //   Wall    STILL text in the wrong place. She is composed and she is somewhere she
+    //           should not be. Two motions would read as a rendering fault, not menace.
+    //   Forge   MOVING text everywhere. She is not menacing anybody, she is unable to
+    //           settle - and restlessness is exactly two motions at once.
+    //
+    // 🔑 Same two flags, opposite meanings, because the CHARACTER decides what a motion
+    // means. If these two ever end up feeling alike, the fix is here, not in the engine.
+    if (typeof VELDORA.voice.setStyle === 'function') {
+      VELDORA.voice.setStyle(GOD, {
+        anchor: 'CENTER_CENTER',
+
+        // ⚠️ A LOOSER BOX THAN WALL'S (150x70). Wall circles the middle - she stays near
+        // where you are looking, because being near you is the threat. Forge is simply
+        // all over the place, so hers is wider AND taller. It stays short of the screen
+        // edges: past that she lands under the hotbar, which reads as a bug.
+        scatter: { x: 190, y: 95 },
+
+        // She trembles. Not with menace - with not being able to stop talking.
+        shake: true,
+
+        // Rye - the western slab. Ethan: *"Western? if that is a thing"* - it is.
+        font: 'veldora:forge',
+
+        // ⭐ SHE TALKS OVER HERSELF. Her lines already average 2.41 sentences, and the
+        // overhaul will push that up; at 0.6 they arrive before you have finished the
+        // previous one, which is what rambling actually feels like to be on the end of.
+        //
+        // ⚠️ TUNE THIS AFTER HIS WRITING PASS, not before. Pace and sentence length are
+        // one effect: shorter lines at the same scale read as clipped, not as a tumble.
+        beatScale: 0.6,
+
+        // Smallest of the five. She is chattering, not proclaiming - Art demands to be
+        // heard and Blade speaks down at you; Forge is just talking.
+        size: 0.9,
+      })
+    }
+
     var n = 0, tags = 0
     for (var k in LINES) {
       if (!LINES.hasOwnProperty(k)) continue

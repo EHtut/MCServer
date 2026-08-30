@@ -372,9 +372,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   // How long one sentence owns the screen before the next arrives. Scaled by length so
   // a short burst does not linger and a long line is not cut off mid-read.
-  function beatFor(sentence) {
+  //
+  // ⭐ A GOD CAN SET ITS OWN PACE. Ethan wants Forge *"more akin to rambling"*, and
+  // rambling is not only shorter sentences - it is sentences arriving faster than you
+  // can finish considering the last one. Her existing lines already average 2.41
+  // sentences each, so the delivery already breaks them up; `beatScale` is what makes
+  // that read as a tumble rather than a list.
+  //
+  // ⚠️ THE FLOOR IS NOT SCALED. Below about half a second a sentence is gone before it
+  // can be read, and "unreadable" is not a personality - it is a bug that looks like one.
+  function beatFor(sentence, st) {
     var n = String(sentence).length
-    return Math.max(30, Math.min(110, 25 + n * 2))   // ticks
+    var t = Math.max(30, Math.min(110, 25 + n * 2))   // ticks
+    var k = (st && typeof st.beatScale === 'number') ? st.beatScale : 1
+    return Math.max(10, Math.round(t * k))
   }
 
   function overlay(player, god, s, tag, opts) {
@@ -449,7 +460,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       var first = overlay(player, god, parts[0], tag, opts)
       var at = 0
       for (var i = 1; i < parts.length; i++) {
-        at += beatFor(parts[i - 1])
+        at += beatFor(parts[i - 1], styleOf(god))
         ;(function (part, delay) {
           try {
             server.scheduleInTicks(delay, function () {

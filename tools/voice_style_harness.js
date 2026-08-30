@@ -35,10 +35,13 @@ function ok(label, got, want) {
 // Load the three files into ONE shared VELDORA, exactly as KubeJS does.
 function sandbox() {
   const cmds = []
+  const delays = []
   const server = {
     runCommandSilent: c => { cmds.push(String(c)); return undefined },
-    // Sentences are scheduled; run them immediately so a whole line is captured.
-    scheduleInTicks: (t, fn) => fn(),
+    // Sentences are scheduled; run them immediately so a whole line is captured, but
+    // KEEP the delay - the pacing is part of a god's character, not an implementation
+    // detail, and Forge's whole brief is that hers is faster.
+    scheduleInTicks: (t, fn) => { delays.push(t); fn() },
   }
   const stub = {
     Platform: { isLoaded: () => true },
@@ -55,7 +58,7 @@ function sandbox() {
       'var VELDORA=VELDORA_IN;' + src.replace(/^var VELDORA = .*$/m, '') + '\n;return VELDORA;'
     )(...keys.map(k => stub[k]), V)
   }
-  return { V, cmds, server, player: { username: 'R', server } }
+  return { V, cmds, delays, server, player: { username: 'R', server } }
 }
 
 // Read the style a god's own file declares, by running THAT file's loaded hook.
@@ -222,6 +225,73 @@ grp('* THE FONTS EXIST — a name no client can resolve fails silently')
     ok(f + ' names no caxton-gated font',
       /font: '(kalam|roboto|minecrafter|norse|anton)'/.test(src), false)
   }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+grp('* FORGE RAMBLES - and it must not look like Wall')
+{
+  const f = styleFromFile('forge_voice.js', 'forge')
+  ok('forge declares a style', !!f.style, true)
+  const fs_ = f.style || {}
+  const w = (styleFromFile('wall_voice.js', 'wall').style) || {}
+
+  // 🔴 SHAKE **AND** SCATTER, which was argued against for Wall. The difference is the
+  // point: Wall is STILL text in the wrong place (composed, somewhere she should not
+  // be); Forge is MOVING text everywhere (unable to settle). Same flags, opposite
+  // meanings, because the character decides what a motion means.
+  ok('forge shakes', fs_.shake, true)
+  ok('...and Wall does NOT - the contrast is the characterisation', w.shake, false)
+  ok('...but both scatter', !!(fs_.scatter && w.scatter), true)
+
+  // Wall circles the middle because being near you is the threat. Forge is simply all
+  // over the place, so her box is looser in BOTH dimensions.
+  ok('forge roams wider than Wall', fs_.scatter.x > w.scatter.x, true)
+  ok('...and taller', fs_.scatter.y > w.scatter.y, true)
+
+  ok('...in Rye', fs_.font, 'veldora:forge')
+  ok('...and she is the smallest - chattering, not proclaiming',
+    fs_.size < (w.size || 1), true)
+
+  // ⭐ THE PACE, MEASURED. Rambling is not only shorter sentences; it is sentences
+  // arriving before you have finished the last one.
+  const s2 = sandbox()
+  s2.V.voice.setStyle('forge', fs_)
+  s2.V.voice.setStyle('wall', w)
+  const line = 'So anyway. I was thinking. You will not like it. I never do either.'
+
+  s2.delays.length = 0; s2.cmds.length = 0
+  s2.V.voice.speak(s2.player, 'forge', line, 'idle')
+  const fDelays = s2.delays.slice(), fCmds = s2.cmds.length
+
+  s2.delays.length = 0; s2.cmds.length = 0
+  s2.V.voice.speak(s2.player, 'wall', line, 'idle')
+  const wDelays = s2.delays.slice()
+
+  ok('four sentences become four sends', fCmds, 4)
+  ok('🔑 forge is measurably FASTER on the same line',
+    fDelays[fDelays.length - 1] < wDelays[wDelays.length - 1], true)
+  ok('...by her declared beatScale', fs_.beatScale < 1, true)
+
+  // ⚠️ A floor exists so a sentence cannot vanish before it can be read. Unreadable is
+  // not a personality - it is a bug that looks like one.
+  const s3 = sandbox()
+  s3.V.voice.setStyle('x', { anchor: 'CENTER_CENTER', beatScale: 0.001 })
+  s3.delays.length = 0
+  s3.V.voice.speak(s3.player, 'x', 'One. Two. Three.', 'plain')
+  ok('🚨 an absurd beatScale still cannot go below the floor',
+    Math.min(...s3.delays.map((d, i) => i ? d - s3.delays[i - 1] : d)) >= 10, true)
+
+  // Every scattered line must land somewhere different.
+  const s4 = sandbox()
+  s4.V.voice.setStyle('forge', fs_)
+  const seen = new Set()
+  for (let i = 0; i < 200; i++) {
+    s4.cmds.length = 0
+    s4.V.voice.speak(s4.player, 'forge', 'x', 'idle')
+    seen.add(tagOf(s4.cmds[0]).match(/x:(-?[\d.]+)f/)[1])
+  }
+  ok('she genuinely moves', seen.size > 40, true)
 }
 
 console.log('\n' + B + (fail ? R + fail + ' FAILED, ' : G) + pass + ' passed' + X)
