@@ -46,12 +46,28 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // flipping AMBIENT back on still works. wall/forge/art being empty was the reason
   // the above-1 half did nothing for three of five paths, and density removes that
   // failure mode rather than asking anyone to fill them in.
+  // 🔴 ETHAN'S ROSTERS, 2026-08-29. Every id probed against the live registry with
+  // a known-fake control in both directions.
+  //
+  // ⭐ THE POINT OF THE LIST IS THAT IT IS NOT THE TIDE'S. The tide is the goddess of
+  // death's and she is skeletons; these are what each god sends on their OWN behalf, so
+  // a player can tell who is attacking them without being told.
+  //
+  // 🚨 blade LOST `decrepit_skeleton` - that is HER bulk now, and leaving it here
+  // would have made his attacks indistinguishable from her tide, which is the exact
+  // confusion this pass exists to remove.
+  //
+  // ⚠️ forge HAS ONE, and it is a Krampus Henchman. She is the god whose forced
+  // column is generous and who sends nothing at her own champion - so this roster is
+  // for the rare varied tide and for anything future, not for hunting her people.
   var ROSTER = {
-    blade: ['born_in_chaos_v1:decaying_zombie', 'born_in_chaos_v1:decrepit_skeleton'],
+    blade: ['born_in_chaos_v1:barrel_zombie', 'born_in_chaos_v1:door_knight',
+      'born_in_chaos_v1:zombie_bruiser', 'born_in_chaos_v1:skeleton_thrasher'],
+    wall: ['born_in_chaos_v1:baby_spider', 'born_in_chaos_v1:mother_spider'],
     salvage: ['born_in_chaos_v1:dread_hound'],
-    forge: [],
-    wall: [],
-    art: [],
+    forge: ['born_in_chaos_v1:krampus_henchman'],
+    art: ['born_in_chaos_v1:restless_spirit', 'born_in_chaos_v1:scarlet_persecutor',
+      'born_in_chaos_v1:dark_vortex'],
     crown: [],
   }
 

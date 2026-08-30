@@ -53,3 +53,58 @@ rather than as a fault.
 does. Fixing it means either biome modifiers (⚠️ which would flatten biome-specific
 spawn lists across Terralith + RU + Nyctophobia) or a clump-thinning `checkSpawn` rule.
 **Not attempted.**
+
+---
+
+## ⭐ T1 — the tide is hers. Not a defect; recorded because it REVERSED one. 2026-08-29
+
+> Ethan: *"Alice is the goddess of death. She has a focus on skeletons, not zombies."*
+
+The tide's three depth pools (SHALLOW / DEEP / DEEPER — twenty mobs from six mods:
+zombies, ghouls, templars, wights, husks, drowned) collapse into **one role-keyed
+skeleton roster**. Composition now comes from the **modifier**, not from `y`.
+
+| modifier | pool |
+|---|---|
+| `horde` | Decrepit Skeleton — the bulk |
+| `general` | + vanilla Skeleton, Bonescaller |
+| `specialist` | + Thrasher (tank), Bonescaller, Demoman (rare, dangerous) |
+| `miniboss` | Supreme Bonescaller, **Fallen Chaos Knight** |
+
+### 🔴 It reversed a prior ruling, and that is the point of this entry
+
+`tide.js` carried: *"⛔ `fallen_chaos_knight` IS DELIBERATELY ABSENT. It is Blade's
+stalker avatar, 'The Challenger', and **Ethan ruled it stays his**."* He then listed it
+himself as one of the tide's two minibosses.
+
+⭐ The newer ruling wins, but it is a **lore change**, not a roster tweak: the goddess of
+death now sends a *fallen version of the Warrior* at his own champions. The old ruling is
+kept in place in both the code and the harness, with the assertion **inverted rather than
+deleted**, so the reversal is visible instead of silently gone.
+
+### 🚨 And it caught a bug before it shipped
+
+**`decrepit_skeleton` was listed RANGED, and it is the bulk.** Under the new roster that
+inverts every wave — `general` and `specialist` weight the ranged list, so the mob meant
+to *be* the horde would have become the archers and the archers the filler. It survived
+before only because the old depth pools held several melee mobs alongside it. Found by
+reading his roles against the map, not by playing a wave.
+
+⚠️ `stray`, `bogged` and `skeleton_lackey` were also removed from the ranged map: no
+roster can draw them any more, and a map naming mobs nothing contains is a map nobody can
+trust.
+
+### ⚠️ Two costs, named
+
+**Depth no longer changes composition.** A surface night tide and a y−100 tide are the
+same skeletons, differing by tier and count. `rosterFor` was depth's only consumer, so
+this trades mob variety for authorship — deliberately, and it is the one thing likely to
+be felt in play.
+
+**The harness went flaky and had to be fixed twice.** A varied wave is a *designed*
+outcome, so three composition tests failed about one run in five. 🚨 **Flaky is worse
+than absent**: it teaches you to re-run instead of to look. Variation is now suppressed
+inside those tests, verified over 15 consecutive runs.
+
+**106 tide assertions, 3 negative controls all red. 862 passed / 0 failed across 22
+harnesses. Live 62/62, 0 errors.**

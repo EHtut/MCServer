@@ -295,17 +295,32 @@ grp('UNREADABLE SKY DOES NOTHING, EVER')
   ok('...and no waves were sent', WAVES.length, 0)
 }
 
-grp('THE DEEPER YOU ARE, THE WORSE IT IS')
+grp('🔴 THE TIDE IS HERS AT EVERY DEPTH — reversed 2026-08-29')
 {
+  // ⚠️ THIS GROUP USED TO ASSERT THE OPPOSITE: that y20, y-20 and y-90 drew three
+  // DIFFERENT rosters. Ethan ruled the thesis instead - "Alice is the goddess of death.
+  // She has a focus on skeletons, not zombies" - so composition comes from the MODIFIER
+  // now and depth survives only in tier and count.
+  //
+  // ⭐ The assertion becomes its own inverse rather than being deleted: the tide must
+  // read as ONE author's at every depth.
+  // ⚠️ VARIATION IS SUPPRESSED HERE. The first version of this test was FLAKY: a
+  // varied wave is a DESIGNED outcome, so three samples occasionally drew a god's
+  // roster and the "same author" check failed at random. A test that fails sometimes
+  // teaches you to re-run it, which is worse than not having it.
   SKY = false
   const seen = {}
+  const realRandom = Math.random
+  Math.random = () => 0.99                    // above both VARY_ chances
   for (const [y, label] of [[20, 'shallow'], [-20, 'deep'], [-90, 'deeper']]) {
     const p = fresh(); Y = y; ticks(3); WAVES = []; T.force(p); drain()
     seen[label] = WAVES[0].ids[0]
   }
-  ok('y20 draws vanilla', seen.shallow.indexOf('minecraft:') === 0, true)
-  ok('y-20 draws the horror roster', seen.deep.indexOf('minecraft:') !== 0, true)
-  ok('the three bands are not the same roster', new Set(Object.values(seen)).size > 1, true)
+  Math.random = realRandom
+  ok('🚨 every depth draws the same author', new Set(Object.values(seen)).size, 1)
+  ok('⭐ ...and that author is skeletons', /skeleton/i.test(seen.deeper), true)
+  ok('🚨 no zombie is the bulk of a tide any more',
+    Object.values(seen).some(id => /zombie|ghoul|husk|drowned/i.test(id)), false)
 }
 
 speak()
@@ -492,11 +507,23 @@ grp('D3 - COMPOSITION')
   // ⚠️ y -20, NOT -60. rosterFor() returns DEEP above -40 and DEEPER below it, and my
   // first attempt used -60 - which lands in DEEPER, where there are no ranged entries
   // at all, so a "specialist wave" was correctly 0% ranged and the test was wrong.
+  // ⚠️ The old note here said "y -20, NOT -60, because DEEPER has no ranged entries".
+  // That is history: depth no longer picks the roster at all. The value is kept only
+  // because _composeFor still takes a y.
   const deep = -20
+
+  // 🚨 VARIATION MUST BE SUPPRESSED TO MEASURE COMPOSITION. A varied wave swaps in
+  // a god's roster, which has no archers - so the ranged ratio legitimately collapses
+  // and these assertions failed about one run in five. FLAKY IS WORSE THAN ABSENT: it
+  // teaches you to re-run instead of to look.
   const frac = (mod) => {
-    const c = T._composeFor({}, tp, deep, mod)
-    const r = c.ids.filter(id => T.ranged[id]).length
-    return { r: r / c.ids.length, boss: c.boss, n: c.ids.length }
+    const realRandom = Math.random
+    Math.random = () => 0.99                  // above both VARY_ chances
+    try {
+      const c = T._composeFor({}, tp, deep, mod)
+      const r = c.ids.filter(id => T.ranged[id]).length
+      return { r: r / c.ids.length, boss: c.boss, n: c.ids.length }
+    } finally { Math.random = realRandom }
   }
   ok('a pure horde has NO ranged at all', frac('horde').r, 0)
   const sp = frac('specialist')
@@ -535,9 +562,19 @@ grp('D3 - THE FALLBACK, AND WHO IS NOT IN THE ROSTER')
     // tide depth there were none: rosterFor returns DEEPER below y-40, DEEPER held no
     // archer, and the composer correctly fell back to melee. The mechanism was right
     // and the roster was empty. Now it asserts the FIX instead.
-    const deeperRanged = T.rosters.deeper.filter(id => T.ranged[id])
-    ok('🚨 DEEPER now HAS archers - the deep is where the tide happens',
-      deeperRanged.length >= 3, true)
+    // ⚠️ WAS "DEEPER now HAS archers". The depth pools are gone, but the DEFECT it
+    // guards against is not: a specialist wave whose pool contains no archer degrades
+    // silently into a horde, which is exactly what Ethan noticed. Same intent, new
+    // structure - the SPECIALIST pool is now the one that must never be archerless.
+    const specialistRanged = T._poolFor('specialist').filter(id => T.ranged[id])
+    ok('🚨 the SPECIALIST pool has archers - or the wave degrades to a horde',
+      specialistRanged.length >= 1, true)
+    ok('🚨 ...and a PURE HORDE has none, or it is not a pure horde',
+      T._poolFor('horde').filter(id => T.ranged[id]).length, 0)
+    // 🚨 The bulk must be MELEE. It was listed ranged, which would have inverted
+    // every general and specialist wave - the mob meant to BE the horde becoming the
+    // archers, and the archers the filler.
+    ok('🚨 the BULK is melee', !!T.ranged['born_in_chaos_v1:decrepit_skeleton'], false)
 
     // ⚠️ Ethan ruled banshee and skeleton_thrasher are MELEE despite the names. They
     // belong in the roster and must stay OUT of the ranged pool.
@@ -552,9 +589,18 @@ grp('D3 - THE FALLBACK, AND WHO IS NOT IN THE ROSTER')
       Math.abs(dr - 0.40) < 0.06, true)
   }
 
-  // Blade's stalker avatar must never turn up in a generic tide wave.
-  ok('fallen_chaos_knight is NOT a tide boss - it is Blade\'s',
-    T.bosses.indexOf('born_in_chaos_v1:fallen_chaos_knight'), -1)
+  // 🔴 REVERSED BY ITS AUTHOR, 2026-08-29. This asserted the opposite - "Blade's
+  // stalker avatar must never turn up in a generic tide wave", from a ruling that it
+  // "stays his". Ethan then listed it himself as one of the tide's two minibosses.
+  //
+  // ⭐ It is a LORE CHANGE rather than a roster tweak: the goddess of death sends a
+  // FALLEN version of the Warrior at his own champions. The assertion is inverted so
+  // the reversal is deliberate and visible, not a quietly deleted line.
+  ok('⭐ fallen_chaos_knight IS a tide miniboss now',
+    T.bosses.indexOf('born_in_chaos_v1:fallen_chaos_knight') !== -1, true)
+  ok('...and she has exactly two', T.bosses.length, 2)
+  ok('🚨 both of hers are bone',
+    T.bosses.every(x => /bonescaller|chaos_knight/.test(x)), true)
   // The Taker is a CLUE about Art, so it is not in the ordinary rotation.
   ok('The Taker is not in the ordinary boss list', T.bosses.indexOf(T.taker), -1)
   ok('...and it is the lifestealer', T.taker, 'born_in_chaos_v1:lifestealer')
@@ -618,6 +664,93 @@ grp('D3 - A PATHLESS PLAYER IS TIER 0')
   ok('an unreadable trust reads as 0, not as a crash', T._trustOf({}, tp), 0)
   ok('...so they get tier 0', T._tierFor({}, tp).at, 0)
   global.VELDORA.trust = noTrust
+}
+
+grp('⭐ THE VARIATION — rare, and rarer if you have a god')
+{
+  const tp = { username: 'V', uuid: 'v1' }
+  const realPathOf = VELDORA.paths.pathOf
+  const realRandom = Math.random
+
+  function rateFor(path, n) {
+    VELDORA.paths.pathOf = () => path
+    let hits = 0
+    for (let i = 0; i < n; i++) if (T._variedRoster(tp)) hits++
+    return hits / n
+  }
+
+  const pathed = rateFor('wall', 4000)
+  const pathless = rateFor('', 4000)
+  VELDORA.paths.pathOf = realPathOf
+
+  ok('⭐ a pathed player rarely sees one',
+    Math.abs(pathed - T.varyChance.pathed) < 0.03, true)
+  ok('🚨 a GODLESS player sees them far more often - his weighting',
+    pathless > pathed * 2, true)
+  ok('...and it is still rare even for them', pathless < 0.35, true)
+
+  // 🚨 An unreadable path must take the RARER branch. A read failure that made every
+  // tide a varied one would erase the thesis by accident.
+  VELDORA.paths.pathOf = () => undefined
+  Math.random = () => (T.varyChance.pathed + T.varyChance.pathless) / 2   // between the two
+  ok('🚨 an unreadable path is treated as PATHED, not godless',
+    T._variedRoster(tp), null)
+  Math.random = realRandom
+  VELDORA.paths.pathOf = realPathOf
+}
+
+grp('🚨 A VARIED WAVE IS ONE GOD, AND THE BOSS STAYS HERS')
+{
+  const tp = { username: 'V', uuid: 'v2' }
+  const realPathOf = VELDORA.paths.pathOf
+  VELDORA.paths.pathOf = () => ''             // godless: the common case
+  let sawGod = {}
+  let mixed = 0
+  for (let i = 0; i < 400; i++) {
+    const v = T._variedRoster(tp)
+    if (!v) continue
+    sawGod[v.god] = true
+    // Every id must belong to that ONE god - a wave that mixes two gods reads as a bug.
+    if (!v.ids.every(id => T.rosters.gods[v.god].indexOf(id) !== -1)) mixed++
+  }
+  VELDORA.paths.pathOf = realPathOf
+  ok('🚨 a varied wave never mixes two gods', mixed, 0)
+  ok('⭐ all five gods can reach in', Object.keys(sawGod).sort(),
+    ['art', 'blade', 'forge', 'salvage', 'wall'])
+
+  // 🚨 THE MINIBOSS STAYS HERS. The variation is who CAME, not who sent them - a
+  // Krampus Henchman leading a tide would make the tide his.
+  const src = fs.readFileSync(path.join(SS, 'tide.js'), 'utf8')
+  ok('🚨 the boss is chosen from BOSSES, never from the varied pool',
+    src.indexOf('boss = BOSSES[Math.floor(Math.random() * BOSSES.length)]') !== -1, true)
+}
+
+grp('⭐ THE GOD ROSTERS ARE THE SAME LIST IN BOTH FILES')
+{
+  // 🚨 tide.js needs them for varied waves and spawn_pressure.js needs them for the
+  // gods' own attacks. Two hand-maintained copies WILL drift, and the drift is
+  // invisible - a god attacking with somebody else's mobs looks like a design choice.
+  const sp = fs.readFileSync(path.join(SS, 'spawn_pressure.js'), 'utf8')
+  const gods = ['blade', 'wall', 'salvage', 'forge', 'art']
+  const missing = []
+  gods.forEach(g => {
+    T.rosters.gods[g].forEach(id => { if (sp.indexOf(id) === -1) missing.push(g + '/' + id) })
+  })
+  ok('🚨 every mob tide.js gives a god is in its spawn_pressure roster too',
+    missing, [])
+
+  // Ethan's rosters, checked against what he actually wrote.
+  ok('blade has his four', T.rosters.gods.blade.length, 4)
+  ok('wall has both spiders', T.rosters.gods.wall.length, 2)
+  ok('salvage has the dread hound', T.rosters.gods.salvage, ['born_in_chaos_v1:dread_hound'])
+  ok('forge has the krampus henchman', T.rosters.gods.forge, ['born_in_chaos_v1:krampus_henchman'])
+  ok('art has her three', T.rosters.gods.art.length, 3)
+
+  // 🚨 The bulk is HERS and must not be in a god's list, or his attacks become
+  // indistinguishable from her tide.
+  const allGodMobs = gods.reduce((a, g) => a.concat(T.rosters.gods[g]), [])
+  ok('🚨 no god borrows her bulk',
+    allGodMobs.indexOf('born_in_chaos_v1:decrepit_skeleton'), -1)
 }
 
 console.log('\n' + (fail === 0

@@ -211,13 +211,32 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ranged undead - no guessing about attack type, which is the thing the registry
   // cannot answer. A less exotic archer that definitely shoots beats a characterful one
   // that might not.
+  // 🔴 REBUILT 2026-08-29 FROM ETHAN'S OWN CLASSIFICATION, and one entry was
+  // actively harmful.
+  //
+  // 🚨 `decrepit_skeleton` WAS LISTED RANGED AND IT IS THE BULK. With the new roster
+  // that inverts every wave: `general` and `specialist` weight the ranged list, so the
+  // mob meant to BE the horde would have become the archers, and the archers the
+  // filler. It survived before only because the old depth pools held several melee
+  // mobs alongside it. Caught by reading his roles against this map rather than by
+  // playing a wave.
+  //
+  // His roles, verbatim: Decrepit Skeleton = "The bulk" · Skeleton = "Specialist/Ranged"
+  // · Bonescaller = "Specialist/Ranged" · Thrasher = "Specialist/Tank" · Demoman =
+  // "Specialist/Rare and incredibly dangerous".
+  //
+  // ⚠️ THE DEMOMAN IS THE ONE I AM NOT CERTAIN OF. He classified it by DANGER, not by
+  // attack type. It stays ranged because it was already, and because a demolitionist
+  // that throws things is ranged in every reading - but it is the one line here that is
+  // an inference rather than his ruling.
+  //
+  // ⚠️ stray, bogged and skeleton_lackey are GONE: they were carrying the deep back
+  // when the roster was depth-keyed, and no tide can draw them any more. A ranged map
+  // naming mobs no roster contains is a map nobody can trust.
   var RANGED = {
     'minecraft:skeleton': true,
-    'minecraft:stray': true,
-    'minecraft:bogged': true,
-    'born_in_chaos_v1:decrepit_skeleton': true,
+    'born_in_chaos_v1:bonescaller': true,
     'born_in_chaos_v1:skeleton_demoman': true,
-    'rottencreatures:skeleton_lackey': true,
   }
 
   // ── the minibosses ─────────────────────────────────────────────────────────
@@ -232,13 +251,22 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // for a real id and a parse caret for a fake one, and a known-fake control was run
   // alongside to prove the method could tell them apart.
   //
-  // ⛔ `fallen_chaos_knight` IS DELIBERATELY ABSENT. It is Blade's stalker avatar, "The
-  // Challenger", and Ethan ruled it stays his.
-  var BOSSES = [
-    'born_in_chaos_v1:supreme_bonescaller',
-    'born_in_chaos_v1:missionary_raider',
-    'born_in_chaos_v1:missioner',
-  ]
+  // 🔴 REVERSED 2026-08-29, AND THE OLD RULING IS KEPT HERE BECAUSE IT WAS REAL.
+  //
+  // This block used to read: *"`fallen_chaos_knight` IS DELIBERATELY ABSENT. It is
+  // Blade's stalker avatar, 'The Challenger', and Ethan ruled it stays his."*
+  //
+  // ⭐ He then listed it himself, as one of the tide's two minibosses. The newer
+  // ruling wins - but it is a LORE CHANGE, not a roster tweak: the goddess of death now
+  // sends a fallen version of the Warrior at his own champions. Nothing in the game
+  // points at that, and nothing should.
+  //
+  // ⚠️ `missionary_raider` and `missioner` are gone with it. They were the two survivors
+  // of a probe that corrected three of four wrong ids, and neither is a skeleton.
+  //
+  // The live BOSSES list is with the other role rosters below. ⚠️ A second `var BOSSES`
+  // here would be a DUPLICATE DECLARATION IN ONE SCOPE - the exact Rhino error that took
+  // this file down earlier today, which node --check does not catch.
 
   // ⭐ THE TAKER IS A TELL, NOT A SPAWN. Ethan: *"Art is just kayer and she is already
   // secretly aligned with the goddess of death."* The tide IS the goddess of death's
@@ -278,33 +306,82 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // Every id below was probed against the LIVE registry, so none of them is a
   // magistuarmory:bronze_ingot waiting to happen.
   // ═══════════════════════════════════════════════════════════════════════════
-  var SHALLOW = [
-    'minecraft:zombie', 'minecraft:skeleton', 'minecraft:husk', 'minecraft:drowned',
-    'born_in_chaos_v1:decaying_zombie', 'born_in_chaos_v1:decrepit_skeleton',
+  // ════════════════════════════════════════════════════════════════════════
+  // ⭐⭐ THE TIDE IS HERS, AND SHE IS SKELETONS. Ethan, 2026-08-29:
+  //
+  //     "The Tides - Thesis, Alice is the goddess of death. She has a focus on
+  //      skeletons, not zombies."
+  //
+  // 🔑 THE ROSTER IS KEYED BY ROLE NOW, NOT BY DEPTH. It used to be three pools -
+  // SHALLOW above y0, DEEP to -40, DEEPER below - holding twenty mobs from six mods:
+  // zombies, ghouls, templars, wights, husks, drowned. A tide that could be anything
+  // says nothing about who sent it.
+  //
+  // ⚠️ AND DEPTH NO LONGER CHANGES COMPOSITION. That is a real loss and it is named
+  // rather than hidden: a surface night tide and a y-100 tide are now the same
+  // skeletons, differing by TIER and COUNT. Depth picked the roster and nothing else
+  // (rosterFor was its only consumer), so this trades mob variety for authorship.
+  //
+  // ⭐ EVERY ID BELOW WAS PROBED AGAINST THE LIVE REGISTRY 2026-08-29, with a
+  // known-fake control in both directions. ⚠️ The probe needed fixing first: a mob
+  // that is CURRENTLY ALIVE makes `data get` succeed rather than say "No entity was
+  // found", so the original check read `minecraft:skeleton` as fake.
+  var BULK = [
+    'born_in_chaos_v1:decrepit_skeleton',
   ]
-  var DEEP = [
-    'born_in_chaos_v1:decaying_zombie', 'born_in_chaos_v1:decrepit_skeleton',
-    'born_in_chaos_v1:barrel_zombie', 'grim_and_bleak:ghoul',
-    'galosphere:preserved', 'goety:rattled', 'goety:wight',
-    'rottencreatures:undead_miner', 'rottencreatures:zombie_lackey',
-    'rottencreatures:skeleton_lackey',
+
+  // ⚠️ `minecraft:skeleton` is the only one here whose attack type is CERTAIN. The
+  // bonescaller and the demoman are Ethan's own classification - he named them ranged
+  // and specialist - so they are trusted as a RULING rather than as a guess of mine.
+  var ARCHERS = [
+    'minecraft:skeleton',
+    'born_in_chaos_v1:bonescaller',
   ]
-  var DEEPER = [
-    'grim_and_bleak:damned_templar', 'grim_and_bleak:banshee',
-    'born_in_chaos_v1:bone_imp', 'born_in_chaos_v1:skeleton_thrasher',
-    'born_in_chaos_v1:zombie_bruiser', 'goety:haunt', 'goety:wight',
-    'iceandfire:dread_thrall', 'iceandfire:dread_ghoul',
-    'rottencreatures:burned', 'rottencreatures:immortal',
-    // ⭐ THE DEEP HAD NO ARCHERS AT ALL until 2026-08-29, which is why specialist
-    // waves silently degraded into hordes below y-40 - and below y-40 is where the
-    // tide actually happens. Ethan: *"Why are ranged enemies not spawning?"*
-    //
-    // 🚨 Vanilla archers, deliberately. stray and bogged are unambiguously ranged
-    // undead; nothing here depends on guessing how a modded mob fights.
-    'minecraft:stray',
-    'minecraft:bogged',
+
+  // The dangerous end. 🚨 The demoman is "rare and incredibly dangerous" in his words,
+  // so it is ONE entry against the thrasher's tanking and the bonescaller's arrows -
+  // rarity is carried by the pool being small, not by a second probability roll.
+  var SPECIALISTS = [
+    'born_in_chaos_v1:skeleton_thrasher',
+    'born_in_chaos_v1:bonescaller',
     'born_in_chaos_v1:skeleton_demoman',
   ]
+
+  // ⭐ FALLEN CHAOS KNIGHT IS BLADE'S OWN PATH ID. The goddess of death sending a
+  // FALLEN version of the Warrior as her miniboss is not a coincidence anybody has to
+  // be told about, and nothing in the game points at it.
+  var BOSSES = [
+    'born_in_chaos_v1:supreme_bonescaller',
+    'born_in_chaos_v1:fallen_chaos_knight',
+  ]
+
+  // ════════════════════════════════════════════════════════════════════════
+  // ⭐ THE VARIATION. Ethan: *"Varatied waves are rare, and random with a weighted
+  // chance focused on godless champions."*
+  //
+  // A varied wave swaps the skeletons for ANOTHER GOD'S mobs. It is rare on purpose -
+  // the tide has to read as hers first, or the variation means nothing when it lands.
+  //
+  // ⚠️ "focused on godless champions" is read as: A PATHLESS PLAYER SEES THEM MORE
+  // OFTEN. If you have a god, the tide is the goddess of death's and it stays hers; if
+  // you have nobody, everything is interested in you. Flagged rather than assumed.
+  var VARY_PATHED = 0.08
+  var VARY_PATHLESS = 0.25
+
+  // 🚨 THESE ARE THE GODS' OWN MOBS - the same lists spawn_pressure.js gives them
+  // for their own attacks. A varied tide is another god reaching into her water, so it
+  // has to be recognisably THEIR roster or the whole effect is just a different skin.
+  var GOD_ROSTERS = {
+    blade: ['born_in_chaos_v1:barrel_zombie', 'born_in_chaos_v1:door_knight',
+      'born_in_chaos_v1:zombie_bruiser', 'born_in_chaos_v1:skeleton_thrasher'],
+    wall: ['born_in_chaos_v1:baby_spider', 'born_in_chaos_v1:mother_spider'],
+    salvage: ['born_in_chaos_v1:dread_hound'],
+    forge: ['born_in_chaos_v1:krampus_henchman'],
+    art: ['born_in_chaos_v1:restless_spirit', 'born_in_chaos_v1:scarlet_persecutor',
+      'born_in_chaos_v1:dark_vortex'],
+  }
+  var GOD_KEYS = ['blade', 'wall', 'salvage', 'forge', 'art']
+
 
   // Named here so the harness can assert the exception is exactly this and has not
   // quietly grown. If a mob is added to the rosters above and is neither tagged
@@ -377,8 +454,26 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // that found no archers must still be a wave - spawning nothing would read exactly
   // like the tide being broken, which is the failure this project keeps paying for.
   function composeFor(server, p, y, modName) {
-    var pool = rosterFor(y)
     var mod = MODS[modName] || MODS.horde
+
+    // ⭐ THE MODIFIER PICKS THE POOL NOW, not the depth. `horde` draws BULK only,
+    // because a pure horde with an archer in it is not a pure horde.
+    var pool = poolFor(modName)
+
+    // ⭐ AND THEN, RARELY, ANOTHER GOD REACHES IN. A varied wave REPLACES the
+    // skeletons rather than mixing with them - half a wave of spiders reads as a bug,
+    // a whole one reads as Wall.
+    //
+    // 🚨 THE MINIBOSS IS UNAFFECTED. Her bosses stay hers even in a varied wave: the
+    // variation is who came, not who sent them, and a Krampus Henchman leading a tide
+    // would make the tide his.
+    var varied = null
+    try { varied = variedRoster(p) } catch (e) { varied = null }
+    if (varied) {
+      pool = varied.ids
+      console.info(TAG + p.username + ' - VARIED WAVE: ' + varied.god + " reached into " +
+        'her water (' + varied.ids.length + ' id(s))')
+    }
     var melee = [], ranged = []
     for (var i = 0; i < pool.length; i++) {
       if (RANGED[pool[i]]) ranged.push(pool[i]); else melee.push(pool[i])
@@ -402,7 +497,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       boss = BOSSES[Math.floor(Math.random() * BOSSES.length)]
       if (Math.random() < TAKER_CHANCE) boss = TAKER
     }
-    return { ids: ids, boss: boss, mod: modName, rangedAvailable: ranged.length }
+    return { ids: ids, boss: boss, mod: modName, rangedAvailable: ranged.length,
+      varied: varied ? varied.god : null }
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -431,10 +527,42 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { return false }
   }
 
+  // ⚠️ DEPTH NO LONGER PICKS THE MOBS. It used to return one of three pools; the
+  // tide is hers everywhere now, so composition comes from the MODIFIER instead and
+  // depth survives only in tier and count. Kept as a function rather than inlined
+  // because the signature is what the harness and the bench both call.
   function rosterFor(y) {
-    if (y >= 0) return SHALLOW
-    if (y > -40) return DEEP
-    return DEEPER
+    return BULK
+  }
+
+  // The pool a given modifier draws from. 🚨 `horde` is BULK ONLY - a pure horde with
+  // an archer in it is not a pure horde, and that distinction is the whole reason the
+  // modifier system exists.
+  function poolFor(modName) {
+    if (modName === 'horde') return BULK
+    if (modName === 'general') return BULK.concat(ARCHERS)
+    if (modName === 'specialist') return BULK.concat(SPECIALISTS)
+    if (modName === 'miniboss') return BULK.concat(SPECIALISTS)
+    return BULK
+  }
+
+  // ⭐ THE VARIATION ROLL. Rare, and rarer still if you have a god.
+  function variedRoster(p) {
+    var pathless = null
+    try {
+      if (VELDORA.paths && typeof VELDORA.paths.pathOf === 'function') {
+        var path = VELDORA.paths.pathOf(p)
+        pathless = (typeof path === 'string') ? (path === '') : null
+      }
+    } catch (e) { }
+    // ⚠️ Unreadable -> treat as PATHED, i.e. the rarer branch. A read failure must
+    // not quietly make every tide a varied one.
+    var chance = (pathless === true) ? VARY_PATHLESS : VARY_PATHED
+    if (Math.random() >= chance) return null
+    var g = GOD_KEYS[Math.floor(Math.random() * GOD_KEYS.length)]
+    var pool = GOD_ROSTERS[g]
+    if (!pool || !pool.length) return null
+    return { god: g, ids: pool }
   }
 
   // ⭐⭐ THE MATRIARCH'S CHAMPION DRAWS THE TIDE. Ethan, 2026-08-24:
@@ -898,7 +1026,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       try { return runs[String(p.uuid)] || null } catch (e) { return null }
     },
     enclosed: enclosed,
-    rosters: { shallow: SHALLOW, deep: DEEP, deeper: DEEPER, allowlist: UNTAGGED_UNDEAD },
+    rosters: { bulk: BULK, archers: ARCHERS, specialists: SPECIALISTS, bosses: BOSSES,
+      gods: GOD_ROSTERS, allowlist: UNTAGGED_UNDEAD },
+    _poolFor: poolFor,
+    _variedRoster: variedRoster,
+    varyChance: { pathed: VARY_PATHED, pathless: VARY_PATHLESS },
     // ⭐ D3, exposed for tools/tide_harness.js. The tier ladder and the composition are
     // pure functions of trust and depth, which makes them exactly the part worth
     // testing without a server - and the part nobody can verify in play, because
@@ -1030,6 +1162,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         Math.round(GRACE / 1200) + ' min in. Each is ' +
         Math.round(SPAWN_WINDOW / 20) + 's of ARRIVALS at range in ' + SPAWN_BATCHES +
         ' pulses - they walk in, they are never dropped on you.')
+      // ⭐ The roster, said out loud. This changed shape completely on 2026-08-29 -
+      // from three depth pools of twenty mixed mobs to one authored skeleton roster -
+      // and a change that large should be visible from the boot log, not from a diff.
+      console.info(TAG + 'SHE IS SKELETONS. bulk ' + BULK.length + ' · archers ' +
+        ARCHERS.length + ' · specialists ' + SPECIALISTS.length + ' · minibosses ' +
+        BOSSES.length + '. Depth no longer changes WHO comes, only how many.')
+      console.info(TAG + 'variation: another god reaches in ' +
+        Math.round(VARY_PATHED * 100) + '% of waves if you have a god, ' +
+        Math.round(VARY_PATHLESS * 100) + '% if you have NONE. The miniboss stays hers ' +
+        'either way - the variation is who came, not who sent them.')
       console.info(TAG + 'herald: your god above y0, the Speaker below it, and a ' +
         'sound ALWAYS - so a wave is never unannounced even with no lines written.')
     })
