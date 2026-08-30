@@ -179,9 +179,15 @@ def main():
 
     # The harnesses too. The worst control character this repo has seen landed in a
     # HARNESS, not a script, and this tool was not looking there.
+    # 🚨 .py TOO, AND THAT IS NOT TIDINESS. On 2026-08-30 a heredoc ate an escape
+    # level and wrote a real 0x08 into THIS FILE, twice - the redeclaration regex became
+    # /<BS>function.../ and the Commands regex /<BS>Commands.../. Both matched nothing
+    # ever. The redeclaration rule, written specifically for the `overheard` collision
+    # that cost a boot, had been vacuously green since the day it was added, and the one
+    # tool that looks for stray control characters was not looking at itself.
     TOOLS = os.path.join(ROOT, 'tools')
     for f in sorted(os.listdir(TOOLS)):
-        if not f.endswith('.js'):
+        if not (f.endswith('.js') or f.endswith('.py')):
             continue
         try:
             bad = ctrl_chars(io.open(os.path.join(TOOLS, f), encoding='utf-8').read())
@@ -201,22 +207,77 @@ def main():
     # ⚠️ NOTHING ELSE CATCHES THIS. Node accepts redeclaration silently, so
     # `node --check` passes; this linter only compared names ACROSS files, so a
     # collision inside one file was invisible to it. Both instruments said fine.
+    # ⚠️ SCOPE, NOT FILE. The first working version of this rule keyed `seen` by
+    # filename, and its very first live output was a FALSE POSITIVE: blade_events.js
+    # has a `watch()` inside the duel closure and another inside the challenger
+    # closure, ~420 lines apart, each with its own locals. That is legal, it has
+    # always loaded, and the boot log proves it - 68/68, zero errors.
+    #
+    # 🔑 Two declarations only collide if they share an ENCLOSING BLOCK, so each match
+    # is keyed by the offset of the innermost `{` open at that point.
     dupes = []
     for f in files:
         try:
             src = strip(io.open(os.path.join(SS, f), encoding='utf-8').read())
         except Exception:
             continue
+        # innermost enclosing open-brace offset at every position (-1 == file top level)
+        stack, enclosing, cur = [], {}, -1
+        for i, ch in enumerate(src):
+            enclosing[i] = cur
+            if ch == '{':
+                stack.append(cur)
+                cur = i
+            elif ch == '}':
+                cur = stack.pop() if stack else -1
         seen = {}
-        for m in re.finditer(r'function\s+([A-Za-z_$][\w$]*)\s*\(', src):
+        for m in re.finditer(r'\bfunction\s+([A-Za-z_$][\w$]*)\s*\(', src):
             name = m.group(1)
             ln = line_of(src, m.start())
-            if name in seen:
-                dupes.append((f, name, seen[name], ln))
+            key = (enclosing.get(m.start(), -1), name)
+            if key in seen:
+                dupes.append((f, name, seen[key], ln))
             else:
-                seen[name] = ln
+                seen[key] = ln
+
+    # -------------------------------------------------------------------
+    # 🔴 A COMMANDS FACTORY THAT DOES NOT EXIST. `Commands` is the raw Java class
+    # net.minecraft.commands.Commands, and it has exactly TWO builders: literal() and
+    # argument(). Everything else - Commands.integer(), Commands.string() - is a
+    # plausible invention that throws at REGISTRATION time:
+    #
+    #     InternalError: Java class "net.minecraft.commands.Commands" has no public
+    #     instance field or method named "integer".
+    #
+    # ⚠️ The command simply does not exist afterwards. Registration is usually wrapped
+    # in a try/catch, so it costs one warning line at boot and then silence.
+    #
+    # 🔑 THIS IS THE THIRD TIME. announce.js already carries a comment saying "a guess
+    # (Commands.string() / java.lang.String.class) was invented" - a warning in a file
+    # nobody reads before writing a new command. A comment did not stop it; a check
+    # will. The working idiom is `event.arguments.INTEGER.create(event)`.
+    bad_cmd = []
+    for f in files:
+        try:
+            src = strip(io.open(os.path.join(SS, f), encoding='utf-8').read())
+        except Exception:
+            continue
+        for m in re.finditer(r'\bCommands\.([a-zA-Z_]\w*)\s*\(', src):
+            if m.group(1) in ('literal', 'argument'):
+                continue
+            bad_cmd.append((f, m.group(1), line_of(src, m.start())))
 
     problems = 0
+
+    if bad_cmd:
+        print('')
+        print('A COMMANDS FACTORY THAT DOES NOT EXIST - it will not register:')
+        for f, name, ln in bad_cmd:
+            print('  %-24s Commands.%s()  line %d' % (f, name, ln))
+        print('  Only literal() and argument() exist. For a typed argument use')
+        print('  event.arguments.INTEGER.create(event) / .STRING.create(event).')
+        problems += len(bad_cmd)
+
 
     if dupes:
         print('')

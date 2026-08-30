@@ -202,9 +202,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     try {
       event.register(Commands.literal('whisperband')
         .requires(function (s) { try { return s.hasPermission(2) } catch (e) { return false } })
-        .then(Commands.argument('waves', Commands.integer(0, 40)).executes(function (ctx) {
+        // 🔴 WAS `Commands.integer(0, 40)`, which does not exist - `Commands` is the
+        // raw Java class and the factory lives on IntegerArgumentType. The whole
+        // command failed to register on the 12:12 boot; it failed LOUDLY because the
+        // registration is wrapped, so it cost a log line rather than a silent absence.
+        //
+        // ⚠️ The working idiom in this pack is `event.arguments.INTEGER.create(event)`,
+        // read back with an explicit java.lang.Integer class - copied from
+        // notoriety.js rather than guessed a second time.
+        .then(Commands.argument('waves', event.arguments.INTEGER.create(event))
+          .executes(function (ctx) {
           var p = ctx.source.player
-          var w = ctx.getArgument('waves', java.lang.Integer)
+          var w = ctx.getArgument('waves', Java.loadClass('java.lang.Integer'))
           var b = bandFor(w)
           p.tell(Text.of('§8wave §f' + w + '§8 -> band §f' + b[5] +
             '§8  chance §f' + b[1] + '§8 size §f' + b[2] +
