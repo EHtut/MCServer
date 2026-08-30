@@ -58,7 +58,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     AMBIENT: 0.0,    // the place talking - same
     ASIDE: 4.5,      // your own head; may follow closely behind one thing
     GOD: 5.0,        // a god addressing you
-    ANNOUNCE: 9.0,   // something is ABOUT to happen - a warning is worth a wait
+    ANNOUNCE: 13.0,  // something is ABOUT to happen - a warning is worth a wait
     CRASHOUT: 999,   // a god announcing their own tide. Always.
   }
 
@@ -86,6 +86,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // speak - the exact inversion this file exists to prevent, produced by the file
   // itself. Priority is not only "who may speak into a busy screen", it is also "how
   // much screen may this take", and only the second one is enforceable in advance.
+  // 🔴🔴 GOD 6.0 -> 12.5 on 2026-08-30, AND IT IS A BUG FIX, NOT A TUNING CHANGE.
+  //
+  // The real duration of a god's line is `typing + reading` (voice.beatFor), and typing
+  // costs one tick per character. The longest line in the game is 161 characters, which
+  // is 12.3 SECONDS on screen. This table said 6.0, so the model believed every long
+  // line cost half what it actually did - and the model is what decides whether the next
+  // thing is allowed to speak.
+  //
+  // ⚠️ AN UNDER-ESTIMATE HERE IS NOT SAFE. It grants the screen to something that then
+  // queues behind a line still being typed, which is precisely the "delivered to a
+  // corpse" failure this file exists to prevent. The cap must cover the worst real case,
+  // not the typical one.
+  //
+  // 🔑 AND ANNOUNCE HAD TO MOVE WITH IT (9.0 -> 13.0), because the boot invariant is
+  // `HOLD[lo] + GAP <= P[hi]`: a god holding 12.5s costs 13s of queue, and a warning that
+  // tolerated only 9 would have been REFUSED behind a god mid-sentence. The audit at the
+  // bottom of this file is what refused to let that ship.
   var HOLD = {
     // 🔴 1.5 -> 4.0 on 2026-08-30. At 1.5s the dead were unreadable (Ethan, from play),
     // and tidewhispers.js now scales each fragment by its length and clamps to this
@@ -94,7 +111,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     WHISPER: 4.0,
     AMBIENT: 1.5,
     ASIDE: 2.5,
-    GOD: 6.0,
+    GOD: 12.5,
     ANNOUNCE: 8.0,
     CRASHOUT: 12.0,
   }

@@ -412,11 +412,68 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   //
   // ⚠️ THE FLOOR IS NOT SCALED. Below about half a second a sentence is gone before it
   // can be read, and "unreadable" is not a personality - it is a bug that looks like one.
+  // 🔴🔴 REWRITTEN 2026-08-30. THE OLD FORMULA CUT LONG LINES OFF MID-WORD.
+  //
+  // Ethan, from play: *"the text frequently fades before the full line is spoken. 1-5s
+  // depending on the line up to 10s. Art talks slowly, same with caebrim which means they
+  // get cut off sooner."*
+  //
+  // It was `max(30, min(110, 25 + n * 2))` — a READING estimate, written before the
+  // typewriter was switched on, and never revisited afterwards. Typing costs ONE TICK PER
+  // CHARACTER (measured), so the 110-tick ceiling was below the typing cost of anything
+  // over 110 characters:
+  //
+  //     110 chars -> types 110t, given 110t   ZERO reading time
+  //     161 chars -> types 161t, given 110t   fades 2.5s BEFORE it finishes typing
+  //
+  // The longest line in the game is 161 characters and the 90th percentile is 95, which
+  // is exactly why this looked fine: most lines are short enough to survive it, and the
+  // tail — the long, slow, deliberate lines — was the half that broke.
+  //
+  // ⚠️ AND IT HIT ART AND CAEBRIM HARDEST, precisely as he noticed. Not because they are
+  // "slow" in any setting — the typewriter speed is fixed and unreachable — but because
+  // their lines are the longest, and the ceiling punished length.
+  //
+  // ⭐⭐ SO DURATION IS NOW TWO THINGS ADDED, NOT ONE THING CAPPED:
+  //
+  //     typing   n ticks. NOT optional, NOT negotiable, NOT scaled.
+  //     reading  time to absorb it AFTER it has finished appearing.
+  //
+  // 🚨 `beatScale` SCALES ONLY THE READING HALF. Scaling the typing half is what a
+  // "faster" god would appear to want and it would guarantee her lines are cut off —
+  // Forge is 0.6, so under the old formula her pace setting was actively truncating her.
+  // A pace dial must never be able to make a line unreadable.
+  //
+  // ⚠️ The reading tail is CAPPED, unlike the typing half. You read a long line while it
+  // types, so the tail is about finishing the last clause, not re-reading the whole
+  // thing — without the cap a 161-character line would sit on screen for 15 seconds.
+  // ⭐⭐ ONE KNOB FOR HOW BIG EVERY GOD IS.
+  //
+  // Ethan, from play 2026-08-30: *"text needs to be bigger, right now it's too thin and
+  // you need to squint to see it."*
+  //
+  // 🔑 A MULTIPLIER, NOT FIVE EDITED NUMBERS. The relative sizes are a design — Art is
+  // the loudest presence, Forge the smallest because she is chattering rather than
+  // proclaiming — and editing each god's file to fix a global legibility problem would
+  // flatten that by hand and lose the intent. This scales all of them and keeps the
+  // shape, so the next adjustment is one number rather than another five-file sweep.
+  //
+  // ⚠️ IT REACHES THE CRASHOUT TOO. Those add a fixed bump to the god's own size, so the
+  // boost is applied AFTER the bump rather than to the base - otherwise the loudest
+  // moment in the game would be the one thing that did not get bigger.
+  var SIZE_BOOST = 1.5
+
+  function sized(n) {
+    var v = (typeof n === 'number' && isFinite(n)) ? n : 1
+    return Math.round(v * SIZE_BOOST * 100) / 100
+  }
+
   function beatFor(sentence, st) {
     var n = String(sentence).length
-    var t = Math.max(30, Math.min(110, 25 + n * 2))   // ticks
+    var typing = TYPEWRITER ? n : 0
+    var read = 25 + Math.min(60, Math.round(n * 0.5))
     var k = (st && typeof st.beatScale === 'number') ? st.beatScale : 1
-    return Math.max(10, Math.round(t * k))
+    return typing + Math.max(15, Math.round(read * k))
   }
 
   function overlay(player, god, s, tag, opts) {
@@ -452,7 +509,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         wave: !!st.wave,
         bold: !!st.bold,
         background: !!o.background,
-        size: (typeof st.size === 'number') ? st.size : o.size,
+        size: sized((typeof st.size === 'number') ? st.size : o.size),
         font: st.font,
         // 🔴 THE COLOUR COMES FROM THE REGISTRY, NOT FROM THE TEXT. im.show() sniffs a
         // leading § code, but garble.strip() runs FIRST and removes every code - so the
@@ -613,7 +670,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           // their temper does not keep to their corner, and the break from their usual
           // position is itself the signal that something is wrong.
           anchor: 'CENTER_CENTER',
-          size: (typeof st.size === 'number' ? st.size : 1) + 0.55,
+          size: sized((typeof st.size === 'number' ? st.size : 1) + 0.55),
           shake: true,
           font: st.font,
           color: overlayColour(god, st, opts),
@@ -700,7 +757,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           // legible lines in a row and sometimes none; the effect is the FLICKER
           // between readable and not, and only a deterministic alternation gives it.
           obfuscate: (i % 2 === 1) ? 'RANDOM' : null,
-          size: (typeof st.size === 'number' ? st.size : 1) + 0.2,
+          size: sized((typeof st.size === 'number' ? st.size : 1) + 0.2),
           shake: true,
           font: st.font,
           color: overlayColour(god, st, opts),
@@ -729,7 +786,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           anchor: 'CENTER_CENTER',
           x: 0,
           y: 0,                      // 🔑 dead centre. She does not scatter here.
-          size: (typeof st.size === 'number' ? st.size : 1) + 0.35,
+          size: sized((typeof st.size === 'number' ? st.size : 1) + 0.35),
           shake: true,               // "slightly shaking"
           font: st.font,
           color: FLAT_RED,
@@ -875,6 +932,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     setStyle: setStyle,
     styleOf: styleOf,
     sentences: sentences,
+    // ⚠️ Exported for the harness, which asserts the one thing that cannot be seen
+    // from outside: that a line is always given at least its TYPING time. That was
+    // false for every line over 110 characters until 2026-08-30.
+    beatFor: beatFor,
+    sized: sized,
+    SIZE_BOOST: SIZE_BOOST,
     alignedTo: alignedTo,
     toneFor: toneFor,
     hotbarLift: function () { return HOTBAR_LIFT },

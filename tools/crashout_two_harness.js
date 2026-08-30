@@ -213,6 +213,69 @@ t('a god may still ask for a colour deliberately', () => {
     'an explicit style colour must win, got ' + JSON.stringify(panic.map(s => s.color)))
 })
 
+// ── duration: a line must never fade before it finishes typing ───────────────
+// 🔴 Ethan, from play 2026-08-30: "the text frequently fades before the full line is
+// spoken." beatFor was a READING estimate capped at 110 ticks, written before the
+// typewriter existed; typing costs one tick per character, so anything over 110
+// characters was cut off mid-word. The longest line in the game is 161.
+function beatOf(text, style) {
+  const env = build()
+  load(env, 'screen.js')
+  load(env, 'voice.js')
+  env.ctx.VELDORA.voice.setStyle('t', style || { anchor: 'CENTER_CENTER' })
+  return env.ctx.VELDORA.voice.beatFor(text, env.ctx.VELDORA.voice.styleOf('t'))
+}
+
+t('🔴 a line is ALWAYS given at least its typing time', () => {
+  for (const n of [10, 40, 72, 95, 110, 161, 240]) {
+    const text = 'x'.repeat(n)
+    const t2 = beatOf(text)
+    assert(t2 > n, n + ' chars types for ' + n + ' ticks but was given ' + t2 +
+      ' - it would fade mid-word')
+  }
+})
+
+t('...and reading time ON TOP of typing, not instead of it', () => {
+  // The old formula gave a 110-char line exactly 110 ticks: zero time to read it
+  // after it finished appearing.
+  const n = 110
+  const t2 = beatOf('x'.repeat(n))
+  assert(t2 - n >= 40, 'only ' + (t2 - n) + ' ticks to read a ' + n + '-char line ' +
+    'after it finishes typing')
+})
+
+t('🚨 beatScale can never truncate a line', () => {
+  // Forge is 0.6. A pace dial that scales the TYPING half guarantees a cut-off, which
+  // is what the old formula did to her specifically.
+  const n = 161
+  const text = 'x'.repeat(n)
+  const fast = beatOf(text, { anchor: 'CENTER_CENTER', beatScale: 0.6 })
+  const norm = beatOf(text, { anchor: 'CENTER_CENTER' })
+  assert(fast > n, 'a fast god must still finish typing: ' + fast + ' vs ' + n + ' ticks')
+  assert(fast < norm, 'but beatScale must still make her faster overall')
+})
+
+t('longer lines get longer, without a ceiling that clips them', () => {
+  const a = beatOf('x'.repeat(60)), b = beatOf('x'.repeat(160))
+  assert(b > a, 'a longer line must hold longer')
+  assert(b - a >= 100, 'and by roughly its extra typing cost, got ' + (b - a) + ' ticks')
+})
+
+t('every god got BIGGER, and the relative sizes survived', () => {
+  // Ethan: "text needs to be bigger, right now it's too thin and you need to squint."
+  const env = build()
+  load(env, 'screen.js')
+  load(env, 'voice.js')
+  const V = env.ctx.VELDORA.voice
+  assert(V.SIZE_BOOST > 1, 'the boost must actually boost')
+  assert(V.sized(1) > 1, 'a default-size god must get bigger')
+  // 🔑 THE CONTROL: a flat "make everything 1.5" would pass the line above and destroy
+  // the design. Art is the loudest presence and Forge the smallest, and that ORDER is
+  // the thing that must survive a global change.
+  assert(V.sized(1.25) > V.sized(0.9), 'Art must still be bigger than Forge')
+  assert(V.sized(1.25) / V.sized(0.9) - 1.25 / 0.9 < 0.01, 'the ratio must be preserved')
+})
+
 t('the silence is RESERVED, not merely waited out', () => {
   const e = realRun(true)
   assert(e.reserved.length === 1, 'expected exactly one reservation, got ' + e.reserved.length)
