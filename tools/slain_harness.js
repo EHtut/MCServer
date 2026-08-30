@@ -174,9 +174,16 @@ grp('⛔ BLADE IS NO LONGER AN ITEM')
   // had been removed. E2 took her off items too - by design, `docs/67` says her
   // condition IS the five deals - so this now checks that the carry table still has
   // the gods that genuinely carry, rather than being deleted for being inconvenient.
-  ok('the carry table still holds forge and art',
-    ch.indexOf("forge: ['create:wrench']") !== -1 &&
-    ch.indexOf("art: ['minecraft:lapis_lazuli']") !== -1, true)
+  // ⚠️ REWRITTEN TWICE as gods left the carry table - salvage at E2, art at E4.
+  // ⭐ What survives is the invariant, not the roster: FORGE IS THE LAST CARRY, and
+  // correctly so. A Create wrench is a thing you MADE. A sword, a crossbow and a lump
+  // of lapis are things you FOUND, which is why all three had to go - lapis worst of
+  // all, since chosen.js records it MEASURED on the live world burning every player's
+  // one offer within minutes of spawning.
+  ok('⭐ forge is the last carry, and it is a thing you MADE',
+    ch.indexOf("forge: ['create:wrench']") !== -1, true)
+  ok('🚨 every FOUND item is gone from the table',
+    ['iron_sword', 'crossbow', 'lapis'].every(i => ch.indexOf(i) === -1), true)
 
   // ⚠️ FAILS CLOSED. An unlock is spent forever, so a missing slain.js must NOT
   // unlock him - the opposite of night.js, which must fail open.

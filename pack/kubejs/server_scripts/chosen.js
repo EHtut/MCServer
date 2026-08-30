@@ -106,6 +106,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var bladeWarned = false
   var dealsWarned = false
 
+  // She has been paid. art_deal.js owns the stamp; this only reads it.
+  function artTook(p) {
+    try { return (p.persistentData.getInt('veldora_art_took') || 0) > 0 } catch (e) { return false }
+  }
+
   // 🚨 THE DISPLAY WAS A TWO-WAY BRANCH, and it had to stop being one. It read
   // `TRIGGERS[k] ? 'carry X' : 'be killed while pathless'` - so the moment Blade left
   // the carry table it would have told the player, confidently and in his own row, to
@@ -122,6 +127,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         if (VELDORA.slain) return 'slay ' + VELDORA.slain.count(p) + '/' + VELDORA.slain.threshold
       } catch (e) { }
       return 'slay - UNAVAILABLE, slain.js is missing'
+    }
+    if (k === 'art') {
+      try {
+        if (VELDORA.artdeal) {
+          return 'meet her in the deep with ' + VELDORA.artdeal.minLevels +
+            '+ levels and take her deal'
+        }
+      } catch (e) { }
+      return 'her deal - UNAVAILABLE, art_deal.js is missing'
     }
     if (k === 'salvage') {
       try {
@@ -145,9 +159,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // Held ANYWHERE in the inventory, not just the hand. You are noticed for what
   // you carry, and a sword in a chest still says something about you.
   //
-  // ⚠️ Art and Forge are CLOSED in paths.js. Their triggers stay listed so this
-  // table is the design rather than the leftovers - and the claim refuses them on
-  // its own, so nothing here needs to know which gods are open.
+  // ⚠️ THIS SAID "Art and Forge are CLOSED in paths.js" AND THEY ARE NOT. That
+  // file's `CLOSED` map is now `{}` - *"EVERY PATH IN VELDORA IS NOW CLAIMABLE"* - so
+  // the comment was describing a state that had already been lifted. Left as a warning
+  // about itself: `isClosed()` is still consulted below and still the right question,
+  // but nothing here should assume the ANSWER.
   // ⛔ BLADE IS NO LONGER AN ITEM. Ethan, 2026-08-29: *"for chosen, i want to make
   // that honestly harder to accomplish we can probably change it to mobs slain because
   // tetra is too good to pass up."*
@@ -163,9 +179,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // godless players deals. All of them suck. Accept 5."* That IS her condition, and a
   // crossbow is a ten-minute shortcut straight past it - the same objection that took
   // Blade off the iron sword.
+  // ⛔ ART IS NO LONGER LAPIS EITHER (E4). `docs/67` makes her deal the condition,
+  // and lapis was actively harmful besides - this file's own history records it
+  // MEASURED on the live world: *"art unlocks off LAPIS, so the closed god spends
+  // everybody's one offer within minutes of spawning... both players carried
+  // offered_art=1."* Lapis is in every ravine; it was never a choice.
+  //
+  // ⭐ FORGE IS THE LAST CARRY, and correctly so: a Create wrench is a thing you MADE,
+  // which is the only item in the pack that means anything about you.
   var TRIGGERS = {
     forge: ['create:wrench'],
-    art: ['minecraft:lapis_lazuli'],
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -299,6 +322,32 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
       // The fight is over. See the note above.
       try { delete lastHurt[String(p.uuid)] } catch (e) { }
+
+      // ⭐⭐ E4 - ART IS CHOSEN ON RESPAWN TOO, and deliberately on the SAME hook
+      // as Wall's rather than a second one. `docs/67`: *"it kills you, and you are
+      // chosen on respawn (symmetric with Wall's, 100t)"* - and symmetry here is not
+      // decoration, it is why both arrive with the same beat after the screen clears.
+      //
+      // ⚠️ HERS IS CHECKED FIRST. A player she emptied and killed died holding
+      // nothing and walking no path - which also satisfies Wall's route if anybody
+      // pathed happened to be involved. The one they PAID for wins.
+      if (artTook(p) && !isUnlocked(p, 'art')) {
+        server.scheduleInTicks(RESPAWN_DELAY, function () {
+          try {
+            if (isUnlocked(p, 'art')) return
+            if (!unlock(p, 'art')) return
+            console.info(TAG + p.username + ' unlocked art - she took every level ' +
+              'they had and killed them, and they knew she would.')
+            if (!canBeOffered(server, p)) {
+              console.info(TAG + '...but they cannot be offered right now. Unlocked; ' +
+                'the sweep will make the offer.')
+              return
+            }
+            makeOffer(server, p, 'art')
+          } catch (e) { console.warn(TAG + 'art respawn offer threw :: ' + e) }
+        })
+        return
+      }
 
       if (!wasStruck(p)) return
       if (isUnlocked(p, 'wall')) return

@@ -18,10 +18,13 @@ in this repo has died before.
 
 ---
 
-## art — 32 pool(s)
+## art — 35 pool(s)
 
 | tag | to rewrite | ⭐ yours, keep | file |
 |---|---:|---:|---|
+| `deal_offer` | ? | — | [`art_deal.js:43`](../pack/kubejs/server_scripts/art_deal.js) |
+| `deal_taken` | ? | — | [`art_deal.js:43`](../pack/kubejs/server_scripts/art_deal.js) |
+| `deal_refused` | ? | — | [`art_deal.js:43`](../pack/kubejs/server_scripts/art_deal.js) |
 | `trial_scene` | ? | — | [`art_events.js:282`](../pack/kubejs/server_scripts/art_events.js) |
 | `guidance` | 9 | — | [`art_voice.js:56`](../pack/kubejs/server_scripts/art_voice.js) |
 | `low_silence` | 4 | — | [`art_voice.js:56`](../pack/kubejs/server_scripts/art_voice.js) |
@@ -205,7 +208,7 @@ in this repo has died before.
 
 ---
 
-**458 drafted lines across 135 pools.**
+**458 drafted lines across 138 pools.**
 
 Ethan's own writing is NOT listed here — his lines carry no marker, which is
 the whole point of the convention. Where a pool is mixed (his first line, drafts

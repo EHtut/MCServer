@@ -628,10 +628,74 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   // ═══════════════════════════════════════════════════════════════════════════
 
+  // ════════════════════════════════════════════════════════════════════════
+  // ⭐⭐ E4a - THE PATHLESS HEAR HER TOO. `docs/67` flagged this as the only one of
+  // the five conditions needing NEW MACHINERY rather than new wiring:
+  //
+  //     "🔴 BUT A PATHLESS PLAYER CURRENTLY GETS NO SPEAKER AT ALL"
+  //
+  // 🔑 THE FIVE PERSONAS ARE THE GODDESS FILTERED THROUGH YOUR PATRON. The Shadow,
+  // the Doctor, the Keeper, the Matriarch - each is what she looks like from inside
+  // somebody else's faith. With no patron there is NO FILTER, so the unclaimed do not
+  // get a sixth mask; they get the absence of one.
+  //
+  // ⚠️ WHICH IS WHY SHE IS §f WHITE. Every persona owns a colour (§8, §b, §e) and
+  // every god owns one. White is the only unowned colour in the pack - the same
+  // reasoning trespass.js uses for lines that come from nobody. She arrives
+  // uncoloured because nobody has introduced her to you.
+  //
+  // 🔴 AND THIS ALSO CLOSES A GAP night.js ALREADY DOCUMENTED. Its D2 comment reads
+  // "A PATHLESS PLAYER HEARS NOBODY - speakerFor() returns null without a path",
+  // meaning the 30th-night introduction was silently a no-op for exactly the players
+  // Art's condition is aimed at. One fix, two systems.
+  //
+  // ⚠️ [CLAUDE-DRAFT] death_stranger/intro · death_stranger/common ·
+  // death_stranger/abandoned · death_stranger/rare · death_stranger/warn_wave
+  // 🚨 INCLUDING THE NAME. "the Stranger" is scaffolding - nobody vouches for her and
+  // nobody has named her to you - but naming a face of the goddess is Ethan's call, not
+  // mine. Rename freely; only the `id` is load-bearing (it keys the met/stage flags).
+  var PATHLESS = {
+    id: 'death_stranger',
+    name: 'the Stranger',
+    colour: '§f',
+    lines: {
+      warn_wave: [
+        'Something is coming for you. Nobody is coming with it.',
+        'That noise is not mine. You should still move.',
+        'They have noticed you. You had that in common with nobody.',
+      ],
+      intro: [
+        'No one sent me. That is not usually how this works.',
+        'You came down here with nobody at all. I noticed. Nobody else did.',
+        'There is normally a name in the way when I do this. Not with you.',
+      ],
+      common: [
+        'Still nobody. Still you.',
+        'You keep coming back down. I have stopped assuming it is an accident.',
+        'Most people who get this far are carrying somebody. You are not.',
+        'You are easier to look at than the others. There is nothing in front of you.',
+      ],
+      abandoned: [
+        'They passed on you. All of them. I am not going to pretend that is a small thing.',
+        'Nobody wanted this conversation with you. I am having it anyway.',
+        'You are unclaimed. Down here that is closer to a qualification than an insult.',
+      ],
+      rare: [
+        'I do not have a face for you. You never gave me one to wear.',
+        'The others see what their god lets them see. You are getting the rest.',
+      ],
+    },
+  }
+
+  // ⚠️ `path ? SPEAKERS[path] : PATHLESS` - and NOT `SPEAKERS[path] || PATHLESS`.
+  // The second would hand the Stranger to a champion whose own persona failed to
+  // register, which reads as a lore event and is actually a load error. A god with a
+  // path and no speaker is a BUG and must stay silent so it gets noticed.
   function speakerFor(p) {
     try {
       var path = VELDORA.paths ? (VELDORA.paths.pathOf(p) || '') : ''
-      return path ? (SPEAKERS[path] || null) : null
+      if (!path) return PATHLESS
+      return SPEAKERS[path] || null
     } catch (e) { return null }
   }
 
@@ -980,6 +1044,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     say: say,
     introduce: introduce,
     confess: confess,
+    // ⭐ E4 - "has she introduced herself to you yet". art_deal.js gates on it, and
+    // without it that gate read false forever: `met` was never exported, so the deal
+    // would have been silently unreachable with nothing to see in any log.
+    //
+    // ⚠️ Keyed to the speaker YOU get, so a player who changes path meets a new one.
+    // That is correct - they are different faces and the met flag is per-face.
+    met: function (p) {
+      try {
+        var sp = speakerFor(p)
+        if (!sp) return false
+        return !!p.persistentData.getBoolean(metKey(sp))
+      } catch (e) { return false }
+    },
     confessed: function (p) { return finished(p, speakerFor(p)) },
     stage: function (p) { return stageOf(p, speakerFor(p)) },
     eligible: confessionEligible,

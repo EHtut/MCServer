@@ -401,3 +401,68 @@ honest name.**
 
 **42 chosen assertions, 3 negative controls all red. 717 passed / 0 failed across 19
 harnesses. Live 59/59, 0 errors.**
+
+---
+
+# ✅ E4 BUILT — 2026-08-29. The only condition that needed new machinery.
+
+## E4a — the pathless hear her
+
+🔴 The blocker `docs/67` flagged: *"a pathless player currently gets no speaker at
+all"* — and Art's condition targets **exactly** that player.
+
+⭐ **The five personas are the goddess filtered through your patron.** The Shadow, the
+Doctor, the Keeper, the Matriarch — each is what she looks like from inside somebody
+else's faith. **With no patron there is no filter**, so the unclaimed do not get a
+sixth mask; they get the absence of one. She arrives in **`§f` white — the only unowned
+colour in the pack**, the same reasoning `trespass.js` uses for lines from nobody.
+
+⚠️ **`path ? SPEAKERS[path] : PATHLESS`, never `SPEAKERS[path] || PATHLESS`.** This
+file's header states the rule: *"A path with no registered speaker gets SILENCE below
+the cutoff, never a stand-in voice."* A pathed god whose persona failed to register must
+stay silent so the bug is **noticed**, not fall through to her and read as lore.
+
+⭐ **One fix, two systems.** `night.js` already documented the same gap — its D2 comment
+reads *"A PATHLESS PLAYER HEARS NOBODY"* — so the 30th-night introduction was silently a
+no-op for those players too.
+
+## E4b — the deal
+
+| | |
+|---|---|
+| **gate** | godless · **50+ levels** · below y0 with no sky · **she has introduced herself first** |
+| **price** | **all of them.** Not fifty |
+| **then** | it kills you, and you are chosen **on respawn**, on the same hook as Wall's |
+
+🚨 **She tells you first, and that is not decoration.** *"I take every level you are
+carrying — not fifty, all of them — and then I kill you. You wake up mine. I am telling
+you this before you answer."* ⛔ The condition is worthless as a trick: a trick tests
+only whether you read the wiki. **Being told, in plain words, and saying yes, is the
+entire mechanic.** The harness asserts it on the text, because nothing else can.
+
+⚠️ **Take first, verify, THEN kill.** The reverse order pays her out of a corpse and
+turns `death_cost.js` into a race. A take that fails aborts the whole thing with the
+player alive and still holding everything.
+
+## 🔴 A gate that would have read false forever
+
+`speaker.met()` **did not exist.** `art_deal.js` gates on it, so the deal would have
+been unreachable with **nothing to see in any log** — the exact silent-inert failure
+class this project keeps paying for. Caught by checking the export against the file,
+not by playing.
+
+## ⛔ And Art is off lapis
+
+`chosen.js` records this **measured on the live world**: *"art unlocks off LAPIS, so the
+closed god spends everybody's one offer within minutes of spawning… both players carried
+`offered_art=1`."* Lapis is in every ravine; it was never a choice.
+
+⭐ **Forge is now the last carry, and correctly so.** A Create wrench is a thing you
+**made**. A sword, a crossbow and a lump of lapis are things you **found**.
+
+⚠️ Also corrected: a `chosen.js` comment asserting *"Art and Forge are CLOSED in
+paths.js."* That file's `CLOSED` map is `{}` — **every path is claimable** — so the
+comment described a state already lifted.
+
+**37 assertions, 3 negative controls all red. 755 passed / 0 failed across 20 harnesses.
+Live 60/60, 0 errors.**
