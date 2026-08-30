@@ -1,7 +1,24 @@
 # 62 — The Harvest is cut
 
-> **STATUS 2026-08-24** — ✅ **STEPS 1 AND 2 DONE AND LIVE.** Gated off, orphans re-homed,
-> boot clean. ⚠️ **STEP 3 (deleting the code) IS DELIBERATELY NOT DONE** — see §6.
+> **STATUS 2026-08-29 — ✅ THE CUT HELD, BUT THIS BANNER DID NOT.**
+>
+> ✅ **The ENDING is gone.** Nothing in `harvest.js` ends a player's story any more; a
+> win now RELEASES the path and offers the stay (`blade_events.js` `harvestWin`). You are
+> let go into the world, not out of it. That was the ruling and it landed.
+>
+> 🔴 **But this banner said "Gated off" and the gate is ON.** The file was REPURPOSED
+> after this doc was written — the same machinery is now **the Trial**, a trust mechanic
+> for combatant paths only (`docs/63`). The live boot reads
+> `[harvest] VELDORA.harvest published OK - handlers: art, blade, salvage`, which is
+> correct for the Trial and flatly contradicts the line that used to be here.
+>
+> ⚠️ **Anyone reading this doc would have concluded the file was inert.** It is not, and
+> that is the whole reason to fix a status line rather than leave it. The filename stays
+> `harvest.js` on purpose (renaming it touches the sync tool, load order and every log
+> grep); the WORDS inside say Trial.
+>
+> ⚠️ **Step 3 (deleting the code) is still deliberately not done** — see §6 — and it is
+> now moot: the code is not dead, it has a job.
 
 ## 0. 🔴 THE RULING — Ethan, 2026-08-23
 

@@ -266,7 +266,15 @@ grp('\U0001f534 THE STRANGER WAS REGISTERED WITH NOBODY \u2014 E4a SHIPPED INERT
 grp('\u2b50 PATHLESS DIALOGUE ARRIVES BROKEN \u2014 75 percent readable')
 {
   const g = code('garble.js')
-  ok('the rate is 25 percent', g.indexOf('var RATE = 0.25') !== -1, true)
+  // ⚠️ WAS 25 PERCENT. Ethan revised it the same day: "90% is readable instead, 75%
+  // is still a bit too much." Asserted as a RANGE rather than a literal, because the
+  // number is a feel decision that will move again - what must not move is that SOME
+  // letters are lost and MOST are not.
+  const rateM = g.match(/var RATE = ([0-9.]+)/)
+  ok('the rate is declared at all', !!rateM, true)
+  const rate = rateM ? parseFloat(rateM[1]) : -1
+  ok('🚨 some letters are lost', rate > 0, true)
+  ok('🚨 ...and most are not - the line still has to read as a line', rate <= 0.15, true)
   ok('\U0001f6a8 spaces are never obfuscated - they would weld words together',
     g.indexOf("if (c === ' ') return false") !== -1, true)
   ok('\U0001f6a8 the colour is restored after every reset code',

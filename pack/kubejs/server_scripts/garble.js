@@ -8,8 +8,12 @@
 // It states the thesis of the whole pathless track without a line of exposition. The
 // five deep personas are the goddess **filtered through your patron** — with no patron
 // there is no filter, which is why the Stranger is uncoloured (`deep_speaker.js`). This
-// is the same idea one layer down: **nobody is translating for you**, so a quarter of
-// what reaches you does not arrive.
+// is the same idea one layer down: **nobody is translating for you**, so some of what
+// reaches you does not arrive.
+//
+// ⚠️ HIS FIRST NUMBER WAS 75% READABLE AND HE REVISED IT THE SAME DAY: *"90% is
+// readable instead, 75% is still a bit too much."* A quarter of the letters gone is
+// past the line where a line still reads as a line.
 //
 // ⭐ AND IT COSTS NOTHING. `§k` is vanilla obfuscation: the client replaces the glyph
 // every frame with a random one **of the same width**, so spacing never moves and the
@@ -25,12 +29,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var TAG = '[garble] '
   var GATE = true
 
-  // ⭐ 25% — Ethan's number, read off "only 75% readable".
-  var RATE = 0.25
+  // ⭐ 10%. Ethan, 2026-08-29: *"change the garbled god dialogue so that 90% is
+  // readable instead, 75% is still a bit too much."*
+  //
+  // ⚠️ WAS 0.25, read off his original "only 75% readable". A quarter of the
+  // letters gone turns out to be past the line where a line still reads as a line -
+  // the effect stops being "something is wrong with this voice" and becomes work.
+  var RATE = 0.10
 
   // ⚠️ SPACES AND PUNCTUATION ARE NEVER TOUCHED. An obfuscated space renders as a
   // visible random glyph, which welds two words together and moves every boundary in
-  // the sentence - the line stops being 75% readable and starts being unparseable.
+  // the sentence - the line stops being MOSTLY readable and starts being unparseable.
   // Punctuation carries the rhythm, which is the last thing to take away.
   function eligibleChar(c) {
     if (c === ' ') return false
