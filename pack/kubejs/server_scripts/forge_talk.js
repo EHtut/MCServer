@@ -121,8 +121,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     try {
       if (VELDORA.paths && typeof VELDORA.paths.pathOf === 'function') {
         var path = VELDORA.paths.pathOf(p)
-        if (typeof path !== 'string') return null
-        return path === ''
+        // 🔴 `typeof path !== 'string'` WAS HERE AND IT BROKE EVERY GODLESS CHECK.
+        // paths.pathOf returns persistentData.getString(...) - a JAVA String - and in
+        // Rhino `typeof javaString` is "object". This returned null for every player
+        // alive, so `/deal`, `/artdeal` and `/forgetalk` all read "godless: UNREADABLE"
+        // and none of the three gods would ever have offered anything on its own.
+        //
+        // ⚠️ I ADDED THAT CHECK TO BE DEFENSIVE and it WAS the bug. The harness stayed
+        // green because its mock returns a real JS string - Node is not the engine, in
+        // the mocks as much as in the syntax.
+        if (path === null || path === undefined) return null
+        return String(path) === ''
       }
     } catch (e) { }
     return null

@@ -51,8 +51,59 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var MSG = null, ANCHOR = null, OBF = null
   var sendMode = null          // 'direct' | 'unwrapped' | null
 
+  // 🔴 `Java.loadClass()` IS NOT ENOUGH FOR A STATIC METHOD, and this is what the
+  // live test proved. `/im` reported `reachable: true` - the class loaded, anchors and
+  // obfuscate resolved - and then every send failed with:
+  //
+  //     InternalError: Java class "toni.immersivemessages.api.ImmersiveMessage" has no
+  //     public instance field or method named "builder".
+  //
+  // 🔑 Rhino handed back the java.lang.Class OBJECT, so `.builder` was looked up as an
+  // INSTANCE member of Class - which of course does not have one. Reaching a STATIC
+  // needs a type wrapper, not the Class object.
+  //
+  // ⚠️ So all three routes are tried and the winner is LOGGED. Which one works is a
+  // property of this KubeJS build, not something to be reasoned out from here - the
+  // whole file was written reflectively for exactly that reason, and the probe that
+  // said "reached" was measuring the wrong thing.
   function cls(name) {
     try { return Java.loadClass(name) } catch (e) { return null }
+  }
+
+  // Returns something you can call statics on, or null. Order matters: the cheapest
+  // and most likely first.
+  var staticMode = null
+  function staticsOf(name) {
+    // 1. Packages.a.b.C - the classic Rhino path to a type wrapper.
+    try {
+      var parts = name.split('.')
+      var o = Packages
+      for (var i = 0; i < parts.length; i++) o = o[parts[i]]
+      if (o && typeof o.builder === 'function') {
+        if (!staticMode) { staticMode = 'Packages'; console.info(TAG + 'statics via Packages.*') }
+        return o
+      }
+    } catch (e) { }
+    // 2. Java.type - present in some builds, gives a proper type wrapper.
+    try {
+      if (typeof Java.type === 'function') {
+        var t = Java.type(name)
+        if (t && typeof t.builder === 'function') {
+          if (!staticMode) { staticMode = 'Java.type'; console.info(TAG + 'statics via Java.type') }
+          return t
+        }
+      }
+    } catch (e) { }
+    // 3. The Class object itself - what the first version used. Kept last rather than
+    //    deleted, because a future KubeJS may make it work and it costs one try.
+    try {
+      var c = cls(name)
+      if (c && typeof c.builder === 'function') {
+        if (!staticMode) { staticMode = 'Java.loadClass'; console.info(TAG + 'statics via Java.loadClass') }
+        return c
+      }
+    } catch (e) { }
+    return null
   }
 
   // ⚠️ Probed ONCE and the outcome logged, because an unreachable API and a quiet one
@@ -60,16 +111,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   function probe() {
     if (probed) return MSG !== null
     probed = true
-    MSG = cls(CLS)
+    MSG = staticsOf(CLS)
     ANCHOR = cls(ANCHOR_CLS)
     OBF = cls(OBF_CLS)
-    if (!MSG) {
-      console.warn(TAG + 'ImmersiveMessage is NOT reachable. Every caller falls back to ' +
+    if (!MSG) {       console.warn(TAG + 'ImmersiveMessage statics are NOT callable by any of the three routes (Packages, Java.type, Java.loadClass). Every caller falls back to ' +
         'its old route (the boss bar, the action bar, hand-woven garble). This is a ' +
         'FAILURE to reach the mod, NOT a quiet dialogue system.')
       return false
     }
-    console.info(TAG + 'ImmersiveMessage reached. anchors=' + (ANCHOR ? 'ok' : 'MISSING') +
+    // ⚠️ "reached" now means the STATIC IS CALLABLE, not merely that the class
+    // loaded. The first version said reached and then failed on every send.
+    console.info(TAG + 'ImmersiveMessage reached via ' + (staticMode || '?') +
+      ' - builder() is callable. anchors=' + (ANCHOR ? 'ok' : 'MISSING') +
       ' obfuscate=' + (OBF ? 'ok' : 'MISSING'))
     return true
   }
@@ -179,6 +232,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     show: show,
     available: function () { return GATE && probe() },
     sendMode: function () { return sendMode },
+    staticMode: function () { return staticMode },
     _probe: probe,
   }
 
@@ -221,7 +275,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         }))
         .executes(function (ctx) {
           var p = ctx.source.player
-          p.tell(Text.of('§8reachable: §f' + probe()))
+          p.tell(Text.of('§8builder callable: §f' + probe() + '§8 via §f' + (staticMode || 'NONE')))
           p.tell(Text.of('§8send mode: §f' + (sendMode || 'not yet attempted')))
           p.tell(Text.of('§8/im shake §7| §8/im type §7| §8/im garbled'))
           return 1

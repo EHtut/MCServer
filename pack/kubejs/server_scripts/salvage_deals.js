@@ -277,9 +277,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // Returns TRUE (godless), FALSE (has a path), or NULL (could not read). The caller
   // treats null as "do not offer", because offering a pathed player is worse than
   // offering nobody.
-  // ⚠️ `typeof path !== 'string'` rather than `path || ''`. The first version wrote the
-  // latter, which turns undefined into '' and therefore into GODLESS - the exact
-  // failure the comment above claims to prevent. The harness caught it.
+  // ⚠️ THIS COMMENT USED TO RECOMMEND `typeof path !== 'string'` over `path || ''`.
+  // 🔴 BOTH were wrong. `path || ''` turns undefined into GODLESS; `typeof` is false
+  // for a Java String in Rhino and turned EVERYONE into unreadable. The correct test is
+  // an explicit null/undefined check followed by String() conversion, which handles a
+  // Java String, a JS string and a missing value distinctly.
   //
   // 🔴 AND THERE IS A REAL ONE UPSTREAM, LEFT ALONE ON PURPOSE. paths.js:481 reads
   // `return player.persistentData.getString(KEY) || ''` inside a try whose catch ALSO
@@ -294,8 +296,22 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     try {
       if (VELDORA.paths && typeof VELDORA.paths.pathOf === 'function') {
         var path = VELDORA.paths.pathOf(p)
-        if (typeof path !== 'string') return null      // unreadable, NOT godless
-        return path === ''
+        // 🔴 `typeof path !== 'string'` WAS HERE AND IT BROKE EVERY GODLESS CHECK.
+        // paths.pathOf returns persistentData.getString(...), which is a JAVA String -
+        // and in Rhino `typeof javaString` is "object", not "string". So this returned
+        // null for every player alive and `/deal`, `/artdeal` and `/forgetalk` all
+        // reported "godless: UNREADABLE". None of the three gods would ever have
+        // offered anything on their own.
+        //
+        // ⚠️ I ADDED THAT CHECK TO BE DEFENSIVE and it was the bug. The harness passed
+        // throughout because its mock returns a real JS string - Node is not the engine,
+        // in the mocks as much as in the syntax.
+        //
+        // ⭐ String() converts either kind. null/undefined stringify to "null"/
+        // "undefined", which are not '' and so read as PATHED - the safe direction,
+        // since offering a pathed player is worse than offering nobody.
+        if (path === null || path === undefined) return null
+        return String(path) === ''
       }
     } catch (e) { }
     return null

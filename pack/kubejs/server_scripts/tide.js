@@ -552,7 +552,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     try {
       if (VELDORA.paths && typeof VELDORA.paths.pathOf === 'function') {
         var path = VELDORA.paths.pathOf(p)
-        pathless = (typeof path === 'string') ? (path === '') : null
+        // 🔴 WAS `typeof path === 'string'`, which is FALSE for a Java String in
+        // Rhino - so this always fell through to null, i.e. the PATHED branch, and a
+        // godless player never got the higher variation rate at all. Same regression as
+        // the three deal files, found the same way: by Ethan running the command.
+        pathless = (path === null || path === undefined) ? null : (String(path) === '')
       }
     } catch (e) { }
     // ⚠️ Unreadable -> treat as PATHED, i.e. the rarer branch. A read failure must

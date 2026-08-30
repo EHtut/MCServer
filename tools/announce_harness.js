@@ -263,8 +263,13 @@ grp('🔴 THE REAL SHAKE — and the fallback that must survive it')
 
   // 🚨 An unreachable mod must SHOUT, or "the mod is missing" and "nobody spoke"
   // are the same event from outside.
-  ok('🚨 an unreachable API is reported, not swallowed',
-    im.indexOf('is NOT reachable') !== -1, true)
+  // ⚠️ The message changed because the OLD one was misleading. It said "NOT
+  // reachable" while the class WAS reachable - only the STATIC was not callable, which
+  // is why /im reported reachable:true and then failed every send.
+  ok('🚨 an uncallable static is reported, not swallowed',
+    im.indexOf('statics are NOT callable') !== -1, true)
+  ok('⭐ ...and all three access routes are named in the message',
+    im.indexOf('Packages, Java.type, Java.loadClass') !== -1, true)
   ok('⚠️ ...and a send that cannot be called either way is reported too',
     im.indexOf('could not be called with EITHER shape') !== -1, true)
 

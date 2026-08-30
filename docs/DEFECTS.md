@@ -256,3 +256,52 @@ abandoned rather than debugged while the server was down.
 quick succession, some backgrounded, and the corruption appeared in a two-minute window
 that contained one of them. Overlapping instances writing the same world would do this.
 🔑 That is a second, concrete reason for the rule in `CLAUDE.md`.
+
+---
+
+## 🔴 D-106 — a defensive `typeof` check broke every godless test. 2026-08-30
+
+`/deal`, `/artdeal` and `/forgetalk` all reported **`godless: UNREADABLE`** in play.
+
+```js
+var path = VELDORA.paths.pathOf(p)
+if (typeof path !== 'string') return null      // <- always true
+```
+
+🔑 **`paths.pathOf` returns `persistentData.getString(...)` — a JAVA String — and in
+Rhino `typeof javaString` is `"object"`.** So the check returned `null` for every player
+alive, and **Salvage, Art and Forge would never have offered anything on their own.**
+
+⚠️ **I added that check to be defensive, and it WAS the bug.** Its own comment claimed to
+prevent a failure it caused. The correct test is an explicit null/undefined check
+followed by `String()` conversion, which distinguishes a Java String, a JS string and a
+missing value.
+
+🚨 **THE HARNESS STAYED GREEN THROUGHOUT** — its mock returns a real JS string. **Node is
+not the engine, in the mocks as much as in the syntax.** A sweep found the same mistake
+in `tide.js`, where it silently denied godless players the higher varied-wave rate. Four
+files fixed.
+
+---
+
+## 🔴 D-107 — `/im` said `reachable: true` and then failed every send
+
+```
+InternalError: Java class "toni.immersivemessages.api.ImmersiveMessage"
+has no public instance field or method named "builder".
+```
+
+🔑 **`Java.loadClass()` returns the `java.lang.Class` OBJECT**, so `.builder` was looked
+up as an *instance* member of `Class`. Reaching a **static** needs a type wrapper.
+
+⚠️ **The probe measured the wrong thing.** It checked that the class loaded and reported
+success — which is exactly the "I failed / I found nothing" collision this project keeps
+paying for, committed by the code written to avoid it. **"Reached" now means the static
+is callable**, verified by looking for `builder` on the handle.
+
+⭐ Three routes are tried — `Packages.*`, `Java.type`, `Java.loadClass` — and **the winner
+is logged**. Which one works is a property of this KubeJS build, not something to reason
+out from here; the file was written reflectively for exactly that reason.
+
+⛔ **Unverified until a boot.** If none of the three work, every caller stays on the boss
+bar and the log says so in one line.
