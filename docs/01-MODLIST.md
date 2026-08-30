@@ -4,13 +4,13 @@
 > `tools/modlist.json` + the resolution cache. Do not hand-edit -
 > change `tools/modlist.json` and regenerate.
 
-**309 mods** for Minecraft 1.21.1 / neoforge, 1,152 MB total.
+**327 mods** for Minecraft 1.21.1 / neoforge, 1,193 MB total.
 
 | side | count | meaning |
 |---|---:|---|
-| both | 222 | installed on the server *and* every client |
+| both | 237 | installed on the server *and* every client |
 | client | 65 | client-only; the server never loads them |
-| server | 22 | server-only; players do not need them |
+| server | 25 | server-only; players do not need them |
 
 Every entry is pinned to an exact file and sha512 in `pack/mods/*.pw.toml`.
 The **Why** column is the reason that mod is in the pack, not a description
@@ -114,7 +114,7 @@ Pillar 3b: horror. Built from stalkers, atmosphere and escalating pressure rathe
 | [Grim & Bleak](https://modrinth.com/mod/grim-and-bleak) | `2.5.2` | both | minor | Ambience-led horror with its own dimension |
 | [Scorchful](https://modrinth.com/mod/scorchful) | `0.15.2+1.21.1-neoforge` *alpha* | both | minor | Heat as survival pressure |
 
-## world-structures (33)
+## world-structures (35)
 
 Worldgen and structures, chosen as ONE coherent set: BWG for biomes, the YUNG suite for vanilla structure overhauls, and a small number of dungeon and settlement mods. Deliberately not stacking competing terrain generators.
 
@@ -134,10 +134,12 @@ Worldgen and structures, chosen as ONE coherent set: BWG for biomes, the YUNG su
 | [Naturalist](https://modrinth.com/mod/naturalist) | `2.0.2+1.21.1-neoforge` | both | major | 47 animals with real behaviours - the world feels inhabited |
 | [Serene Seasons](https://modrinth.com/mod/serene-seasons) | `10.1.0.3` *beta* | both | major | Seasons with shifting colour and temperature. NOTE: this makes crops seasonal, so it is a real gameplay change on top of Farmer's Delight, not decoration |
 | [ShineaL's Prehistoric Expansion](https://modrinth.com/mod/shineals-prehistoric-expansion) | `1.5.2` | both | major | Mythology and prehistoric creatures reclaiming the overworld. Complements Jurassic Reborn rather than overlapping; no dependencies |
+| [Sparse Structures](https://modrinth.com/mod/sparsestructures) | `3.0` | server | major | Structure spacing. WORLDGEN - must land before the reset. |
 | [Spawn](https://modrinth.com/mod/spawn-mod) | `4.0.7` | both | major | Overworld wilderness overhaul - many animals, ambience, biome life. A surface with no hostiles needs to be FULL of something, or peaceful just reads as empty |
 | [Structory](https://modrinth.com/mod/structory) | `1.3.17` | both | major | Small atmospheric structures, very high quality |
 | [Tectonic](https://modrinth.com/mod/tectonic) | `3.0.26-neoforge-21.1` | both | major | Bigger mountains, deeper caves - Ethan's ask. Needs lithostitched, already present. WARNING: overrides minecraft:overworld noise settings, collides with mcserver_depth - see docs/16-THE-REFORGE.md D1 |
 | [Untitled Duck Mod](https://modrinth.com/mod/untitled-duck-mod) | `1.6.0+neoforge` | both | major | Ducks and geese - ambient overworld life |
+| [Village Spawn Point](https://modrinth.com/mod/village-spawn-point) | `1.21.1-4.6-fabric+forge+neo` | server | major | Spawn in a village. WORLDGEN - must land before the reset. |
 | [Weather Storms & Tornadoes](https://modrinth.com/mod/weather-storms-tornadoes) | `1.21.0-2.8.7` | both | major | Ethan's ruling 2026-08-02: the surface should be survived, not fought - 'deeper is fight. upper is survive against weather events'. Scorchful already covers deserts (sandstorms) and Frostiful the cold (freezing wind); nothing covered the temperate plains where people actually build. Adds tornadoes, severe storms and wind there. |
 | [When Dungeons Arise](https://modrinth.com/mod/when-dungeons-arise) | `2.1.68` | server | major | Large hand-built dungeons |
 | [YUNG's Better Dungeons](https://modrinth.com/mod/yungs-better-dungeons) | `1.21.1-NeoForge-5.1.4` | server | major | Vanilla dungeons made worth entering |
@@ -154,7 +156,7 @@ Worldgen and structures, chosen as ONE coherent set: BWG for biomes, the YUNG su
 | [SeasonHud](https://modrinth.com/mod/seasonhud) | `1.21.1-2.0.8` | both | minor | Shows the current season on the HUD - without it, seasonal farming is guesswork |
 | [When Dungeons Arise: Seven Seas](https://modrinth.com/mod/when-dungeons-arise-seven-seas) | `1.0.4` | server | minor | Naval dungeon set |
 
-## qol (50)
+## qol (53)
 
 Quality of life. At 400 mods this is not garnish - it is what stops the pack being unplayable. Recipe lookup, tooltips, sorting, waypoints and death recovery carry the whole experience.
 
@@ -179,11 +181,14 @@ Quality of life. At 400 mods this is not garnish - it is what stops the pack bei
 | [Explorer's Compass](https://modrinth.com/mod/explorers-compass) | `1.21.1-3.4.0-neoforge` | both | major | Find structures |
 | [Figura](https://modrinth.com/mod/figura) | `0.1.6+1.21.1` | client | major | Custom scripted player avatars. Client-side, so it costs the server nothing and each player controls their own presence |
 | [Nature's Compass](https://modrinth.com/mod/natures-compass) | `1.21.1-3.4.0-neoforge` | both | major | Find biomes without wandering for an hour |
+| [Panda's Falling Trees](https://modrinth.com/mod/pandas-falling-trees) | `0.14.0` *beta* | both | major | Tree felling. BETA build. |
 | [Presence Footsteps (NeoForge)](https://modrinth.com/mod/pf-neoforge) | `1.21.1-1.12.0-beta.1` *beta* | client | major | Presence Footsteps - footstep audio that varies by the surface you are actually standing on. With Sound Physics reverberating it, this is most of what 'the world sounds real' means |
+| [Ping It!](https://modrinth.com/mod/pingit) | `2.0.5` | both | major | Ping locations. |
 | [Sounds](https://modrinth.com/mod/sound) | `2.4.22+lts+1.21.1-neoforge` | client | major | Sounds - 170+ replacement and new sound effects. The SFX layer under the ambience |
 | [Storage Drawers](https://modrinth.com/mod/storagedrawers) | `1.21.1-13.11.4` | both | major | Bulk storage with contents visible on the block face - storage you can read by looking at it |
 | [Trade Cycling](https://modrinth.com/mod/trade-cycling) | `neoforge-1.21.1-1.0.18` *beta* | both | major | Refresh villager trades without breaking and replacing workstations - removes the single most tedious ritual in modded Minecraft |
 | [Trading Post](https://modrinth.com/mod/trading-post) | `v21.1.1-1.21.1-NeoForge` | both | major | Trade with every villager in a village at once. With a peaceful medieval surface, villages are now central to play and vanilla trading does not scale to four people |
+| [TrashSlot](https://modrinth.com/mod/trashslot) | `21.1.11+neoforge-1.21.1` | both | major | A bin slot. Ethan: "we have too much junk." |
 | [Waystones](https://modrinth.com/mod/waystones) | `21.1.41+neoforge-1.21.1` | both | major | Fast travel between discovered points. CUT 2026-08-03 for deleting extraction, RESTORED 2026-08-04 by Ethan. Consider gating use below y0 to keep the climb-out |
 | [3D Skin Layers](https://modrinth.com/mod/3dskinlayers) | `1.11.2` | client | minor | 3D skin layers |
 | [Advancement Plaques](https://modrinth.com/mod/advancement-plaques) | `1.6.8` | client | minor | Better advancement popups |
@@ -211,7 +216,7 @@ Quality of life. At 400 mods this is not garnish - it is what stops the pack bei
 | [Tips](https://modrinth.com/mod/tips) | `21.1.3` | both | minor | Loading-screen tips - a place to teach the pack's own systems |
 | [Traveler's Titles](https://modrinth.com/mod/travelers-titles) | `1.21.1-NeoForge-5.1.3` | client | minor | Biome and dimension names as a centre-screen title on entry - the actual answer to the information drought, and it reads every mod's biome names |
 
-## building-deco (7)
+## building-deco (8)
 
 Building blocks and furniture. Four players sharing a world need a deep palette or every base looks identical. Every Compat plus the Macaw suite produces an enormous variant space for very little runtime cost.
 
@@ -221,17 +226,19 @@ Building blocks and furniture. Four players sharing a world need a deep palette 
 | [Every Compat (Wood Good)](https://modrinth.com/mod/every-compat) | `1.21-2.11.48` | both | major | Generates the missing wood-type variants across every mod in the pack |
 | [FramedBlocks](https://modrinth.com/mod/framedblocks) | `10.6.1` | both | major | Framed blocks - any shape, any texture |
 | [Handcrafted](https://modrinth.com/mod/handcrafted) | `4.0.3` | both | major | Furniture with craft appeal |
+| [Supplementaries](https://modrinth.com/mod/supplementaries) | `1.21.1-3.9.5` | both | major | Decoration. Ethan: "Decorations." |
 | [Macaw's Furniture](https://modrinth.com/mod/macaws-furniture) | `3.4.1` | both | minor | Furniture |
 | [Macaw's Roofs](https://modrinth.com/mod/macaws-roofs) | `2.3.2` | both | minor | Roofs |
 | [Storage Delight](https://modrinth.com/mod/storage-delight) | `26.07.01a-1.21-neoforge` | both | minor | Kitchen and storage furniture |
 
-## food-farm (1)
+## food-farm (2)
 
 Farmer's Delight and its ecosystem. This exists because Create: Central Kitchen and Slice & Dice make food a real automation target rather than a chore.
 
 | Mod | Version | Side | Tier | Why |
 |---|---|---|---|---|
 | [Farmer's Delight](https://modrinth.com/mod/farmers-delight) | `1.21.1-1.3.2` | both | major | The cooking and farming base |
+| [Tough As Nails](https://modrinth.com/mod/tough-as-nails) | `10.1.0.13` *beta* | both | major | Thirst + temperature. BETA. Gives the pack food a reason to exist; its own balance chunk. |
 
 ## performance (21)
 
@@ -305,7 +312,7 @@ APIs and shared code. Listed explicitly rather than left to transitive resolutio
 | [Prickle](https://modrinth.com/mod/prickle) | `21.1.11` | both | minor | Config library |
 | [Searchables](https://modrinth.com/mod/searchables) | `1.0.2` | client | minor | Search-field library |
 
-## auto-deps (49)
+## auto-deps (54)
 
 Required dependencies discovered by resolving the pack's declared dependency graph (tools/resolve.py deps). These were being pulled in implicitly; listing them explicitly means a dependency appearing or disappearing is a reviewable diff rather than a surprise at boot. Fabric API and QSL were correctly excluded - multiloader jars declare them even though no NeoForge build needs them.
 
@@ -360,6 +367,11 @@ Required dependencies discovered by resolving the pack's declared dependency gra
 | [Velvet](https://modrinth.com/mod/velvet-api) | `0.5.1+NeoForge` | client | core | Required by scorchful |
 | [YetAnotherConfigLib (YACL)](https://modrinth.com/mod/yacl) | `3.8.2+1.21.1-neoforge` | both | core | Required by critters-and-companions, health-indicators |
 | [Zeta](https://modrinth.com/mod/zeta) | `1.1-40` | both | core | Required by quark |
+| [Collective](https://modrinth.com/mod/collective) | `1.21.1-8.39-fabric+forge+neo` | both | major | Required by village-spawn-point. |
+| [Kiwi 🥝](https://modrinth.com/mod/kiwi) | `15.8.7+neoforge` | both | major | Required by snow-real-magic and companion. |
+| [Modern Networking](https://modrinth.com/mod/modernnetworking) | `2.0.1+1.21.1-neoforge` | both | major | Required by talk-balloons. |
+| [PandaLib](https://modrinth.com/mod/pandalib) | `0.6.0` *beta* | both | major | Required by pandas-falling-trees. |
+| [TxniLib](https://modrinth.com/mod/txnilib) | `neoforge-1.21.1-1.0.24` | both | major | Required by immersive-messages-api. |
 
 ## classes (6)
 
@@ -374,12 +386,14 @@ Ethan chose CLASSES over races 2026-08-03 - the only 1.21.1 NeoForge race mod is
 | [Archers Expansion (More RPG Classes)](https://modrinth.com/mod/archers-expansion) | `1.5.1+1.21.1-neoforge` *beta* | both | major | Extends the archer with real content |
 | [Pufferfish's Skills](https://modrinth.com/mod/skills) | `0.18.3` *beta* | both | major | Puffish skill framework - the progression spine |
 
-## client-visual (7)
+## client-visual (9)
 
 Client-only visual polish. Ethan, 2026-08-16: 'im just making an attempt to make the game more cinematic'. EVERY entry is client_side=required / server_side=unsupported, verified against the live Modrinth API - so the server never needs the jar and nobody who declines is locked out, which is the failure the_obsessed caused on 2026-08-15. NOT here: better-clouds (the client ships renderClouds:false so it would render nothing) and every snow mod (all 16 on 1.21.1/neoforge need the server; not one is client-only).
 
 | Mod | Version | Side | Tier | Why |
 |---|---|---|---|---|
+| [Fog](https://modrinth.com/mod/fog) | `1.11.0+1.21-neoforge` | both | major | Configurable fog. Ethan: "Just makes the world beautiful." |
+| [Snow! Real Magic! ⛄](https://modrinth.com/mod/snow-real-magic) | `12.2.2+neoforge` | both | major | Real snow layers. Ethan: "Snow!" |
 | [ATMOSPHERICS](https://modrinth.com/mod/atmospherics) | `2.6.5.1` *beta* | client | minor | Per-biome fog, sky, cloud and star colour in real time. The cheapest 'cinematic' win on the list - it is colour grading, not geometry. |
 | [Clear Water](https://modrinth.com/mod/clear-water) | `3.0.0` | client | minor | Configurable underwater fog. Client-only, and it pairs with make_bubbles_pop which is already installed. |
 | [Falling Leaves (NeoForge/Forge)](https://modrinth.com/mod/fallingleavesforge) | `1.21.1-2.5.1` | client | minor | Leaf particles from tree canopies. Cheap, and it makes a still forest look alive. |
@@ -388,12 +402,16 @@ Client-only visual polish. Ethan, 2026-08-16: 'im just making an attempt to make
 | [Smooth Skies](https://modrinth.com/mod/smooth-skies) | `2.10.4` | client | minor | Fixes skybox colour banding at long render distances. Specifically relevant here: Distant Horizons IS in this pack, and banding is exactly what DH's extra distance exposes. |
 | [Visuality: Reforged](https://modrinth.com/mod/visuality-forge) | `3.0.0` | client | minor | Ambient particles on mobs and blocks. Reforged port, client-only. |
 
-## media-ambience (1)
+## media-ambience (5)
 
 Shared media and world ambience. Ethan, 2026-08-02: 'we also need more ambient sounds, the world is just quiet' and an earlier ask for watching video / importing images together. AmbientSounds is by the CreativeCore author, so its dependency is already in the pack.
 
 | Mod | Version | Side | Tier | Why |
 |---|---|---|---|---|
+| [Companion 🐕](https://modrinth.com/mod/companion) | `6.2.2+neoforge` | server | major | Ethan: "Gives the world a bit more life, personally." |
+| [Immersive Messages API](https://modrinth.com/mod/immersive-messages-api) | `neoforge-1.21.1-1.0.18` | both | major | In-world text API. Ethan wants ALL god dialogue moved onto it - its own chunk. |
+| [Talk Balloons](https://modrinth.com/mod/talk-balloons) | `1.6.1+1.21.1-neoforge` | both | major | Speech bubbles over speakers. |
+| [What Are They Up To (Watut)](https://modrinth.com/mod/what-are-they-up-to) | `1.21.0-1.2.7` | both | major | Shows what other players are doing. |
 | [Camerapture](https://modrinth.com/mod/camerapture) | `1.10.12+mc1.21.1-neoforge` | both | minor | Take, place and share photographs between players - the social half of a 4-player world |
 
 ## resourcepack (4)
@@ -413,6 +431,8 @@ Shared media and world ambience. Ethan, 2026-08-02: 'we also need more ambient s
 | [Complementary Shaders - Reimagined](https://modrinth.com/mod/complementary-reimagined) | `r5.8.1` | client | shaderpack | Chosen on performance: the best frames-per-quality of the four Ethan picked, and Euphoria Patches (already in the mod list) gives it Distant Horizons support, which most shaders lack. |
 
 ## veldora-2026-08-29 (28)
+
+Everything added during the 2026-08-29 buildout, backfilled into this file on the same day. THIS CATEGORY EXISTS BECAUSE modlist.json HAD DRIFTED 28 MODS BEHIND resolved.json. gen_pack.py reads resolved.json so nothing was at risk day to day - but `resolve.py resolve` regenerates resolved.json FROM THIS FILE, so running it would have silently deleted 28 installed mods, including terralith and nyctophobia. The two must agree.
 
 | Mod | Version | Side | Tier | Why |
 |---|---|---|---|---|

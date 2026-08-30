@@ -1888,6 +1888,195 @@
      "minor"
     ]
    ]
+  },
+  "veldora-2026-08-29": {
+   "desc": "Everything added during the 2026-08-29 buildout, backfilled into this file on the same day. THIS CATEGORY EXISTS BECAUSE modlist.json HAD DRIFTED 28 MODS BEHIND resolved.json. gen_pack.py reads resolved.json so nothing was at risk day to day - but `resolve.py resolve` regenerates resolved.json FROM THIS FILE, so running it would have silently deleted 28 installed mods, including terralith and nyctophobia. The two must agree.",
+   "mods": [
+    [
+     "accents",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "bountiful",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "capitals-a-monarchy-mod-for-mca-reborn",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "collective",
+     "Required by village-spawn-point."
+    ],
+    [
+     "companion",
+     "Ethan: \"Gives the world a bit more life, personally.\""
+    ],
+    [
+     "death-count",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "distant-friends",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "easy-npc",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "easy-npc-config-ui",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "easy-npc-core",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "fog",
+     "Configurable fog. Ethan: \"Just makes the world beautiful.\""
+    ],
+    [
+     "fragmentum",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "immersive-messages-api",
+     "In-world text API. Ethan wants ALL god dialogue moved onto it - its own chunk."
+    ],
+    [
+     "immersive-snow",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. | client_side forced to optional 2026-08-29: Modrinth marks it client=unsupported but it registers a client-bound network channel the server REQUIRES, so packwiz skipping it client-side made the server refuse the connection."
+    ],
+    [
+     "inventory-pets",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "irons-lib",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "irons-simple-blood",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "irons-spells-n-spellbooks",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "kambrik",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "kiwi",
+     "Required by snow-real-magic and companion."
+    ],
+    [
+     "loot-journal",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "maestro-music",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "minecraft-comes-alive-reborn",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "modernnetworking",
+     "Required by talk-balloons."
+    ],
+    [
+     "nyctophobia",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "obscure-tooltips",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "pandalib",
+     "Required by pandas-falling-trees."
+    ],
+    [
+     "pandas-falling-trees",
+     "Tree felling. BETA build."
+    ],
+    [
+     "pingit",
+     "Ping locations."
+    ],
+    [
+     "put-a-plug-in-it-",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "realm-rpg-treasure-balloons",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. | client_side forced to optional 2026-08-29: Modrinth marks it client=unsupported but it registers a client-bound network channel the server REQUIRES, so packwiz skipping it client-side made the server refuse the connection."
+    ],
+    [
+     "reliquified-artifacts",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "seasonal-decorations",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "simple-hats",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "snow-real-magic",
+     "Real snow layers. Ethan: \"Snow!\""
+    ],
+    [
+     "sparsestructures",
+     "Structure spacing. WORLDGEN - must land before the reset."
+    ],
+    [
+     "supplementaries",
+     "Decoration. Ethan: \"Decorations.\""
+    ],
+    [
+     "talk-balloons",
+     "Speech bubbles over speakers."
+    ],
+    [
+     "terralith",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "the-day-of-the-beast",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "tough-as-nails",
+     "Thirst + temperature. BETA. Gives the pack food a reason to exist; its own balance chunk."
+    ],
+    [
+     "trashslot",
+     "A bin slot. Ethan: \"we have too much junk.\""
+    ],
+    [
+     "txnilib",
+     "Required by immersive-messages-api."
+    ],
+    [
+     "tyzs-skills",
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+    ],
+    [
+     "village-spawn-point",
+     "Spawn in a village. WORLDGEN - must land before the reset."
+    ],
+    [
+     "what-are-they-up-to",
+     "Shows what other players are doing."
+    ]
+   ]
   }
  },
  "cut_for_budget": {

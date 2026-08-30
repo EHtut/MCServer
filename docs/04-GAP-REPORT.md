@@ -7,8 +7,8 @@
 
 ## Summary
 
-- **309 / 450** mod slots used
-- **276** stable releases, **33** beta/alpha
+- **327 / 450** mod slots used
+- **291** stable releases, **36** beta/alpha
 - **3** entries carry a known hazard (see below)
 
 ---
@@ -100,6 +100,8 @@ They are the first place to look when something breaks.
 | `more-rpg-library` | `2.6.3+1.21.1-neoforge` | beta |
 | `moreculling` | `1.0.8` | beta |
 | `owo-lib` | `0.12.15.5-beta.1+1.21` | beta |
+| `pandalib` | `0.6.0` | beta |
+| `pandas-falling-trees` | `0.14.0` | beta |
 | `particle-rain` | `v4-beta.10+1.21.1-neoforge` | beta |
 | `pf-neoforge` | `1.21.1-1.12.0-beta.1` | beta |
 | `playeranimator` | `2.0.4+1.21.1-forge` | beta |
@@ -109,6 +111,7 @@ They are the first place to look when something breaks.
 | `sound-physics-remastered` | `neoforge-1.21.1-1.4.10` | beta |
 | `sparkweave` | `0.510.0+NeoForge` | beta |
 | `terrablender` | `4.1.0.8` | beta |
+| `tough-as-nails` | `10.1.0.13` | beta |
 | `trade-cycling` | `neoforge-1.21.1-1.0.18` | beta |
 | `tras-fresh-player` | `3.1` | beta |
 
