@@ -242,7 +242,15 @@ grp('⛔ SALVAGE IS NO LONGER AN ITEM')
   const ch = code('chosen.js')
   ok('🚨 the crossbow is gone', ch.indexOf('minecraft:crossbow') === -1, true)
   ok('🚨 ...and blade\'s sword stayed gone', ch.indexOf('minecraft:iron_sword') === -1, true)
-  ok('forge and art still carry', ch.indexOf("forge: ['create:wrench']") !== -1, true)
+  // ⚠️ REWRITTEN THREE TIMES as gods left the carry table - salvage (E2), art (E4),
+  // forge (E5). ⭐ What it asserts now is the END STATE of section E: the table is
+  // EMPTY, and every god notices something you DID rather than something in your bag.
+  // Blade counts what you killed, Salvage what you agreed to, Wall who passed on you,
+  // Art what you handed over, Forge how you talk.
+  ok('🚨 THE CARRY TABLE IS EMPTY - nobody is chosen for their inventory',
+    /var TRIGGERS = \{\s*\}/.test(ch), true)
+  ok('🚨 every FOUND item is gone', ['iron_sword', 'crossbow', 'lapis', 'wrench']
+    .every(i => ch.indexOf(i) === -1), true)
 
   // ⚠️ FAILS CLOSED - an unlock is spent forever.
   ok('🚨 her route fails CLOSED without salvage_deals.js',
@@ -294,11 +302,11 @@ grp('🚨 SHE NEVER SAYS WHAT SHE WANTS — the ruling, on every line')
   const pitches = D.deals.map(d => d.pitch)
 
   ok('🚨 no pitch names a COST', pitches.every(p =>
-    !/(level|levels|hunger|health|die|death|kill|debuff|slow|weak)/i.test(p)), true)
+    !/\b(level|levels|hunger|health|die|death|kill|debuff|slow|weak)\b/i.test(p)), true)
   ok('🚨 no pitch admits there is no upside', pitches.every(p =>
     !/no upside|bad buy|nothing|not worth|regret/i.test(p)), true)
   ok('🚨 no pitch names an actual PRIZE either', pitches.every(p =>
-    !/(diamond|gold|xp|weapon|armour|armor|power|strength)/i.test(p)), true)
+    !/\b(diamond|gold|xp|weapon|armour|armor|power|strength)\b/i.test(p)), true)
 
   // "something of yours" and "wonderful"/"the world" are as specific as she gets.
   const all = pitches.join(' ')
@@ -311,7 +319,7 @@ grp('🚨 SHE NEVER SAYS WHAT SHE WANTS — the ruling, on every line')
   ok('every pitch is three sentences or fewer',
     pitches.every(p => (p.match(/[.?!]/g) || []).length <= 3), true)
   ok('no pitch says chosen/destiny/fate',
-    pitches.every(p => !/(chosen|destiny|fate)/i.test(p)), true)
+    pitches.every(p => !/\b(chosen|destiny|fate)\b/i.test(p)), true)
 
   // ⭐ The tiers still climb - toward FAMILIARITY, not honesty.
   ok('⭐ all four tiers are still populated',

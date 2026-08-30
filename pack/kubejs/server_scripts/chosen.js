@@ -105,6 +105,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   var bladeWarned = false
   var dealsWarned = false
+  var forgeWarned = false
 
   // She has been paid. art_deal.js owns the stamp; this only reads it.
   function artTook(p) {
@@ -127,6 +128,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         if (VELDORA.slain) return 'slay ' + VELDORA.slain.count(p) + '/' + VELDORA.slain.threshold
       } catch (e) { }
       return 'slay - UNAVAILABLE, slain.js is missing'
+    }
+    if (k === 'forge') {
+      try {
+        if (VELDORA.forgetalk) {
+          return 'charm her at a bench after ' + VELDORA.forgetalk.nightsNeeded + ' nights'
+        }
+      } catch (e) { }
+      return 'her conversation - UNAVAILABLE, forge_talk.js is missing'
     }
     if (k === 'art') {
       try {
@@ -187,8 +196,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   //
   // ⭐ FORGE IS THE LAST CARRY, and correctly so: a Create wrench is a thing you MADE,
   // which is the only item in the pack that means anything about you.
+  // ⛔ AND NOW NOBODY CARRIES ANYTHING (E5). Forge was the last one, and hers was the
+  // most defensible - a Create wrench is a thing you MADE. `docs/67` gives her a real
+  // condition instead: *"At a crafting bench after the 6th night, survive her
+  // conversation - you can charm her. Nothing else."*
+  //
+  // ⭐ THE CARRY TABLE IS NOW EMPTY, AND THAT IS THE POINT OF SECTION E. Every god used
+  // to notice you for something in your bag. Now Blade counts what you have killed,
+  // Salvage counts what you have agreed to, Wall counts who has passed on you, Art
+  // counts what you were willing to hand over, and Forge listens to you talk.
+  //
+  // ⚠️ KEPT, NOT DELETED. carries() and howTo() still read it, and the next god built
+  // may want an item. An empty table is a design statement; a missing one is a rewrite.
   var TRIGGERS = {
-    forge: ['create:wrench'],
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -515,6 +535,26 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (!carries(p, TRIGGERS[key])) continue
       if (unlock(p, key)) newly = newly || key
     }
+    // ⭐ E5 - SHE ASKED, AND YOU CHARMED HER. Same shape as the others: its own
+    // never-reset key, and it FAILS CLOSED because an unlock is spent forever.
+    if (!isUnlocked(p, 'forge')) {
+      var charmed = false
+      try {
+        if (VELDORA.forgetalk && typeof VELDORA.forgetalk.charmed === 'function') {
+          charmed = VELDORA.forgetalk.charmed(p) === true
+        } else if (!forgeWarned) {
+          forgeWarned = true
+          console.warn(TAG + 'forge_talk.js is MISSING - Forge can never be unlocked. ' +
+            'This is a FAILURE, not a player who has not charmed her.')
+        }
+      } catch (e) { charmed = false }
+      if (charmed && unlock(p, 'forge')) {
+        newly = newly || 'forge'
+        console.info(TAG + p.username + ' unlocked forge - she asked five times and ' +
+          'liked every answer.')
+      }
+    }
+
     // ⭐ E1 - BLADE NOTICES THE PROVEN. 500 mobs, lifetime, and the tally is
     // slain.js's own key rather than his trust counter - which resets.
     //
@@ -736,18 +776,26 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // ⚠️ THIS BANNER LISTED `TRIGGERS` AND CALLED IT THE ROSTER, then said
     // "carrying it UNLOCKS the path forever" - false for two of five gods as of E1
     // and E2. It now names all three kinds of condition, and reads them from ALL.
-    var t = []
-    for (var k = 0; k < ALL.length; k++) {
-      var g = ALL[k]
-      t.push(g + ':' + (TRIGGERS[g] ? TRIGGERS[g][0].split(':')[1] : 'no item'))
-    }
-    console.info(TAG + 'YOU ARE CHOSEN - ' + t.join(', ') + '.')
-    console.info(TAG + 'THREE KINDS OF CONDITION: CARRY (forge, art) - BLADE takes ' +
-      (VELDORA.slain ? VELDORA.slain.threshold : '?') + ' slain, lifetime, never reset. ' +
-      'SALVAGE takes ' + (VELDORA.deals ? VELDORA.deals.threshold : '?') + ' bad deals ' +
-      'accepted. WALL has TWO routes and no item: a CHAMPION kills you while you walk ' +
-      'no path (she offers ON YOUR RESPAWN, ' + RESPAWN_DELAY + 't later), OR you ' +
-      'drift ' + DRIFT_DAYS + ' days of PLAYED time with nobody.')
+    // ⚠️ THIS BANNER HAS NOW LIED THREE TIMES as section E moved gods off items. It
+    // said "carrying it UNLOCKS the path forever" while two gods no longer carried,
+    // then "THREE KINDS OF CONDITION: CARRY (forge, art)" after BOTH of those left the
+    // table too. ⭐ It is written off the live modules now rather than off a list, so
+    // it cannot describe a world that no longer exists.
+    var kinds = []
+    kinds.push('BLADE ' + (VELDORA.slain ? VELDORA.slain.threshold + ' slain, lifetime' : 'slain (slain.js MISSING)'))
+    kinds.push('SALVAGE ' + (VELDORA.deals ? VELDORA.deals.threshold + ' bad deals accepted' : 'deals (salvage_deals.js MISSING)'))
+    kinds.push('WALL killed by a champion while pathless, OR ' +
+      DRIFT_DAYS + ' days of PLAYED time with nobody')
+    kinds.push('ART ' + (VELDORA.artdeal ? VELDORA.artdeal.minLevels + '+ levels handed over in the deep' : 'her deal (art_deal.js MISSING)'))
+    kinds.push('FORGE ' + (VELDORA.forgetalk ? 'charmed at a bench after ' + VELDORA.forgetalk.nightsNeeded + ' nights' : 'her conversation (forge_talk.js MISSING)'))
+
+    var carries = []
+    for (var k = 0; k < ALL.length; k++) if (TRIGGERS[ALL[k]]) carries.push(ALL[k])
+    console.info(TAG + 'YOU ARE CHOSEN. ' +
+      (carries.length ? 'CARRY: ' + carries.join(', ') + '. '
+        : '⭐ NOBODY IS CHOSEN FOR THEIR INVENTORY - the carry table is empty. '))
+    console.info(TAG + kinds.join(' · ') + '.')
+
     var shut = []
     for (var ci = 0; ci < ALL.length; ci++) if (isClosed(ALL[ci])) shut.push(ALL[ci])
     if (shut.length) {

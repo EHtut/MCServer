@@ -53,7 +53,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     wall: '§5§l',       // dark purple
     salvage: '§6§l',    // gold
     forge: '§2§l',      // dark green - the Goat, and everything he builds
-    art: '§d§l',        // light purple - the Dreamwalker, and not the Spider's
+    art: '§1§l',        // dark blue. Ruled 2026-08-29 - was §d, which made her the
+                        // only god who spoke in two colours. See art_voice.js.
   }
 
   var NARRATE = '§7§o'

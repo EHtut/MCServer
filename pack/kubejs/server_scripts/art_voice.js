@@ -45,7 +45,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 ;(function () {
   var TAG = '[art] '
   var GOD = 'art'
-  var COLOUR = '§b§l'          // pale blue. The ice witch, and nothing warm.
+  // ⭐ DARK BLUE. Ethan, 2026-08-29, ruling the split below.
+  //
+  // 🔴 SHE HAD TWO COLOURS AND SPOKE IN BOTH. This file said §b pale blue ("the ice
+  // witch"); arrival.js said §d light purple ("the Dreamwalker, and not the Spider's").
+  // Both registered into voice.js, so she came out PINK in the Arrival scene and BLUE
+  // everywhere else - exactly the split voice.js's setColour exists to prevent, and its
+  // header quotes Ethan on it: "we need to make sure all her dialogue stays in her
+  // color." Found because he asked who the pink dialogue was.
+  //
+  // ⚠️ §1 is genuinely dark against the chat background - dimmer than any other god.
+  // That is the ruling and it suits her, but it is worth knowing it was chosen, not
+  // inherited.
+  var COLOUR = '§1§l'          // dark blue. Ruled 2026-08-29.
 
   // Trust is the COUNTER: new biomes seen. ⚠️ A FIRST GUESS - replace with a measured
   // curve once there is play data rather than arguing about the numbers.

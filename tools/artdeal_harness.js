@@ -224,8 +224,15 @@ grp('⛔ ART IS NO LONGER LAPIS')
 {
   const ch = code('chosen.js')
   ok('🚨 lapis is gone', ch.indexOf('minecraft:lapis_lazuli') === -1, true)
-  ok('⭐ forge is the last carry, and it is a thing you MADE',
-    ch.indexOf("forge: ['create:wrench']") !== -1, true)
+  // ⚠️ REWRITTEN THREE TIMES as gods left the carry table - salvage (E2), art (E4),
+  // forge (E5). ⭐ What it asserts now is the END STATE of section E: the table is
+  // EMPTY, and every god notices something you DID rather than something in your bag.
+  // Blade counts what you killed, Salvage what you agreed to, Wall who passed on you,
+  // Art what you handed over, Forge how you talk.
+  ok('🚨 THE CARRY TABLE IS EMPTY - nobody is chosen for their inventory',
+    /var TRIGGERS = \{\s*\}/.test(ch), true)
+  ok('🚨 every FOUND item is gone', ['iron_sword', 'crossbow', 'lapis', 'wrench']
+    .every(i => ch.indexOf(i) === -1), true)
   ok('the sword, crossbow and lapis are all gone',
     ['iron_sword', 'crossbow', 'lapis'].every(s => ch.indexOf(s) === -1), true)
 

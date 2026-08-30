@@ -466,3 +466,65 @@ comment described a state already lifted.
 
 **37 assertions, 3 negative controls all red. 755 passed / 0 failed across 20 harnesses.
 Live 60/60, 0 errors.**
+
+---
+
+# ✅ E5 BUILT — 2026-08-29. **SECTION E IS COMPLETE.**
+
+## ⛔ Nobody is chosen for their inventory any more
+
+| god | condition |
+|---|---|
+| **Blade** | 500 slain, lifetime, never reset |
+| **Salvage** | 5 bad deals accepted |
+| **Wall** | killed by a champion while pathless, **or** 30 days of played time with nobody |
+| **Art** | 50+ levels handed over in the deep, to something that explains nothing |
+| **Forge** | charmed at a bench after 6 nights |
+
+⭐ **The carry table is empty**, and that is the point of the whole section. Every god
+used to notice you for something in your bag — an iron sword, a crossbow, a lump of
+lapis, a wrench. Now **Blade counts what you killed, Salvage what you agreed to, Wall who
+passed on you, Art what you were willing to hand over, and Forge how you talk.**
+
+⚠️ **The table is kept, not deleted.** `carries()` and `howTo()` still read it and the
+next god built may want an item. An empty table is a design statement; a missing one is a
+rewrite.
+
+## ⭐ She does not cutscene you — a constraint, not a note
+
+`docs/67` is explicit, so this deliberately does **not** use `ritual.js`: that primitive
+blinds the player and holds the world still, which is exactly the wrong texture for the
+one god who talks to you while you are busy. It borrows only ritual's *input* idea —
+clickable chat options. The world keeps running throughout.
+
+⚠️ `clickRunCommand` only. `ritual.js` records that `.click(String)` throws a Throwable
+which escapes the JS catch and takes the whole command with it.
+
+## 🔑 The options are shuffled every prompt
+
+Otherwise the answer is a **position**, and *"always click the first one"* beats a tree
+whose whole value is that you have to read it.
+
+## ⭐ The timer resets on every prompt
+
+Five minutes **per prompt** — a 25-minute ceiling, not a 5-minute one. ⚠️ The harness
+asserts the reset specifically, because sharing one budget across five prompts turns the
+forgiving reading `docs/67` ruled for into the punishing one, and nothing would show it.
+
+## 🔴 And the banner lied for the third time
+
+It said *"carrying it UNLOCKS the path forever"* while two gods no longer carried, then
+*"THREE KINDS OF CONDITION: CARRY (forge, art)"* after **both of those left the table
+too**. ⭐ It is now written off the **live modules** — it reads each threshold from the
+module that owns it — so it cannot describe a world that no longer exists, and it names
+any missing module instead of quietly omitting a god.
+
+## ⭐ Art is dark blue
+
+Ethan, 2026-08-29. `§1`, replacing the split where `arrival.js` had her at `§d` light
+purple and `art_voice.js` at `§b` pale blue — she was the **only god who spoke in two
+colours**, pink in the Arrival scene and blue everywhere else. ⚠️ `§1` is genuinely dark
+against chat; that is the ruling and it suits her, but it was chosen, not inherited.
+
+**40 assertions, 3 negative controls all red. 820 passed / 0 failed across 21 harnesses.
+Live 62/62, 0 errors.**
