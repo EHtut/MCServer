@@ -36,20 +36,26 @@ function ok(label, got, want) {
 function sandbox() {
   const cmds = []
   const delays = []
+  const loadedHooks = []
   let tick = 0
   const server = {
     get tickCount() { return tick },
     advance(sec) { tick += Math.round(sec * 20) },
     runCommandSilent: c => { cmds.push(String(c)); return undefined },
-    // Sentences are scheduled; run them immediately so a whole line is captured, but
-    // KEEP the delay - the pacing is part of a god's character, not an implementation
-    // detail, and Forge's whole brief is that hers is faster.
-    scheduleInTicks: (t, fn) => { delays.push(t); fn() },
+    // 🔴 RECORD, DO NOT RUN. This used to execute the callback immediately, which was
+    // fine while the only scheduled thing was a sentence - and became an infinite
+    // recursion the moment tidewhispers.js arrived, because its tick loop reschedules
+    // itself. 2118 nested calls before it gave up, reported as "2118 things were
+    // scheduled" rather than as the runaway it was.
+    //
+    // ⚠️ Nothing in the delivery path schedules any more: the mod's own queue sequences
+    // sentences. A test that needs a scheduled callback should run it deliberately.
+    scheduleInTicks: (t, fn) => { delays.push(t); return 0 },
   }
   const stub = {
     Platform: { isLoaded: () => true },
     Utils: { server },
-    ServerEvents: { loaded() { }, commandRegistry() { } },
+    ServerEvents: { loaded(f) { loadedHooks.push(f) }, commandRegistry() { } },
     PlayerEvents: { loggedOut() { }, loggedIn() { }, tick() { } },
     Text: { of: s => s },
     console: { info() { }, log() { }, warn() { } },
@@ -58,12 +64,17 @@ function sandbox() {
   let V = {}
   // ⚠️ screen.js must load too - it is the referee every send now passes through, and a
   // sandbox without it tests a path that no longer exists in production.
-  for (const f of ['garble.js', 'immersive.js', 'screen.js', 'voice.js']) {
+  for (const f of ['garble.js', 'immersive.js', 'screen.js', 'voice.js',
+                   'tidewhispers.js']) {
     const src = fs.readFileSync(path.join(SS, f), 'utf8')
     V = new Function(...keys, 'VELDORA_IN',
       'var VELDORA=VELDORA_IN;' + src.replace(/^var VELDORA = .*$/m, '') + '\n;return VELDORA;'
     )(...keys.map(k => stub[k]), V)
   }
+  // ⚠️ Run the loaded hooks so pools registered at boot exist. Without this the
+  // whisper bands have no lines and every test measures an empty system.
+  server.players = []
+  loadedHooks.forEach(f => { try { f({ server }) } catch (e) { } })
   const player = { username: 'R', server, uuid: 'u-' + Math.random() }
   // ⚠️ THE REFEREE IS LIVE IN THIS SANDBOX, because it is live in production - a
   // sandbox without it would test a path that no longer exists. But a test measuring
@@ -75,6 +86,7 @@ function sandbox() {
   const say = (god, text, tag, opts) => {
     try { V.screen.clear(player) } catch (e) { }
     cmds.length = 0
+    delays.length = 0
     return V.voice.speak(player, god, text, tag, opts)
   }
   return { V, cmds, delays, server, player, say }
@@ -394,6 +406,86 @@ grp('* THE SCREEN REFEREE - one message at a time, and a queue nobody can jump')
   ok('a player carries a backlog', s4.V.screen.backlog(p4) > 0, true)
   s4.V.screen.clear(p4)
   ok('...which is dropped on logout', s4.V.screen.backlog(p4), 0)
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+grp('* THE TIDE WHISPERS - the dead get louder, measured over samples')
+{
+  const s = sandbox()
+  const W = s.V.tideWhispers
+  const bands = W.bands
+
+  // ⭐ MONOTONIC, not "roughly rising". Every dial must move the same way at every step
+  // or the ramp has a dip in it that nobody would ever notice in play.
+  let mono = true
+  for (let i = 1; i < bands.length; i++) {
+    if (!(bands[i][1] > bands[i - 1][1])) mono = false   // chance
+    if (!(bands[i][2] > bands[i - 1][2])) mono = false   // size
+    if (!(bands[i][3] >= bands[i - 1][3])) mono = false  // brokenness
+    if (!(bands[i][4] > bands[i - 1][4])) mono = false   // reach
+  }
+  ok('every dial rises monotonically across the bands', mono, true)
+  ok('a wave number picks the right band', W.bandFor(0)[5], 'far')
+  ok('...and the last band catches everything above it', W.bandFor(99)[5], 'inside')
+
+  // 🔴 SAMPLED, NOT INSPECTED. Brokenness is a per-fragment coin flip, so ONE send from
+  // the worst band can easily come back clean - it did, on the first run. Wall's scatter
+  // taught this the same way: a small sample that looks wrong deserves a bigger sample
+  // before it deserves a fix.
+  const sample = (band, n) => {
+    let broken = 0, dist = 0, got = 0
+    const p = { username: 'S', server: s.server, uuid: 'u-samp' }
+    for (let i = 0; i < n; i++) {
+      s.V.screen.clear(p)
+      s.cmds.length = 0
+      W._speak(p, band)
+      if (!s.cmds.length) continue
+      got++
+      const t = tagOf(s.cmds[0])
+      if (/obfuscate:/.test(t)) broken++
+      const mx = t.match(/x:(-?[\d.]+)f/)
+      if (mx) dist += Math.abs(parseFloat(mx[1]))
+    }
+    return { broken: broken / (got || 1), dist: dist / (got || 1), got }
+  }
+
+  const far = sample(bands[0], 300)
+  const inside = sample(bands[3], 300)
+
+  ok('every roll produces a fragment', far.got, 300)
+  ok('🔴 the far band is barely broken', far.broken < 0.1, true)
+  ok('...and the inside band is mostly broken', inside.broken > 0.4, true)
+  ok('⭐ ...and lands CLOSER to the middle', inside.dist < far.dist, true)
+
+  // 🚨 The dead never outrank a god.
+  // 🔴 THIS MEASURED THE BACKLOG SIZE, which is not the guarantee. Promoting whispers to
+  // ANNOUNCE left it green, because a 1.4s send is small at any priority. The property
+  // that matters is REFUSAL: the dead must not speak while a god is.
+  const pw = { username: 'W', server: s.server, uuid: 'u-prio' }
+  s.V.screen.clear(pw)
+  s.V.voice.setStyle('blade', { anchor: 'TOP_CENTER', y: 40 })
+  s.V.voice.speak(pw, 'blade', 'I am speaking to you now.', 'mark_declare')
+  ok('a god has taken the screen', s.V.screen.backlog(pw) > 2, true)
+  s.cmds.length = 0
+  W._speak(pw, bands[3])
+  ok('🚨 the dead are REFUSED while a god is speaking', s.cmds.length, 0)
+
+  // ...and speak again once he has finished.
+  s.server.advance(60)
+  s.cmds.length = 0
+  W._speak(pw, bands[3])
+  ok('...and speak again once he is done', s.cmds.length > 0, true)
+
+  // Nothing happens outside a tide.
+  ok('a player not in a tide has no wave count', W._waves(s.player), null)
+
+  // 🖊️ The words are Ethan's. Every placeholder must be findable.
+  const src = fs.readFileSync(path.join(SS, 'tidewhispers.js'), 'utf8')
+  const lines = src.match(/'\[CLAUDE-DRAFT\][^']*'/g) || []
+  ok('🖊️ every fragment is marked as a placeholder', lines.length >= 8, true)
+  const pools = src.match(/^\s+'[^[][^']*',\s*$/gm) || []
+  ok('...and NONE are unmarked', pools.length, 0)
 }
 
 console.log('\n' + B + (fail ? R + fail + ' FAILED, ' : G) + pass + ' passed' + X)
