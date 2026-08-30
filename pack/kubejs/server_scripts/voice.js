@@ -252,7 +252,24 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // the alphabet, the rate is usable and this may flip. If it shows six letters, it is a
   // character a second and it may not. That command exists for exactly this question and
   // should have been read before this was ever set true.
-  var TYPEWRITER = false
+  var TYPEWRITER = true
+
+  // ⭐⭐ HOW FAST IT TYPES, AS ONE NUMBER — because it has never been measured precisely
+  // and this is the honest way to hold a value you are unsure of.
+  //
+  // Ethan, 2026-08-30, from the first instrument that could actually answer: 50 characters
+  // "takes a few seconds". That is roughly 15 a second, and it is an ESTIMATE from an
+  // eyeball reading with a queue backlog in the way — not a measurement.
+  //
+  // 🔑 EVERY DURATION IS DERIVED FROM THIS, so refining it is one edit rather than a
+  // sweep. If lines start finishing early, raise it; if they truncate, lower it.
+  //
+  // ⚠️ THREE NUMBERS FOR THIS RATE HAVE NOW BEEN WRONG - "a character a tick" (a
+  // misattributed quote), "a character a second" (inferred from a symptom), and the
+  // instrument meant to settle it sent three messages into a one-at-a-time queue so the
+  // control blocked both typed lines. Treat this one as provisional too, and prefer a
+  // reading over an argument.
+  var TYPE_CHARS_PER_SEC = 15
 
   // 🔴 NEGATIVE, AND THE SIGN IS THE WHOLE BUG. y grows DOWNWARD in GUI space, so from a
   // BOTTOM anchor a POSITIVE y pushes the line off the bottom edge of the screen. It
@@ -529,7 +546,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // ⚠️ `typing` is 0 while TYPEWRITER is off, and the term stays here on purpose: the
     // day it flips back, the duration has to account for it again or long lines truncate
     // exactly as they did before. Deleting it would remove the fix along with the symptom.
-    var typing = TYPEWRITER ? n : 0
+    // Typing time in TICKS, from the measured-ish rate. ⚠️ Never scaled by beatScale:
+    // a pace dial that shortens the typing half guarantees a line is cut off mid-word.
+    var typing = TYPEWRITER ? Math.round(n * 20 / TYPE_CHARS_PER_SEC) : 0
     var read = 30 + Math.min(90, Math.round(n * 0.9))
     var k = (st && typeof st.beatScale === 'number') ? st.beatScale : 1
     return typing + Math.max(15, Math.round(read * k))
@@ -1022,6 +1041,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // false for every line over 110 characters until 2026-08-30.
     beatFor: beatFor,
     CHAT_COPY: CHAT_COPY,
+    TYPE_CHARS_PER_SEC: TYPE_CHARS_PER_SEC,
     dodgeCrosshair: dodgeCrosshair,
     CROSSHAIR_BAND: CROSSHAIR_BAND,
     sized: sized,
@@ -1140,18 +1160,48 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // ⭐ THE MEASUREMENT. One character is revealed per `1.0 / speed`, and the
       // command hardcodes speed 1.0 - so this answers whether that unit is a TICK
       // (0.05s, effect is free) or a SECOND (effect is unusable from the command).
+      // 🔴🔴 REWRITTEN 2026-08-30, AND THE OLD VERSION COULD NEVER HAVE WORKED.
+      //
+      // It sent THREE messages at once - a control and two typed - and the mod shows ONE
+      // AT A TIME, FIFO (screen.js's entire premise, documented by me). So the 30-second
+      // CONTROL played first and blocked both typed lines behind it for half a minute.
+      // Ethan ran it and reported "didn't type anything", which is exactly what it does.
+      //
+      // 🚨 SO THIS INSTRUMENT NEVER MEASURED TYPING, and two different "measurements" of
+      // the typewriter speed were then built on it - first "a character costs a tick",
+      // later "a character per second". Neither was ever observed. An instrument that
+      // cannot produce the reading it claims to take is worse than no instrument, because
+      // its output gets quoted.
+      //
+      // ⭐ ONE MESSAGE. Nothing else in the queue, a long duration so it cannot expire
+      // mid-reveal, and a string whose progress can be read at a glance.
       .then(Commands.literal('type').executes(function (ctx) {
         var p = ctx.source.player
-        var line = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        VELDORA.im.show(p, 'CONTROL no typewriter - ' + line,
-          { anchor: 'TOP_CENTER', seconds: 30 })
-        VELDORA.im.show(p, 'TYPING 30s - ' + line,
-          { anchor: 'TOP_CENTER', y: 40, seconds: 30, typewriter: true })
-        VELDORA.im.show(p, 'TYPING 6s - ' + line,
-          { anchor: 'TOP_CENTER', y: 80, seconds: 6, typewriter: true })
-        p.tell(Text.of('§8Three lines, 26 letters each, at the TOP of the screen.'))
-        p.tell(Text.of('§8If TYPING 30s finishes the alphabet, a character is a TICK'))
-        p.tell(Text.of('§8and typing is usable. If it crawls a letter a second, it is not.'))
+        // 🔴 REFUSE TO MEASURE INTO A BACKLOG. Ethan: "there's like a backlog of text so
+        // i can't cycle to the latest test one. Might be wrong." He was right to doubt
+        // it - the mod plays one message at a time, so a queued message means the thing
+        // on screen is an OLDER one and any reading taken from it is of the wrong line.
+        // An instrument that will happily report a stale value is how the last three
+        // wrong numbers happened.
+        var owed = 0
+        try { owed = VELDORA.screen ? VELDORA.screen.backlog(p) : 0 } catch (e) { }
+        if (owed > 1) {
+          p.tell(Text.of('§c§lWAIT §7- §f' + owed.toFixed(1) + 's§7 of text is still queued.'))
+          p.tell(Text.of('§8Anything on screen now is an OLDER message. Re-run when clear.'))
+          return 1
+        }
+        // Numbered every ten so the count is readable WITHOUT counting letters.
+        var line = 'ABCDEFGHIJ1234567890abcdefghij1234567890KLMNOPQRST'
+        VELDORA.im.show(p, line, {
+          anchor: 'TOP_CENTER', y: 40, seconds: 60, typewriter: true, size: 1.4,
+        })
+        p.tell(Text.of('§8§m                                        '))
+        p.tell(Text.of('§750 characters, ONE message, 60s. Nothing else is queued.'))
+        p.tell(Text.of('§8· finishes almost instantly §7-> typing is fast, and usable'))
+        p.tell(Text.of('§8· takes a few seconds      §7-> usable, tune the durations'))
+        p.tell(Text.of('§8· still crawling at 30s    §7-> ~1 char/sec, and unusable'))
+        p.tell(Text.of('§8· never appears at all     §7-> the typewriter flag does nothing'))
+        p.tell(Text.of('§eTell me which of those four it was.'))
         return 1
       }))
       // ⭐ THE TWO-MOVEMENT CRASHOUT, on demand. It is otherwise only reachable by
