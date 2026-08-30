@@ -207,6 +207,58 @@ are three claimants on one screen. `announce.js` already solved exactly this for
 that never came*. Building any of the three before the referee means retrofitting it into
 all three.
 
+## C7 · ⭐ Serve the fonts from the server, so no player has to do anything
+
+> Ethan, 2026-08-30: *"most of the players are too stupid to figure that out and we need
+> to find a way to make it automatic on the new server."*
+
+Right, and the current route was never going to reach anyone but him. `build_client_assets.py`
+already named this in its own header and deferred it — *"better long-term (it can be
+REQUIRED), but it adds a hosting dependency to a font change."* That trade looked correct
+when the cost of getting it wrong was "a player sees plain text". **D-129 showed the real
+cost is a screen of boxes with nothing in any log.**
+
+### Why this route and not the current one
+
+| | today (KubeJS assets) | server resource pack |
+|---|---|---|
+| how a player gets it | reinstall the client pack | **downloaded on join** |
+| when it takes effect | next resource reload — F3+T or relaunch | **immediately; applying it IS a reload** |
+| a player who skips it | boxes, silently | `require-resource-pack=true` refuses the join |
+| updating it | rebuild + redistribute a 1.1 GB zip | replace one 802 KB file |
+
+🔑 **It fixes both halves at once.** Today's failure needed *two* things to go right —
+the files present, and a reload since. A server pack collapses that into one event the
+player cannot be in the middle of.
+
+### The five fields, all currently empty
+
+```
+resource-pack=            # the URL
+resource-pack-sha1=       # 🔴 the trap, see below
+resource-pack-id=         # a UUID, 1.20.3+
+resource-pack-prompt=     # what they are asked
+require-resource-pack=    # false -> true is the "automatic" part, and is Ethan's call
+```
+
+### 🔴 THE HASH IS THE SAME DEFECT AGAIN, WAITING
+
+If the pack changes and `resource-pack-sha1` does not, **clients keep serving the cached
+old pack and nothing errors.** Delivered, stale, silent — D-129 with a new coat on.
+
+⛔ **So the hash is not a step someone remembers.** `build_client_assets.py` must zip,
+hash and write the property as one operation, and `reset_preflight.py` must fail when the
+recorded hash does not match the file on disk. A build that can leave those disagreeing
+is the bug, not the person who forgot.
+
+### Open, and genuinely Ethan's
+
+* **Hosting.** A GitHub release asset is the cheapest stable URL and versions itself. ⚠️ It
+  puts a public dependency in the join path — if it 404s, `require=true` means nobody
+  gets in. Worth a fallback ruling before it is required.
+* **`require-resource-pack=true`?** It guarantees the fonts, and it kicks anyone who
+  declines. That is a player-experience decision, not a technical one.
+
 ## C6 · Make the extractor see all the dialogue — **blocks E7**
 
 `dialogue_doc.py` has `FILES = {blade: blade_voice.js, ...}` — one god, one file, and it
