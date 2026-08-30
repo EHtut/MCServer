@@ -85,6 +85,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var failed = 0
   var rcWarned = false
   var fadeWarned = false
+  var logged = 0
+  var LOG_FIRST = 40
 
   function probe() {
     if (available !== null) return available
@@ -270,6 +272,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // 🔑 What actually guards the grammar is the HARNESS, which builds the command
       // string and asserts its shape. That is the honest division: the harness catches
       // malformed commands before they ship, and this catches only throws.
+      // ⭐ LOG THE FIRST FEW COMMANDS VERBATIM. Three rounds were spent guessing which
+      // tag key stopped a line rendering, while the one fact that would have settled it
+      // - the exact string that reached the server - was never written down anywhere.
+      // Capped so a live tide cannot flood the log.
+      if (logged < LOG_FIRST) {
+        logged++
+        console.info(TAG + 'SENT #' + logged + ': ' + cmd)
+      }
       var rc = server.runCommandSilent(cmd)
 
       if (typeof rc === 'number') {
