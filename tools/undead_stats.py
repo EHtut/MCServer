@@ -80,10 +80,26 @@ def main():
         print('   rcon said: %s' % ping.strip()[:160])
         return 1
 
+    # ⭐ RESUMABLE. The server restarted twice during the first two runs, so a tool
+    # that starts from zero every time never finishes. Anything already measured is
+    # kept; only the gaps are asked for again.
     stats = {}
+    if os.path.exists(OUT):
+        try:
+            stats = json.load(io.open(OUT, encoding='utf-8'))
+        except Exception:
+            stats = {}
+    todo = [e for e in ids if stats.get(e, {}).get('hp') is None]
+    if not todo:
+        print('OK  all %d already measured - nothing to do.' % len(ids))
+        todo = []
+    else:
+        print('resuming: %d already measured, %d to go'
+              % (len(ids) - len(todo), len(todo)))
+
     BATCH = 4
-    for start in range(0, len(ids), BATCH):
-        chunk = ids[start:start + BATCH]
+    for start in range(0, len(todo), BATCH):
+        chunk = todo[start:start + BATCH]
         cmds = []
         for n, eid in enumerate(chunk):
             tag = 'vst%d' % (start + n)
@@ -115,6 +131,20 @@ def main():
             if m2:
                 byname.setdefault('summon:' + m2.group(1), []).append(b)
 
+        # 🔴 THE SERVER CAN GO AWAY MID-RUN, AND IT DID. A restart landed partway
+        # through the first full pass and 56 of 89 came back "summon failed" - which is
+        # NOT what happened. They were never asked. The preflight only checked once, at
+        # the start, so a run that began healthy silently produced a half-poisoned table.
+        #
+        # ⚠️ "unreachable" is now recorded as UNREACHABLE, distinct from a real
+        # failure, and those ids are retried rather than written off.
+        if 'cannot reach RCON' in out or not out.strip():
+            for n, eid in enumerate(chunk):
+                stats[eid] = {'id': eid, 'summoned': None, 'unreachable': True,
+                              'hands': []}
+            sys.stderr.write('  !! server unreachable at %d - marked for retry\n' % start)
+            continue
+
         for n, eid in enumerate(chunk):
             tag = 'vst%d' % (start + n)
             rec = {'id': eid}
@@ -134,7 +164,7 @@ def main():
 
     # 🚨 Final sweep. Anything left is a leak and gets REPORTED, not silently killed.
     left = []
-    for i in range(len(ids)):
+    for i in range(len(todo) + BATCH):
         left.append('kill @e[tag=vst%d]' % i)
     swept = rcon(left)
     killed = len(re.findall(r'^Killed ', swept, flags=re.M))

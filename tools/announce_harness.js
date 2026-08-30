@@ -278,5 +278,52 @@ grp('🔴 THE REAL SHAKE — and the fallback that must survive it')
     an.indexOf('shake: (prio >= P_ANNOUNCE)') !== -1, true)
 }
 
+grp('⭐ THE GODS ON SCREEN — and chat keeps the record')
+{
+  const vo = code('voice.js')
+
+  // 🚨 ADDITIVE, NEVER A MOVE. announce.js's header states the reason and it has not
+  // changed: a god says load-bearing things and an overlay is gone in five seconds.
+  // 🔴 THIS ASSERTION WAS WORTHLESS AND A NEGATIVE CONTROL PROVED IT. It matched
+  // `player.tell(Text.of(paint(...)))` ANYWHERE in the file - and `sayAbout()` has the
+  // identical line - so deleting the tell from `say()` entirely left it GREEN. Measure
+  // at the point of use, not at the first place the string appears.
+  //
+  // ⚠️ Both callers must keep it, so both are counted.
+  ok('🚨 BOTH say() and sayAbout() still write to chat',
+    (vo.match(/player\.tell\(Text\.of\(paint\(player, god, s\)\)\)/g) || []).length, 2)
+
+  // ...and specifically inside say(), which is the one the overlay was added to.
+  const sayStart = vo.indexOf('function say(player, god, tag)')
+  const sayEnd = vo.indexOf('function sayAbout(', sayStart)
+  const sayBody = sayStart !== -1 ? vo.slice(sayStart, sayEnd) : ''
+  ok('🚨 say() itself still tells the player',
+    sayBody.indexOf('player.tell(') !== -1, true)
+  ok('⭐ ...and the overlay is sent as well', vo.indexOf('overlay(player, god, s)') !== -1, true)
+
+  // ⚠️ A failed overlay must cost nothing - say() returns true either way.
+  const i = vo.indexOf('overlay(player, god, s)')
+  const j = vo.indexOf('return true', i)
+  ok('⚠️ a failed overlay does not fail the line', i !== -1 && j !== -1 && j > i, true)
+  ok('...and overlay() returns false rather than throwing',
+    vo.indexOf('function overlay(player, god, s)') !== -1 &&
+    vo.indexOf('} catch (e) { return false }') !== -1, true)
+
+  // 🚨 TWO SYSTEMS, TWO ANCHORS. announce.js owns TOP_CENTER for things about to
+  // happen; a god talking is not that, and sharing an anchor would put a tide warning
+  // and a conversation on the same pixels.
+  ok('🚨 gods speak at BOTTOM_CENTER', vo.indexOf("anchor: 'BOTTOM_CENTER'") !== -1, true)
+  const an = code('announce.js')
+  ok('🚨 ...and announcements keep TOP_CENTER', an.indexOf("anchor: 'TOP_CENTER'") !== -1, true)
+
+  // ⭐ The mod obfuscates properly, so the overlay uses ObfuscateMode rather than the
+  // hand-woven §k - but the CHAT copy still uses garble.js.
+  ok('⭐ a garbled speaker uses the built-in obfuscation on screen',
+    vo.indexOf("obfuscate: GARBLED[god] ? 'RANDOM' : null") !== -1, true)
+  ok('⚠️ ...and the overlay strips the hand-woven codes first',
+    vo.indexOf('VELDORA.garble.strip(s)') !== -1, true)
+  ok('🚨 chat still gets the hand-woven version', vo.indexOf('function paint(') !== -1, true)
+}
+
 console.log('\n' + B + (fail ? R + fail + ' FAILED, ' : G) + pass + ' passed' + X)
 process.exit(fail ? 1 : 0)

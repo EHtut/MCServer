@@ -183,11 +183,44 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return c + s
   }
 
+  // ════════════════════════════════════════════════════════════════════════
+  // ⭐ THE GODS ON SCREEN. Ethan, 2026-08-29: *"we could use this and documentation to
+  // transfer all god dialogue making it more immersive instead of just creating
+  // workarounds."*
+  //
+  // 🚨 AND CHAT KEEPS THE RECORD. This is an ADDITION, never a move. announce.js's
+  // own header states the reason and it has not changed: *"a god says load-bearing
+  // things and a bar is gone in four seconds - a line missed mid-fight would be missed
+  // forever. Chat is the only surface in the game that keeps a record."*
+  //
+  // ⭐ So the overlay carries PRESENCE - typewriter, her colour, obfuscated if she is
+  // reaching somebody with no god - and the chat line carries the WORDS. Neither is a
+  // workaround for the other; they are doing different jobs.
+  //
+  // ⚠️ BOTTOM_CENTER, not TOP. announce.js owns the top of the screen for things that
+  // are ABOUT to happen, and a god talking is not that. Two systems on one anchor would
+  // fight over the same pixels the first time a tide landed mid-conversation.
+  function overlay(player, god, s) {
+    try {
+      if (!VELDORA.im || typeof VELDORA.im.show !== 'function') return false
+      // ⭐ The mod obfuscates properly, so a garbled speaker does not need §k woven in
+      // by hand for THIS surface. garble.js still owns the chat copy.
+      return VELDORA.im.show(player, VELDORA.garble ? VELDORA.garble.strip(s) : s, {
+        seconds: 5,
+        anchor: 'BOTTOM_CENTER',
+        typewriter: 1.0,
+        obfuscate: GARBLED[god] ? 'RANDOM' : null,
+        fade: true,
+      })
+    } catch (e) { return false }
+  }
+
   function say(player, god, tag) {
     if (silenced(player, god)) return false
     var s = line(god, tag, player)
     if (!s) return false
     try { player.tell(Text.of(paint(player, god, s))) } catch (e) { return false }
+    overlay(player, god, s)          // ⚠️ additive - a failure here costs nothing
     chime(player, god, tag)
     return true
   }
