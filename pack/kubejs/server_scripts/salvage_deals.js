@@ -21,11 +21,20 @@
 // `docs/68`: *"the hardest writing in the plan. They have to convince five times
 // against a reader who is getting suspicious."*
 //
-// 🔑 SO SHE STOPS TRYING. The pitch pool is keyed to how many you have already taken,
-// and she gets MORE HONEST as the count climbs - because she does not need to sell to
-// somebody who keeps saying yes. By the fifth she is barely pretending, and that is
-// funnier and worse than a fifth lie would have been. A reader getting suspicious is
-// not an obstacle to write around; it is the thing the escalation is FOR.
+// 🔴 MY FIRST ANSWER WAS THAT SHE STOPS TRYING - getting plainer each time until she
+// said "there is no upside, say yes". Ethan ruled it out the same day:
+//
+//     "salvage's trick dialogue will never tell you what she wants only that you are
+//      going to get something wonderful."
+//
+// ⚠️ SO SHE NEVER ANSWERS THE SUSPICION AT ALL. She does not confess, she does not
+// acknowledge that you are on your fourth, and she never once names what she is taking
+// or what you are getting. "Something of yours" for "something wonderful" is the most
+// specific she is capable of being.
+//
+// ⭐ THE TIERS STILL CLIMB, JUST NOT TOWARD HONESTY - toward FAMILIARITY. Early pitches
+// sell. Late ones assume you are already friends and skip the selling. A suspicious
+// reader gets no reward for being suspicious, which is worse than being told.
 //
 // ⚠️ ALL PITCH TEXT IS [CLAUDE-DRAFT] - see the register below. Ethan wrote the shape
 // and the laughter line; the ten pitches are scaffolding and are marked as such.
@@ -66,60 +75,84 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // is how you cause them to quit."* Nothing here touches an inventory.
   // ═══════════════════════════════════════════════════════════════════════════
   var DEALS = [
-    // ── tier 0: she is selling. Warm, plausible, almost generous. ─────────────
+    // ── what she offers you ────────────────────────────────────────
+    // 🚨 NOT ONE OF THESE NAMES THE PRICE, AND NOT ONE NAMES THE PRIZE. That is the
+    // rule and there are no exceptions in the pool - the harness checks every line.
+    //
+    // ⚠️ "give me something of yours" is as specific as she EVER gets about what she
+    // is taking, and "wonderful" is as specific as she ever gets about what you are
+    // getting. She does not say WHICH thing, or WHAT you receive, because she is not
+    // going to give you one.
     { id: 'hand', cost: 'life', tier: 0,
       pitch: "I have a deal for you. Give me something of yours, and I'll give you the world.",
       yes: "Take her hand.",
-      after: "There it is. The whole world, and you in it." },
+      after: "There. Wasn't that easy?" },
 
-    { id: 'appetite', cost: 'hunger', tier: 0,
-      pitch: "You're carrying more appetite than you need. I'll take the surplus and we'll call it a favour.",
-      yes: "Hand it over.",
-      after: "Lighter already. That's the feeling of a good margin." },
+    { id: 'wonderful', cost: 'hunger', tier: 0,
+      pitch: "Something wonderful, for something of yours. You won't even miss it.",
+      yes: "Trade.",
+      after: "Wonderful. Truly." },
 
     { id: 'seedmoney', cost: 'levels', tier: 0,
-      pitch: "Everything worth having starts as seed money. Yours is sitting in your pocket doing nothing.",
-      yes: "Invest it.",
-      after: "Invested. I'd give it a while before you check on it." },
+      pitch: "Everything worth having starts with a small thing changing hands. Yours first.",
+      yes: "Hand it over.",
+      after: "And so it begins." },
 
-    // ── tier 1: she has stopped bothering with the pitch. ─────────────────────
-    { id: 'shortweight', cost: 'levels', tier: 1,
-      pitch: "Same offer. You already know the terms, so I'll skip the part where I dress it up.",
-      yes: "Same again.",
-      after: "Same again. You're an easy customer and I mean that kindly." },
+    { id: 'lucky', cost: 'debuff', tier: 0,
+      pitch: "You've caught me in a generous mood, friend, and those don't last. One thing of yours.",
+      yes: "Before it passes.",
+      after: "Lucky, lucky you." },
 
-    { id: 'thirsty', cost: 'hunger', tier: 1,
-      pitch: "You want this one. I can tell, and it's the only reason I'm still standing here.",
-      yes: "I want it.",
-      after: "Knew it. That's twice I didn't have to try." },
+    { id: 'better', cost: 'levels', tier: 1,
+      pitch: "This one's better than the last. I wouldn't waste your time twice.",
+      yes: "Better, then.",
+      after: "Better. Much better." },
 
-    { id: 'legwork', cost: 'debuff', tier: 1,
-      pitch: "This one costs you comfort rather than anything you'd miss. Comfort's the cheapest thing you own.",
-      yes: "Take the comfort.",
-      after: "Comfort's gone. You'll notice in about a minute." },
+    { id: 'saving', cost: 'hunger', tier: 1,
+      pitch: "I've been saving this for someone. Turns out it's you.",
+      yes: "For me?",
+      after: "For you. Always was." },
 
-    // ── tier 2: honest, and it changes nothing. ───────────────────────────────
-    { id: 'plainly', cost: 'debuff', tier: 2,
-      pitch: "I'll be plain, since plain doesn't seem to cost me anything with you. This is a bad buy.",
-      yes: "Buy it anyway.",
-      after: "You bought it anyway. I did tell you." },
+    { id: 'rare', cost: 'debuff', tier: 1,
+      pitch: "You will not see an offer like this again. I say that to everyone. It's true this time.",
+      yes: "This time.",
+      after: "This time. Same as last time." },
 
-    { id: 'nothing', cost: 'levels', tier: 2,
-      pitch: "There's no upside. There never was one. Say yes.",
-      yes: "Yes.",
-      after: "Yes. Every time." },
+    { id: 'owed', cost: 'levels', tier: 2,
+      pitch: "You're owed something marvellous by now. Give me one more thing and we'll settle it.",
+      yes: "Settle it.",
+      after: "Settled. Consider us square." },
 
-    // ── tier 3: she is not even in the room any more. ─────────────────────────
-    { id: 'ledger', cost: 'hunger', tier: 3,
-      pitch: "I've stopped writing these down. You'd take a blank page.",
-      yes: "Take it.",
-      after: "Blank page. Signed." },
+    { id: 'nearly', cost: 'hunger', tier: 2,
+      pitch: "We're so close, you and I. One more and it all comes good.",
+      yes: "So close.",
+      after: "So close. Nearly there." },
 
     { id: 'lasthand', cost: 'life', tier: 3,
-      pitch: "Last one's the same as the first. Give me something of yours, and I'll give you the world.",
+      pitch: "Last one, friend. Give me something of yours, and I'll give you the world.",
       yes: "Take her hand.",
       after: "The world. As promised." },
   ]
+
+  // ⭐ PATHLESS DIALOGUE ARRIVES BROKEN. These lines are only ever spoken to a player
+  // with no god, so they take the same 25% obfuscation the Stranger does - nothing is
+  // translating for you. See garble.js.
+  //
+  // ⚠️ Fails SOFT to plain text: a missing garble.js should not silence a deal.
+  function broken(t) {
+    try {
+      if (VELDORA.garble && typeof VELDORA.garble.line === 'function') {
+        return VELDORA.garble.line(t, COLOUR)
+      }
+    } catch (e) { }
+    return t
+  }
+
+  function brokenAll(a) {
+    var out = [], i
+    for (i = 0; i < a.length; i++) out.push(broken(a[i]))
+    return out
+  }
 
   // ── the counter ──────────────────────────────────────────────────────────────
   function taken(p) {
@@ -139,7 +172,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return n
   }
 
-  // Which tier she is speaking from. ⭐ She gets more honest as the count climbs.
+  // 🔴 THIS USED TO ESCALATE TOWARD HONESTY. Ethan, 2026-08-29, ruling it out:
+  // *"salvage's trick dialogue will never tell you what she wants only that you are
+  // going to get something wonderful."*
+  //
+  // ⚠️ THE ESCALATION WAS MINE, NOT HIS. I built her getting plainer each time - "there
+  // is no upside, say yes" - as an answer to "convince five times against a suspicious
+  // reader". It was a good mechanic for a different character. She does not confess.
+  //
+  // ⭐ THE TIERS SURVIVE, POINTING SOMEWHERE ELSE: she gets more FAMILIAR, not more
+  // honest. Early pitches sell; late ones assume you are already friends and skip the
+  // selling. The reader's suspicion is never answered, because she never acknowledges
+  // it - and that is worse, and correct.
   function tierFor(p) {
     var n = taken(p)
     if (n <= 0) return 0
@@ -244,11 +288,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       return false
     }
     var deal = dealFor(p)
-    var say = function (s) { try { p.tell(Text.of(COLOUR + s)) } catch (e) { } }
+    var say = function (s) { try { p.tell(Text.of(COLOUR + broken(s))) } catch (e) { } }
 
     return VELDORA.ritual.begin(p, {
       colour: COLOUR,
-      lines: [deal.pitch],
+      lines: brokenAll([deal.pitch]),
       options: [
         { id: 'yes', label: deal.yes },
         { id: 'no', label: 'No.' },

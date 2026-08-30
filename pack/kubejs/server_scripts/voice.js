@@ -153,11 +153,41 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { return false }
   }
 
+  // ════════════════════════════════════════════════════════════════════════
+  // ⭐ WHO ARRIVES BROKEN. Ethan, 2026-08-29: *"all pathless dialogue needs to have
+  // some of those 'obscure' characters, randomly spread across the entire dialogue so
+  // it's only 75% readable."*
+  //
+  // 🔑 A REGISTRY, EXACTLY LIKE `COLOUR` ABOVE, and for the same reason: one place
+  // that knows. A speaker declares itself garbled once; nothing else has to remember.
+  //
+  // 🚨 SCOPED ON PURPOSE, AND THIS IS THE IMPORTANT PART. "Pathless dialogue" here
+  // means *the dialogue that exists BECAUSE you have no god* - the Stranger, and the
+  // two deals. It does NOT mean everything a pathless player reads, because the path
+  // OFFER is read by a pathless player by definition, and garbling the one piece of UI
+  // that asks "will you walk my path?" would make the game's most load-bearing prompt
+  // 75% legible. Widen this if Ethan wants it wider; do not widen it by accident.
+  var GARBLED = {}
+
+  function setGarbled(god) { GARBLED[god] = true }
+
+  function paint(player, god, s) {
+    var c = COLOUR[god] || DEFAULT_COLOUR
+    if (GARBLED[god]) {
+      try {
+        if (VELDORA.garble && typeof VELDORA.garble.line === 'function') {
+          return c + VELDORA.garble.line(s, c)
+        }
+      } catch (e) { }
+    }
+    return c + s
+  }
+
   function say(player, god, tag) {
     if (silenced(player, god)) return false
     var s = line(god, tag, player)
     if (!s) return false
-    try { player.tell(Text.of((COLOUR[god] || DEFAULT_COLOUR) + s)) } catch (e) { return false }
+    try { player.tell(Text.of(paint(player, god, s))) } catch (e) { return false }
     chime(player, god, tag)
     return true
   }
@@ -170,12 +200,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (subs) for (var k in subs) {
       if (subs.hasOwnProperty(k)) s = s.split('{' + k + '}').join(String(subs[k]))
     }
-    try { player.tell(Text.of((COLOUR[god] || DEFAULT_COLOUR) + s)) } catch (e) { return false }
+    try { player.tell(Text.of(paint(player, god, s))) } catch (e) { return false }
     chime(player, god, tag)
     return true
   }
 
   VELDORA.voice = {
+    setGarbled: setGarbled,
+    garbled: function (god) { return !!GARBLED[god] },
     register: register,
     setColour: setColour,
     colourOf: colourOf,

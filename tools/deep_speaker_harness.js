@@ -276,8 +276,9 @@ grp('🚨 deep_speaker.js IS ACTUALLY LOADED AND BOOTED — both were missing')
 
   const spk = (global.VELDORA.speaker && global.VELDORA.speaker.speakers) || {}
   const gotLines = [...new Set(REGISTERED)].sort()
-  ok('🚨 ALL FIVE SPEAKERS GOT THEIR LINES INTO THE VOICE SYSTEM', gotLines,
-    ['death_doctor', 'death_keeper', 'death_matriarch', 'death_shadow', 'death_speaker'])
+  ok('🚨 ALL SIX SPEAKERS GOT THEIR LINES INTO THE VOICE SYSTEM', gotLines,
+    ['death_doctor', 'death_keeper', 'death_matriarch', 'death_shadow',
+     'death_speaker', 'death_stranger'])
 
   // ⭐ THE EXACT SHAPE THAT BROKE IT. `confession` is optional; Kayer has none on
   // purpose. One entry without it must cost its own registration and nothing

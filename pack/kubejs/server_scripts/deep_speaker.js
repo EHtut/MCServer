@@ -1132,6 +1132,37 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (!VELDORA.voice) { console.error(TAG + 'voice.js missing'); return }
     var names = []
     var lost = []
+
+    // 🔴🔴 THE STRANGER HAS TO BE REGISTERED BY HAND, AND SHE WAS NOT.
+    //
+    // This loop iterates SPEAKERS, and PATHLESS is deliberately NOT in SPEAKERS - it is
+    // keyed by path and she has no path. So her pools never reached voice.js, and
+    // `voice.say(p, 'death_stranger', ...)` found nothing and returned false. E4a
+    // shipped INERT: the persona existed, speakerFor returned her, and she said nothing.
+    //
+    // ⚠️ MY OWN HARNESS MISSED IT because it asserted the persona exists and that
+    // speakerFor hands her back - never that her LINES arrive anywhere. A speaker with
+    // no registered pool is the same defect as a gate with no consumer, and this file
+    // already carries a comment about exactly that. Measure at the point of USE.
+    try {
+      VELDORA.voice.setColour(PATHLESS.id, PATHLESS.colour)
+      // ⭐ And she is the one who arrives BROKEN. Ethan: pathless dialogue is only
+      // 75% readable. She is the reason garble.js exists.
+      if (typeof VELDORA.voice.setGarbled === 'function') VELDORA.voice.setGarbled(PATHLESS.id)
+      var pn = 0
+      for (var pk in PATHLESS.lines) {
+        if (!PATHLESS.lines.hasOwnProperty(pk)) continue
+        if (VELDORA.voice.registerLines(PATHLESS.id, pk, PATHLESS.lines[pk])) {
+          pn += PATHLESS.lines[pk].length
+        }
+      }
+      console.info(TAG + PATHLESS.name + ' registered for the pathless - ' + pn +
+        ' line(s), garbled, no colour.')
+    } catch (e) {
+      console.error(TAG + '!! could not register ' + PATHLESS.id + ' - the pathless ' +
+        'will hear NOTHING in the deep :: ' + e)
+    }
+
     for (var path in SPEAKERS) {
       if (!SPEAKERS.hasOwnProperty(path)) continue
       try {

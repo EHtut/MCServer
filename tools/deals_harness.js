@@ -127,16 +127,20 @@ grp('⭐ THE SHAPE — ten deals, four costs, five to be had')
     D.deals.every(d => !/\b(chosen|destiny|fate)\b/i.test(d.pitch)), true)
 }
 
-grp('⭐ SHE GETS MORE HONEST — the answer to "convince five times"')
+grp('⭐ SHE GETS MORE FAMILIAR — never more honest')
 {
+  // ⚠️ THIS GROUP WAS "SHE GETS MORE HONEST". Ethan ruled that out: she never tells
+  // you what she wants. The tiers survive pointing somewhere else - early pitches
+  // sell, late ones assume you are already friends and skip the selling. A suspicious
+  // reader is never rewarded for being suspicious, because she never acknowledges it.
   const p = mkPlayer('Tier')
   ok('at zero she is selling', D._tierFor(p), 0)
   p._data['veldora_deals_taken'] = 3
-  ok('by three she has stopped dressing it up', D._tierFor(p), 1)
+  ok('by three she is on first-name terms', D._tierFor(p), 1)
   p._data['veldora_deals_taken'] = 4
-  ok('by four she is plain', D._tierFor(p), 2)
+  ok('by four she barely bothers with the pitch', D._tierFor(p), 2)
   p._data['veldora_deals_taken'] = 5
-  ok('by five she is barely present', D._tierFor(p), 3)
+  ok('by five it is the same offer as the first', D._tierFor(p), 3)
 
   // ⚠️ Every tier must have something in it, or she silently stops offering.
   const tiers = {}
@@ -278,5 +282,41 @@ grp('⭐ THE LAUGHTER IS AN ACTION BAR, NOT THE BOSS BAR')
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+grp('🚨 SHE NEVER SAYS WHAT SHE WANTS — the ruling, on every line')
+{
+  // Ethan, 2026-08-29: "salvage's trick dialogue will never tell you what she wants
+  // only that you are going to get something wonderful."
+  //
+  // ⚠️ MY FIRST VERSION BROKE THIS BADLY. I had her getting more honest as the count
+  // climbed - "There's no upside. There never was one. Say yes." - as an answer to
+  // "convince five times against a suspicious reader". Good mechanic, wrong character.
+  // She does not confess, so the pool is checked line by line rather than by spot-read.
+  const pitches = D.deals.map(d => d.pitch)
+
+  ok('🚨 no pitch names a COST', pitches.every(p =>
+    !/(level|levels|hunger|health|die|death|kill|debuff|slow|weak)/i.test(p)), true)
+  ok('🚨 no pitch admits there is no upside', pitches.every(p =>
+    !/no upside|bad buy|nothing|not worth|regret/i.test(p)), true)
+  ok('🚨 no pitch names an actual PRIZE either', pitches.every(p =>
+    !/(diamond|gold|xp|weapon|armour|armor|power|strength)/i.test(p)), true)
+
+  // "something of yours" and "wonderful"/"the world" are as specific as she gets.
+  const all = pitches.join(' ')
+  ok('⭐ she gestures at something vague of YOURS',
+    /something of yours|one thing of yours|yours first|one more thing/i.test(all), true)
+  ok('⭐ ...and promises something vague and wonderful',
+    /wonderful|the world|marvellous|better|comes good/i.test(all), true)
+
+  // Her register still holds: three sentences, contractions, no destiny talk.
+  ok('every pitch is three sentences or fewer',
+    pitches.every(p => (p.match(/[.?!]/g) || []).length <= 3), true)
+  ok('no pitch says chosen/destiny/fate',
+    pitches.every(p => !/(chosen|destiny|fate)/i.test(p)), true)
+
+  // ⭐ The tiers still climb - toward FAMILIARITY, not honesty.
+  ok('⭐ all four tiers are still populated',
+    [0, 1, 2, 3].every(t => D.deals.some(d => d.tier === t)), true)
+}
+
 console.log('\n' + B + (fail ? R + fail + ' FAILED, ' : G) + pass + ' passed' + X)
 process.exit(fail ? 1 : 0)

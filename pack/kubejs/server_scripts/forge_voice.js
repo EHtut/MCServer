@@ -99,22 +99,48 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var MEDIUM_AT = 250
   var HIGH_AT = 1200
 
+  // ════════════════════════════════════════════════════════════════════════
+  // ⭐ HER REGISTER. Ethan, 2026-08-29:
+  //
+  //     "Forge dialogue should be childish and will often go off on rambling tangents,
+  //      this is both in her pathless dialogue and path dialogue."
+  //
+  // 🔑 CHILDISH IS NOT STUPID. She is the best builder in the pantheon and the
+  // rambling is not confusion - it is a nine-year-old showing you her workshop.
+  //
+  //   · SHORT WORDS. If a longer one exists she does not reach for it.
+  //   · "an' then" as connective tissue. Sentences run on because stopping is boring.
+  //   · TANGENTS THAT DO NOT COME BACK. A second thought starts before the first
+  //     finishes, and the first is simply gone.
+  //   · QUESTIONS SHE ANSWERS HERSELF, immediately, without waiting.
+  //   · SHOWING OFF, then undercutting it.
+  //   · ⚠️ NEVER MEAN. She is the one god whose FORCED column is generous, and the
+  //     childishness must read as warmth, not as a brat.
+  //
+  // ⭐ A LINE STARTING "- " IS JOINED MID-RAMBLE: she was already talking and you just
+  // walked into earshot. That device predates this ruling and is the best thing in her
+  // voice. Keep it. Use it more.
+  //
+  // ⚠️ SCOPE OF THIS PASS: `guidance`, `bored` and `notion` are rewritten below as the
+  // worked example. Her other ~17 pools still read FOLKSY-ADULT ("reckon", "oughta",
+  // "I ain't got the trick for stoppin' that") and want the same treatment. They are
+  // all [CLAUDE-DRAFT] and therefore listed in `docs/51` - not silently left.
   var LINES = {
     // [CLAUDE-DRAFT] forge/guidance
     // ⭐ NOT GUIDANCE. Every other god's guidance pool tells you what to go and do.
     // Hers is her thinkin' out loud at you and occasionally landing on something
     // useful by accident. The player is welcome to ignore all of it.
     guidance: [
-      "- an' that's before you even get to the water wheel, which I wouldn't have put there, but you did, so.",
-      'You could build it outta stone. You could build it outta somethin else too. I ain\'t gonna tell you what to do.',
-      'I reckon that\'d work better upside down. Most things do.',
-      'Somebody made one of these once that could lift a whole horse. Never did find out why they wanted to.',
-      "- anyway that's the third time you walked past that spot, so either you're thinkin' about it or you're lost.",
-      "Build the ugly one first. The pretty one don't never get finished, that's just a rule.",
-      "I got a mess of ideas 'bout what you oughta do next an' most of 'em are bad, so I'll just say: more of it.",
-      "You don't need my say-so. That ain't what I'm for.",
-      "A thing that works an' looks stupid is still a thing that works. Write that down.",
-      "- which is when I figured out nobody'd ever asked me. So. Build whatever you want.",
+      "- an' that's BEFORE the water wheel! I wouldn't of put it there. You did. That's fine.",
+      "You could build it out of stone. Or not stone! I'm not the boss of it.",
+      "It'd work better upside down. Most things do. I don't know why.",
+      "Somebody made one that could lift a whole horse once. A HORSE. Nobody ever said why.",
+      "- anyway that's three times you walked past that spot so you're either thinkin' or you're lost, an' both is fine.",
+      "Build the ugly one first! The pretty one never gets finished. That's just true.",
+      "I got about a hundred ideas an' most of 'em are bad so just - more. Do more.",
+      "You don't need me to say yes. I'm not for that.",
+      "If it works an' it looks stupid it still WORKS. That's the whole thing.",
+      "- an' that's when I figured out nobody ever asked me. So. Whatever you want!",
     ],
 
     // ⭐ SILENCE POOLS FOR THE CHATTIEST GOD ARE A JOKE, AND THEY SHOULD BE. She does
@@ -221,11 +247,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // cheerfully, mid-thought, with no idea it lands as a warning. The mechanic is
     // punishing; the voice must not be.
     bored: [
-      "- an' I've kinda run outta things to look at over here.",
-      "You ain't made nothin' in a while. I been countin'. Not on purpose.",
-      "I might go see what the others are up to. I'll come back.",
-      "Build somethin'. Anythin'. I don't even care if it's good.",
-      "My attention's wanderin' an' I ain't got the trick for stoppin' that.",
+      "- an' now I've looked at everything over here. Twice. Both times.",
+      "You haven't made anything in AGES. I counted. I wasn't tryin' to count.",
+      "I might go see what the others are doin'. I'll come back though. I always come back.",
+      "Build somethin'! Anythin'! It doesn't even have to be good, that's the best part.",
+      "My brain wandered off an' I don't know the trick for gettin' it back yet.",
     ],
 
     // [CLAUDE-DRAFT] forge/warn_wave
@@ -286,10 +312,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // [CLAUDE-DRAFT] forge/lend_ask · forge/lend_done · forge/lend_no
     // ═══════════════════════════════════════════════════════════════════════
     notion: [
-      "- oh! Hold still. Hold still, I wanna try somethin'.",
-      "I had a notion. It's on you now. You'll be fine.",
-      "Right, so I done a thing an' I probably oughta have asked first, but I didn't.",
-      "Don't worry 'bout what that is. It's good. It's mostly good.",
+      "- oh! OH. Hold still, hold still, I wanna try somethin'.",
+      "I had an idea an' now it's on you. You'll be fine. Probably fine.",
+      "Okay so I did a thing an' I should of asked first an' I didn't, an' now we both know.",
+      "Don't worry about what that is! It's good. It's mostly good.",
     ],
     notion_aid: [
       "- an' I done the same for your friend over yonder, 'cause it seemed rude not to.",

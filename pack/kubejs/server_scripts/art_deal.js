@@ -14,12 +14,22 @@
 // you HAVE, because she is appraising you, and the appraisal is *what were you willing
 // to bring*. Arriving with 80 costs you 80.
 //
-// ── 🚨 SHE TELLS YOU FIRST. THIS IS NOT NEGOTIABLE. ────────────────────────────
-// `docs/67`: *"it takes every level you have and kills you. **She tells you this
-// first**."* The whole condition is worthless if it is a trick - a trick tests nothing
-// except whether you read the wiki. Being told, in plain words, and saying yes, is the
-// entire mechanic. ⛔ Do not soften the warning, do not bury it in flavour, and do not
-// move it after the choice.
+// ── 🔴 SHE DOES NOT EXPLAIN. REWRITTEN 2026-08-29. ──────────────────────────────
+// Ethan: *"Art will be blunt but also noninformative, she will never reveal her cards
+// or tell you what she wants. She will simply demand."*
+//
+// ⚠️ THE FIRST VERSION HAD HER SPELL OUT THE TERMS - every level, not fifty, and then
+// I kill you, I am telling you before you answer. `docs/67` carried "She tells you this
+// first" in bold, and I built to it.
+//
+// 🚨 THAT LINE WAS MINE. His only verbatim ruling was *"Chosen on respawn, however she
+// takes all your levels. im adding a requirement of 50"* - the tell-first clause was
+// doc prose I wrote and then treated as canon a week later. Checked, not assumed.
+//
+// ⭐ SO SHE DEMANDS INSTEAD. She names no price, no prize, no reason and no outcome.
+// She says give it to me, and the player decides with nothing to go on but her. That
+// is a harder ask than an informed one, and it is the character: she is appraising
+// you, and explaining herself would mean she needed something from you.
 var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
 ;(function () {
@@ -47,24 +57,45 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // because the ruling says she tells you first.
   // ═══════════════════════════════════════════════════════════════════════════
   var OFFER = [
-    'You brought all of that down here. To me. With nobody standing behind you.',
-    'Here is what happens. I take every level you are carrying - not fifty, all of ' +
-      'them - and then I kill you. You wake up mine.',
-    'I am telling you this before you answer. Nobody will do that for you again.',
+    'You brought all of that down here. With nobody behind you.',
+    'Give it to me.',
+    'I am not going to ask twice, and I am not going to explain.',
   ]
   var YES = 'Give her everything.'
   var NO = 'No.'
 
+  // ⚠️ She does not gloat and she does not clarify afterwards either. Whatever just
+  // happened, the player works out on their own.
   var TAKEN = [
-    'There. That is what you were worth, and you handed it over.',
-    'You knew. That is the part the others never manage.',
+    'Good.',
+    'That will do.',
   ]
   var REFUSED = [
-    'Sensible. Come back when it is worth more.',
-    'Then keep it. It will not make you less alone down here.',
+    'Then go back up.',
+    'No. Fine.',
   ]
 
-  function say(p, s) { try { p.tell(Text.of(COLOUR + s)) } catch (e) { } }
+  // ⭐ PATHLESS DIALOGUE ARRIVES BROKEN. These lines are only ever spoken to a player
+  // with no god, so they take the same 25% obfuscation the Stranger does - nothing is
+  // translating for you. See garble.js.
+  //
+  // ⚠️ Fails SOFT to plain text: a missing garble.js should not silence a deal.
+  function broken(t) {
+    try {
+      if (VELDORA.garble && typeof VELDORA.garble.line === 'function') {
+        return VELDORA.garble.line(t, COLOUR)
+      }
+    } catch (e) { }
+    return t
+  }
+
+  function brokenAll(a) {
+    var out = [], i
+    for (i = 0; i < a.length; i++) out.push(broken(a[i]))
+    return out
+  }
+
+  function say(p, s) { try { p.tell(Text.of(COLOUR + broken(s))) } catch (e) { } }
   function pick(a) { return a[Math.floor(Math.random() * a.length)] }
 
   // ── eligibility ──────────────────────────────────────────────────────────────
@@ -145,7 +176,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
     return VELDORA.ritual.begin(p, {
       colour: COLOUR,
-      lines: OFFER,
+      lines: brokenAll(OFFER),
       options: [{ id: 'yes', label: YES }, { id: 'no', label: NO }],
       holdAfterChoice: 60,
       onChoose: function (player, id) {

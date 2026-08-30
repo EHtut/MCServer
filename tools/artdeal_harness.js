@@ -99,25 +99,32 @@ function choose(id) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-grp('🚨 SHE TELLS YOU FIRST — the assertion nothing else can catch')
+grp('\U0001f534 SHE DOES NOT EXPLAIN \u2014 REVERSED BY RULING')
 {
+  // \u26a0\ufe0f THIS GROUP USED TO ASSERT THE OPPOSITE - that the offer must spell out
+  // "every level, not fifty, and then I kill you, before you answer".
+  //
+  // \U0001f6a8 THAT REQUIREMENT WAS MINE. Ethan's only verbatim ruling was "Chosen on
+  // respawn, however she takes all your levels. im adding a requirement of 50"; the
+  // "She tells you this first" clause was doc prose I wrote and later treated as
+  // canon. He ruled 2026-08-29: "Art will be blunt but also noninformative, she will
+  // never reveal her cards or tell you what she wants. She will simply demand."
+  //
+  // The assertions become their own inverse rather than being deleted.
   const text = A.lines.offer.join(' ')
-  // docs/67: "it takes every level you have and kills you. She tells you this first."
-  ok('🚨 the offer says it takes every level', /every level/i.test(text), true)
-  ok('🚨 ...explicitly NOT just fifty', /not fifty|all of them/i.test(text), true)
-  ok('🚨 ...and that she kills you', /kill you/i.test(text), true)
-  ok('🚨 ...and that she is telling you BEFORE you answer',
-    /before you answer/i.test(text), true)
+  ok('\U0001f6a8 she never says how much she takes', /every level|all of them|fifty/i.test(text), false)
+  ok('\U0001f6a8 she never says she will kill you', /kill|die|death/i.test(text), false)
+  ok('\U0001f6a8 she never says what you get', /give you|in return|reward/i.test(text), false)
+  ok('\U0001f6a8 ...and never explains why', /because|so that|in order/i.test(text), false)
 
-  // The warning must be in the LINES, which render before the options, not in the
-  // after-text - a warning after the choice is not a warning.
-  const after = (A.lines.taken.join(' ') + A.lines.refused.join(' '))
-  ok('⭐ the price is stated in the offer, not revealed afterwards',
-    /every level/i.test(text) && !/takes every level/i.test(after), true)
+  ok('\u2b50 she DEMANDS, plainly, with no terms', /give it to me/i.test(text), true)
+  ok('\u2b50 ...and refuses to elaborate', /not going to explain/i.test(text), true)
 
-  const src = code('art_deal.js')
-  ok('the options are only accept and refuse',
-    src.indexOf("{ id: 'yes', label: YES }, { id: 'no', label: NO }") !== -1, true)
+  // Blunt means SHORT. A god who explains nothing has nothing to pad with.
+  ok('\u2b50 bluntness is measurable - every line is short',
+    A.lines.offer.every(l => l.length <= 90), true)
+  ok('...and she does not gloat afterwards either',
+    A.lines.taken.every(l => l.length <= 40), true)
 }
 
 grp('⭐ THE GATE — fifty to speak, godless, deep, and she has met you')
@@ -230,5 +237,52 @@ grp('⛔ ART IS NO LONGER LAPIS')
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+grp('\U0001f534 THE STRANGER WAS REGISTERED WITH NOBODY \u2014 E4a SHIPPED INERT')
+{
+  const ds = code('deep_speaker.js')
+  // The registration loop iterates SPEAKERS, and PATHLESS is deliberately not in it
+  // (that map is keyed by path; she has none). Her pools never reached voice.js, so
+  // voice.say(p,'death_stranger',...) found nothing. The persona existed, speakerFor
+  // returned her, and she said NOTHING.
+  //
+  // \u26a0\ufe0f The first version of this harness MISSED IT: it asserted she exists and that
+  // speakerFor hands her back - never that her LINES arrive anywhere.
+  ok('\U0001f6a8 her colour is registered with voice.js',
+    ds.indexOf('setColour(PATHLESS.id, PATHLESS.colour)') !== -1, true)
+  ok('\U0001f6a8 ...and every one of her POOLS is registered',
+    ds.indexOf('registerLines(PATHLESS.id, pk, PATHLESS.lines[pk])') !== -1, true)
+  ok('\u26a0\ufe0f a registration failure SHOUTS rather than going quiet',
+    ds.indexOf('will hear NOTHING in the deep') !== -1, true)
+  ok('\u2b50 and she is marked GARBLED', ds.indexOf('setGarbled(PATHLESS.id)') !== -1, true)
+}
+
+grp('\u2b50 PATHLESS DIALOGUE ARRIVES BROKEN \u2014 75 percent readable')
+{
+  const g = code('garble.js')
+  ok('the rate is 25 percent', g.indexOf('var RATE = 0.25') !== -1, true)
+  ok('\U0001f6a8 spaces are never obfuscated - they would weld words together',
+    g.indexOf("if (c === ' ') return false") !== -1, true)
+  ok('\U0001f6a8 the colour is restored after every reset code',
+    g.indexOf("'\u00a7k' + ch + '\u00a7r' + c") !== -1, true)
+
+  const vo = code('voice.js')
+  ok('voice.js has a garble registry, like its colour one',
+    vo.indexOf('function setGarbled(god)') !== -1, true)
+  ok('\U0001f6a8 say() and sayAbout() BOTH go through paint()',
+    (vo.match(/Text\.of\(paint\(player, god, s\)\)/g) || []).length, 2)
+
+  // \U0001f6a8 SCOPE. A pathless player reads the path OFFER by definition; garbling that
+  // would make the most load-bearing prompt in the game 75 percent legible.
+  ok('\U0001f6a8 it is a REGISTRY, not "garble everything a pathless player reads"',
+    vo.indexOf('GARBLED[god]') !== -1 && vo.indexOf('pathOf') === -1, true)
+
+  const sd = code('salvage_deals.js')
+  const ad = code('art_deal.js')
+  ok('salvage pitch arrives broken', sd.indexOf('brokenAll([deal.pitch])') !== -1, true)
+  ok('art demand arrives broken', ad.indexOf('brokenAll(OFFER)') !== -1, true)
+  ok('\u26a0\ufe0f both fail SOFT to plain text - a plain line beats a silent one',
+    sd.indexOf('return t') !== -1 && ad.indexOf('return t') !== -1, true)
+}
+
 console.log('\n' + B + (fail ? R + fail + ' FAILED, ' : G) + pass + ' passed' + X)
 process.exit(fail ? 1 : 0)

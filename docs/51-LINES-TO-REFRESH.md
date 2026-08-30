@@ -22,9 +22,9 @@ in this repo has died before.
 
 | tag | to rewrite | ⭐ yours, keep | file |
 |---|---:|---:|---|
-| `deal_offer` | ? | — | [`art_deal.js:43`](../pack/kubejs/server_scripts/art_deal.js) |
-| `deal_taken` | ? | — | [`art_deal.js:43`](../pack/kubejs/server_scripts/art_deal.js) |
-| `deal_refused` | ? | — | [`art_deal.js:43`](../pack/kubejs/server_scripts/art_deal.js) |
+| `deal_offer` | ? | — | [`art_deal.js:53`](../pack/kubejs/server_scripts/art_deal.js) |
+| `deal_taken` | ? | — | [`art_deal.js:53`](../pack/kubejs/server_scripts/art_deal.js) |
+| `deal_refused` | ? | — | [`art_deal.js:53`](../pack/kubejs/server_scripts/art_deal.js) |
 | `trial_scene` | ? | — | [`art_events.js:282`](../pack/kubejs/server_scripts/art_events.js) |
 | `guidance` | 9 | — | [`art_voice.js:56`](../pack/kubejs/server_scripts/art_voice.js) |
 | `low_silence` | 4 | — | [`art_voice.js:56`](../pack/kubejs/server_scripts/art_voice.js) |
@@ -105,49 +105,49 @@ in this repo has died before.
 
 | tag | to rewrite | ⭐ yours, keep | file |
 |---|---:|---:|---|
-| `guidance` | 10 | — | [`forge_voice.js:103`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `low_silence` | 3 | — | [`forge_voice.js:122`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `medium_silence` | 3 | — | [`forge_voice.js:122`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `high_silence` | 3 | — | [`forge_voice.js:122`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `combat` | 6 | — | [`forge_voice.js:139`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `returned` | 4 | — | [`forge_voice.js:152`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `low_gift` | 5 | — | [`forge_voice.js:164`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `medium_gift` | 5 | — | [`forge_voice.js:164`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `high_gift` | 5 | — | [`forge_voice.js:164`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `harvest_won` | 3 | — | [`forge_voice.js:188`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `harvest_lost` | 3 | — | [`forge_voice.js:188`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `warn_incoming` | 3 | — | [`forge_voice.js:203`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `bored` | 5 | — | [`forge_voice.js:213`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `warn_wave` | 3 | — | [`forge_voice.js:231`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `argue_accuse` | 3 | — | [`forge_voice.js:247`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `argue_answer` | 3 | — | [`forge_voice.js:247`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `argue_threat` | 3 | — | [`forge_voice.js:247`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `argue_refuse` | 3 | — | [`forge_voice.js:248`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `argue_unanswered` | 3 | — | [`forge_voice.js:248`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `notion` | 4 | — | [`forge_voice.js:284`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `notion_aid` | 3 | — | [`forge_voice.js:284`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `gift_open` | 3 | — | [`forge_voice.js:285`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `gift_taken` | 3 | — | [`forge_voice.js:285`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `gift_left` | 3 | — | [`forge_voice.js:285`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `lend_ask` | 3 | — | [`forge_voice.js:286`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `lend_done` | 3 | — | [`forge_voice.js:286`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `lend_no` | 3 | — | [`forge_voice.js:286`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `loc_above` | 4 | — | [`forge_voice.js:337`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `rare_loc_above` | 2 | — | [`forge_voice.js:337`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `loc_below` | 4 | — | [`forge_voice.js:350`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `rare_loc_below` | 2 | — | [`forge_voice.js:350`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `hold_none` | 5 | — | [`forge_voice.js:368`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `rare_hold_none` | 1 | — | [`forge_voice.js:368`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `hold_item` | 5 | — | [`forge_voice.js:379`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `rare_hold_item` | 2 | — | [`forge_voice.js:379`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `hold_weapon` | 5 | — | [`forge_voice.js:393`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `rare_hold_weapon` | 1 | — | [`forge_voice.js:393`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `hold_food` | 5 | — | [`forge_voice.js:406`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `rare_hold_food` | 1 | — | [`forge_voice.js:406`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `near_blade` | 5 | — | [`forge_voice.js:420`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `near_wall` | 5 | — | [`forge_voice.js:420`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `near_salvage` | 3 | — | [`forge_voice.js:420`](../pack/kubejs/server_scripts/forge_voice.js) |
-| `near_art` | 5 | — | [`forge_voice.js:420`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `guidance` | 10 | — | [`forge_voice.js:129`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `low_silence` | 3 | — | [`forge_voice.js:148`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `medium_silence` | 3 | — | [`forge_voice.js:148`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `high_silence` | 3 | — | [`forge_voice.js:148`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `combat` | 6 | — | [`forge_voice.js:165`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `returned` | 4 | — | [`forge_voice.js:178`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `low_gift` | 5 | — | [`forge_voice.js:190`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `medium_gift` | 5 | — | [`forge_voice.js:190`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `high_gift` | 5 | — | [`forge_voice.js:190`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `harvest_won` | 3 | — | [`forge_voice.js:214`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `harvest_lost` | 3 | — | [`forge_voice.js:214`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `warn_incoming` | 3 | — | [`forge_voice.js:229`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `bored` | 5 | — | [`forge_voice.js:239`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `warn_wave` | 3 | — | [`forge_voice.js:257`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `argue_accuse` | 3 | — | [`forge_voice.js:273`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `argue_answer` | 3 | — | [`forge_voice.js:273`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `argue_threat` | 3 | — | [`forge_voice.js:273`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `argue_refuse` | 3 | — | [`forge_voice.js:274`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `argue_unanswered` | 3 | — | [`forge_voice.js:274`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `notion` | 4 | — | [`forge_voice.js:310`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `notion_aid` | 3 | — | [`forge_voice.js:310`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `gift_open` | 3 | — | [`forge_voice.js:311`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `gift_taken` | 3 | — | [`forge_voice.js:311`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `gift_left` | 3 | — | [`forge_voice.js:311`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `lend_ask` | 3 | — | [`forge_voice.js:312`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `lend_done` | 3 | — | [`forge_voice.js:312`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `lend_no` | 3 | — | [`forge_voice.js:312`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `loc_above` | 4 | — | [`forge_voice.js:363`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `rare_loc_above` | 2 | — | [`forge_voice.js:363`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `loc_below` | 4 | — | [`forge_voice.js:376`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `rare_loc_below` | 2 | — | [`forge_voice.js:376`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `hold_none` | 5 | — | [`forge_voice.js:394`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `rare_hold_none` | 1 | — | [`forge_voice.js:394`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `hold_item` | 5 | — | [`forge_voice.js:405`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `rare_hold_item` | 2 | — | [`forge_voice.js:405`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `hold_weapon` | 5 | — | [`forge_voice.js:419`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `rare_hold_weapon` | 1 | — | [`forge_voice.js:419`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `hold_food` | 5 | — | [`forge_voice.js:432`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `rare_hold_food` | 1 | — | [`forge_voice.js:432`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `near_blade` | 5 | — | [`forge_voice.js:446`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `near_wall` | 5 | — | [`forge_voice.js:446`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `near_salvage` | 3 | — | [`forge_voice.js:446`](../pack/kubejs/server_scripts/forge_voice.js) |
+| `near_art` | 5 | — | [`forge_voice.js:446`](../pack/kubejs/server_scripts/forge_voice.js) |
 | `intro_arrival` | ? | — | [`introductions.js:129`](../pack/kubejs/server_scripts/introductions.js) |
 | `intro_demand` | ? | — | [`introductions.js:129`](../pack/kubejs/server_scripts/introductions.js) |
 | `intro_accept` | ? | — | [`introductions.js:130`](../pack/kubejs/server_scripts/introductions.js) |
@@ -157,9 +157,9 @@ in this repo has died before.
 
 | tag | to rewrite | ⭐ yours, keep | file |
 |---|---:|---:|---|
-| `deal_pitch` | ? | — | [`salvage_deals.js:58`](../pack/kubejs/server_scripts/salvage_deals.js) |
-| `deal_taken` | ? | — | [`salvage_deals.js:58`](../pack/kubejs/server_scripts/salvage_deals.js) |
-| `deal_refused` | ? | — | [`salvage_deals.js:58`](../pack/kubejs/server_scripts/salvage_deals.js) |
+| `deal_pitch` | ? | — | [`salvage_deals.js:67`](../pack/kubejs/server_scripts/salvage_deals.js) |
+| `deal_taken` | ? | — | [`salvage_deals.js:67`](../pack/kubejs/server_scripts/salvage_deals.js) |
+| `deal_refused` | ? | — | [`salvage_deals.js:67`](../pack/kubejs/server_scripts/salvage_deals.js) |
 | `bounty_offer` | 5 | — | [`salvage_voice.js:89`](../pack/kubejs/server_scripts/salvage_voice.js) |
 | `bounty_paid` | 4 | — | [`salvage_voice.js:89`](../pack/kubejs/server_scripts/salvage_voice.js) |
 | `sabotage_offer` | 4 | — | [`salvage_voice.js:90`](../pack/kubejs/server_scripts/salvage_voice.js) |
