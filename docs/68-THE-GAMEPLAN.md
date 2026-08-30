@@ -490,3 +490,48 @@ which nobody asked for. Worth reconciling one day; not today, and not silently.
 | server jars | **246** (was 218) |
 | installed | 22 of 23 requested, plus 4 dependency mods |
 | dropped | `irons-jewelry` |
+
+
+## ✅ The client pack, rebuilt
+
+`server/scripts/build-client.ps1 -Zip` — **305/305 mods, 1,151 MB**, zipped to
+`C:\MCServer\clientpack.zip` (1,082 MB). All 15 new mods verified present, including
+the two that are **client-only and correctly absent from the server**
+(`loot_journal`, `obscure_tooltips`).
+
+⚠️ **`C:\MCServer\clientmods` still holds 292 jars and is now stale** — the build
+writes to `clientpack`. Left alone rather than deleted; it may be somebody's working
+copy, but it should not be sent to anyone.
+
+---
+
+## 🔴 Why Iron's Gems 'n Jewelry was dropped — the full reason
+
+It is **not** a judgement about the mod. It is a fetchability problem, and it is worth
+recording because the same wall will stop other mods later.
+
+1. **It is a HARD dependency failure.** The server refuses to boot without `atlas_api` —
+   proven twice, named explicitly in the crash both times:
+   `Mod irons_jewelry requires atlas_api 1.21.1-1.1.0 or above, and below 1.21.1-2.0.0`
+2. **`atlas_api` is not on Modrinth.** Checked five slug variants (`atlas-api`,
+   `atlasapi`, `atlas_api`, `irons-atlas`, `atlas-api-lib`) and then **iron431's entire
+   project list** — nine projects, no Atlas API among them.
+3. **`atlas-lib` is not it**, despite the name. Its mod id is `atlaslib` at version
+   `1.21.0-1.1.14`, failing both the id and the required range.
+4. **The mod's own page confirms the requirement and does not link it** — *"Requires
+   Iron's Lib, Atlas API, and Curios API"*.
+5. ⭐ **THE DECIDING FACT: this pack's installer is Modrinth-only.** `install_mods.py`
+   contains **zero** CurseForge references, and every manifest entry is
+   `[update.modrinth]` against `cdn.modrinth.com`. Even if Atlas API exists on
+   CurseForge, there is no path to fetch it with the sha512 pinning the manifest
+   guarantees.
+
+### ⭐ It is recoverable, and the cost is specific
+
+Drop the jar into `instance/mods` **manually, as an unmanaged mod** — exactly what `jei`,
+`createbionics`, `more_rpg_library` and `runes` already are.
+
+⚠️ **The cost is the guarantee `install_mods.py` exists to provide**: *"the runtime can
+be rebuilt from the manifest on any machine with a Python install"*. Every unmanaged jar
+is a thing that will not come back on a rebuild, and there are already four. **Ethan's
+call — the mod works, the pipeline just cannot carry it.**
