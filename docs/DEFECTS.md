@@ -390,3 +390,92 @@ as easily as it failed a right one.
 The resolver is recursive with cycle protection, and is verified by controls in both
 directions — `minecraft:zombie` and `goety:wraith` in, `minecraft:creeper` and a planted
 fake out.
+
+---
+
+## 🔴 D-111 — `/im` reported `reachable: true` and then failed every single send ✅ FIXED 2026-08-30
+
+**Found by**: Ethan's own in-game test. Four screenshots, everything passing except one —
+*"the only major concern is /im see above everything else has passed"*.
+
+`immersive.js` reached ImmersiveMessage reflectively and probed itself at boot. The probe
+said the API was reachable. It was not callable. On the 00:11 boot **all three routes
+failed**:
+
+```
+Packages.toni.immersivemessages.api.ImmersiveMessage   -> no callable builder
+Java.type(...)                                         -> no callable builder
+Java.loadClass(...)                                    -> the java.lang.Class OBJECT;
+                                                          statics are not members of it
+```
+
+🔑 **The probe measured class LOADING; the code needed static CALLABILITY.** Those are
+different questions and the probe answered the easy one. Fourth instance of measuring at
+the point of definition instead of the point of use.
+
+🚨 **And the harness was green the entire time.** Every assertion was a substring match:
+
+```js
+ok('⭐ the shim reaches ImmersiveMessage',
+   im.indexOf("'toni.immersivemessages.api.ImmersiveMessage'") !== -1, true)
+```
+
+The class name *appears in the file*, so it passed — and would have passed if `show()`
+had been deleted outright. A substring match proves a string was **typed**, never that it
+**runs**. Seventh weak-assertion instance on this project.
+
+### The fix — and the thing that could not be guessed
+
+The mod ships a command. `javap` on `ImmersiveMessagesCommands.class` gave the grammar
+that four rounds of live probing could not:
+
+```
+/immersivemessages sendcustom <player> <data:CompoundTag> <duration:float> <text...>
+                                       ^^^^ THE NBT COMES SECOND ^^^^
+```
+
+⚠️ Every other Minecraft command takes its value arguments before a compound tag. This one
+does not. That single inversion is why `sendcustom @a 4.0 {}` answered **"Expected '{'"**
+with a brace sitting right there in the input — the parser had already consumed it.
+
+**Two properties of the tag would have failed silently**, and both are now pinned by test:
+
+* **`anchor` is `getInt` — the ORDINAL, not the name.** `anchor:"TOP_CENTER"` is read by
+  `getInt` as `0`, which is `CENTER_CENTER`. Every god line would have appeared dead
+  centre and looked deliberate. Nothing errors, nothing logs. Same for `align` and
+  `obfuscate`.
+* **The switches are presence-only.** The mod calls `contains()` and never reads the
+  value, so **`shake:0b` still shakes**. "Off" has to mean the key is absent; a key set
+  false is a key set true.
+
+Ordinals read out of the jar, not guessed — `TextAnchor`: 0 CENTER_CENTER · 1 CENTER_LEFT ·
+2 CENTER_RIGHT · 3 BOTTOM_CENTER · 4 BOTTOM_LEFT · 5 BOTTOM_RIGHT · **6 TOP_CENTER** ·
+7 TOP_LEFT · 8 TOP_RIGHT. `ObfuscateMode`: 0 NONE · 1 FULL · 2 LEFT · 3 RIGHT · 4 CENTER ·
+**5 RANDOM**.
+
+### What stops it recurring
+
+`tools/immersive_harness.js` **executes** immersive.js against stubbed KubeJS globals and
+reads the command string it hands the server. 37 assertions. Six deliberate mutations —
+wrong ordinal, swapped argument order, `rc=0` treated as success, § codes left in the
+body, a presence flag emitted as `false`, and reflection creeping back — were each
+confirmed to turn it **RED** before it landed. ⭐ *A harness that cannot fail is not
+evidence.*
+
+The handler ends `iconst_1; ireturn`, so **0 is a real failure** and every caller falls
+back to its boss bar. "I failed" and "I found nothing" do not share a return value.
+
+⛔ **Do not re-attempt reflection in that file.** The header says so at length, and a test
+now fails if `Java.loadClass`, `Java.type` or `Packages.` reappears.
+
+### Still open
+
+⚠️ **Unverified in Rhino.** Node running the shim is not proof — `node --check` has passed
+code Rhino rejected before. `rhino_lint.py` is clean and the file is deployed, but only a
+boot settles it, and the restart is Ethan's call.
+
+⭐ **`font` is a tag key** (a string). That is a direct answer to the question he deferred:
+*"It depends on if we can get fonts working cleanly. Scratched messy text with occasional
+bolded or colored words for emphasis looks a hell of a lot better than just flat colored
+text."* `/im codes` and `/im font` are built to settle whether inline § emphasis survives
+the send, or whether emphasis has to come from the tag keys instead.
