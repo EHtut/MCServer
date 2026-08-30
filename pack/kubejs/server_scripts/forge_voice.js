@@ -498,8 +498,24 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   ServerEvents.loaded(function () {
-    if (!VELDORA.voice) { console.error(TAG + 'voice.js missing'); return }
-    VELDORA.voice.setColour(GOD, COLOUR)
+    if (!VELDORA.pantheon) { console.error(TAG + 'pantheon.js missing'); return }
+
+    // ⚠️ DERIVED FROM THE POOLS, NOT RESTATED. Five banners lied in one day this month
+    // because they hardcoded a rule another file owned. This counts what is actually
+    // written, so it cannot drift - and it is genuinely HERS, which is why it is computed
+    // here and handed over rather than living in the shared registrar.
+    var holds = 0, hl = ['hold_none', 'hold_item', 'hold_weapon', 'hold_food']
+    for (var i = 0; i < hl.length; i++) if (CONTEXT[hl[i]] && CONTEXT[hl[i]].length) holds++
+
+    // ⭐ The plumbing moved to pantheon.js; her WRITING did not move an inch.
+    VELDORA.pantheon.define(GOD, {
+      colour: COLOUR,
+      label: 'The Goat',
+      lines: LINES,
+      context: CONTEXT,
+      note: 'Accent written. Trust at ' + MEDIUM_AT + '/' + HIGH_AT + ' things built. ' +
+        holds + '/4 hold contexts answered (no other god fills more than 2). Below the ' +
+        'deep cutoff she does NOT speak - Caebrim does',
 
     // ⭐⭐ SHE CANNOT HOLD STILL. Ethan, 2026-08-30: *"Forge - Shaking and random across
     // your screen - She will need an overhaul to make her sentences shorter, with more
@@ -515,8 +531,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     //
     // 🔑 Same two flags, opposite meanings, because the CHARACTER decides what a motion
     // means. If these two ever end up feeling alike, the fix is here, not in the engine.
-    if (typeof VELDORA.voice.setStyle === 'function') {
-      VELDORA.voice.setStyle(GOD, {
+      style: {
         anchor: 'CENTER_CENTER',
 
         // ⚠️ A LOOSER BOX THAN WALL'S (150x70). Wall circles the middle - she stays near
@@ -542,32 +557,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // Smallest of the five. She is chattering, not proclaiming - Art demands to be
         // heard and Blade speaks down at you; Forge is just talking.
         size: 0.9,
-      })
-    }
-
-    var n = 0, tags = 0
-    for (var k in LINES) {
-      if (!LINES.hasOwnProperty(k)) continue
-      if (VELDORA.voice.registerLines(GOD, k, LINES[k])) { n += LINES[k].length; tags++ }
-    }
-    var ctxn = 0, ctxtags = 0
-    for (var c in CONTEXT) {
-      if (!CONTEXT.hasOwnProperty(c)) continue
-      if (VELDORA.voice.registerLines(GOD, c, CONTEXT[c])) { ctxn += CONTEXT[c].length; ctxtags++ }
-    }
-
-    if (!n && !ctxn) {
-      console.error(TAG + 'THE GOAT HAS NO VOICE - every pool is empty')
-      return
-    }
-    // ⚠️ DERIVED FROM THE POOLS, NOT RESTATED. Five banners lied in one day this
-    // month because they hardcoded a rule another file owned. This one counts what
-    // actually registered, so it cannot drift.
-    var holds = 0, hl = ['hold_none', 'hold_item', 'hold_weapon', 'hold_food']
-    for (var i = 0; i < hl.length; i++) if (CONTEXT[hl[i]] && CONTEXT[hl[i]].length) holds++
-    console.info(TAG + 'The Goat speaks - ' + n + ' fixed + ' + ctxn + ' contextual, ' +
-      'across ' + (tags + ctxtags) + ' tags, accent written. Trust at ' + MEDIUM_AT +
-      '/' + HIGH_AT + ' things built. ' + holds + '/4 hold contexts answered (no other ' +
-      'god fills more than 2). Below the deep cutoff she does NOT speak - Caebrim does.')
+      },
+    })
   })
 })();

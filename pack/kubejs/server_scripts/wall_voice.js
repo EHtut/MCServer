@@ -685,8 +685,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ReferenceError that KubeJS logs WITHOUT a level - invisible to `logq errors`
   // until that tool was repaired on 2026-08-15. docs/41 invariant #13.
   ServerEvents.loaded(function (event) {
-    if (!VELDORA.voice) { console.error(TAG + 'voice.js missing'); return }
-    VELDORA.voice.setColour(GOD, COLOUR)
+    if (!VELDORA.pantheon) { console.error(TAG + 'pantheon.js missing'); return }
+
+    // ⭐ The plumbing moved to pantheon.js; not one word she says moved with it.
+    //
+    // ⚠️ WRITTEN/POOL_COUNT above stays where it is, at SCRIPT-EVAL time. The
+    // registrar counts coverage too, but it does so inside `loaded` - and wall_events.js
+    // sorts BEFORE this file and reads VELDORA.wall.written from its own loaded handler,
+    // so an eval-time count is the whole point rather than a duplication.
+    VELDORA.pantheon.define(GOD, {
+      colour: COLOUR,
+      label: 'The Spider',
+      lines: LINES,
+      frags: FRAGS,
+      context: CONTEXT,
+      note: 'Tiers at ' + MEDIUM_AT + '/' + HIGH_AT + ' rage',
 
     // ⭐⭐ THE CRASHOUT POOL. Fired by grudge.js when this god stops arguing and
     // actually STRIKES - the reprisal after a champion of theirs was killed. It is
@@ -699,12 +712,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     //
     // ⚠️ Only the three gods who RETALIATE have one. Forge and Art never reach
     // this line at all, and their silence is a posture rather than a missing pool.
-    if (typeof VELDORA.voice.registerLines === 'function') {
-      VELDORA.voice.registerLines(GOD, 'crashout', [
+      crashout: [
         '[CLAUDE-DRAFT] They were mine. Every one of them was mine.',
         '[CLAUDE-DRAFT] You do not get to walk away from that.',
         '[CLAUDE-DRAFT] I am sending them now. All of them.',
-      ])
+      ],
 
       // ⭐⭐ MOVEMENT 2. Ethan, docs/75 §2: *"normal and garbled text across your screen
       // before a flat 'I will kill you' in slow dark red slightly shaking typed text in
@@ -723,10 +735,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // the command route (B2 / D-123 - `sendcustom` hardcodes typewriter(1.0f, false)).
       // It types at the normal rate and is then HELD for six seconds, which buys the
       // stillness but not the slowness. Flagged rather than quietly called done.
-      VELDORA.voice.registerLines(GOD, 'crashout_flat', [
+      crashoutFlat: [
         '[CLAUDE-DRAFT] I will kill you.',
-      ])
-    }
+      ],
 
     // ⭐⭐ SHE IS NOT ON THE SCREEN, SHE IS INSIDE YOUR HEAD. Ethan, 2026-08-30:
     // *"Wall - Randomized across the screen like she's whispering into your skull."*
@@ -739,8 +750,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // ⚠️ CENTER_CENTER IS THE ORIGIN, NOT THE PLACEMENT. `scatter` offsets from it
     // every single line, so anchoring her centrally means she can land anywhere in a
     // box around the middle rather than clinging to one edge.
-    if (typeof VELDORA.voice.setStyle === 'function') {
-      VELDORA.voice.setStyle(GOD, {
+      style: {
         anchor: 'CENTER_CENTER',
 
         // ⚠️ THE NUMBERS ARE A BOX, AND THEY ARE DELIBERATELY NOT SQUARE. Wider than
@@ -771,35 +781,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // Smaller than Art and Blade. A whisper is not a proclamation, and she is the
         // only one of the three not trying to be looked at.
         size: 0.95,
-      })
-    }
-    var n = 0, tags = 0
-    for (var k in LINES) {
-      if (!LINES.hasOwnProperty(k)) continue
-      if (VELDORA.voice.registerLines(GOD, k, LINES[k])) { n += LINES[k].length; tags++ }
-    }
-    var combo = 0
-    for (var fr in FRAGS) {
-      if (!FRAGS.hasOwnProperty(fr)) continue
-      if (VELDORA.voice.register(GOD, fr, FRAGS[fr].opens, FRAGS[fr].closes)) {
-        combo += FRAGS[fr].opens.length * FRAGS[fr].closes.length
-        tags++
-      }
-    }
-    var ctxn = 0
-    for (var c in CONTEXT) {
-      if (!CONTEXT.hasOwnProperty(c)) continue
-      if (VELDORA.voice.registerLines(GOD, c, CONTEXT[c])) { ctxn += CONTEXT[c].length; tags++ }
-    }
-    // 🚨 AN UNWRITTEN GOD IS LOUD, NOT SILENT. "loaded fine" and "has anything to
-    // say" are different claims, and a subsystem configured on that produces nothing
-    // is the failure mode this project keeps paying for.
-    if (!n && !combo && !ctxn) {
-      console.error(TAG + 'THE SPIDER HAS NO VOICE - every pool is empty')
-    } else {
-      console.info(TAG + 'The Spider speaks - ' + n + ' fixed + ' + ctxn +
-        ' contextual + ' + combo + ' combinatorial, across ' + tags +
-        ' tags. Tiers at ' + MEDIUM_AT + '/' + HIGH_AT + ' rage.')
-    }
+      },
+    })
   })
 })();

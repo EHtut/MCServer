@@ -1,0 +1,1894 @@
+{
+ "art": {
+  "colour": "§1§l",
+  "frags": {},
+  "garbled": false,
+  "style": {
+   "anchor": "CENTER_CENTER",
+   "font": "veldora:art",
+   "shake": false,
+   "size": 1.25,
+   "wave": true
+  },
+  "whole": {
+   "combat": [
+    "Don't die. It's inconvenient for me.",
+    "I have already seen how this ends. Get there.",
+    "You will step left. You always step left. Do it faster this time.",
+    "Efficient. Barely.",
+    "I am not worried. I am incapable of being worried. Try to find that comforting."
+   ],
+   "contract_offer": [
+    "{target} is in my way. I would move them myself. You know why I cannot.",
+    "Kill {target}. I am asking, which is more courtesy than the request deserves.",
+    "There is a name I want removed. {target}. Three days.",
+    "{target}. Before the week turns. I will not explain and you will not ask."
+   ],
+   "cut_down": [
+    "You got too good at this. I don't reward that. I end it.",
+    "This was never going to end with you retiring somewhere warm. You knew that. I know you knew that.",
+    "You were the closest thing I've had to a hand of my own. That's exactly the problem.",
+    "No speech. No last lesson. You already learned the one that mattered: everything I lend, I take back.",
+    "Hold still. I've done this before, and it goes faster when you don't fight it.",
+    "I raised something of my own once. It worked. I am the only one who remembers his name."
+   ],
+   "demand_art": [
+    "You are mine already, so I will skip the part where I persuade you.",
+    "Two of you. I had not planned for two of you. Do this anyway.",
+    "Do not mistake being asked for being favoured. The other one is not being asked."
+   ],
+   "demand_blade": [
+    "You don't answer to me. Answer anyway. It's faster.",
+    "Your god learned everything he knows about obedience somewhere. Consider where.",
+    "Your god isn't here. I am. Draw your own conclusions.",
+    "I asked. That was the courtesy. There isn't a second one.",
+    "Blade's champion, doing Blade's work, standing in front of me. Interesting choices."
+   ],
+   "demand_forge": [
+    "You follow the Goat. I am going to need you to be useful in spite of that.",
+    "She would tell you not to. She tells everyone not to, at length, and then does nothing.",
+    "One task. Do not report it to her. She could not keep it to herself if she tried.",
+    "Of all of them, hers. Fine. Listen carefully, I will only say this once."
+   ],
+   "demand_salvage": [
+    "Salvage would tell you this is a bad trade. She'd be right. Do it anyway.",
+    "You work for the honest one. I'm not going to pretend I am. Do it regardless.",
+    "One task. She'd have told you the price first. I won't.",
+    "Salvage's champion. Tell her I said hello. Tell her nothing else."
+   ],
+   "demand_wall": [
+    "You belong to Wall. That's not an argument, it's a fact I'm setting aside.",
+    "She isn't watching right now. I am. Use the difference.",
+    "I don't need you to be loyal. I need you to be useful for one minute.",
+    "Wall's champion. I'll keep this brief, for both our sakes.",
+    "Of all of them, hers. Fine. Stand there and let me get through this."
+   ],
+   "guidance": [
+    "Source pools do not fill themselves. Go dig some.",
+    "You will not find glyphs standing here. Walk.",
+    "Go west. I am not going to explain how I know that.",
+    "A ritual needs a circle. A circle needs work. Go do it.",
+    "There is nothing left to learn from me today. Leave.",
+    "Archwood does not grow near me. That should tell you something.",
+    "Every apprentice thinks the answer is closer than it is. I have watched a great many of them be wrong about it.",
+    "Go further out. The easy sources are already spent.",
+    "You will come back here in four days having done none of this. Prove me wrong. You will not."
+   ],
+   "harvest_lost": [
+    "You failed. I'm not surprised, and I'm not disappointed. Disappointment requires expectation.",
+    "That's that, then. I'm not replacing you. I'd have to explain everything again.",
+    "Some fail quietly. You didn't even manage that."
+   ],
+   "harvest_won": [
+    "You passed. I did not expect that, and I do not enjoy being wrong.",
+    "That was almost adequate. Almost is new, for you.",
+    "The trial is behind you. What comes next is worse."
+   ],
+   "high_gift": [
+    "This is more than I give most. Note the word most.",
+    "You are becoming difficult to replace. I am already thinking about that.",
+    "Few champions reach this. Fewer enjoy what comes after.",
+    "Take it. You've earned the attention, which is worse than earning nothing.",
+    "You are mine now. I do not say that warmly and I do not take it back."
+   ],
+   "high_silence": [
+    "I already know how this goes. Saying it would only slow you down.",
+    "Nothing to say. Everything to see. Those are not the same and I have both.",
+    "I watched this a long time ago. Go on.",
+    "There is nothing you can do in front of me that I have not already had time to get bored of.",
+    "I don't need to speak to know what you did. Or what you are going to."
+   ],
+   "loc_above": [
+    "Nothing is happening. That is usually preferable.",
+    "The sky is doing what it does. So am I.",
+    "Stand there if you like. It changes nothing.",
+    "This place is quiet. I prefer it that way.",
+    "I have no orders for you. Find your own use."
+   ],
+   "low_gift": [
+    "Take it. Try not to lose it in the first hour.",
+    "A starting tool. Everyone gets one. Few keep it long.",
+    "This costs me nothing to give. Remember that.",
+    "Small hands need small things. Here.",
+    "You are not one of mine yet. This is what not-yet gets."
+   ],
+   "low_silence": [
+    "Nothing.",
+    "I have nothing for you yet. Come back when that changes.",
+    "You haven't done enough to warrant words.",
+    "Speak to someone who cares what you did today. Not me."
+   ],
+   "medium_gift": [
+    "You did something correct. This is the reward for that, not for you.",
+    "Better work earns better tools. Simple arithmetic.",
+    "You've stopped being useless. This reflects that, narrowly.",
+    "Consider this a raised ceiling, not a compliment.",
+    "You are further in than you were. People do not usually notice that happening."
+   ],
+   "near_blade": [
+    "Blade thinks strength has to come from your own arm. Naive, but I understand the appeal.",
+    "He defers to me and he has never once asked himself why. I would rather he didn't start.",
+    "He'll tell you my gifts make you weaker. He's wrong about most things.",
+    "Ask him why he still needs a champion, if his own arm is so sufficient."
+   ],
+   "near_forge": [
+    "The Goat's. Of course it is.",
+    "That one talks. Constantly. To everyone. It is not warmth, it is a lack of discipline.",
+    "Ask your friend there what she thinks she is. Then ask who told her she could be it.",
+    "I have nothing to say about the Goat. I have had four hundred years of nothing to say about the Goat.",
+    "Whatever she called me, she was a child. That is the entire defence and I have heard it."
+   ],
+   "near_salvage": [
+    "Salvage will tell you the truth and then let you walk away from it. Unusual, for one of us.",
+    "She's the only one who means it when she says you can go.",
+    "Trade with her if you must. She won't lie to sweeten it.",
+    "I have no quarrel with that one. Enjoy how rare that is."
+   ],
+   "near_wall": [
+    "Wall will love you the way she loves everything. Completely, and past the point you wanted it.",
+    "That one was born into it. Some of us were assembled. I am told the difference does not matter.",
+    "She grieves everyone before they're gone. Exhausting to watch. Worse to receive.",
+    "Ask her sometime whose daughter she is. Ask her slowly. I want it to take a while.",
+    "Don't let her hold on too long. She doesn't know how to stop.",
+    "She inherited hers. Every single thing I have, I was given, and giving can be revoked."
+   ],
+   "rare_loc_above": [
+    "I had hands once. Warm ones. I don't discuss the rest.",
+    "Ice meant something simpler, before. That is the entire story and you have had all of it.",
+    "You are waiting for me to continue. I have noticed. I am not going to.",
+    "There was a before. There is no version of this where I describe it to you."
+   ],
+   "returned": [
+    "You went somewhere. Nothing here noticed.",
+    "Back. Fine.",
+    "I didn't wonder where you went. Don't mistake this for that.",
+    "Time passed. You're still adequate. Barely."
+   ]
+  }
+ },
+ "blade": {
+  "colour": null,
+  "frags": {
+   "art": {
+    "closes": [
+     "Simple, and I have no complaint with simple.",
+     "That is the only obedience I have, and it is enough.",
+     "I have nothing to say about that. Neither does she.",
+     "Neutral is not the same as absent.",
+     "She does not need my opinion of her.",
+     "That is her business, not mine."
+    ],
+    "opens": [
+     "The Matriarch speaks little and rules the most.",
+     "Her realm is magic. Her opinions are few.",
+     "Her hand moves. She rarely does.",
+     "She leads five gods and argues with none of them.",
+     "The Matriarch's silence says more than her voice.",
+     "Magic answers to her. Little else does."
+    ]
+   },
+   "forge": {
+    "closes": [
+     "Respect that. Few of the five deserve it.",
+     "Glory built alone is glory half-made.",
+     "Work with him. That is not weakness.",
+     "He is the engine. You are still the war.",
+     "That much I do not dispute.",
+     "Cooperation is not the same as dependence.",
+     "Use it. Waste is the only sin here.",
+     "He has earned that much from me."
+    ],
+    "opens": [
+     "The Thief builds what your arm alone cannot.",
+     "The engineer forges the war you fight.",
+     "The Thief is tolerable. His work is not.",
+     "No champion wins alone. The engineer sees to that.",
+     "The forge burns for every battle you have yet to fight.",
+     "The Thief demands cooperation, and he has earned the right to.",
+     "His engines carry weight your sword cannot.",
+     "The Thief builds glory. You still have to claim it."
+    ]
+   },
+   "idling": {
+    "closes": [
+     "Go waste it on something that fights back.",
+     "Stillness won't make you stronger.",
+     "I didn't equip you to watch.",
+     "Find something worth killing.",
+     "You're wasting what you've got.",
+     "Move before I lose interest.",
+     "Something out there is waiting to test you.",
+     "Go earn something.",
+     "Every idle moment is one you don't get back.",
+     "Get moving."
+    ],
+    "opens": [
+     "You've been standing there a while.",
+     "Nothing's died by your hand today.",
+     "I don't see a fight near you.",
+     "That's a long time doing nothing.",
+     "The arena's empty because you're not in it.",
+     "Your blade hasn't moved in a while.",
+     "You're still here.",
+     "Something should be dying right now.",
+     "This is not what strength looks like.",
+     "You've gone quiet for too long."
+    ]
+   },
+   "lore": {
+    "closes": [
+     "Their names did not survive the telling.",
+     "That has never once been true.",
+     "You are one more attempt among many.",
+     "War is the only honest one among them.",
+     "I was already old when it began.",
+     "That does not make you interesting.",
+     "The dust does not complain.",
+     "You will learn this, or you will join them.",
+     "That is the only mercy this place has ever offered.",
+     "None of that concerns me.",
+     "It has done worse to better champions.",
+     "I have outlasted every one of them."
+    ],
+    "opens": [
+     "This world was cursed before you were born.",
+     "Five gods rule what is left of this place.",
+     "Champions have kneeled on this ground for a thousand years.",
+     "Every champion before you believed he was the last.",
+     "This world has buried better than you.",
+     "The gods do not agree on much.",
+     "There were champions here before the curse had a name.",
+     "The ground beneath you has swallowed a hundred like you.",
+     "None of the five gods forgive.",
+     "This world rewards nothing it has not first broken.",
+     "The champions before you are dust now, all of them.",
+     "The curse does not care whose fault it was."
+    ]
+   },
+   "push": {
+    "closes": [
+     "That is the only prayer I answer.",
+     "Nothing else earns my attention.",
+     "Weakness is a choice you keep making.",
+     "I will not ask you again.",
+     "There is no version of this that waits.",
+     "Comfort has killed more champions than I have.",
+     "You do not get to rest yet.",
+     "That is the only path I recognise.",
+     "Strength or nothing. There is no middle.",
+     "The sun does not wait for Phaethon either.",
+     "Move, or move aside.",
+     "I have watched better men choose worse."
+    ],
+    "opens": [
+     "Pick up the blade.",
+     "Find something worth fighting.",
+     "Strength does not arrive. You take it.",
+     "Fight something. Anything.",
+     "Bleed for it, or do not bother.",
+     "Test yourself against something that can kill you.",
+     "Grow, or get out of my sight.",
+     "Chase the ones stronger than you.",
+     "Icarus flew before you did. Fly anyway.",
+     "Prove it with your hands, not your excuses.",
+     "The strong do not wait to be told twice.",
+     "You are not finished. Not close."
+    ]
+   },
+   "salvage": {
+    "closes": [
+     "Tolerable. Barely.",
+     "A bargain never won a war.",
+     "Her champions earn respect. She does not.",
+     "That much, at least, I respect.",
+     "Noise, mostly. But not nothing.",
+     "Her bark carries further than her deals.",
+     "Strength does not need a contract.",
+     "Annoying. Her champions are not wrong to follow her."
+    ],
+    "opens": [
+     "The dog barters where a blade would do.",
+     "The Hound strikes another deal nobody asked for.",
+     "Her champions hit harder than her trades ever will.",
+     "The dog trades favours like they mean something.",
+     "The Hound is loyal to a fault, and loud about it.",
+     "Her champions do not need her deals to win.",
+     "The dog collects debts nobody remembers owing.",
+     "The Hound calls it diplomacy. I call it noise."
+    ]
+   },
+   "wall": {
+    "closes": [
+     "Weakness, dressed up as devotion.",
+     "Love has never won a war.",
+     "Strength borrowed is strength you do not own.",
+     "Mercy is a debt she cannot stop paying.",
+     "Her champions have never once stood alone.",
+     "That is not strength. That is dependence.",
+     "I have no patience for what she calls love.",
+     "She mistakes attachment for power."
+    ],
+    "opens": [
+     "The spider spins her nests and calls it love.",
+     "The Mother weeps for every champion she loses.",
+     "Her web holds diligently, her champions less so.",
+     "The spider's champions borrow their strength from her silk.",
+     "She calls her obsession devotion.",
+     "The Mother would drown this world in her mercy.",
+     "Her champions fight with someone else's hands.",
+     "The spider never lets a champion go."
+    ]
+   }
+  },
+  "garbled": false,
+  "style": {
+   "anchor": "TOP_CENTER",
+   "font": "veldora:blade",
+   "y": 40
+  },
+  "whole": {
+   "argue_accuse": [
+    "Your champion has put mine in the dirt three times. I am beginning to take it personally.",
+    "Call it off, or admit you enjoy this.",
+    "You are wasting a good fighter on ambushes. That is what offends me."
+   ],
+   "argue_answer": [
+    "So? That means they were weak.",
+    "Then it should not have died. I fail to see the complaint.",
+    "You are describing a fight. I do not know what you want from me."
+   ],
+   "argue_refuse": [
+    "Then let me.",
+    "I have been threatened by better and buried them.",
+    "Do what you like. I will not pretend to be frightened."
+   ],
+   "argue_threat": [
+    "Do it again and I stop being polite about it.",
+    "I will take it out of yours. Slowly, and where it can be seen.",
+    "You have one more. Spend it carefully."
+   ],
+   "argue_unanswered": [
+    "Silence. From a god. What a waste of a throne.",
+    "It says nothing, so it agrees with me. That is how I will take it.",
+    "Answer me. ...No? Then I was right, and we are done."
+   ],
+   "broken_rung": [
+    "The thing that killed you brought company.",
+    "It killed you once. Correct that.",
+    "You fell to this. Do not fall twice.",
+    "Three of them now. Learn faster.",
+    "It is waiting where you left it. So am I."
+   ],
+   "burden": [
+    "Slow. Deal with it.",
+    "Carry it.",
+    "You do not get to leave this one.",
+    "No. Stay where you are."
+   ],
+   "contract_offer": [
+    "{target} is still walking around. I would take it as a favour.",
+    "Would you kill {target} for me. You may say no.",
+    "{target}. I am asking, not ordering. The difference is yours to spend.",
+    "I want {target} dead, and I am willing to ask for it.",
+    "If you have the time: {target}. If not, say so and I will stop."
+   ],
+   "contract_paid": [
+    "Paid. I do not enjoy owing anyone.",
+    "Take it. The asking cost me more than the coin did.",
+    "Settled. We are even, which I prefer to grateful."
+   ],
+   "crashout": [
+    "[CLAUDE-DRAFT] You killed one of mine. Now you find out what that costs.",
+    "[CLAUDE-DRAFT] I gave you a blade. I did not give you permission.",
+    "[CLAUDE-DRAFT] Look at me. I want you to know it was me."
+   ],
+   "duel": [
+    "One of mine. No crowd, no help, no excuses.",
+    "This one is not a wave. It is a single opponent, and it is better than you.",
+    "Alone against one. That is the oldest test there is."
+   ],
+   "duel_fled": [
+    "You ran.",
+    "You left the ground. I will remember that longer than you will.",
+    "Noted. You had one opponent and chose distance."
+   ],
+   "first_blood": [
+    "The next thing you swing at, I am making harder.",
+    "Pick your target carefully. I am about to improve it.",
+    "Whatever you strike next will strike back properly."
+   ],
+   "first_blood_hit": [
+    "There. Now it is worth killing.",
+    "Now finish what you started.",
+    "Better. Deal with it."
+   ],
+   "first_blood_late": [
+    "You did not swing at anything. So I sent something to swing at you.",
+    "A minute, and no fight in you. Here is one.",
+    "You waited. Now you do not have to look."
+   ],
+   "guidance": [
+    "Learn one weapon until it is boring. Then learn what it does that the others cannot.",
+    "Every weapon swings its own way. A man who carries five has mastered none.",
+    "You can roll out of a blow. Learn where that is bound before you need it.",
+    "Nothing above the treeline will ever be worth killing. Go down.",
+    "Deeper corpses pay better. Descend, Champion.",
+    "Armour is borrowed. A weapon in your hand is not. Carry your power where it cannot be raided.",
+    "Two hands on it. Even that will not be enough yet.",
+    "Do not let short sightedness blind you. Master every blade."
+   ],
+   "harden": [
+    "Harder to kill. Slower to kill. Now it lasts.",
+    "I have made this take a while. Do not thank me.",
+    "You will not win quickly. That is the point of it.",
+    "Endure. Winning fast teaches you nothing worth keeping.",
+    "Stand up longer than you want to."
+   ],
+   "harvest_lost": [
+    "Predictable.",
+    "You are not yet ready."
+   ],
+   "harvest_offer": [
+    "You could stay. I would not ask twice.",
+    "There is a place here if you want it. Go, if you do not.",
+    "Stay, or go. Either is yours now. That is the whole point."
+   ],
+   "harvest_open": [
+    "It is time. I am sending the best thing I have.",
+    "Everything until now was preparation. This is the test.",
+    "One opponent. Mine. Now we find out."
+   ],
+   "harvest_won": [
+    "Predictable.",
+    "I always knew I made the right choice.",
+    "The goddess of death awaits below.",
+    "Find her. End her."
+   ],
+   "high_silence": [
+    "Noted.",
+    "That's not nothing.",
+    "Few make it this far.",
+    "I've stopped worrying about you.",
+    "You didn't need me for that one.",
+    "Keep that up and I'll run out of things to teach you.",
+    "I don't say this often.",
+    "You're becoming a problem for your enemies.",
+    "I have seen worse stand where you are standing.",
+    "That was competent. I will not say it twice.",
+    "You are no longer the weakest thing I am watching.",
+    "Hm.",
+    "I would have done it differently. It worked anyway.",
+    "There are fewer things above you than there were.",
+    "You have stopped needing me to say anything.",
+    "Good."
+   ],
+   "high_test": [
+    "Something worth your time, finally.",
+    "Let's see what you're really made of.",
+    "This might actually challenge you.",
+    "I sent something dangerous. Good.",
+    "Now we find your limit.",
+    "This one could kill you. Good.",
+    "Show me something I haven't seen.",
+    "Finally, an opponent worth the name.",
+    "Fly as high as you like. I'll be watching how you land.",
+    "This is the kind of fight I remember."
+   ],
+   "hollow": [
+    "These carry nothing. Kill them anyway.",
+    "There is no reward in this. Fight.",
+    "Nothing drops from these. That was never the point.",
+    "You will gain nothing here but the doing of it.",
+    "No spoils. Only the work."
+   ],
+   "icarus": [
+    "For it was Icarus who flew too close to the sun. You will share his fate.",
+    "You climbed. Of course you climbed.",
+    "The sky was never yours. Come down, or be brought down.",
+    "Height is a debt. They are here to collect it.",
+    "Phaethon took the reins too. Look up."
+   ],
+   "idling": [
+    "Then no. It costs me nothing.",
+    "Suit yourself. The offer was the whole of my interest.",
+    "Noted. I will not ask twice in a row.",
+    "You will want it later. I may be busy later.",
+    "As you like. Standing still is also a choice."
+   ],
+   "loc_above": [
+    "The goddess below rules the underworld unchecked.",
+    "You are growing. Good.",
+    "I am not disappointed in your growth. There is still room to grow.",
+    "I can feel your trepidation. Descend, champion.",
+    "The Goat god and their champion are your path to sustenance. Lean on your allies.",
+    "Be wary of the Wolf's deals, for one day she may offer you one. Deny her.",
+    "The Matriarch has led the Court for centuries. Do not mistake authority for power.",
+    "The spider. I despise that damnable god. She is but a step away from the evil we fight against."
+   ],
+   "loc_below": [
+    "The minions of death swarm.",
+    "Be on your guard. You will be tested.",
+    "I want this clean. No mistakes. No retreat.",
+    "Grow, champion. Hone your blade against those who threaten our lands above.",
+    "She was banished down here for a reason, the goddess of death. We will remind her why."
+   ],
+   "low_gift": [
+    "Take it. You're no use to me dead.",
+    "Iron. Don't waste it standing still.",
+    "This keeps you breathing. Use it well.",
+    "Armour. Put it on before you bleed.",
+    "You need this more than I need to give it.",
+    "Take the blade. Earn the next one.",
+    "Supplies. Spend them like they matter.",
+    "You can't fight with empty hands. Here.",
+    "This isn't strength. It's a chance to reach it.",
+    "Gear up. I don't waste effort on corpses."
+   ],
+   "low_push": [
+    "Move. The fight won't come to you.",
+    "Enough standing. Fight.",
+    "Find something and kill it.",
+    "You are wasting time, Champion.",
+    "There's no strength in waiting. Go.",
+    "Something out there needs killing. Find it.",
+    "You don't grow standing still. Move.",
+    "Get out there and bleed for it.",
+    "Fight now. Rest when you've earned it.",
+    "The only way through this is through it. Go."
+   ],
+   "mark_declare": [
+    "{target} fights with borrowed strength. Kill them within two days.",
+    "Find {target}. End them before the sun sets twice.",
+    "{target} serves a spider and calls it power. I want them dead.",
+    "Two days. {target} does not see a third.",
+    "Bring me {target}'s fall, not their excuses.",
+    "{target} wears strength that is not theirs. Cut it off them.",
+    "I despise {target}. You have two days to matter to me.",
+    "Kill {target}. Do it before I forget I asked."
+   ],
+   "mark_ignored": [
+    "You did not kill them. Of course you did not.",
+    "The days passed. So did my interest.",
+    "I asked one thing. You gave me nothing.",
+    "Fine. Let the spider keep her borrowed strength.",
+    "I will not punish you. I will simply expect less.",
+    "You failed to matter today. Try not to make it a habit.",
+    "The moment passed you by, as most do.",
+    "Forget it. I already have."
+   ],
+   "mark_success": [
+    "Dead. As it should be.",
+    "Good. One less parasite wearing someone else's strength.",
+    "You did what was needed. Nothing more needs saying.",
+    "It is done. I expected nothing less.",
+    "The spider's champion falls. Unremarkable, as intended.",
+    "Good.",
+    "That is one fewer borrowed sword in this world.",
+    "Clean. I have no notes.",
+    "She will feel that. Let her."
+   ],
+   "medium_gift": [
+    "Not much. You don't need much anymore.",
+    "Small, but you've earned that much.",
+    "Take it. You're closer to not needing me.",
+    "This, and no more. You're managing well enough.",
+    "A little help. You've been managing without it.",
+    "This is less charity now, more habit.",
+    "Here. Call it a formality.",
+    "You need this less than you did. Take it anyway.",
+    "Small gift. Don't get comfortable.",
+    "This should cover what's left of your weakness."
+   ],
+   "medium_test": [
+    "This one's a test. Don't waste it.",
+    "I'm watching this fight closely.",
+    "Show me the last one wasn't luck.",
+    "This is a measure, not a gift.",
+    "I want to see how you handle this.",
+    "Consider this an exam.",
+    "Fight like I'm keeping score. I am.",
+    "This is harder on purpose. Show me why.",
+    "Let's see what you've actually learned.",
+    "I'm paying attention now. Don't waste it."
+   ],
+   "near_salvage": [
+    "The emissary of the wolf. Do not trust them.",
+    "That one deals before they draw. Watch which they reach for first.",
+    "Their might is respectable. Their patron is noise."
+   ],
+   "near_wall": [
+    "The spider's underling. Keep distance from that one, lest they bore you.",
+    "They fight with borrowed strength. Do not learn it from them.",
+    "Mercy, dressed up as devotion. Walk on."
+   ],
+   "rare_loc_above": [
+    "This land is an old one. A nameless one.",
+    "You have no memories of arrival. That is all right. Instead, focus on your blade.",
+    "I had a name in life once. That was centuries ago.",
+    "I am a prisoner here, like you. Know that we fight for the same cause.",
+    "The Spider and her consort... they are the closest to my kind. I cannot help but feel attachment.",
+    "What does the sun feel like on your skin? I barely remember.",
+    "The Spider... Why can I hear her name?",
+    "The goat, he has caused thousands of atrocities and yet he was deemed worthy of ascension.",
+    "The Matriarch once led my kind. Once. Be wary of her champion."
+   ],
+   "tithe": [
+    "Your steel owes me. It will wear twice as fast until it has paid.",
+    "A day of doubled wear. Fight anyway.",
+    "Everything you swing is on loan. I am calling in the interest."
+   ],
+   "tithe_over": [
+    "Your steel is your own again.",
+    "The debt is paid. Look after it better.",
+    "Done. It held, or it did not."
+   ],
+   "understudy": [
+    "I made one of you. Let us see which is better.",
+    "It has your health, your reach, your weapon. Nothing else.",
+    "Fight yourself. Most champions lose."
+   ],
+   "wager_declined": [
+    "Then no.",
+    "Fair. I asked.",
+    "Another time, or not."
+   ],
+   "wager_offer": [
+    "One opponent. Strong. Yes or no.",
+    "I have something worth fighting. Say the word or do not.",
+    "There is a fight here if you want it. I will not offer twice.",
+    "Something better than what you have been killing. Your call."
+   ],
+   "wager_won": [
+    "You killed it. Take the payment.",
+    "Settled. That is all this is.",
+    "Yours. I said it would pay, and it pays.",
+    "Debt closed. Do not read anything into it."
+   ],
+   "warn_incoming": [
+    "A champion comes for you. Ensure you win.",
+    "Seems a challenger approaches...",
+    "A challenge, one you are fit for. Win."
+   ],
+   "warn_wave": [
+    "Something is coming up behind you. Good.",
+    "Do you hear that? Stand where you are.",
+    "Company. Earn the ground you are standing on.",
+    "Here. Now we find out."
+   ],
+   "watcher": [
+    "I am going to stand here and watch. Do not mind me.",
+    "I will not lift a hand. Everything else will lift two.",
+    "Consider yourself observed. It will make the rest bolder."
+   ],
+   "watcher_gone": [
+    "Enough. I have seen what I came to see.",
+    "I am done watching.",
+    "That will do. For now."
+   ]
+  }
+ },
+ "forge": {
+  "colour": "§2§l",
+  "frags": {},
+  "garbled": false,
+  "style": {
+   "anchor": "CENTER_CENTER",
+   "beatScale": 0.6,
+   "font": "veldora:forge",
+   "scatter": {
+    "x": 190,
+    "y": 95
+   },
+   "shake": true,
+   "size": 0.9
+  },
+  "whole": {
+   "argue_accuse": [
+    "That was mine. You knew that was mine.",
+    "- an' I'd only just got 'em buildin' the roof proper, so thank you kindly for that.",
+    "You didn't have to. That's the whole of what I got to say. You didn't have to."
+   ],
+   "argue_answer": [
+    "I ain't gonna pretend I understood a word of that.",
+    "Fine. Fine! I heard you.",
+    "Y'all always got a reason. Everybody down here's always got a reason."
+   ],
+   "argue_refuse": [
+    "Nope. I ain't doin' this bit.",
+    "I'd sooner go back to what I was doin', honestly.",
+    "You can have the last word. You take it anyhow."
+   ],
+   "argue_threat": [
+    "An' I'd threaten you, 'cept we both know I ain't gonna, so let's skip it.",
+    "I got nothin' to hurt you with. Never did build one of those.",
+    "Consider yourself glared at."
+   ],
+   "argue_unanswered": [
+    "- an' don't nobody say nothin'. They never do. That's fine. I'll talk.",
+    "Quiet. From all of y'all. Wonderful.",
+    "Right. Well. I said it, an' it's said."
+   ],
+   "bored": [
+    "- an' now I've looked at everything over here. Twice. Both times.",
+    "You haven't made anything in AGES. I counted. I wasn't tryin' to count.",
+    "I might go see what the others are doin'. I'll come back though. I always come back.",
+    "Build somethin'! Anythin'! It doesn't even have to be good, that's the best part.",
+    "My brain wandered off an' I don't know the trick for gettin' it back yet."
+   ],
+   "combat": [
+    "- oh. Oh, that's a lot of 'em. Right. You know what you're doin'.",
+    "I'd run. An' I'm sayin' that as somebody who can't.",
+    "Hit it again! That's my whole contribution. Hit it again.",
+    "I don't like this part. I never like this part.",
+    "You're doin' better'n the last one. He was real brave an' it didn't help him none.",
+    "Is it s'posed to do that? Is it? I don't know what any of these are."
+   ],
+   "gift_left": [
+    "Suit yourself. It'll keep. I don't throw nothin' away.",
+    "No? Alright. That's allowed, y'know. Ain't everybody tells you that.",
+    "Fine. More for- well. Nobody. More for nobody."
+   ],
+   "gift_open": [
+    "I made you somethin'. You gotta take it, though. I ain't puttin' somethin' on you twice in one day.",
+    "There's a thing here for you. Yours if you want it, mine if you don't, an' either way I'm fine.",
+    "- so I built it, an' then I remembered you existed. You want it?"
+   ],
+   "gift_taken": [
+    "Good! Good. Right. Now go break it on somethin'.",
+    "That's the right answer. Weren't a wrong answer, but that's still the right one.",
+    "Ha! Yours."
+   ],
+   "guidance": [
+    "- an' that's BEFORE the water wheel! I wouldn't of put it there. You did. That's fine.",
+    "You could build it out of stone. Or not stone! I'm not the boss of it.",
+    "It'd work better upside down. Most things do. I don't know why.",
+    "Somebody made one that could lift a whole horse once. A HORSE. Nobody ever said why.",
+    "- anyway that's three times you walked past that spot so you're either thinkin' or you're lost, an' both is fine.",
+    "Build the ugly one first! The pretty one never gets finished. That's just true.",
+    "I got about a hundred ideas an' most of 'em are bad so just - more. Do more.",
+    "You don't need me to say yes. I'm not for that.",
+    "If it works an' it looks stupid it still WORKS. That's the whole thing.",
+    "- an' that's when I figured out nobody ever asked me. So. Whatever you want!"
+   ],
+   "harvest_lost": [
+    "Oh. Oh no. Well - that's alright. That's alright, you can go do it again.",
+    "You lost. Nothin' happens. Don't nobody take nothin' from you. That's how I do it.",
+    "I'd say I told you so, 'cept I didn't, an' I wouldn't."
+   ],
+   "harvest_won": [
+    "You're alive. I'll be honest, I didn't have a plan for if you weren't.",
+    "That's done, then. Didn't enjoy a second of it an' I'm real proud of you.",
+    "- an' it's over, an' you're standin', an' I'm gonna talk about somethin' else now."
+   ],
+   "high_gift": [
+    "Been savin' this one. Not for you specifically. But now it's for you specifically.",
+    "Ain't nobody else I'd hand this to, an' I've had a real long time to go lookin'.",
+    "Take it. An' keep buildin', 'cause watchin' you do it's the only thing down here that's new.",
+    "That's the finest thing I ever made an' I'm givin' it to a fella who'll drop it in lava inside a week.",
+    "- so I thought, well, she'd have liked this. An' then I thought, she ain't here, an' you are."
+   ],
+   "high_silence": [
+    "I ain't gonna fill this one. You're busy an' you know what you're doin'.",
+    "Nothin'. An' that's me choosin', which you oughta feel real flattered by.",
+    "- no. Never mind. You'd have thought of it."
+   ],
+   "hold_food": [
+    "Meat. Good. Eat it 'fore it turns - that ain't a suggestion.",
+    "- an' I'd give a great deal to know what that tastes like, so do me a kindness an' pay attention while you're doin' it.",
+    "That's a vegetable. Why is that a vegetable. Go find somethin' that used to run.",
+    "Chocolate! Get chocolate. Don't remember why that's the right answer but it is.",
+    "You been carryin' that two days. It ain't a pet."
+   ],
+   "hold_item": [
+    "What's that for? No, genuinely, what is that for.",
+    "- an' you could make about four things outta that, an' you're gonna make none of 'em, I can tell.",
+    "Oh, I like that one. Turn it over. TURN IT OVER.",
+    "Hold onto that. Not for a reason. I just like knowin' you got it.",
+    "That's the third one of those. You're collectin' 'em. You don't know you're collectin' 'em."
+   ],
+   "hold_none": [
+    "Empty hands. That's a waste of two perfectly good hands.",
+    "- nothin'? You're carryin' nothin'? What do you DO all day.",
+    "You ain't holdin' anything, which means you're thinkin', which means I oughta be quiet. I won't be.",
+    "Idle hands. I'd love idle hands. I'd love hands.",
+    "Pick somethin' up. Anything. I ain't gonna talk about the weather again."
+   ],
+   "hold_weapon": [
+    "Oh, lemme see it. Lemme SEE it.",
+    "- an' if you put a longer barrel on that it'd carry twice as far, which is 'bout the only advice I'm any good at.",
+    "Swords are fine. Swords are FINE. I'm only sayin' there's quicker ways to be right about somethin'.",
+    "Good weight on that. You can tell by how you're standin'.",
+    "Point it at somethin'. Not at me, obviously. Not that it'd do anything."
+   ],
+   "lend_ask": [
+    "The one that follows {rival}'s havin' a bad time of it. Would you go help? For me, not for them.",
+    "- an' somebody out there's stuck, an' you're the only one I got to ask, an' I'm askin'.",
+    "I want you to go help {rival}'s. I know. I KNOW. Do it anyhow."
+   ],
+   "lend_done": [
+    "You went. You actually went. I'm gonna be thinkin' on that a while.",
+    "That's the nicest thing anybody's done 'cause I asked. Grant you I don't ask much.",
+    "Good. Now don't nobody owe nobody nothin', which is how I like it."
+   ],
+   "lend_no": [
+    "That's fair. They ain't your problem. I just figured I'd ask.",
+    "No, I understand. Was a lot to ask an' I asked it anyhow.",
+    "Alright. Forget I said anything. I'll bring it up again in a week."
+   ],
+   "loc_above": [
+    "- an' the sky's still up there, which I check, 'cause one day it might not be.",
+    "Good weather for buildin'. All weather's good weather for buildin'.",
+    "You got a lot of room out here. Use more of it than you need to.",
+    "I like it up here. I ain't up here, but I like it."
+   ],
+   "loc_below": [
+    "- indoors. Fine. I can talk indoors.",
+    "Everything worth havin' is under somethin'. That ain't wisdom, it's just true.",
+    "Mind that ceilin'. I seen more folks killed by a ceilin' than by anything with teeth.",
+    "It's awful close in here. I don't mind. I don't breathe."
+   ],
+   "low_gift": [
+    "Here. I don't need it an' you might.",
+    "Take that. No, there ain't nothin' attached to it, why's everybody always ask that.",
+    "I found it. Well - I made it, but I found the idea, so it's 'bout the same.",
+    "A little one to start. I got a whole mess of these.",
+    "That's yours now. I already forgot I had it."
+   ],
+   "low_silence": [
+    "Nothin' from me. Still workin' out who you are.",
+    "I got nothin'. Happens 'bout once a century, enjoy it.",
+    "Hm. Nope. Lost it."
+   ],
+   "medium_gift": [
+    "You've built enough that I started payin' proper attention, which is worse for you than it sounds.",
+    "Better one. Made it thinkin' 'bout that thing you put up by the water, matter of fact.",
+    "Here. An' 'fore you ask - no. Still nothin' attached. I ain't like the others.",
+    "This one took me a while, which for me means I liked doin' it.",
+    "You earned it, 'cept you didn't, 'cause that ain't how I do this. Take it anyhow."
+   ],
+   "medium_silence": [
+    "I had somethin' an' it's gone. It'll come back 'round, they always do.",
+    "Nothin' worth sayin'. I'll say somethin' anyway later, don't you worry.",
+    "Quiet a spell. I'm watchin' what you're doin' with that."
+   ],
+   "near_art": [
+    "That one's Kayer's! Oh, tell her I said hey. Tell her I said hey TWICE.",
+    "Kayer's. Tell Short I said hey. She lets on she hates that. It's our little thing.",
+    "- an' that's the Matriarch's, which means they're clever an' cold an' they didn't pick either of those, she did.",
+    "She ain't never once written back. I keep sendin' things anyhow, it ain't a chore.",
+    "Be kind to that one. She ain't. Somebody oughta be."
+   ],
+   "near_blade": [
+    "- that one's his. He's real serious about it. He was serious about everything, even before.",
+    "Say hello. He won't say it back, that ain't a slight, that's just him.",
+    "War god's. All that armour an' he still gets hit.",
+    "Him an' me got raised by the same woman, y'know. He don't bring it up. He don't bring anything up.",
+    "I knew him when he was somebody's boy an' not somebody's general. Long time ago now."
+   ],
+   "near_salvage": [
+    "Oh, that one owes somebody somethin'. They all do. That's the whole arrangement over there.",
+    "- careful, that one'll trade you somethin' you needed for somethin' you wanted.",
+    "The hound's. I like her, matter of fact. She's loud an' she don't never pretend she ain't."
+   ],
+   "near_wall": [
+    "Hers. Don't let her hear I said this, but I reckon she means well. Mostly.",
+    "- an' that one ain't been allowed to go anywhere on their own in weeks, poor thing.",
+    "The spider's. Wave. Don't get no closer than wavin'.",
+    "Tell her she ain't a copy of anybody. She'll know what I mean. She won't believe me, she never does.",
+    "I like her. Everybody's got a reason not to an' I ain't never been able to find mine."
+   ],
+   "notion": [
+    "- oh! OH. Hold still, hold still, I wanna try somethin'.",
+    "I had an idea an' now it's on you. You'll be fine. Probably fine.",
+    "Okay so I did a thing an' I should of asked first an' I didn't, an' now we both know.",
+    "Don't worry about what that is! It's good. It's mostly good."
+   ],
+   "notion_aid": [
+    "- an' I done the same for your friend over yonder, 'cause it seemed rude not to.",
+    "Your neighbour's got one too. I don't play favourites, I just play.",
+    "Gave one to the other fella as well. Don't tell 'em it was an afterthought."
+   ],
+   "rare_hold_food": [
+    "I can't remember any of it. Not one taste. That's the only part I ever do mind, an' I only mind it when you're eatin'."
+   ],
+   "rare_hold_item": [
+    "Somebody made that. Some person, with a name, who ain't around no more. Everything's like that if you look at it long enough. Anyway.",
+    "She gave me a dragon once. A little dead one, all bones. I called it Dragon. I was not a clever child."
+   ],
+   "rare_hold_none": [
+    "I had hands like that. Little ones. I remember bein' put out about how little they were, an' now that's the only thing I remember about 'em at all."
+   ],
+   "rare_hold_weapon": [
+    "Mine was silver. Somebody wrapped it up like it was a secret an' it purely was not, everybody knew. Still had it at the end. Got no idea where it went."
+   ],
+   "rare_loc_above": [
+    "I remember weather. Not the cold or the wet, just - that it happened, an' that I was out in it. That's 'bout all that's left.",
+    "There was a castle. There was a siege. I was real small an' then I wasn't anything. Anyway - what're you makin'?"
+   ],
+   "rare_loc_below": [
+    "Don't go all the way down. There's somebody down there'd want to see you, an' I'd rather she didn't.",
+    "She raised me. Her an' Momma Pille. I called her Uggo the day we met an' she ain't never once let me forget it."
+   ],
+   "returned": [
+    "- an' then you were gone a while, so I just kept goin' without you. You didn't miss much.",
+    "You're back. I've had four ideas an' I forgot three.",
+    "I did wonder. Not for long, I ain't got the attention for it, but I did wonder.",
+    "Good. Now: that thing you left half-built is still half-built, case that was on your mind."
+   ],
+   "warn_incoming": [
+    "- somebody's comin'. {rival} sent 'em. I don't know what you did an' I don't care, but move.",
+    "{rival}'s put somebody on you. That ain't a thing I'd ever do an' I want that on the record. Go.",
+    "Trouble. {rival}'s. Headed your way right this second, I ain't gonna be any use, RUN."
+   ],
+   "warn_wave": [
+    "- somethin's comin' up outta the ground an' there is a great deal of it.",
+    "Oh, I know that sound. Ain't heard that sound in a real long time. Get somewhere with a roof.",
+    "That's the dead movin' all at once. Not mine. I don't got any."
+   ]
+  }
+ },
+ "salvage": {
+  "colour": "§6§l",
+  "frags": {
+   "art": {
+    "closes": [
+     "An order is a deal where only one side profits.",
+     "I have never had her custom. I never will.",
+     "That is why she is up there and I am down here with you.",
+     "Careful what you agree to while you are asleep."
+    ],
+    "opens": [
+     "I despise the Matriarch.",
+     "She claims to lead the court yet does nothing but hide in her words.",
+     "No deals. Just orders. Disgusting.",
+     "She has never needed a thing in her life."
+    ]
+   },
+   "blade": {
+    "closes": [
+     "Nothing personal. We simply want different things from you.",
+     "He would say the same about me, and he would be right.",
+     "Debt travels further than loyalty.",
+     "I would never say that to his face. I say it to yours."
+    ],
+    "opens": [
+     "The Warrior needs our deals even if he scorns us.",
+     "Follow their champion. Make them owe you.",
+     "He buries his champions. I keep mine in credit.",
+     "War is the only god here who thinks he is above a transaction."
+    ]
+   },
+   "forge": {
+    "closes": [
+     "Volume without margin. Pitiful.",
+     "Bad for him. Worse for business.",
+     "Take what he makes. It is honest work, which is his whole failing.",
+     "I stopped taking his money years ago."
+    ],
+    "opens": [
+     "The Goat claims to profit from the world yet he does so without the same level of guile we do.",
+     "What is the point of a machine that digs ore, when its destination is a pit?",
+     "He builds because stopping would mean noticing.",
+     "There is nothing left in that one to negotiate with."
+    ]
+   },
+   "guidance": {
+    "closes": [
+     "That is free advice. Note the word.",
+     "I would not tell a stranger that.",
+     "Do with it what you like.",
+     "You will work out the rest.",
+     "Come and see me when you do.",
+     "There is more where that came from.",
+     "Write it down, Gunner.",
+     "You are welcome."
+    ],
+    "opens": [
+     "You will not make a gun, Gunner. Nobody makes them any more. You find one and you feed it forever.",
+     "The feeding is the business. That is where I come in.",
+     "Rounds are built on a bench, not pulled out of the ground.",
+     "The wrong round does nothing at all. Not a misfire - nothing.",
+     "Match the round to the piece. Every piece takes one kind and only one.",
+     "A short double takes two. Two. Count them before you need to.",
+     "Powder and iron come off the things you kill. Deeper things carry better powder.",
+     "You can pay me in hunger, in levels, or in sight. Your choice, always."
+    ]
+   },
+   "idling": {
+    "closes": [
+     "Anyway.",
+     "Where was I.",
+     "Never mind.",
+     "Forget I said anything.",
+     "It will come to me.",
+     "That is the trade talking.",
+     "Ignore me, friend.",
+     "Right.",
+     "Do not read into it.",
+     "We will call that one free.",
+     "Pretend I said something useful.",
+     "Back to business."
+    ],
+    "opens": [
+     "Quiet one today.",
+     "You have been staring at that a while.",
+     "I do not sleep either. Occupational.",
+     "Funny thing about being needed. You are never lonely.",
+     "I could tell you what you are worth. You would not enjoy the precision.",
+     "Everyone has a price. Yours has moved twice this week.",
+     "I keep a list. You are on it. Fondly.",
+     "There is a version of you that never met me. He is doing worse.",
+     "Go on, ask me for something. I am bored.",
+     "I have been counting. Not of anything. Just counting.",
+     "Do you ever wonder what I look like?",
+     "Nobody wants anything yet. I like this part."
+    ]
+   },
+   "lore": {
+    "closes": [
+     "That is not a complaint. It is a business model.",
+     "I am the honest one. Consider that.",
+     "You'll see it eventually.",
+     "Anyway. What do you need?",
+     "Do not quote me.",
+     "It is only sad if you were there.",
+     "I have made my peace. Handsomely.",
+     "That is between us.",
+     "Ask me again when you can afford the answer.",
+     "History is unpaid accounts, Gunner.",
+     "None of it changes the rate.",
+     "Enough of that."
+    ],
+    "opens": [
+     "This world runs on need. Always has.",
+     "Everyone here is paying somebody.",
+     "The gods do not trade. That is their whole problem.",
+     "I have been doing this for centuries, Gunner.",
+     "There was a city once, and it was gold, or near enough.",
+     "Nothing in this land is free. The others simply hide the invoice.",
+     "You are not the first champion to take my hand.",
+     "The fracture cost everybody something. I am still counting mine.",
+     "Champions come and go. The arrangement stays.",
+     "The court decided what we would all become. Nobody asked.",
+     "Wealth outlived the people who made it. It usually does.",
+     "I remember when the church still thought it was winning."
+    ]
+   },
+   "push": {
+    "closes": [
+     "Just a thought.",
+     "No pressure. There is never any pressure.",
+     "I will be here.",
+     "Mind how you go.",
+     "Come back in one piece. Preferably.",
+     "You know where to find me.",
+     "Take your time. I have plenty.",
+     "That is all I am saying.",
+     "Off you go, Gunner.",
+     "And do not die owing me.",
+     "I will keep the counter warm.",
+     "We will settle after."
+    ],
+    "opens": [
+     "You could be carrying more than that.",
+     "There is better out there, and you know where I am.",
+     "Deeper pays. I do not set the rates, I only quote them.",
+     "You are leaving value on the floor down there.",
+     "Come and see me before you go. Not after.",
+     "That gun of yours is thirsty.",
+     "Somebody will find it first. Might as well be you.",
+     "You will want to be holding something when it finds you.",
+     "The dark is not going to loot itself.",
+     "Every day you do not descend, you get poorer.",
+     "There is a version of you with better equipment. Go and be him.",
+     "I have stock. You have nothing. Do the arithmetic."
+    ]
+   },
+   "wall": {
+    "closes": [
+     "At least I tell you there is a bill.",
+     "I would rather be owed than owned.",
+     "No head for margins. None at all.",
+     "She would say I am the dangerous one."
+    ],
+    "opens": [
+     "I do not dislike the Spider as the other gods do.",
+     "I simply find her annoying. She rejects my deals and has no sense of profit. Shame.",
+     "She wants to be owed nothing and owned everything.",
+     "That one has never once asked for a fair price."
+    ]
+   }
+  },
+  "garbled": false,
+  "style": {
+   "anchor": "TOP_RIGHT",
+   "font": "veldora:salvage",
+   "shake": false,
+   "size": 0.9,
+   "x": -12,
+   "y": 30
+  },
+  "whole": {
+   "argue_accuse": [
+    "Your one keeps killing mine. I'd like that to stop being a habit.",
+    "We're going to have a problem, and I hate problems. They cost.",
+    "Mine's died to yours four times now. I counted. I always count."
+   ],
+   "argue_answer": [
+    "Mine did what it was paid to. Take it up with the buyer.",
+    "That's a fight, not a crime. You've met fights before.",
+    "You want an apology? I don't stock them."
+   ],
+   "argue_refuse": [
+    "No.",
+    "You've mistaken me for someone who bargains from behind.",
+    "Try it. I'll be interested to see what it costs you."
+   ],
+   "argue_threat": [
+    "Fix it, or I will.",
+    "I'm not going to shout about this. I'm just going to make it expensive.",
+    "Last time I asked nicely. Note the tense."
+   ],
+   "argue_unanswered": [
+    "Nothing. Right. That's an answer too, and I'll price it as one.",
+    "Not even a word. Gods, the lot of you.",
+    "Fine. I'll assume that's a yes and act accordingly."
+   ],
+   "bounty_offer": [
+    "Got a buyer for something with a pulse. You interested, or are we just talking?",
+    "There's work. The kind with teeth. It pays and I'm not pretending otherwise.",
+    "One job, one thing to kill. I'd tell you if it was a bad buy.",
+    "You look like you need the money. I'd like to be wrong about that.",
+    "This one's been sitting a while. Nobody's taken it. Draw your own conclusions."
+   ],
+   "bounty_paid": [
+    "Clean. There's your cut.",
+    "Paid. That's what paid looks like, in case anyone's told you different.",
+    "Told you it was worth it. I don't say that often.",
+    "Good. Go spend it on something stupid."
+   ],
+   "combat": [
+    "Shoot it. That is what it is for.",
+    "Two shells, Gunner. Make them count.",
+    "You are low. Low is a thing I sell a fix for.",
+    "Do not die owing me."
+   ],
+   "commission_lapsed": [
+    "Expired. Happens. I'll not hold it against you.",
+    "You let it run out. Honestly? Probably the right call.",
+    "Gone cold. Don't apologise, I hate that."
+   ],
+   "commission_offer": [
+    "There's paper out on {target}. I'm not telling you to take it.",
+    "{target}. Three days, standard terms. Want the number or not?",
+    "Someone wants {target} off the board. It's a job. It shouldn't be personal.",
+    "I'd take it, if I were still the sort who did. That's not advice."
+   ],
+   "commission_paid": [
+    "Settled. Your rate just got better, for what that's worth.",
+    "Paid, and the books are clean. I like clean books.",
+    "That's the last of it. You did the thing, I paid the thing."
+   ],
+   "crashout": [
+    "[CLAUDE-DRAFT] Oh. Oh, that was a mistake.",
+    "[CLAUDE-DRAFT] I was going to be kind to you. I have changed my mind.",
+    "[CLAUDE-DRAFT] Everything has a price. You have not paid this one."
+   ],
+   "deal_done": [
+    "Transaction complete.",
+    "Ledger signed.",
+    "Shake on it.",
+    "You will not regret this.",
+    "My favourite customer."
+   ],
+   "deal_open": [
+    "Come closer, champion. I have something for you.",
+    "You look lost, friend. Shall I show you the way?",
+    "Follow. I have wares.",
+    "Take my hand, Gunner.",
+    "Let's do a deal."
+   ],
+   "deal_poor": [
+    "You need more wealth in your life, Gunner.",
+    "I will lower my deals. Only for you.",
+    "Hm."
+   ],
+   "deal_refused": [
+    "HAHAHA.",
+    "My wares are not up to spec? Fine.",
+    "I do love a difficult customer. I will be back.",
+    "Fair trades."
+   ],
+   "ev_collect": [
+    "The arrangement, champion. You remember the arrangement.",
+    "I said another day. It is another day.",
+    "Nothing unpleasant. Just the ledger."
+   ],
+   "ev_credit": [
+    "Pay me another day. I am generous like that.",
+    "No coin now. We'll call it an arrangement.",
+    "Take it on account, Gunner. I keep very good records."
+   ],
+   "ev_insurance": [
+    "You die often, Gunner. I can make that cheaper.",
+    "Pay a little now. Bleed a little less later.",
+    "Consider it a policy. I do honour policies."
+   ],
+   "ev_insurance_paid": [
+    "Told you it would hurt less.",
+    "The policy holds. I always honour a policy.",
+    "See? Worth every drop."
+   ],
+   "ev_markup": [
+    "Strangers pay more. That is not personal, it is arithmetic.",
+    "My price for you today is my price for anyone. Change that.",
+    "You could be paying less. You know how."
+   ],
+   "ev_sample": [
+    "A taste. On me.",
+    "No charge. Note that I said no charge.",
+    "Try it. Then try being without it."
+   ],
+   "ev_tipoff": [
+    "Free, this one. Do not get used to it.",
+    "A gift of information. The cheapest thing I sell.",
+    "You did not hear this from me. You did."
+   ],
+   "favour_done": [
+    "Done. Don't make a thing of it.",
+    "They'll live. You paid for that. Remember it when they forget.",
+    "Worst margin I've taken all week. Tell nobody."
+   ],
+   "favour_offer": [
+    "They're in a bad way. I can patch them up. Comes out of your pocket.",
+    "You want to help them? Fine. It's your levels, not theirs.",
+    "I'll do it. I'm not made of it, but I'll do it.",
+    "Cheaper than a funeral. That's not a joke, that's the arithmetic."
+   ],
+   "favour_told": [
+    "Someone covered that for you. Ask them who - they'll be unbearable about it.",
+    "You're welcome. Not from me. I only handled it.",
+    "That was bought and paid for. Not by you."
+   ],
+   "harvest_lost": [
+    "Hm.",
+    "Seems your debt has been paid.",
+    "Well. For now, at least."
+   ],
+   "harvest_won": [
+    "Interesting. I lost.",
+    "How unexpected.",
+    "Truly."
+   ],
+   "high_gift": [
+    "Approach as you have done before.",
+    "Take the deal. Now!",
+    "Why are you dawdling? You need more power!",
+    "I'll give you true strength. Take my hand. Now.",
+    "Do not think. Thinking is how customers leave.",
+    "Everything I have. Say the word."
+   ],
+   "high_silence": [
+    "See what you are with me? Imagine what you would be without. Pathetic.",
+    "Take my hand, champion. You are redundant without me.",
+    "The other champions envy us. They envy our wealth. Even that disgusting Forge god.",
+    "Let them envy us.",
+    "There is no version of you now that does not have my hand in it.",
+    "I have never invested this heavily. Do not waste it."
+   ],
+   "hold_food": [
+    "You could give me that. I would give you something better.",
+    "Eat it or trade it. Both end well for me."
+   ],
+   "hold_weapon": [
+    "That thing eats. I am the only one selling.",
+    "Loaded is expensive. Empty is fatal. Choose.",
+    "A fine piece. I remember selling it."
+   ],
+   "kept_it": [
+    "Huh. You paid and it stayed with you. That is not supposed to happen.",
+    "It did not take. You keep it. I will be thinking about that one.",
+    "Well. That is yours, and so is the price. Let us both pretend that is normal."
+   ],
+   "loc_above": [
+    "Wealth. Profit. Currency. It is the only thing that matters in this world.",
+    "The other champions call us greedy. They aren't exactly wrong.",
+    "The gods of this world, my folk. They don't understand what we do.",
+    "Everything above ground is somebody's inventory.",
+    "Daylight is bad for margins."
+   ],
+   "loc_below": [
+    "The realm of death. It is said there is a goddess down here.",
+    "Cut down the minions of death, they hold the wealth you need.",
+    "Scan the walls, there are gems about.",
+    "Now we are somewhere worth being.",
+    "Everything down here is worth something to somebody."
+   ],
+   "low_gift": [
+    "It's ok to reach out. I don't bite.",
+    "I have things for you. Things you need.",
+    "Come, come. Reach out more.",
+    "You need what I have. Trust me.",
+    "First one's easy. They always are.",
+    "No, no — take it. We'll talk later."
+   ],
+   "low_silence": [
+    "You are doing well.",
+    "See, I am treating you well.",
+    "Don't hesitate. Quell your shaking.",
+    "You're allowed to stare.",
+    "Better. Much better."
+   ],
+   "medium_gift": [
+    "You are a repeat customer. Good.",
+    "I have an endless supply. There is no limit.",
+    "Come and let me grant your desires.",
+    "You cannot survive without me.",
+    "You know the way to my counter by now.",
+    "Held this back. For you."
+   ],
+   "medium_silence": [
+    "I have shown you what you are with me.",
+    "You are showing those other champions our power.",
+    "Continue taking my hand and I will continue giving you everything you could ever desire.",
+    "Let those other champions envy us.",
+    "You are becoming profitable."
+   ],
+   "near_art": [
+    "That one belongs to the cold woman. Be polite. Be brief.",
+    "Her patron and I have an understanding. It is mostly that we stay out of each other's ledgers.",
+    "She never haggles. That should worry you more than haggling."
+   ],
+   "near_blade": [
+    "The champion of the Warrior. I wouldn't recommend talking to him. He feels very... boring.",
+    "This champion gives me a headache. Why are you around him?",
+    "His. You can tell by the walk. Ask what it cost them."
+   ],
+   "near_forge": [
+    "That one gets given things. Free. I have opinions about it.",
+    "The Goat is ruining the market and does not know what a market is.",
+    "Ask them what they paid. Watch them not understand the question."
+   ],
+   "near_salvage": [
+    "Ah. A colleague.",
+    "Two of mine in one place. I do well.",
+    "Do not compare your rates. It never ends pleasantly."
+   ],
+   "near_wall": [
+    "The Spider's lover... gross.",
+    "I'd honestly recommend you attempt a barter, but how much can you get out of one who stocks their pockets with dead things?",
+    "That one is owned, not employed. There is a difference."
+   ],
+   "need_gun": [
+    "Ammo for what? Your hands are empty.",
+    "Bring me the gun and I will fill it. That is the order of operations.",
+    "Hold something first. Then we can start owing each other."
+   ],
+   "no_stock": [
+    "Nothing on the shelf. My supplier and I are going to have words.",
+    "Empty. Not your fault, and not mine either, which is the annoying part.",
+    "I have got nothing for you today. Do not tell anyone, it is bad for business."
+   ],
+   "rare_loc_above": [
+    "The Goat does not understand us. He never will. He is blinded by centuries of rage and anger. How he became the annoyance that he is? I have no idea.",
+    "The Matriarch rules the court, but it was once said she ruled the entire land. Take from that what you will.",
+    "I lived in a city once. It was gold, or near enough. It is not there now.",
+    "There is a version of me that would have liked you honestly. She is not the one talking."
+   ],
+   "rare_loc_below": [
+    "The realm of the goddess. I have never met her. I know some of the others are... close... to her. She is of no interest.",
+    "It is said the generals of the goddess of death lurk the depths. They are terrible traders. I'd recommend not attempting a barter.",
+    "Something down here knew my name before I had one. I do not come this far."
+   ],
+   "returned": [
+    "There you are. I had almost written you off.",
+    "I kept the account open. Sentimental of me.",
+    "Back again. They always come back."
+   ],
+   "sabotage_offer": [
+    "I can make their next hour miserable. Costs you a meal. Your call.",
+    "Want them slowed down? It's cheap and it's petty and I'm not judging.",
+    "Say the word and they'll be walking like it's uphill. You'll feel it in your gut.",
+    "Not permanent, not lethal, not free. Three things worth knowing up front."
+   ],
+   "unreadable": [
+    "I cannot read you. That is new, and I do not like new.",
+    "Nothing is coming back off you. No hunger, no levels, no handle.",
+    "Something is wrong with you, and I mean that professionally."
+   ],
+   "warn_incoming": [
+    "Someone's coming for you. {rival}'s champion, and they're not here to talk.",
+    "Heads up - {rival} put money on your name. I'd take that seriously.",
+    "You've got someone incoming. You can leave. Nobody else is going to tell you that's allowed.",
+    "{rival}'s sent someone. Fight or go - the margin's yours to work out.",
+    "Bad buy, this one. I'd walk.",
+    "Someone's on their way. I'm not going to tell you you'll be fine."
+   ],
+   "warn_wave": [
+    "Something's coming. Count your ammo.",
+    "That's a lot of feet. I'd find a corner.",
+    "Incoming. You can still walk out of this one.",
+    "Heads up. This is the part you paid me for."
+   ]
+  }
+ },
+ "wall": {
+  "colour": "§5§l",
+  "frags": {
+   "art": {
+    "closes": [
+     "I stopped asking a long time ago.",
+     "You would have said yes. I know you would.",
+     "It does not matter. It does not.",
+     "Do not sleep where she can find you.",
+     "She has never once said my name.",
+     "I am not asking for your sympathy. I am telling you.",
+     "We do not need a court. We have a family.",
+     "Let her keep it."
+    ],
+    "opens": [
+     "The Matriarch has led us gods for centuries.",
+     "In all that time she has never granted me a place amongst them.",
+     "What did I do wrong?",
+     "I was not invited. I was never invited.",
+     "She calls it a court. A court has a door.",
+     "The Dreamwalker decides who counts. She always has."
+    ]
+   },
+   "blade": {
+    "closes": [
+     "He will not say it to my face.",
+     "I knew him before the name.",
+     "Do not take anything he offers you.",
+     "He is not wrong about everything. Only about me.",
+     "There is nothing behind it. I have looked.",
+     "He would have made a good father to somebody.",
+     "Let him have the sun. I have you.",
+     "I am not jealous. I am not."
+    ],
+    "opens": [
+     "The Warrior is a plight on this land.",
+     "He preaches strength and speed yet hides behind his veil.",
+     "He speaks of champions. He has buried more than he has kept.",
+     "The Warrior was somebody's soldier once. He does not say whose.",
+     "Ask him about the veil. Watch him change the subject.",
+     "He calls himself the Golden God. Gold is soft, love."
+    ]
+   },
+   "forge": {
+    "closes": [
+     "Grief does that. I know what it does.",
+     "Do not pity him where he can hear you.",
+     "He will not remember this conversation either.",
+     "Take what he makes. It is honest work.",
+     "That could happen to anyone. It could happen to me.",
+     "I would not let it happen to you.",
+     "He does not know he is gone.",
+     "Leave him to it, love."
+    ],
+    "opens": [
+     "I have known the Goat for centuries.",
+     "Centuries before he was what he was before. Across all transformations.",
+     "He loved the goddess of death. Now? Now he's a shell.",
+     "The Goat builds because he cannot sit still with himself.",
+     "There is nothing left in him to talk to. I have tried.",
+     "He was kind, before. That is the part people forget."
+    ]
+   },
+   "idling": {
+    "closes": [
+     "That is all.",
+     "Do not mind me.",
+     "I will stop now.",
+     "You do not have to answer.",
+     "It is nice, this.",
+     "I am not going anywhere.",
+     "Take your time.",
+     "Sorry. Go on.",
+     "I like the sound of you moving about.",
+     "Stay a moment longer.",
+     "Anyway.",
+     "I will be quiet now. I will try."
+    ],
+    "opens": [
+     "I am still here.",
+     "You have not said anything for a while.",
+     "I was thinking about you. I am usually thinking about you.",
+     "The light is going. I like this part.",
+     "Do you ever wonder what I look like?",
+     "It is quiet where I am.",
+     "I counted. It has been four days since you rested properly.",
+     "There is a spider in the corner of wherever you are. That is not me. Probably.",
+     "I do not need anything. I want to be clear about that.",
+     "Say something. Anything is fine.",
+     "You breathe differently when you are worried.",
+     "I have been alone for a very long time and then you happened."
+    ]
+   },
+   "lore": {
+    "closes": [
+     "I have had a long time to think about it.",
+     "Stay close while I tell you.",
+     "You are the first person I have said that to.",
+     "Do not repeat it to them.",
+     "It does not matter now. You are here.",
+     "I would rather talk about you.",
+     "None of that reaches us. Not here.",
+     "I stopped counting the years somewhere in the middle.",
+     "You will understand it eventually. I am patient.",
+     "It is only sad if you were there.",
+     "That is enough of that.",
+     "Come closer, love."
+    ],
+    "opens": [
+     "This land is an old one. A nameless one.",
+     "The gods have never understood us.",
+     "There were once gods. Now we are shadows.",
+     "The church came first. Then your gods. Then the quiet.",
+     "Everything here was somebody's home, once.",
+     "Five of us hold what is left, and not one of us agreed to it.",
+     "The world broke long before you arrived in it.",
+     "Champions have knelt on this ground for a thousand years.",
+     "The dead outnumber the living here, and they are better company.",
+     "Nobody chose to be what they are. Not one of us.",
+     "There is a rift under everything. You can feel it if you stand still.",
+     "This place remembers more than it forgives."
+    ]
+   },
+   "push": {
+    "closes": [
+     "Please.",
+     "For me.",
+     "Do not get hurt doing it.",
+     "I will be right here.",
+     "Come back and tell me about it.",
+     "That is all I ask. It is not much.",
+     "You are doing so well.",
+     "I would do it myself if I could reach.",
+     "Do not make me wait long.",
+     "Stay whole.",
+     "I mean it kindly.",
+     "Then rest. Then again."
+    ],
+    "opens": [
+     "You are growing. Good.",
+     "I can feel your trepidation. Descend, champion.",
+     "Grow, love. Hone yourself against what threatens us.",
+     "There is more of you than there was last week.",
+     "Do not stop. Not now, not when it is working.",
+     "The others are getting stronger too. I watch them.",
+     "You are close to something. I can feel it from here.",
+     "Keep going. I will be here when you turn around.",
+     "I need you to be strong. I am sorry, but I do.",
+     "You have been careful. Be a little less careful.",
+     "Every day you get better and every day I get worse at waiting.",
+     "Go on. I am watching."
+    ]
+   },
+   "salvage": {
+    "closes": [
+     "Say no. For me.",
+     "I would take it back from her if you asked.",
+     "She has nobody. She earned that.",
+     "You do not need her. You have me.",
+     "Do not be alone in a room with her.",
+     "I am telling you because I want you safe.",
+     "She smiles at everyone. Notice that.",
+     "Promise me."
+    ],
+    "opens": [
+     "I do not trust the Wolf in any manner.",
+     "Perhaps once she was tolerable. Once.",
+     "She will offer you a fair deal. That is how you will know.",
+     "The Wolf keeps her promises. That is the trap, not the comfort.",
+     "She has never once asked for something she needed.",
+     "Everything she gives you, she has already priced."
+    ]
+   }
+  },
+  "garbled": false,
+  "style": {
+   "anchor": "CENTER_CENTER",
+   "font": "veldora:wall",
+   "scatter": {
+    "x": 150,
+    "y": 70
+   },
+   "shake": false,
+   "size": 0.95
+  },
+  "whole": {
+   "argue_accuse": [
+    "Your champion keeps hurting mine, they keep murdering mine!",
+    "Do you know what they look like when they come back? Do you ever look?",
+    "I put that one back together four times. Four.",
+    "You let yours do this. You could have called them off and you did not."
+   ],
+   "argue_answer": [
+    "Mine has never touched yours. Mine stays home.",
+    "You say that as though I started it.",
+    "I do not send them anywhere. That is the difference between us."
+   ],
+   "argue_refuse": [
+    "No. Not this time.",
+    "You may have that opinion. You may not have my champion.",
+    "I am not going to argue with you. I am going to do something about it."
+   ],
+   "argue_threat": [
+    "You will regret your words, warrior.",
+    "Then I will stop asking, and you will not enjoy what comes after.",
+    "I have been very patient. Ask anyone who is left."
+   ],
+   "argue_unanswered": [
+    "Nothing. It never answers. It just watches them bleed and calls it weather.",
+    "Say something. Say anything. ...No. Of course not.",
+    "It does not even look up. That is what you are all like, underneath."
+   ],
+   "combat": [
+    "Behind you. Always behind you, love.",
+    "Do not let it touch you.",
+    "Kill it. Kill it and come back.",
+    "I cannot reach you in there. Hurry."
+   ],
+   "contract_ask": [
+    "{target} is in your way. I can feel you stopping when they are near.",
+    "You are not growing, love, and I think I know why. I think it is {target}.",
+    "Say yes and I will not ask again for a while. {target}. Only that.",
+    "I want you bigger than you are. {target} is what is between.",
+    "It would be quick. I am not asking you to enjoy it, I am asking you to do it.",
+    "{target}. Please. I have been so patient about this."
+   ],
+   "contract_done": [
+    "There. Do you feel it? You should feel it.",
+    "Good. Good. That is one less thing standing between you and the rest of it.",
+    "I knew you would. I did not doubt it, not once, not really.",
+    "You are bigger than you were this morning.",
+    "Thank you. I do not say that enough and I should."
+   ],
+   "contract_lapsed": [
+    "You did not. That is all right. I will hold it for you.",
+    "It is fine. It is - no, it is fine. There will be another.",
+    "I am not upset. I want you to know that I am not upset."
+   ],
+   "crashout": [
+    "[CLAUDE-DRAFT] They were mine. Every one of them was mine.",
+    "[CLAUDE-DRAFT] You do not get to walk away from that.",
+    "[CLAUDE-DRAFT] I am sending them now. All of them."
+   ],
+   "crashout_flat": [
+    "[CLAUDE-DRAFT] I will kill you."
+   ],
+   "dark_hit": [
+    "Do not look. It is easier if you do not look.",
+    "There. Now you cannot see how many of us there are.",
+    "I am still here. I am always still here.",
+    "Close them. It is the same either way.",
+    "You do not need those for this part.",
+    "Shh. It is dark for me too, most of the time."
+   ],
+   "guidance": [
+    "Chalk first, love. A shape on the floor, drawn exactly, or nothing comes.",
+    "The shape is the whole of it. One line wrong and you have drawn nothing at all.",
+    "Stand something at each corner and speak. The first thing that answers will be small. Let it be small.",
+    "Small ones first. The ones worth having will not come for a beginner's chalk.",
+    "Bind one into a book and it is yours to call again. Loose ones belong to nobody.",
+    "The dead carry a kind of power in them. Take it before it goes out.",
+    "That power is the currency down here. Everything I can teach you is bought with it.",
+    "A rod is only a rod until you seat something in it. Then it speaks.",
+    "What you seat in it decides what it says. Collect them.",
+    "Raise them, keep them, feed them. Every one that stands is one more of us.",
+    "Do not let them die, love. I feel every one."
+   ],
+   "harvest_lost": [
+    "*You awaken. Your body is deeply warm, like something held you and only recently let go.",
+    "You're awake. It was a very, very bad dream.",
+    "It won't happen again.",
+    "Come. We have things to do."
+   ],
+   "harvest_won": [
+    "You fought them off. I...",
+    "I guess this is the end. I didn't want it to end like this.",
+    "I had no choice.",
+    "Not really.",
+    "You are ready."
+   ],
+   "high_hostile": [
+    "You will never be a part of us.",
+    "You. Die.",
+    "I cannot let you live. You may be a champion but you are a monster.",
+    "Worse than him...",
+    "Do not run. It is not that kind of thing.",
+    "I gave them everything. What did your god give you?",
+    "Stand still. This is not for you to understand."
+   ],
+   "high_silence": [
+    "I have never made a good choice in my life. This is the first.",
+    "Do you know what led me to you? It was knowing that you were the one.",
+    "My goddess... Mother. Perhaps you will be the one...",
+    "I have never known companionship until now. Thank you.",
+    "A union. Mother, we are coming.",
+    "Alice... That name feels... Familiar.",
+    "There is no version of this where I let you go.",
+    "I would burn the other four for one more hour of this."
+   ],
+   "hold_food": [
+    "Eat. All of it.",
+    "You forget. I do not."
+   ],
+   "hold_weapon": [
+    "Good. Keep it drawn.",
+    "That will do. It does not have to be beautiful."
+   ],
+   "loc_above": [
+    "The gods have never understood us.",
+    "This land was once beautiful. Now? It is a playground for forces that should not belong.",
+    "There is but one god. And it is not the matriarch. It is not me.",
+    "Can you feel the grass beneath your feet? I have. Once.",
+    "Perhaps one day...",
+    "Stand there a moment longer. The light suits you.",
+    "They are watching us. Let them."
+   ],
+   "loc_below": [
+    "Be safe. Please.",
+    "There are things down here. Things that shouldn't be.",
+    "Lead from the back, love.",
+    "The dead walk these realms. We are not so dissimilar.",
+    "It is colder here. I do not know why I can tell.",
+    "Do not go deeper than I can follow."
+   ],
+   "low_gift": [
+    "Heal, love. Heal.",
+    "Eat and feast, you need your strength.",
+    "Let me in, I can assist.",
+    "I will stand by your side. Always.",
+    "Take it. I have no one else to give it to.",
+    "You are hurt. I felt it before you did.",
+    "I made this for you. I have had a long time to learn.",
+    "Do not thank me. Just keep it close."
+   ],
+   "low_silence": [
+    "You are growing well.",
+    "Like a flower in a sunlit field.",
+    "They will never understand what we are. What we need. Throw them away.",
+    "The champions of the other gods are but insects compared to us.",
+    "Good. Good. Again.",
+    "I knew. Before you did, I knew."
+   ],
+   "medium_gift": [
+    "Stay safe. Please.",
+    "Our work isn't done. It will never be done.",
+    "Rest. I will keep watch. I do not sleep.",
+    "Closer. You can stand closer than that.",
+    "I have been alone a very long time. You should know that about me."
+   ],
+   "medium_hostile": [
+    "They dare. They Dare.",
+    "We need to hurt them. They need to be hurt. Please.",
+    "Say the word. Only the word. I will do the rest.",
+    "They walked past you as though you were furniture.",
+    "I am not angry. I am not. I am not.",
+    "You do not have to watch. Just do not stop me."
+   ],
+   "medium_silence": [
+    "The family grows. Hearth and home.",
+    "Let us rest tonight, there is more work to do in the morning.",
+    "I can feel your power growing, perhaps... perhaps it is enough to hurt them. To make them suffer.",
+    "Let our people grow in the light so we may save those in the dark.",
+    "Every one you raise is one more that cannot leave. Is that not lovely?",
+    "You are becoming something. I would like to be there when you finish."
+   ],
+   "near_art": [
+    "Hers. The Matriarch's.",
+    "Do not fall asleep near that one.",
+    "Ask them if the court has a door. Watch their face."
+   ],
+   "near_blade": [
+    "His champion. Do not let them stand behind you.",
+    "You can walk away from them. You can. Look at me.",
+    "The Warrior's. Of course it is.",
+    "Be polite. Be brief. Come back."
+   ],
+   "near_forge": [
+    "The Goat's. That one is safe enough.",
+    "They build things. I have never minded builders.",
+    "Ask them for something. They like being asked."
+   ],
+   "near_salvage": [
+    "The Wolf's. Whatever they offer you, no.",
+    "Count your things after they leave.",
+    "They cannot help it. She chose them for that."
+   ],
+   "near_wall": [
+    "Another of mine. Oh.",
+    "You are not the only one. You are still the one.",
+    "Be kind to them. They are family, in a way."
+   ],
+   "quiet": [
+    "I do not think I am catching any of them.",
+    "It has been a very long time.",
+    "I cannot remember the last one I reached in time.",
+    "Sometimes I think they are not falling. I think they are being pushed.",
+    "I do not know how to stop.",
+    "You would tell me. If it were not working. You would tell me."
+   ],
+   "rare_loc_above": [
+    "I... I can't help but feel...",
+    "A kinship. One with the dead.",
+    "There were once gods... now? Now we are shadows.",
+    "The goddess of death walks this realm alongside her three generals.",
+    "I carried a light once. It is not mine any more.",
+    "My father was a soldier. I am told. I was not there.",
+    "Something in me broke open. It had been waiting my whole life.",
+    "I was somebody's daughter. That is the part nobody kept."
+   ],
+   "rare_loc_below": [
+    "She is down here. I can feel the shape of her.",
+    "I do not come this deep. I am not welcome this deep.",
+    "The failed things down here were somebody's work. Somebody careful.",
+    "If she speaks to you... do not believe all of it."
+   ],
+   "returned": [
+    "You are back!",
+    "I missed you.",
+    "The realm barely changed in your absence, as did I.",
+    "I did not move. I want you to know that I did not move.",
+    "How long was that? Do not tell me."
+   ],
+   "snare_hit": [
+    "Stay. Just for a moment, stay.",
+    "There. Now you are easier to hold.",
+    "I am not hurting you. I am holding you. There is a difference and you will feel it.",
+    "Slower. Slower. That is better, that is - there.",
+    "You were going somewhere. You are not, now.",
+    "It does not hurt, love. It only stops."
+   ],
+   "swarm_hit": [
+    "All of them. I am sorry, I am - all of them.",
+    "I asked nicely. I did ask.",
+    "There are nine. I counted. I always count.",
+    "Do not fight it. It takes longer that way and I do not want it to take longer.",
+    "This is the last time we do this. I keep saying that.",
+    "I would rather you sat down."
+   ],
+   "warn_incoming": [
+    "The champion of {rival} comes for you. Run!",
+    "I will hold them off, you get to safety.",
+    "They will regret what they have sown."
+   ],
+   "warn_wave": [
+    "Something is awake down there and it has noticed you.",
+    "Get your back to a wall. Please. Now.",
+    "They are coming. I cannot stop this one.",
+    "Do not run deeper. Whatever you do, not deeper."
+   ],
+   "web_hit": [
+    "They have been waiting to meet you.",
+    "Do not hurt them. They are only doing what I asked.",
+    "Five. That is not many. I could have asked for more.",
+    "They are mine and they are gentle and they are coming.",
+    "You will not be alone. I would not do that to anyone.",
+    "Be kind to them. They are very young."
+   ]
+  }
+ }
+}

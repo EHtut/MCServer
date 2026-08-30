@@ -724,8 +724,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ReferenceError that KubeJS logs WITHOUT a level - invisible to `logq errors`
   // until that tool was repaired on 2026-08-15. docs/41 invariant #13.
   ServerEvents.loaded(function (event) {
-    if (!VELDORA.voice) { console.error(TAG + 'voice.js missing'); return }
-    VELDORA.voice.setColour(GOD, COLOUR)
+    if (!VELDORA.pantheon) { console.error(TAG + 'pantheon.js missing'); return }
+
+    // ⭐ The plumbing moved to pantheon.js; not one word she says moved with it.
+    //
+    // ⚠️ The eval-time WRITTEN/POOL_COUNT above stays exactly where it is - see the note
+    // there. The registrar counts coverage too, but inside `loaded`, which is the race
+    // that block exists to lose no longer.
+    VELDORA.pantheon.define(GOD, {
+      colour: COLOUR,
+      label: 'The Hound',
+      lines: LINES,
+      frags: FRAGS,
+      context: CONTEXT,
+      note: 'Harness tiers at ' + MEDIUM_AT + '/' + HIGH_AT + ' deals',
 
     // ⭐⭐ THE CRASHOUT POOL. Fired by grudge.js when this god stops arguing and
     // actually STRIKES - the reprisal after a champion of theirs was killed. It is
@@ -738,13 +750,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     //
     // ⚠️ Only the three gods who RETALIATE have one. Forge and Art never reach
     // this line at all, and their silence is a posture rather than a missing pool.
-    if (typeof VELDORA.voice.registerLines === 'function') {
-      VELDORA.voice.registerLines(GOD, 'crashout', [
+      crashout: [
         '[CLAUDE-DRAFT] Oh. Oh, that was a mistake.',
         '[CLAUDE-DRAFT] I was going to be kind to you. I have changed my mind.',
         '[CLAUDE-DRAFT] Everything has a price. You have not paid this one.',
-      ])
-    }
+      ],
 
     // ⭐⭐ TOP RIGHT, LIKE A QUEST LOG. Ethan ruled it 2026-08-30 (E2a) after holding the
     // question open: *"Salvage speaks top-right, like a quest log."*
@@ -764,8 +774,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // so this pushes DOWN and clear of the vanilla effect icons that live in that corner.
     // A negative y would put her off the top of the screen - the sign error that cost a
     // whole evening once already.
-    if (typeof VELDORA.voice.setStyle === 'function') {
-      VELDORA.voice.setStyle(GOD, {
+      style: {
         anchor: 'TOP_RIGHT',
         y: 30,
 
@@ -789,32 +798,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
         // ⛔ NO `color`. Colour is emphasis now, not identity (voice.js overlayColour,
         // Ethan 2026-08-30). Her font and her corner say who she is.
-      })
-    }
-    var n = 0, tags = 0
-    for (var k in LINES) {
-      if (!LINES.hasOwnProperty(k)) continue
-      if (VELDORA.voice.registerLines(GOD, k, LINES[k])) { n += LINES[k].length; tags++ }
-    }
-    var combo = 0
-    for (var fr in FRAGS) {
-      if (!FRAGS.hasOwnProperty(fr)) continue
-      if (VELDORA.voice.register(GOD, fr, FRAGS[fr].opens, FRAGS[fr].closes)) {
-        combo += FRAGS[fr].opens.length * FRAGS[fr].closes.length
-        tags++
-      }
-    }
-    var ctxn = 0
-    for (var c in CONTEXT) {
-      if (!CONTEXT.hasOwnProperty(c)) continue
-      if (VELDORA.voice.registerLines(GOD, c, CONTEXT[c])) { ctxn += CONTEXT[c].length; tags++ }
-    }
-    if (!n && !combo && !ctxn) {
-      console.error(TAG + 'THE HOUND HAS NO VOICE - every pool is empty')
-    } else {
-      console.info(TAG + 'The Hound speaks - ' + n + ' fixed + ' + ctxn +
-        ' contextual + ' + combo + ' combinatorial, across ' + tags +
-        ' tags. Harness tiers at ' + MEDIUM_AT + '/' + HIGH_AT + ' deals.')
-    }
+      },
+    })
   })
 })();

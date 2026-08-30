@@ -749,28 +749,25 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   })
 
   ServerEvents.loaded(function () {
-    if (!VELDORA.voice) {
-      console.error(TAG + 'voice.js missing - The Warrior has no mouth')
+    if (!VELDORA.pantheon) {
+      console.error(TAG + 'pantheon.js missing - The Warrior has no mouth')
       return
     }
-    var n = 0, tags = 0
-    for (var k in LINES) {
-      if (!LINES.hasOwnProperty(k)) continue
-      if (VELDORA.voice.registerLines(GOD, k, LINES[k])) { n += LINES[k].length; tags++ }
-    }
-    var combo = 0
-    for (var fr in FRAGS) {
-      if (!FRAGS.hasOwnProperty(fr)) continue
-      if (VELDORA.voice.register(GOD, fr, FRAGS[fr].opens, FRAGS[fr].closes)) {
-        combo += FRAGS[fr].opens.length * FRAGS[fr].closes.length
-        tags++
-      }
-    }
-    var ctxn = 0
-    for (var c in CONTEXT) {
-      if (!CONTEXT.hasOwnProperty(c)) continue
-      if (VELDORA.voice.registerLines(GOD, c, CONTEXT[c])) { ctxn += CONTEXT[c].length; tags++ }
-    }
+
+    // ⭐ The plumbing moved to pantheon.js; not one word he says moved with it.
+    //
+    // 🔴 HE DECLARES NO COLOUR, AND THAT IS DELIBERATELY LEFT AS IT WAS. Blade has
+    // never called setColour - he silently inherits voice.js's DEFAULT_COLOUR, which
+    // happens to be his red, so a change to that default would move him with nothing in
+    // any log. The registrar now WARNS about it at boot. Fixing it is a one-line change
+    // with its own baseline update, kept out of this refactor so that "nothing changed"
+    // stays literally true here.
+    VELDORA.pantheon.define(GOD, {
+      label: 'The Warrior',
+      lines: LINES,
+      frags: FRAGS,
+      context: CONTEXT,
+      note: 'Tiers at ' + MEDIUM_AT + '/' + HIGH_AT + ' slain',
     // ⭐⭐ WHERE HE STANDS. Ethan, 2026-08-30: *"Blade - Upper middle of screen - He
     // talks down to you."*
     //
@@ -795,16 +792,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     //
     // ⚠️ Only the three gods who RETALIATE have one. Forge and Art never reach this
     // line at all, and their silence is a posture rather than a missing pool.
-    if (typeof VELDORA.voice.registerLines === 'function') {
-      VELDORA.voice.registerLines(GOD, 'crashout', [
+      crashout: [
         '[CLAUDE-DRAFT] You killed one of mine. Now you find out what that costs.',
         '[CLAUDE-DRAFT] I gave you a blade. I did not give you permission.',
         '[CLAUDE-DRAFT] Look at me. I want you to know it was me.',
-      ])
-    }
+      ],
 
-    if (typeof VELDORA.voice.setStyle === 'function') {
-      VELDORA.voice.setStyle(GOD, {
+      style: {
         anchor: 'TOP_CENTER',
         y: 40,
 
@@ -841,11 +835,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // resource pack renders the vanilla default and nothing errors. "It works on
         // the server" is not a statement about anybody's screen.
         font: 'veldora:blade',
-      })
-    }
-
-    console.info(TAG + 'The Warrior speaks - ' + n + ' fixed + ' + ctxn +
-      ' contextual + ' + combo + ' combinatorial, across ' + tags +
-      ' tags. Tiers at ' + MEDIUM_AT + '/' + HIGH_AT + ' slain.')
+      },
+    })
   })
 })();

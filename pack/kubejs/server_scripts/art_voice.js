@@ -363,8 +363,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   ServerEvents.loaded(function (event) {
-    if (!VELDORA.voice) { console.error(TAG + 'voice.js missing'); return }
-    VELDORA.voice.setColour(GOD, COLOUR)
+    // ⭐ ONE `define` CALL WHERE A BOOT BLOCK USED TO BE. The registration loops, the
+    // colour, the style, the coverage count and the banner all live in pantheon.js now -
+    // its header has the why (five drifted copies of the same plumbing).
+    //
+    // ⚠️ NOT ONE WORD SHE SAYS MOVED. LINES and CONTEXT are untouched above; only the
+    // wiring changed, and `tools/pantheon_snapshot.py --check` holds that to
+    // byte-identical against a baseline taken before this refactor existed.
+    if (!VELDORA.pantheon) { console.error(TAG + 'pantheon.js missing'); return }
+    VELDORA.pantheon.define(GOD, {
+      colour: COLOUR,
+      label: 'The Matriarch',
+      lines: LINES,
+      context: CONTEXT,
+      note: 'Tiers at ' + MEDIUM_AT + '/' + HIGH_AT + ' biomes. Underground she speaks ' +
+        'as her OWN deep speaker, in a different register - see deep_speaker.js',
 
     // ⭐⭐ SHE STANDS IN THE MIDDLE AND BLOCKS YOUR VIEW. Ethan, 2026-08-30:
     // *"Art - Straight in the middle of the screen. She demands to be heard."*
@@ -376,8 +389,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     //
     // ⚠️ CENTER_CENTER with NO y. Every other god needs an offset to clear something;
     // she is the one who should be in the way.
-    if (typeof VELDORA.voice.setStyle === 'function') {
-      VELDORA.voice.setStyle(GOD, {
+      style: {
         anchor: 'CENTER_CENTER',
 
         // ⭐ THE DANCING IS THE WAVE, NOT THE FONT. Ethan asked for *"Elegant, almost
@@ -399,25 +411,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // to its tone could never take that back. She does not flinch.
         shake: false,
         size: 1.25,
-      })
-    }
-    var n = 0, tags = 0
-    for (var k in LINES) {
-      if (!LINES.hasOwnProperty(k)) continue
-      if (VELDORA.voice.registerLines(GOD, k, LINES[k])) { n += LINES[k].length; tags++ }
-    }
-    var ctxn = 0
-    for (var c in CONTEXT) {
-      if (!CONTEXT.hasOwnProperty(c)) continue
-      if (VELDORA.voice.registerLines(GOD, c, CONTEXT[c])) { ctxn += CONTEXT[c].length; tags++ }
-    }
-    if (!n && !ctxn) {
-      console.error(TAG + 'THE MATRIARCH HAS NO VOICE - every pool is empty')
-    } else {
-      console.info(TAG + 'The Matriarch speaks - ' + n + ' fixed + ' + ctxn +
-        ' contextual, across ' + tags + ' tags. Tiers at ' + MEDIUM_AT + '/' +
-        HIGH_AT + ' biomes. Underground she speaks as her OWN deep speaker, ' +
-        'in a different register - see deep_speaker.js.')
-    }
+      },
+    })
   })
 })();
