@@ -125,3 +125,93 @@ change with a real risk attached:
 ⚠️ **A shipped `options.txt` overwrites a player's own keys.** Whatever we send, we send to
 all four of you, over anything you have personally rebound. That is a different decision
 from fixing the conflicts and wants its own answer.
+
+---
+
+# 🔴 CORRECTIONS — the audit above was wrong twice, and the pass shipped anyway
+
+> **APPLIED 2026-08-30** by `tools/controls_pass.py`. Ethan: *"its fine if there are
+> overlap if some of these keys are conditional"*, *"it's fine to overwrite options.txt"*,
+> and, when told the client was open, *"write it anyways."*
+
+## ⛔ Correction 1 — the 93 unbound are NOT unreachable path content
+
+The section above argued that occultism and ars nouveau having the most unbound keys meant
+*"they are not unused, they are unreachable"*, because a champion is sent to use them.
+
+**That inference was drawn from mod names and totals. Reading the action names kills it:**
+
+| mod | what the 'unbound' actually are |
+|---|---|
+| occultism (17) | `familiar.bat`, `familiar.beaver`, `familiar.deer` … one summon slot **per familiar type** |
+| ars_nouveau (11) | `qc1`…`qc10` — **quick-cast slots** |
+| irons_spellbooks (16) | `spell_quick_cast_1`…`_15` — **loadout slots** |
+
+⭐ These are **personal loadout slots and they are correctly unbound.** A player binds the
+two or three they actually use. Binding all 44 would be inventing four people's
+preferences for them. Wall's ritual guidance — *"Chalk first, love. A shape on the floor"* —
+needs no keybind at all; it is chalk, placed by hand.
+
+🔑 **The count was right and the reading was wrong.** Measure at the point of use.
+
+## ⛔ Correction 2 — "76% of bound actions are in conflict" counts co-location, not conflict
+
+Most of those 135 cannot fire together: JEI is GUI-only, Create's `keyinfo.*` are modifier
+declarations, TACZ needs a gun in your hands, and `hippocampus_up` needs you to be sitting
+on a hippocampus. **Ethan's instinct was right and the audit overstated the problem.**
+
+## ⚠️ And a false alarm I raised mid-pass, recorded so it is not repeated
+
+I reported that `options.txt` was *"full of ghosts"* — keybinds for mods not in the pack.
+**It was not.** I had matched keybind namespaces against **jar filenames**, which use
+hyphens where namespaces use underscores:
+
+```
+ars_nouveau      -> ars-nouveau                  installed
+irons_spellbooks -> irons-spells-n-spellbooks    installed
+cataclysm        -> l_enders-cataclysm           installed
+fxntstorage      -> create-storage-neo-forge     installed   (name shares nothing)
+```
+
+Grepping pw.toml **contents** settled it: only `metki` (3 binds) and `simulated` (1) are
+genuinely absent. ⛔ **Four dead entries, not a file full of them.** Same error class as
+Correction 1 — matching on names instead of on the thing itself.
+
+## 🖊️ What actually shipped
+
+**The keyboard is saturated: ZERO letters A–Z are free.** With 317 mods that is the
+capacity of a keyboard, not a mess. So the pass makes overlaps *safe* rather than removing
+them, on one rule: **two actions may share a key only if they can never fire in the same
+context.**
+
+| key | before | after | |
+|---|---|---|---|
+| **V** | 11 | **1** | 🔴 **the worst key in the game.** V is push-to-talk — you *hold* it — and it also fired melee, scope zoom, spell cast, quiver, ender bag and two armour abilities |
+| **TAB** | 3 | **1** | a compacting wheel opened on the player-list key |
+| **B** | 8 | **2** | **three separate backpack mods** were on B; whichever answered first is what you got |
+| **G** | 8 | 4 | curios keeps it; the rest need a dragon, a gun or witch robes |
+| **H** | 8 | 5 | accessories keeps it |
+| **SPACE** | 5 | 4 | `create_sa.flying` fired while jumping; the three left are mount/siege controls |
+
+**Totals:** 177 → 173 bound (4 dead unbound) · 135 → **106** actions sharing a key · **no
+new collision introduced** (the tool refuses to send two actions to one key, and caught
+itself doing exactly that to `semicolon` on the first attempt).
+
+## ⛔ What is deliberately NOT here
+
+**The full reallocation.** The keyboard is full *because* the pack has 317 mods, and the
+next phase is the mod cuts. Reallocating everything now and then cutting a third of the
+mods means doing it twice. Re-examine once the cuts free real estate.
+
+## ⚠️ Two things still open
+
+1. **The client was running when this was written.** Minecraft holds settings in memory and
+   rewrites `options.txt` on exit, so **these changes may be overwritten when the client
+   closes.** Re-run `python tools/controls_pass.py` after closing to check — a clean file
+   reports `0 change(s)`. The pre-pass file is saved as `options.txt.bak-precontrols`.
+2. **Shipping it to the other three via packwiz is still undecided, and there is a catch
+   the earlier section missed:** `options.txt` holds *everything* — FOV, render distance,
+   GUI scale, mouse sensitivity, audio levels. Shipping the file overwrites those too, and
+   a player on a weaker machine inheriting Ethan's render distance is a real annoyance.
+   ⭐ **Better: they each run `controls_pass.py` against their own `options.txt`.** It fixes
+   the keys and leaves their video and audio alone. That is why the tool takes `--file`.
