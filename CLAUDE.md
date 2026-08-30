@@ -57,6 +57,24 @@ updated between two regenerations holds versions the server no longer has, which
 ⚠️ **Configs do NOT travel by packwiz.** `pack/config` is not in `index.toml`. Shared
 configs reach players only through `build-client.ps1`.
 
+🔴 **AND THEY DO NOT REACH THE SERVER EITHER.** `pack/config` (64 files) and
+`instance/config` (961) have no sync in either direction. **Editing a config in the repo
+changes nothing that runs.** `tectonic.json` was set to `min_y: -64` in the repo on
+08-14, C1 was marked done, and the instance was still `-128` on 08-30 — sixteen days of a
+✅ on a change the world had never seen (D-112).
+
+🔑 **The repo records intent. The instance is what runs. Measure the instance.**
+
+⛔ **Before the world reset (C2), run the gate — it is the only irreversible chunk:**
+
+```
+python tools/reset_preflight.py
+```
+
+It exits non-zero until every input is actually true, and **an UNKNOWN counts as a
+failure** — a check that cannot answer has not passed. `tools/test_reset_preflight.py`
+proves it can fail (16 cases); if you add a check, add its negative control too.
+
 ---
 
 ## ⚠️ 3. Sidedness: the metadata is not the jar, in BOTH directions
