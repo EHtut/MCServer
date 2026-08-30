@@ -407,7 +407,8 @@ it can be done tonight.
 | **C1** | 🔴 **NOT DONE — and it looked done for sixteen days.** `pack/config/tectonic.json` was set to `min_y: -64` on 2026-08-14. The **instance** — the only copy generation reads — is still **−128**. ⚠️ **Config does not travel by packwiz**: `pack/config` is not in `index.toml`, so nothing was ever going to carry it across, and nothing said so. 🔑 Copy the file into `C:\MCServer\instance\config\` as part of C2's pre-flight; `tools/reset_preflight.py` **fails** until it matches. ⚠️ `ore_fix` moves with it — it compensates for a *lowered* `min_y`, so the two are a pair, and the instance currently has `ore_fix: true` to match its −128 |
 | **C2** | **Generate.** ⚠️ Everything in B must be settled first. 🔑 **Run `python tools/reset_preflight.py` first — it exits non-zero until every input is actually true, and an UNKNOWN counts as a failure.** C2 is the only irreversible chunk in the plan: a config that never reached the instance is not a bug you notice, it is a world that is quietly wrong forever |
 | **C3** | Free with the reset: Crown → Wall · The Arrival · `/path forcereset` |
-| **C4** | ⛔ **REMOVE `the-knocker`** — Ethan, 2026-08-29. *"An unpredictable human-like stalker that follows and visits."* ⚠️ Staged for the reset, not done now: pulling a mod whose entities are already in a live world leaves them as unknown-entity stubs. 🔑 Change `index.toml`, `pack.toml`'s index hash and `resolved.json` **together** — a `.pw.toml` deleted alone is invisible to the installer, and a stale index hash makes every client refuse the pack |
+| **C4** | ⛔ **REMOVE `the-knocker` AND `grim-and-bleak`** — Ethan, 2026-08-29 and 2026-08-30. *"An unpredictable human-like stalker that follows and visits."* · *"Ambience-led horror with its own dimension."* ⚠️ **Staged for the reset, never before.** Both leave debris in a live world: the-knocker's entities become unknown-entity stubs, and **grim-and-bleak owns a DIMENSION** whose chunk data is orphaned the moment the mod is gone. 🔑 **FIVE places, together** — `pack/mods/<slug>.pw.toml` · `index.toml` · `pack.toml`'s index hash · `resolved.json` · `modlist.json` **categories AND `pins.versions`**. ⚠️ **The pin is the one that gets missed**: this row said three places, the check said four, and `pins.versions` holds 251 entries including *both* staged mods (`the-knocker` 1.5.2, `grim-and-bleak` 2.5.2). A `.pw.toml` deleted alone is invisible to the installer; a stale index hash makes every client refuse the pack; a leftover pin forces a version for a mod that no longer exists. `tools/reset_preflight.py` reports each slug across all five and calls a **partial** removal a FAILURE, not a warning |
+| **C5** | ⭐ **THE CONTROLS AND MOD SETTINGS PASS** — Ethan, 2026-08-30: *"Before the reset too i want to do a pass on controls and mod settings."* ⚠️ **This gates C2** and it is genuinely the last cheap moment: worldgen-affecting settings are baked by C2 and mob/spawn settings are far easier to change before four people have opinions about them. 🔑 Scope is **not yet agreed** — see the open questions below. ⛔ **Docs-first**: this is a design pass, not a config edit spree |
 
 ### D — the night (`70`) · *the big new system*
 
@@ -453,6 +454,29 @@ prove a silenced god *cannot* speak, not merely that a permitted one can.
   deals (E2), which are aimed at exactly that player
 * **the bounty board** — does a godless player get to use it?
 * the **1.21.1 version question** raised by four unavailable mods
+
+### ⭐ C5 — what the controls and settings pass has to decide
+
+These are not hypotheticals; each one is a live disagreement found by
+`tools/reset_preflight.py` on 2026-08-30, and C5 is where they get ruled.
+
+* 🔴 **Which copy of `incontrol/spawn.json` is authoritative?** Repo and instance differ
+  with **identical mtimes**, so timestamps cannot answer it. The difference is not merely
+  an extra denied mob — a `"result": "default"` rule sits at position ~4 in the repo and
+  near the end in the instance, and **InControl evaluates in order, first match wins**,
+  so the reordering changes which rules are ever reached at all. Getting this backwards
+  is how the night tide silently stops spawning.
+* ⚠️ **Six repo configs are absent from the instance entirely** — `l2configs/l2hostility-server.toml`,
+  `servercore-config.yml`, two `cristellib` structure-placement files, and two READMEs.
+  Are they intended, abandoned, or never deployed?
+* ⚠️ **Is `pack/config` meant to be a mirror at all?** It holds 64 files against the
+  instance's 961, with no sync in either direction. Either it is the source of truth and
+  needs a deploy step, or it is a scratch copy and should stop looking authoritative.
+  Right now it looks like the former and behaves like the latter (D-112).
+* ⚠️ **`simple-hats`** is RESOLVED but also listed under `unavailable`/`cut_for_budget`.
+* 🔑 **Controls** are client-side keybinds and therefore travel by `build-client.ps1`,
+  **not** by packwiz and **not** by anything that touches the server — a different
+  delivery path from every other item here, and the one most likely to be assumed.
 
 ---
 

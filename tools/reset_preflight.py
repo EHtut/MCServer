@@ -100,37 +100,105 @@ def check_tectonic():
 # ---------------------------------------------------------------------------
 # 2. C4 — the-knocker must leave in FOUR places at once
 # ---------------------------------------------------------------------------
-def check_knocker():
-    """A .pw.toml deleted alone is invisible to the installer, and a stale index hash
-    makes every client refuse the pack. So this reports each place separately."""
-    places = {
-        "pack/mods/the-knocker.pw.toml": os.path.exists(
-            os.path.join(REPO, "pack", "mods", "the-knocker.pw.toml")),
-        "pack/index.toml": "knocker" in read_text(os.path.join(REPO, "pack", "index.toml")).lower()
-            if os.path.exists(os.path.join(REPO, "pack", "index.toml")) else None,
-        "tools/.cache/resolved.json": "knocker" in read_text(
-            os.path.join(REPO, "tools", ".cache", "resolved.json")).lower()
-            if os.path.exists(os.path.join(REPO, "tools", ".cache", "resolved.json")) else None,
-        "tools/modlist.json": "knocker" in read_text(
-            os.path.join(REPO, "tools", "modlist.json")).lower()
-            if os.path.exists(os.path.join(REPO, "tools", "modlist.json")) else None,
-    }
-    unknown = [k for k, v in places.items() if v is None]
-    if unknown:
-        return check("C4 the-knocker", UNKNOWN, "could not read: " + ", ".join(unknown))
+# ⭐ C4 — staged for removal AT the reset, never before. Both leave debris in a live
+# world: the-knocker's entities become unknown-entity stubs, and grim-and-bleak owns a
+# DIMENSION whose chunk data is orphaned the moment the mod is gone.
+STAGED_FOR_REMOVAL = {
+    "the-knocker": "an unpredictable human-like stalker that follows and visits "
+                   "(Ethan, 2026-08-29)",
+    "grim-and-bleak": "ambience-led horror with ITS OWN DIMENSION (Ethan, 2026-08-30)",
+}
 
-    present = [k for k, v in places.items() if v]
-    if not present:
-        return check("C4 the-knocker", OK, "gone from all four places")
-    if len(present) == 4:
-        # Expected state until the reset - removing it from a LIVE world leaves its
-        # entities as unknown-entity stubs, so it is staged deliberately.
-        return check("C4 the-knocker", WARN,
-                     "still present in all four (expected until the reset - remove it as "
-                     "part of C2, never before, or the live world keeps entity stubs)")
-    check("C4 the-knocker", BAD,
-          "PARTIALLY removed - still in: %s. A half-removal is the worst state: the "
-          "installer and the clients disagree about the pack." % ", ".join(present))
+
+def check_knocker():
+    """🔑 FIVE places, not four. A `.pw.toml` deleted alone is invisible to the
+    installer; a stale index hash makes every client refuse the pack; and a slug left in
+    `pins.versions` is a version forced for a mod that no longer exists.
+
+    ⚠️ The pin was nearly missed. The gameplan's C4 row names three places and this
+    check originally had four; `pins.versions` holds **251** entries including BOTH
+    staged mods (`the-knocker` 1.5.2, `grim-and-bleak` 2.5.2), and nothing pointed at
+    it. Found only because grim-and-bleak turned up there while its slug was being
+    looked up."""
+    ml_path = os.path.join(REPO, "tools", "modlist.json")
+    idx_path = os.path.join(REPO, "pack", "index.toml")
+    rs_path = os.path.join(REPO, "tools", ".cache", "resolved.json")
+
+    ml = None
+    if os.path.exists(ml_path):
+        try:
+            ml = json.load(io.open(ml_path, encoding="utf-8"))
+        except Exception:
+            ml = None
+
+    idx_txt = read_text(idx_path).lower() if os.path.exists(idx_path) else None
+    try:
+        resolved = json.load(io.open(rs_path, encoding="utf-8")) if os.path.exists(rs_path) else None
+    except Exception:
+        resolved = None
+
+    def in_categories(slug):
+        if not isinstance(ml, dict):
+            return None
+        cats = ml.get("categories")
+        if not isinstance(cats, dict):
+            return None
+        for cat in cats.values():
+            for row in (cat.get("mods") or []) if isinstance(cat, dict) else []:
+                if (isinstance(row, list) and row and row[0] == slug) or row == slug:
+                    return True
+        return False
+
+    def in_pins(slug):
+        if not isinstance(ml, dict):
+            return None
+        pins = ml.get("pins")
+        if not isinstance(pins, dict):
+            return None
+        vers = pins.get("versions")
+        return slug in vers if isinstance(vers, dict) else None
+
+    def in_resolved(slug):
+        if not isinstance(resolved, list):
+            return None
+        return any(isinstance(e, dict) and e.get("slug") == slug for e in resolved)
+
+    for slug, why in sorted(STAGED_FOR_REMOVAL.items()):
+        places = {
+            "pack/mods": os.path.exists(os.path.join(REPO, "pack", "mods", slug + ".pw.toml")),
+            "index.toml": (slug in idx_txt) if idx_txt is not None else None,
+            "resolved.json": in_resolved(slug),
+            "modlist categories": in_categories(slug),
+            "modlist pins": in_pins(slug),
+        }
+        label = "C4 " + slug
+        unknown = [k for k, v in places.items() if v is None]
+        if unknown:
+            check(label, UNKNOWN, "could not read: " + ", ".join(unknown))
+            continue
+
+        present = [k for k, v in places.items() if v]
+        # A mod that was never pinned is not "partially removed" for lacking a pin, so
+        # the pin only counts once the slug is gone from everywhere else.
+        if not present:
+            check(label, OK, "gone from all five places")
+        elif set(present) == {"modlist pins"}:
+            check(label, BAD,
+                  "removed everywhere EXCEPT `pins.versions` - a version forced for a "
+                  "mod that no longer exists")
+        elif len(present) == len(places):
+            # ⚠️ ONLY the untouched state is a warning. `>= 4` was here first and called
+            # a 4-of-5 half-removal "staged, expected" - which is the single most
+            # dangerous state there is, and exactly what C4 warns about. Its own test
+            # caught it; reading the line did not.
+            check(label, WARN,
+                  "staged, still present in all %d places - EXPECTED until C2. %s"
+                  % (len(places), why))
+        else:
+            check(label, BAD,
+                  "PARTIALLY removed - still in: %s. A half-removal is the worst state: "
+                  "the installer and the clients disagree about the pack."
+                  % ", ".join(sorted(present)))
 
 
 # ---------------------------------------------------------------------------

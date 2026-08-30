@@ -164,6 +164,62 @@ finally:
     P.REPO = REAL_REPO
     shutil.rmtree(tmp3, ignore_errors=True)
 
+# ---------------------------------------------------------------------------
+print("\nC4 staged removals — five places, and a half-removal is the worst state")
+tmp4 = tempfile.mkdtemp(prefix="preflight_c4_")
+try:
+    P.REPO = tmp4
+    os.makedirs(os.path.join(tmp4, "pack", "mods"))
+    os.makedirs(os.path.join(tmp4, "tools", ".cache"))
+    SLUG = sorted(P.STAGED_FOR_REMOVAL)[0]
+
+    def build(in_mods, in_index, in_resolved, in_cats, in_pins):
+        p = os.path.join(tmp4, "pack", "mods", SLUG + ".pw.toml")
+        if in_mods:
+            io.open(p, "w", encoding="utf-8").write("name = \"x\"\n")
+        elif os.path.exists(p):
+            os.remove(p)
+        io.open(os.path.join(tmp4, "pack", "index.toml"), "w", encoding="utf-8").write(
+            ("[[files]]\nfile = \"mods/%s.pw.toml\"\n" % SLUG) if in_index else "[[files]]\n")
+        json.dump([{"slug": SLUG, "status": "RESOLVED"}] if in_resolved else [],
+                  io.open(os.path.join(tmp4, "tools", ".cache", "resolved.json"), "w",
+                          encoding="utf-8"))
+        ml = {"categories": {"c": {"mods": [[SLUG, "why", "minor"]] if in_cats else []}},
+              "pins": {"versions": ({SLUG: "1.0.0"} if in_pins else {})}}
+        json.dump(ml, io.open(os.path.join(tmp4, "tools", "modlist.json"), "w",
+                              encoding="utf-8"))
+
+    def state_for(slug):
+        P.results = []
+        P.check_knocker()
+        for n, s, d in P.results:
+            if n.endswith(slug):
+                return s, d
+        return ("NOTHING", "")
+
+    build(True, True, True, True, True)
+    expect("present everywhere -> WARN (staged, expected)", state_for(SLUG)[0], P.WARN)
+
+    build(False, False, False, False, False)
+    expect("gone from all five -> PASS", state_for(SLUG)[0], P.OK)
+
+    # 🚨 THE STATE THAT BREAKS THE PACK. A .pw.toml deleted alone is invisible to the
+    # installer and the index hash goes stale, so clients refuse the pack.
+    build(False, True, True, True, True)
+    expect("removed from pack/mods only -> FAIL", state_for(SLUG)[0], P.BAD)
+
+    build(False, False, False, False, True)
+    st, detail = state_for(SLUG)
+    expect("removed everywhere EXCEPT the pin -> FAIL", st, P.BAD)
+    expect("...and it names the pin", "pins" in detail, True)
+
+    # A shape it cannot read must not read as "gone".
+    io.open(os.path.join(tmp4, "tools", "modlist.json"), "w", encoding="utf-8").write("{")
+    expect("unparseable modlist -> UNKNOWN, never PASS", state_for(SLUG)[0], P.UNKNOWN)
+finally:
+    P.REPO = REAL_REPO
+    shutil.rmtree(tmp4, ignore_errors=True)
+
 print()
 print("%d FAILED" % fails if fails else "all preflight gate tests passed")
 raise SystemExit(1 if fails else 0)
