@@ -132,7 +132,7 @@ polish item.**
 ---
 
 
-## Fodder  — 47
+## Fodder  — 41
 
 
 | family | mob | hp | armor | dmg | mod | id |
@@ -161,18 +161,12 @@ polish item.**
 | Other | Crypt Slime | 1.0 | 0.0 | 1.0 | Goety | `goety:crypt_slime` |
 | Skeleton | Possessed Skeleton | 30.0 | 0.0 | 4.0 | Occultism | `occultism:possessed_skeleton` |
 | Skeleton | Koboleton | 25.0 | 0.0 | 3.0 | L_Ender's Cataclysm 1.21.1 | `cataclysm:koboleton` |
-| Skeleton | Bone Imp | 20.0 | 3.5 | 3.0 | Born in Chaos  | `born_in_chaos_v1:bone_imp` |
 | Skeleton | Siamese Skeletons | 20.0 | 2.0 | 3.0 | Born in Chaos  | `born_in_chaos_v1:siamese_skeletons` |
 | Skeleton | Bone Lord | 20.0 | 0.0 | 3.0 | Goety | `goety:bone_lord` |
-| Skeleton | Wither Skeleton | 20.0 | 0.0 | 2.0 | Minecraft (vanilla) | `minecraft:wither_skeleton` |
 | Skeleton | Wild Hunt Skeleton | 20.0 | 0.0 | 4.0 | Occultism | `occultism:wild_hunt_skeleton` |
 | Skeleton | Decrepit Skeleton | 15.0 | 0.0 | 3.0 | Born in Chaos  | `born_in_chaos_v1:decrepit_skeleton` |
-| Skeleton | Baby Skeleton | 10.0 | 1.0 | 2.0 | Born in Chaos  | `born_in_chaos_v1:baby_skeleton` |
 | Skeleton | Skeleton Wolf | 10.0 | 0.0 | 4.0 | Goety | `goety:skeleton_wolf` |
 | Skeleton | Haunted Skull | 2.0 | 0.0 | 5.0 | Goety | `goety:haunted_skull` |
-| Zombie | Zoglin | 40.0 | 0.0 | 6.0 | Minecraft (vanilla) | `minecraft:zoglin` |
-| Zombie | Elite Draugr | 32.0 | 3.0 | 5.0 | L_Ender's Cataclysm 1.21.1 | `cataclysm:elite_draugr` |
-| Zombie | Draugr | 28.0 | 3.0 | 4.0 | L_Ender's Cataclysm 1.21.1 | `cataclysm:draugr` |
 | Zombie | Decaying Zombie | 25.0 | 0.5 | 4.0 | Born in Chaos  | `born_in_chaos_v1:decaying_zombie` |
 | Zombie | Drowned Host | 20.0 | 2.0 | 3.0 | L_Ender's Cataclysm 1.21.1 | `cataclysm:drowned_host` |
 | Zombie | Frayed | 20.0 | 2.0 | 3.0 | Goety | `goety:frayed` |
@@ -221,7 +215,7 @@ polish item.**
 | Zombie | Wild Horde Husk | 30.0 | 10.0 | 4.0 | Occultism | `occultism:wild_horde_husk` |
 | Zombie | Ghoul | 22.0 | 15.0 | 8.0 | Grim & bleak | `grim_and_bleak:ghoul` |
 
-## Specialist - Other  — 11
+## Specialist - Other  — 17
 
 
 | family | mob | hp | armor | dmg | mod | id |
@@ -230,11 +224,17 @@ polish item.**
 | Other | Swarmer | 40.0 | 4.0 | 4.0 | Born in Chaos  | `born_in_chaos_v1:swarmer` |
 | Other | Door Knight | 30.0 | 7.0 | 6.0 | Born in Chaos  | `born_in_chaos_v1:door_knight` |
 | Skeleton | Wild Skeleton | 30.0 | 5.0 | 2.0 | Occultism | `occultism:wild_skeleton` |
+| Skeleton | Bone Imp | 20.0 | 3.5 | 3.0 | Born in Chaos  | `born_in_chaos_v1:bone_imp` |
+| Skeleton | Wither Skeleton | 20.0 | 0.0 | 2.0 | Minecraft (vanilla) | `minecraft:wither_skeleton` |
+| Skeleton | Baby Skeleton | 10.0 | 1.0 | 2.0 | Born in Chaos  | `born_in_chaos_v1:baby_skeleton` |
+| Zombie | Zoglin | 40.0 | 0.0 | 6.0 | Minecraft (vanilla) | `minecraft:zoglin` |
 | Zombie | Zombie Clown | 35.0 | 4.0 | 3.0 | Born in Chaos  | `born_in_chaos_v1:zombie_clown` |
+| Zombie | Elite Draugr | 32.0 | 3.0 | 5.0 | L_Ender's Cataclysm 1.21.1 | `cataclysm:elite_draugr` |
 | Zombie | Barrel Zombie | 30.0 | 6.0 | 3.0 | Born in Chaos  | `born_in_chaos_v1:barrel_zombie` |
 | Zombie | Royal Draugr | 30.0 | 5.0 | 5.0 | L_Ender's Cataclysm 1.21.1 | `cataclysm:royal_draugr` |
 | Zombie | Dread Ghoul | 30.0 | 4.0 | 5.0 | Ice And Fire Community Edition | `iceandfire:dread_ghoul` |
 | Zombie | Wild Zombie | 30.0 | 5.0 | 3.0 | Occultism | `occultism:wild_zombie` |
+| Zombie | Draugr | 28.0 | 3.0 | 4.0 | L_Ender's Cataclysm 1.21.1 | `cataclysm:draugr` |
 | Zombie | Zombie Fisherman | 25.0 | 4.0 | 4.0 | Born in Chaos  | `born_in_chaos_v1:zombie_fisherman` |
 | Zombie | Zombie Lumberjack | 25.0 | 4.0 | 9.0 | Born in Chaos  | `born_in_chaos_v1:zombie_lumberjack` |
 

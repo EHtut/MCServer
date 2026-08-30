@@ -84,9 +84,17 @@ before it lands, or it silently mis-weights the pool.**
 
 **1. NECROMANCERS SUMMON.** `goety` contributes 27 usable mobs and a large share of them
 (`necromancer`, `cairn_necromancer`, `mossy_necromancer`, `wither_necromancer`,
-`skull_lord`, `bone_lord`, `draugr_necromancer`) **raise more undead**. In a 24-mob wave
-that is a multiplier on top of a multiplier. ⚠️ We have already been bitten this week by
-one un-noticed spawn multiplier.
+`skull_lord`, `bone_lord`, `draugr_necromancer`) **raise more undead**.
+
+> ⛔ **THE RULE THIS BECAME IS RETIRED — Ethan, 2026-08-30.** *"No summoner rule no longer
+> applies that is redundant, cut it from everywhere it is mentioned."* The observation
+> above is still TRUE and still worth knowing; what is gone is the blanket ban it turned
+> into. What actually bounds the risk is `MAX_ALIVE_NEAR` — a measured ceiling on live
+> tide mobs near a player — not a category exclusion.
+>
+> ⚠️ `bone_lord` is on this list and was checked in the jar afterwards: it extends
+> `AbstractSkeleton` and spawns nothing. **It is fodder, and this line was wrong about
+> it** — which is the case for measuring rather than listing by name.
 
 **2. OCCULTISM'S `wild_*` ARE EVENT MOBS.** All twelve belong to the Wild Hunt. Spawning
 them outside it may be fine or may look like a bug in another mod's system.

@@ -59,6 +59,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   function register(god, tag, opens, closes) {
     if (!god || !tag) return false
+    // ⚠️ Fragments too. A drafted OPEN joined to a written CLOSE is still a placeholder
+    // on somebody's screen, and the combinatorial engine would hide it in 1-in-N.
+    if (opens && closes) {
+      opens = undrafted(god, tag + '/opens', opens)
+      closes = undrafted(god, tag + '/closes', closes)
+    }
     if (!opens || !opens.length || !closes || !closes.length) {
       console.error(TAG + 'refusing to register ' + god + '/' + tag +
         ' - a pool with an empty half can only ever produce half a line')
@@ -72,11 +78,58 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // Some pools are WHOLE lines rather than fragments - a declaration, a verdict,
   // a refusal. Those are registered with an empty `closes` and joined to nothing,
   // so one engine serves both shapes and callers never need to know which is which.
+  // ⭐⭐ A PLACEHOLDER NEVER REACHES A PLAYER.
+  //
+  // 🔴 Ethan, 2026-08-30: *"there are lines playing that say [Claude-draft] lines playing
+  // across liam's screen."* 113 of them are registered across twelve files, and every one
+  // was reachable. Somebody who is not building this game read my scaffolding as content.
+  //
+  // 🔑 THE RULE WAS ALREADY WRITTEN, in salvage_voice.js's header, and I did not enforce
+  // it: *"A placeholder line is worse than an empty pool - it anchors the writing and gets
+  // mistaken for content later. Empty is honest, and the boot log shouts about it."*
+  //
+  // 🔴 THE FIRST VERSION OF THIS DELETED THE LINES, AND THAT WAS WRONG. Filtering them out
+  // silenced whole pools that are entirely draft - `warn_incoming` for blade and wall, and
+  // Wall's crashout. ⚠️ A SILENCED WARNING IS WORSE THAN A VISIBLE PLACEHOLDER: the tag is
+  // embarrassing, a warning that does not arrive is a player dying to something the game
+  // promised to tell them about.
+  //
+  // ⭐ Three harnesses caught it within a minute of the change - warn, crashout_two and
+  // grudge - which is the only reason it is not live right now.
+  //
+  // 🔑 SO THE MARKER IS STRIPPED, NOT THE LINE. The scaffolding stops being visible; every
+  // system keeps working; nothing goes quiet. The debt does not disappear either - the
+  // boot log counts what is still unwritten, so it stays a number somebody can see rather
+  // than a tag a player reads.
+  //
+  // ⛔ Stripped at REGISTRATION, not at the point of speaking. Several things read pools
+  // directly, and a marker that survives into the pool can escape through any of them.
+  var DRAFT_MARK = '[CLAUDE-DRAFT]'
+  var draftSilenced = []
+
+  function undrafted(god, tag, lines) {
+    var out = [], n = 0
+    for (var i = 0; i < lines.length; i++) {
+      var t = String(lines[i])
+      var at = t.indexOf(DRAFT_MARK)
+      if (at !== -1) {
+        n++
+        t = (t.substring(0, at) + t.substring(at + DRAFT_MARK.length))
+          .replace(/^\s+/, '').replace(/\s+$/, '')
+      }
+      if (t) out.push(t)
+    }
+    if (n) draftSilenced.push(god + '/' + tag + ' ' + n + '/' + lines.length)
+    return out
+  }
+
   function registerLines(god, tag, lines) {
     if (!lines || !lines.length) {
       console.error(TAG + 'refusing to register ' + god + '/' + tag + ' - empty')
       return false
     }
+    lines = undrafted(god, tag, lines)
+    if (!lines.length) return false
     if (!POOLS[god]) POOLS[god] = {}
     POOLS[god][tag] = { opens: lines, closes: null, whole: true }
     return true
@@ -1154,6 +1207,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // from outside: that a line is always given at least its TYPING time. That was
     // false for every line over 110 characters until 2026-08-30.
     beatFor: beatFor,
+    draftSilenced: function () { return draftSilenced },
     CHAT_COPY: CHAT_COPY,
     chat: chat,
     TYPE_CHARS_PER_SEC: TYPE_CHARS_PER_SEC,
@@ -1416,6 +1470,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         var pp = POOLS[g][t]
         total += pp.whole ? pp.opens.length : (pp.opens.length * pp.closes.length)
       }
+    }
+    // 🚨 SAY WHAT WENT SILENT. A pool emptied by the draft filter is a REAL loss of
+    // content, and the one failure mode this project keeps paying for is a subsystem that
+    // is configured, running, and producing nothing without saying so.
+    var ds = draftSilenced()
+    if (ds.length) {
+      var dn = 0
+      for (var q = 0; q < ds.length; q++) dn += parseInt(String(ds[q]).split(' ')[1], 10) || 0
+      console.warn(TAG + dn + ' UNWRITTEN line(s) across ' + ds.length + ' pool(s) are ' +
+        'live with their [CLAUDE-DRAFT] marker stripped. They PLAY - stripping the tag ' +
+        'is not writing them. Ethan replaces them; this count is the debt.')
+      for (var d = 0; d < ds.length; d++) console.warn(TAG + '  ' + ds[d])
     }
     console.info(TAG + 'VELDORA.voice published OK - ' + gods + ' god(s), ' + tags +
       ' tag(s), ' + total + ' possible lines')

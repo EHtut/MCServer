@@ -398,8 +398,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // opposite meaning - the position IS the characterisation, so neither number should
     // ever be "tidied" to match the other.
     //
-    // ⚠️ CENTER_CENTER with NO y. Every other god needs an offset to clear something;
-    // she is the one who should be in the way.
+    // ⚠️ CENTER_CENTER, LIFTED JUST CLEAR OF THE CROSSHAIR. This used to say "with NO y"
+    // and that stopped being true when Ethan reported it from play: *"We cannot have any
+    // text be on the cross hair... that is unreadable."*
+    //
+    // ⭐ The brief is intact. Every other god needs an offset to clear something; she is
+    // still the one who should be in the way, and she still is - just above the crosshair
+    // rather than on it. See the y below for which direction lifts.
       style: {
         anchor: 'CENTER_CENTER',
 

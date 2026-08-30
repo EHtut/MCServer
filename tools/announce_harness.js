@@ -292,15 +292,23 @@ grp('⭐ THE GODS ON SCREEN — and chat keeps the record')
   // at the point of use, not at the first place the string appears.
   //
   // ⚠️ Both callers must keep it, so both are counted.
-  ok('🚨 BOTH say() and sayAbout() still write to chat',
-    (vo.match(/player\.tell\(Text\.of\(paint\(player, god, s\)\)\)/g) || []).length, 2)
+  ok('🚨 BOTH say() and sayAbout() still route through the ONE chat door',
+    (vo.match(/chat\(player, paint\(player, god, s\)\)/g) || []).length, 2)
 
   // ...and specifically inside say(), which is the one the overlay was added to.
   const sayStart = vo.indexOf('function say(player, god, tag)')
   const sayEnd = vo.indexOf('function sayAbout(', sayStart)
   const sayBody = sayStart !== -1 ? vo.slice(sayStart, sayEnd) : ''
-  ok('🚨 say() itself still tells the player',
-    sayBody.indexOf('player.tell(') !== -1, true)
+  // 🔴 THE IDIOM MOVED BEHIND ONE DOOR. It used to be a bare `player.tell(...)` in both
+  // say() and sayAbout(). Ethan found dialogue still leaking into chat in play, and the
+  // cause was that only 2 of 18 send sites were gated - so every tell now goes through
+  // `voice.chat()`, which is the single place CHAT_COPY is honoured.
+  ok('🚨 say() itself still offers the line to chat, via the door',
+    sayBody.indexOf('chat(player, paint(') !== -1, true)
+  // ⭐ AND THE DOOR IS THE ONLY ONE. This is the assertion that would have caught the
+  // original leak: exactly one `player.tell(` may exist in voice.js, inside chat().
+  ok('🚨 ...and voice.js has exactly ONE player.tell, inside chat()',
+    (code('voice.js').match(/player\.tell\(/g) || []).length, 1)
   // ⭐ THE TRANSFER, 2026-08-30. The tag now rides along so the overlay can pick a
   // tone for the line - `overlay(player, god, s, tag)`.
   // ⚠️ The path gained a hop on 2026-08-30: say() -> speak() -> overlay(), so that
@@ -399,8 +407,16 @@ grp('* THE GOD DIALOGUE PASS - 2026-08-30')
   // after `/gd type` measures the unit is a single edit.
   // overlay(), aside(), and crashout() - three surfaces, ONE switch. The count is
   // asserted rather than ">= 1" so a fourth surface has to come here and say so.
+  // ⚠️ FIVE NAMED SITES NOW, NOT THREE - speakChunks and the crashout staging added
+  // their own overlays, and each reads the same switch. Growth here is fine; what must
+  // never grow is the literal count below.
   ok('typing is one named switch, not scattered literals',
-    (vo2.match(/typewriter: TYPEWRITER/g) || []).length, 3)
+    (vo2.match(/typewriter: TYPEWRITER/g) || []).length, 5)
+  // ⛔ THE ONLY TWO LITERALS ARE THE PROBE ITSELF. `/gd type` sends one typed and one
+  // untyped message to measure the rate; those two cannot read the switch because they
+  // ARE the measurement of it. Any third literal is a send that escaped the switch.
+  ok('...and the only literal typewriter flags are the measurement command',
+    (vo2.match(/typewriter: (true|false)/g) || []).length, 2)
   ok('...declared exactly once', (vo2.match(/var TYPEWRITER = /g) || []).length, 1)
   ok('...and /gd type exists to measure the speed',
     /Commands\.literal\('type'\)/.test(vo2), true)
@@ -500,7 +516,7 @@ grp('* PER-GOD SPEAKING STYLE - 2026-08-30')
 
   // Ethan: "Blade - Upper middle of screen - He talks down to you."
   ok('blade is styled in HIS OWN file, beside his colour and pools',
-    /setStyle\(GOD, \{/.test(bl), true)
+    /pantheon\.define\(GOD, \{/.test(bl) && /style: \{/.test(bl), true)
   ok('...at the top of the screen', /anchor: 'TOP_CENTER'/.test(bl), true)
   // y grows DOWNWARD: a TOP anchor needs a POSITIVE y to come down into view, a BOTTOM
   // anchor needs a NEGATIVE one to lift up into view. D-123 cost a session to this.
@@ -510,14 +526,19 @@ grp('* PER-GOD SPEAKING STYLE - 2026-08-30')
   ok('lines are cut into sentences', /function sentences\(text\)/.test(vo3), true)
   ok('...and say() delivers them in sequence',
     (vo3.match(/speak\(player, god, s, tag\)/g) || []).length, 2)
-  ok('...while CHAT still gets the whole line',
-    (vo3.match(/Text\.of\(paint\(player, god, s\)\)/g) || []).length, 2)
+  ok('...while both callers still offer the whole line to chat',
+    (vo3.match(/chat\(player, paint\(player, god, s\)\)/g) || []).length, 2)
 
   // Ethan: "All dialogue should be typed."
   ok('typing is ON now that the speed was measured', /var TYPEWRITER = true/.test(vo3), true)
 
   // Ethan: "how possible is it to just change his dialogue to white and then give him font?"
-  ok('blade is white on screen', /color: '#FFFFFF'/.test(bl), true)
+  // 🔴 HE IS STILL WHITE, BUT HE NO LONGER SAYS SO. Ethan, 2026-08-30: *"God colors
+  // need to go away, color will only be used for emphasis now."* Blade declares no
+  // colour at all and renders in the overlay's default white - same pixels, one fewer
+  // thing claiming to control them.
+  ok('blade declares no colour - white is the default now, not a choice',
+    /color: '#/.test(bl), false)
   ok('...and carries HIS OWN font, not a vanilla placeholder',
     /font: 'veldora:blade'/.test(bl), true)
   // The font has to actually exist in the resource pack, or the server names something
@@ -538,8 +559,14 @@ grp('* PER-GOD SPEAKING STYLE - 2026-08-30')
   // The colour must come from the REGISTRY, not from sniffing the text: garble.strip()
   // removes every section code before im.show() can see one, so the sniffer never fired
   // through this path and on-screen god dialogue rendered colourless.
-  ok('a god with no declared colour is coloured from the REGISTRY',
-    /color: st\.color \|\| hexOfGod\(god\)/.test(vo3), true)
+  // 🔴 THE REGISTRY NO LONGER TINTS THE OVERLAY. `color: st.color || hexOfGod(god)` was
+  // the old line; it is now `overlayColour()`, which returns null unless the god's style
+  // or the moment asks for a tint deliberately. That is the ruling above, in code.
+  //
+  // ⚠️ setColour and hexOfGod ARE STILL LIVE - chat and labels use them. The point is
+  // that the overlay does not, which is why this checks the fallback is `null`.
+  ok('a god with no declared colour gets NO overlay tint',
+    /function overlayColour\([^)]*\)\s*\{[\s\S]*?return null/.test(vo3), true)
   ok('...and the code->hex table has ONE home, in immersive.js',
     /VELDORA\.im\.hexFor\(colourOf\(god\)\)/.test(vo3), true)
 }
@@ -552,11 +579,17 @@ grp('* ART - dead centre, and she does not flinch')
   const ar = code('art_voice.js')
 
   // Ethan: "Art - Straight in the middle of the screen. She demands to be heard."
-  ok('art is styled in her own file', /setStyle\(GOD, \{/.test(ar), true)
-  ok('...dead centre', /anchor: 'CENTER_CENTER'/.test(ar), true)
+  ok('art is styled in her own file',
+    /pantheon\.define\(GOD, \{/.test(ar) && /style: \{/.test(ar), true)
   // Every other god needs an offset to clear something. She is the one who should be
   // in the way, so she takes none.
-  ok('...with no y offset at all', /anchor: 'CENTER_CENTER',\s*\n\s*\n?\s*\/\//.test(ar) || !/y: -?\d+/.test(ar), true)
+  // 🔴 SHE HAS AN OFFSET NOW, AND IT IS THE FIX, NOT A REGRESSION. Ethan, from play
+  // 2026-08-30: *"We cannot have any text be on the cross hair... that is unreadable."*
+  // Dead centre put her exactly on it. y grows DOWNWARD, so a NEGATIVE y lifts her above
+  // the crosshair - still centre-screen, still in the way, still unable to be looked
+  // past, which was the whole brief for her.
+  ok('...lifted just clear of the crosshair, not sat on it',
+    /y: -\d+/.test(ar), true)
 
   // "Elegant, almost dancing across your screen" is TWO jobs. The face is elegant and
   // still; the mod's wave flag does the dancing.

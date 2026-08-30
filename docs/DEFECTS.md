@@ -892,3 +892,429 @@ for that reason and should have been the first move, not the fourth.
   and `sendcustom` hardcodes `typewriter(1.0f, false)` — the speed is unreachable from this
   route. `TYPEWRITER` is `false` behind one named switch until `/gd type` measures whether
   a character costs a tick or a second. It gates every "typed" line in `docs/75`.
+
+---
+
+## 🔴 D-124 — three mobs I added were fighting the tide they arrived in ✅ FIXED 2026-08-30
+
+> Ethan, from play: *"there were skeletons with glowing blue eyes that immediately
+> started attacking and killing all the other enemies in the tide."*
+
+| mob | why | added |
+|---|---|---|
+| `iceandfire:dread_thrall` | `DreadAITargetNonDreadGoal` | today |
+| `iceandfire:dread_knight` | same | today |
+| `goety:skeleton_wolf` | `Summoned$NaturalAttackGoal`, a servant with no owner | today |
+
+Glowing blue eyes are the Ice and Fire **Dread army's** signature, and
+`DreadAITargetNonDreadGoal` is an AI goal whose entire job is attacking anything not
+dread. Her skeletons are not dread.
+
+⭐ **NOTHING ELSE IN THIS REPO COULD SEE IT.** The ids are real, measured, undead, and
+survive being summoned. Every harness passes — they are the right strings in the right
+lists. The defect is in how the mob **behaves once it is standing there**.
+
+### 🔴 AND MY LIVE "CONFIRMATION" WAS FALSE
+
+I reported *"prey dropped 15.0 → 13.0 HP, confirmed live."* **It was daylight, the test
+was at y250 under open sky, and skeletons burn.** A control with no attacker in the world
+dropped 15 → 4. I had measured sunlight and called it combat.
+
+Re-run with fire resistance, the control held — and then *everything* read as innocent,
+because `NoGravity` mobs three blocks apart cannot path to each other. ⚠️ **The bench can
+prove infighting present; it cannot prove it absent.** What settled this was his
+observation plus the goal name, and the file says so rather than claiming a measurement.
+
+New screen: **`tools/infight_check.py`**, which found `skeleton_wolf` on its first run.
+
+---
+
+## ⚠️ D-125 — ten of twelve rostered goety mobs are servant-class ⚠️ WATCH (tested, not cut)
+
+Chasing D-124 I walked the class hierarchy and found that most goety mobs in her rosters
+are **servants** — entities designed to be summoned by a player or necromancer:
+
+```
+wraith / border_wraith / muck_wraith   AbstractWraith  -> Summoned
+reaper                                 AbstractReaper  -> Summoned
+haunt                                  Summoned
+hostile_black_wolf / hellhound / stormhound / winter_wolf   BlackWolf -> AnimalSummon
+```
+
+Only `bone_lord` and `rattled` are ordinary hostiles (`AbstractSkeleton`).
+
+⛔ **NOT ACTED ON, and that is deliberate.** A live test showed an ownerless wraith
+sitting inert next to her skeletons for twelve seconds — no target, no damage. Only
+`skeleton_wolf` carries an actual attack goal, and that one is removed. **Cutting ten
+working mobs on a class name would have gutted the ghost faction on inference.**
+
+### ⭐ RE-TESTED PROPERLY, 2026-08-30 — the risk is much smaller than the names suggest
+
+The original evidence was one wraith watched for twelve seconds, which is not evidence.
+Re-run over **90 seconds** with all four servant ghosts, the reaper, and two known-good
+controls:
+
+```
+t+30s / t+60s / t+90s   wraith · border_wraith · muck_wraith · haunt · reaper   ALL PRESENT
+                        (controls: decrepit_skeleton, phantom — also present)
+```
+
+🔑 **An ownerless goety servant does not evaporate.** The specific fear — that her whole
+Alternate faction would thin out mid-wave because four of its six mobs are servant-class —
+does not happen.
+
+⚠️ **ONE LIMIT ON THAT TEST, STATED RATHER THAN GLOSSED:** it used
+`PersistenceRequired:1b`, and **the tide does not** — `spawner.js` appends only the caller's
+nbt, which for a tide is the tag alone. So this proves no *mod-custom* despawn; it does not
+prove behaviour under vanilla despawn rules.
+
+⭐ **And vanilla despawn is correct here, checked rather than assumed.** Tide mobs arrive
+5–11 blocks away and path toward the player, so they sit inside the 32-block no-despawn
+radius for the whole fight; past 128 blocks they clear themselves, which *complements* the
+idle sweep (D-126) rather than fighting it.
+
+⚠️ **Still worth watching in play:** servants following nobody, refusing to path, or going
+inert. The attack-goal half is covered statically by `tools/infight_check.py`.
+
+---
+
+## ⚠️ D-126 — a tide run ended and its mobs stayed forever ✅ FIXED 2026-08-30
+
+Death, dawn and surfacing each reset `runs[uuid]` and **left the mobs standing**. Nothing
+removed them: `MAX_ALIVE_NEAR` stops more *arriving* and never clears what is there. Every
+tide anyone had ever run was still loaded somewhere.
+
+> Ethan: *"we will need to build a natural despawn system... if all players die or if no
+> mobs slain in 5(?) minutes the tide despawns. this is for server cleanliness and lag."*
+
+⭐ **Keyed to KILLS, not elapsed time** — a long hard fight keeps resetting the clock; a
+player who walked away does not. Death and logout despawn immediately; dawn and surfacing
+deliberately do **not** (his old ruling: no more come, but the ones chasing you do not
+evaporate), so a slow orphan scan collects those five minutes later.
+
+⚠️ `discard()`, never `/kill` — no loot, no XP, no death handlers, nothing feeding the
+slain counters the tide reads back.
+
+🔑 Every exit now routes through one `endRun()`, and the harness asserts **exactly one**
+place resets a run, so a future exit cannot forget to clean up.
+
+---
+
+## 🔴 D-127 — two of rhino_lint's three rules were dead, and reported clean ✅ FIXED 2026-08-30
+
+A shell heredoc ate an escape level and wrote a real **0x08 BACKSPACE** into
+`tools/rhino_lint.py` where a word-boundary was meant. Twice. Both regexes became
+searches for a backspace byte:
+
+| line | rule | became |
+|---|---|---|
+| 211 | within-file function redeclaration | `/<BS>function\s+.../` |
+| 241 | a `Commands.<factory>` that does not exist | `/<BS>Commands\..../` |
+
+A pattern that looks for a backspace matches nothing, ever. Both rules ran green over
+68 scripts every time they were invoked.
+
+⭐ **THE REDECLARATION RULE HAD NEVER RUN.** It was added the same day, specifically
+because a duplicate `overheard` in `pathless.js` took the whole file out of the 01:27
+boot (65/66). It was vacuously green from the moment it was written to the moment it
+was fixed — the instrument built in response to an outage could not have detected that
+outage.
+
+### How it surfaced
+
+Not by inspection. `/whisperband` failed to register at boot on `Commands.integer`, and
+the negative control written to prove the new rule catches that kept reporting **MISSED**
+while an in-process replication of *the same loop*, retyped rather than heredoc'd,
+returned the hit. The discrepancy was the whole signal: the difference between the two
+was the transport, and the transport was corrupting the source.
+
+🔑 **The tool's own header already named this failure** — *"a green assertion that cannot
+fail is worse than a missing one"* — written after a heredoc put a 0x08 into a harness
+on 2026-08-29. The rule was correct, documented, and enforced on `.js` only, so the file
+carrying the warning was outside the sweep that would have caught it.
+
+### Fixes
+
+1. Both regexes repaired.
+2. **The control-character sweep now covers `tools/*.py`, not just `.js`.** The tool now
+   watches its own language; it would have caught this on the next run.
+3. `tools/test_rhino_lint.py` — **6 mutation tests, one per rule.** Every rule is now
+   fed input that must trip it. A rule that cannot be made to fail is not a rule.
+
+### And the redeclaration rule's first live output was a FALSE POSITIVE
+
+Once alive it flagged `watch()` in `blade_events.js` at lines 592 and 1012. It is legal:
+two *sibling* closures, each with its own locals, and the boot log proves the file loads
+(68/68, zero errors). The rule keyed `seen` by **filename**, which is the natural way to
+write it and is wrong — a collision requires a shared **enclosing scope**. Now keyed by
+the innermost enclosing brace offset, with a control test (case 2) that fails if anyone
+reverts to file-keying.
+
+⚠️ **Both halves of this are the same lesson.** The rule was first unable to fail, then
+unable to be right. Neither state was visible from a green run.
+
+---
+
+## 🔴 D-128 — 591 lines of dialogue cannot be put in front of the writer
+
+Found while building the dialogue-refresh backlog item (E7). `tools/dialogue_doc.py` maps
+each god to **exactly one file**:
+
+```python
+FILES = {"blade": "blade_voice.js", "art": "art_voice.js", ...}
+```
+
+and loads only that file. Everything written anywhere else is not filtered out — it is
+never read. **591 lines across 27 files**, against 881 the documents do cover.
+
+| file | lines | what it is |
+|---|---|---|
+| `deep_speaker.js` | 177 | Caebrim, both of her — the largest unreviewed block in the game |
+| `introductions.js` | 98 | first contact with each god |
+| `pathless.js` | 60 | the gods overheard by the pathless |
+| `blade_events.js` · `salvage_events.js` · `wall_events.js` · `art_events.js` | 23 · 18 · 14 · 14 | **per-god lines that never went through the pools** |
+| + 20 more | 187 | |
+
+⚠️ **The `*_events.js` lines are the dangerous half.** A writer reading `blade.md`
+reasonably concludes they have seen everything Blade says. They have not seen 23 of his
+lines, and nothing in the document admits it. Silent partial coverage of a document whose
+entire purpose is completeness.
+
+### And a lying banner, fixed in the same commit
+
+`tidewhispers.js` told the reader its fragments could be pulled into a document with
+`python tools/dialogue_doc.py extract undead`. That command answers **`unknown god
+'undead'`**. Registering through the voice pools is necessary and not sufficient — the
+extractor must also know the speaker exists, and nothing had ever run the command to find
+out. Written by me, never true.
+
+### ⚠️ The measurement undercounted itself first
+
+The first sweep found 309 lines. It matched only bare array entries and missed every
+keyed field, so `salvage_deals.js` — which holds dialogue as `pitch:`/`yes:`/`after:` —
+reported **zero**. A file with seventeen lines of dialogue read as having none.
+
+🔑 The zero is what exposed it. A file known to contain drafts reporting none is a prompt
+to re-check the query, not a finding — the standing rule, and it paid for itself here.
+
+### Not the fix
+
+⛔ **Do not move the off-pool dialogue into `registerLines`.** Those shapes are load-
+bearing: a deal needs three linked strings, an introduction needs a named sequence, and
+the pool API is a flat bag of interchangeable lines. Converting them would destroy the
+structure to suit the tool. **The extractor learns to read them.** Filed as C6.
+
+---
+
+## 🔴 D-129 — the fonts were delivered, verified, and had never been loaded ✅ FIXED 2026-08-30
+
+Ethan's screen, mid-test: Wall's line rendered as **thirteen magenta boxes**. Right
+colour, right length, right place, every glyph a missing-glyph rectangle.
+
+| | |
+|---|---|
+| client launched | **10:27:03** |
+| `FontManager` built the font set (the only reload that session) | **10:27:45** |
+| fonts copied into his instance | **10:58** |
+| times `veldora` appears in the client log | **0** |
+
+Every check the tooling had said delivered: right files, right folder, hashes verified,
+inside `KubeJS File Resource Pack [assets]` — a pack genuinely present in the resource
+stack, confirmed in the log. All of it was true. **Minecraft builds its font set once per
+resource reload**, and there had not been one since the files arrived.
+
+### ⭐ Why the symptom is tofu and not vanilla text
+
+`Style.withFont` on a font that is not in the loaded stack does **not** fall back to the
+default — it yields an **empty font set**, and an empty font set draws every codepoint as
+the missing glyph. So the failure looks like a *broken font* rather than an *absent* one,
+which sends you to inspect the TTF. The TTFs were fine (valid TrueType, valid `ttf`
+provider JSON, correct namespace).
+
+🔴 **`build_client_assets.py` actively pointed the wrong way.** Its closing line promised
+that a client without the fonts *"will see vanilla text and no error"*. Written from
+reasoning, never from a screen. Corrected in the same commit.
+
+### ⚠️ And the check could not have been "is veldora in the log"
+
+A font that loads correctly logs **nothing**. A font never asked for also logs
+**nothing**. They are indistinguishable in the client log — so absence of `veldora` lines
+proves nothing in either direction, and a check built on it would have been the third
+unfalsifiable assertion this week.
+
+The only question the evidence can answer is a timestamp comparison: **did the client
+reload resources after these files landed?** That is now `check_loaded()`, run
+automatically by every invocation of the tool, with three distinct answers —
+`OK` / `STALE` / `UNKNOWN` — because *"I could not tell"* and *"no"* must never share a
+return value. `tools/test_client_assets.py` proves all three are reachable (6/6).
+
+Running it against the live instance reproduces the failure exactly:
+
+```
+🔴 STALE: files landed 10:58:50, client last reloaded 10:27:48 - it has NEVER seen them.
+```
+
+### The fix for Ethan
+
+**F3+T in game, or relaunch the client.** No packwiz reimport — the files were already in
+the right folder the whole time.
+
+🔑 **This is `live_path_smoke`'s lesson in a second subsystem.** Configured, delivered,
+hash-verified and doing nothing, with every instrument reporting success because every
+instrument was measuring the write rather than the read.
+
+---
+
+## 🔴 D-130 — every god's font was rejected at load, since the day they were fetched ✅ FIXED 2026-08-30
+
+Found by reading the client log after D-129's fix was applied and the screen was *still*
+full of boxes:
+
+```
+Failed to load builder (veldora:wall: builder #0 from pack KubeJS File Resource Pack
+[assets]), rejecting
+java.io.FileNotFoundException: veldora:font/font/wall.ttf
+```
+
+Doubled `font/`. Every definition said:
+
+```json
+"file": "veldora:font/wall.ttf"
+```
+
+which reads as obviously correct and is wrong. Minecraft's `TrueTypeGlyphProviderDefinition`
+calls `.withPrefix("font/")` on that value itself, so it resolved to
+`assets/veldora/font/`**`font/`**`wall.ttf`. **All five gods, rejected on every load since
+the fonts were first fetched.** They have never once rendered.
+
+The correct form is `"veldora:wall.ttf"`.
+
+### ⚠️ It was hidden by D-129, and the two are indistinguishable on screen
+
+A **rejected builder** and an **unloaded pack** both end in an EMPTY font set, and an empty
+font set draws every codepoint as the missing glyph. So both faults produce the identical
+picture: rectangles at the right colour, right length, right place.
+
+🔑 That is why fixing D-129 and reloading looked like *"the fix did not work"* rather than
+*"there is a second bug underneath"*. **The client log named the real cause in one line,
+both times.** It should have been the first thing read, not the fourth — the screenshot
+could not distinguish the two failures and the log could.
+
+### The generator wrote it, so fixing the files was not the fix
+
+`tools/fetch_fonts.py` emitted `"veldora:font/%s.ttf"`. A re-fetch would have silently
+restored the bug. ⭐ And the comment on the line directly above it already stated the rule
+correctly — *"`file` resolves under assets/<ns>/font/"* — with the code adding the prefix
+anyway. Documented and wrong within three lines of each other.
+
+### The check that ends this class
+
+`build_client_assets.py` now runs `check_providers()` **before copying anything**: it
+resolves every provider's `file` exactly the way Minecraft does and refuses to ship a
+definition that does not land on real bytes.
+
+```
+✓ all font definitions resolve to a real file
+```
+
+`tools/test_client_assets.py` is now 10 cases, including the control that matters: it
+reconstructs all five shipped definitions and requires all five to be rejected. Without
+it, a `check_providers` that simply returned `[]` would pass every other case.
+
+### Standing lesson
+
+⛔ **A screenshot cannot distinguish two failures that render identically. A log can.**
+Two evenings were spent on the delivery chain — files, folders, hashes, resource stacks —
+for a fault that was one line of the client log the entire time.
+
+---
+
+## D-131 — a four-sentence god line holds the screen ~50s, and nothing can warn you through it ⛔ OPEN
+
+**Measured, not estimated** (`tools/voice_style_harness.js`, the four-sentence group):
+
+| god | four sentences |
+|---|---|
+| Wall | **50.0s** |
+| Forge | 36.6s |
+
+Each sentence is individually correct. Ethan ruled from play that a line must stay up
+**10–15s**, so `voice.beatFor` grew a 12s floor; four of those is fifty seconds.
+
+⚠️ **The cost is that the mod plays one message at a time, FIFO, with no reorder and no
+clear.** So for the length of a Wall ramble there is a window in which a tide warning
+*cannot reach the player at all*. That is precisely the failure the old assertion
+("under 15s for four sentences") existed to prevent — it was written when a sentence held
+~3s, and it went red the moment the durations were raised.
+
+🔑 **The referee cannot fix this.** `screen.js` may refuse to *accept* a line; it can never
+jump one already queued. So the answer is not a priority number.
+
+**⛔ Needs Ethan's ruling.** The two real options are shorter god lines, or a warning
+channel that bypasses the message queue entirely. Do **not** quietly lower the per-line
+floor to make the number go down — that reverses a ruling he made from play.
+
+The assertion now splits: the safety property (no *single* sentence outlasts the referee's
+model for a god) is asserted, and the aggregate carries a regression ceiling plus a name
+that says it is open, so green is not read as "this is fine".
+
+---
+
+## D-132 — an aside can now arrive ~9s after the moment that prompted it ⚠️ OPEN, traded deliberately
+
+`screen.js` `P.ASIDE` went 2.0 → **10.0**. It had to: Ethan reported the dead were
+unreadable at 1.5s, so `HOLD.WHISPER` is now **9.5s**, and anything tolerating less than
+~10s is **DROPPED OUTRIGHT** while a whisper plays — not delayed, discarded. At 2.0 every
+interior line landing inside a whisper would have been silently thrown away.
+
+⚠️ **The same number lets an aside queue behind a god.** It still cannot talk *over* one —
+the mod is strictly one-at-a-time, so the queue enforces that by itself — but it can now
+land up to ~9s late.
+
+🔴 **For an aside that is arguably the wrong trade.** These are the player's own body
+reacting — *"You hold your breath"*. Nine seconds late is not a late reaction, it is a
+non-sequitur; a dropped one is merely absent. `screen.js` still carries my original
+argument that "late is the better failure for an interior line" — that reasoning did not
+survive seeing the number, and the comment is now marked as such.
+
+🔑 **One knob cannot satisfy both.** Any value below 10.0 reintroduces the drop Ethan
+actually complained about. The real fix is an **expiry on the aside** — accept it, then
+discard it if it has not been shown within a few seconds — which is mechanism, not tuning,
+and is not being built mid-test.
+
+---
+
+## D-133 — six harnesses went blind when registration moved and chat was switched off ✅ FIXED 2026-08-30
+
+Another chat reported seven red harnesses "in files I've never touched". None of it was
+game breakage; **every one was an instrument watching something that had moved.**
+
+| harness | what it watched | why it went blind |
+|---|---|---|
+| `voice_style` | `voice.setStyle`, spied in an isolated god file | the pantheon refactor moved the call into `pantheon.define`, which the sandbox did not load — so the define threw and **no style was captured at all** |
+| `warn` | blade/wall/salvage `warn_incoming` pools | same: three gods registering nothing, reported as *"blade has no real warn_incoming line"* |
+| `grudge` | the exchange, via `player.tell` | dialogue was ruled out of chat, so `broadcast` now delivers through `voice.overlay` — which the sandbox never stubbed. **Both channels silent** |
+| `announce` / `artdeal` | `player.tell(Text.of(paint(...)))` counts | that idiom now lives behind the single `voice.chat()` door |
+| `deep_speaker` | `spk.forge.confession.length` | the confession was retconned away; this **crashed** the file rather than failing it, silently taking every later assertion with it |
+| `confession` | `VELDORA.speaker.eligible` | the whole system is gone — rewritten as a removal guard |
+
+### The two lessons
+
+⛔ **A harness that dies partway reports the tests it never ran as nothing at all.**
+`deep_speaker` threw on `undefined.length` and lost its remaining assertions with no
+summary line. A crash and a failure must not look alike.
+
+🔑 **When a ruling changes a channel, the tests measuring the old channel are the first
+thing that breaks — and they break looking exactly like missing content.** *"blade has no
+real warn_incoming line"* reads as unwritten dialogue; it was a missing dependency in the
+sandbox. Every one of these was fixed by pointing the instrument at where the behaviour
+went, **never** by weakening the assertion. Where a ruling genuinely inverted a contract
+(god colours, Forge's shake, Art's crosshair lift, Caebrim's name) the assertion was
+inverted and the ruling quoted beside it.
+
+### Also found while fixing it
+
+Two comments were arguing for behaviour Ethan had already overruled — `forge_voice.js`
+still made the case for shake-and-scatter, and `art_voice.js` still said "CENTER_CENTER
+with NO y" above a `y: -70`. Both corrected. ⚠️ **A stale comment outranks the code it sits
+on when the next person reads it.**

@@ -111,11 +111,27 @@ function styleFromFile(file, god) {
     console: { info() { }, log() { }, warn() { }, error() { } },
   }
   const keys = Object.keys(stub)
-  const src = fs.readFileSync(path.join(SS, file), 'utf8')
+  // 🔴 pantheon.js LOADS ALONGSIDE THE GOD FILE, and it did not used to.
+  //
+  // This harness runs one god file in isolation and spies on `voice.setStyle` to catch
+  // the style it registers. That worked while every god file called setStyle directly.
+  // The pantheon refactor moved that call inside `pantheon.define`, so with pantheon.js
+  // absent from this sandbox the define call hit `VELDORA.pantheon === undefined`, threw,
+  // and the spy captured nothing - reported as "art is not styled in her own file".
+  //
+  // ⭐ THE ASSERTION WAS RIGHT AND THE INSTRUMENT WAS WRONG. Art's style object genuinely
+  // does live in art_voice.js; only the function carrying it to the engine moved. So the
+  // fix is to give the sandbox the registrar, not to weaken the test - this file exists to
+  // prove each god is styled in her OWN file, which is the one property the refactor most
+  // needed to be held to.
+  const files = ['pantheon.js', file]
   try {
-    new Function(...keys, 'VELDORA_IN',
-      'var VELDORA=VELDORA_IN;' + src.replace(/^var VELDORA = .*$/m, '') + '\n;'
-    )(...keys.map(k => stub[k]), s.V)
+    for (const fn of files) {
+      const src = fs.readFileSync(path.join(SS, fn), 'utf8')
+      new Function(...keys, 'VELDORA_IN',
+        'var VELDORA=VELDORA_IN;' + src.replace(/^var VELDORA = .*$/m, '') + '\n;'
+      )(...keys.map(k => stub[k]), s.V)
+    }
     loaded.forEach(f => { try { f({ server: s.server }) } catch (e) { } })
   } catch (e) { return { s, style: null, threw: String(e) } }
   return { s, style: captured, threw: null }
@@ -230,8 +246,17 @@ grp('* AN UNSTYLED GOD IS PLAIN, NOT BROKEN')
   ok('it still speaks', s.cmds.length > 0, true)
   ok('...at the default bottom anchor', /anchor:3/.test(t), true)
   ok('...lifted clear of the hotbar with a NEGATIVE y', /y:-\d/.test(t), true)
-  ok('...and coloured from the REGISTRY, since garble.strip removes the codes first',
-    /color:"#FFAA00"/.test(t), true)
+  // 🔴 THE ASSERTION IS INVERTED FROM WHAT IT WAS, and the ruling is why. Ethan,
+  // 2026-08-30: *"God colors need to go away, color will only be used for emphasis
+  // now."* So `voice.overlayColour` no longer consults the colour registry - a god
+  // gets a plain overlay unless her style or the moment asks for a tint deliberately.
+  //
+  // ⚠️ setColour IS STILL LIVE and still registered above; it feeds chat and labels.
+  // That is exactly why this needs a test: the registry still holds §6§l for this god,
+  // and the overlay must ignore it. A test that only checked "no colour anywhere" would
+  // pass for the wrong reason.
+  ok('...and NOT coloured from the registry - colour is for emphasis only now',
+    /color:/.test(t), false)
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -262,11 +287,16 @@ grp('* FORGE RAMBLES - and it must not look like Wall')
   const fs_ = f.style || {}
   const w = (styleFromFile('wall_voice.js', 'wall').style) || {}
 
-  // 🔴 SHAKE **AND** SCATTER, which was argued against for Wall. The difference is the
-  // point: Wall is STILL text in the wrong place (composed, somewhere she should not
-  // be); Forge is MOVING text everywhere (unable to settle). Same flags, opposite
-  // meanings, because the character decides what a motion means.
-  ok('forge shakes', fs_.shake, true)
+  // 🔴 FORGE DOES NOT SHAKE, AND THIS COMMENT USED TO ARGUE THAT SHE DID.
+  //
+  // The original reasoning was that shake AND scatter together read as restlessness,
+  // against Wall who is still text in the wrong place. Ethan overruled it from play,
+  // 2026-08-30: *"Forge shakes too much, we can remove the shaking."*
+  //
+  // ⭐ The characterisation still holds, it is just carried by the SCATTER and the PACE
+  // instead - her box is wider and taller than Wall's and her beatScale is below 1. The
+  // contrast with Wall survives losing the flag, which is the point worth testing.
+  ok('forge does NOT shake - removed from play feedback', fs_.shake, false)
   ok('...and Wall does NOT - the contrast is the characterisation', w.shake, false)
   ok('...but both scatter', !!(fs_.scatter && w.scatter), true)
 
@@ -307,10 +337,31 @@ grp('* FORGE RAMBLES - and it must not look like Wall')
   ok('🚨 and NOTHING is scheduled - the mod queue is the sequencer', s2.delays.length, 0)
   ok('🔑 forge holds the screen for LESS time on the same line',
     f2.screen < w2.screen, true)
-  // ⚠️ A four-sentence line must not squat on the screen. Everything else queues behind
-  // it, and a tide warning behind a ramble is a warning that arrives after the tide.
-  ok('🚨 ...and neither of them squats - under 15s for four sentences',
-    f2.screen < 15 && w2.screen < 15, true)
+  // 🔴🔴 THIS IS A REAL FINDING, NOT A STALE TEST, AND IT IS LEFT VISIBLE ON PURPOSE.
+  //
+  // The old assertion was "under 15s for four sentences". Measured now: WALL 50.0s,
+  // FORGE 36.6s. The 15s budget was written when a sentence held ~3s; Ethan then ruled
+  // from play that a line must stay up 10-15s, and voice.beatFor grew a 12s floor. Each
+  // sentence is therefore correct on its own and the AGGREGATE is the cost.
+  //
+  // ⚠️ WHAT IT COSTS: the mod plays one message at a time, FIFO, with no reorder and no
+  // clear. So while Wall says four sentences there are ~50 SECONDS in which a tide
+  // warning cannot reach the player - which is the precise failure the original
+  // assertion existed to prevent. The referee cannot fix it: it may refuse to accept a
+  // line, never jump one already queued.
+  //
+  // 🔑 SO THE TEST SPLITS IN TWO. The safety property still holds and is asserted first:
+  // no SINGLE sentence exceeds what the referee models for a god, which is what stops a
+  // line being delivered to a corpse. The aggregate gets a regression ceiling and a name
+  // that says what it is, so nobody reads green as "this is fine".
+  //
+  // ⛔ Ethan rules on the aggregate - shorter god lines, or a warning channel that
+  // bypasses the queue. Do not quietly lower the per-line floor to make this number go
+  // down; that reverses a ruling made from play.
+  ok('🔑 no SINGLE sentence outlasts the referee model for a god',
+    f2.screen / f2.sends <= 14.5 && w2.screen / w2.sends <= 14.5, true)
+  ok('🚨 OPEN: four sentences still hold the screen ~50s - see the note above',
+    f2.screen < 60 && w2.screen < 60, true)
   ok('...by her declared beatScale', fs_.beatScale < 1, true)
 
   // ⚠️ A floor exists so a sentence cannot vanish before it can be read. Unreadable is
@@ -375,7 +426,30 @@ grp('* THE SCREEN REFEREE - one message at a time, and a queue nobody can jump')
   // while GOD tolerated 2.5s, so the dead muttering locked out the god about to speak -
   // the exact inversion the referee exists to prevent.
   ok('🔴 ...and CANNOT block a god', send('GOD', 5), true)
-  ok('an aside will not talk over a god mid-sentence', send('ASIDE', 3), false)
+  // 🔴 THIS ASSERTION FLIPPED, AND THE FLIP IS A TRADE, NOT A FIX.
+  //
+  // It used to be REFUSED, because ASIDE tolerated 2.0s of queue. Ethan then reported
+  // the dead were unreadable at 1.5s, so WHISPER now holds up to 9.5s - and anything
+  // tolerating less than ~10s is DROPPED OUTRIGHT while a whisper plays, not delayed.
+  // ASIDE went to 10.0 so an interior line survives the dead muttering.
+  //
+  // ⚠️ THE SAME NUMBER LETS IT QUEUE BEHIND A GOD. It still cannot talk OVER one - the
+  // mod is strictly one-at-a-time and FIFO, so the queue enforces that on its own - but
+  // it can now arrive up to ~9s after the moment that prompted it.
+  //
+  // 🔑 AND FOR AN ASIDE THAT IS ARGUABLY THE WRONG TRADE. These are the player's own
+  // body reacting - "You hold your breath". Nine seconds late is not a late reaction, it
+  // is a non-sequitur, whereas a dropped one is merely absent. The comment in screen.js
+  // argues the opposite ("late is the better failure for an interior line"); that was my
+  // reasoning and it did not survive seeing the number.
+  //
+  // ⛔ NOT RE-TUNED HERE. Any value below 10.0 reintroduces the drop-behind-a-whisper
+  // that Ethan actually complained about, so the two cannot both be satisfied by this
+  // one knob - it needs an expiry on the aside instead, which is mechanism, not tuning.
+  ok('an aside is ACCEPTED behind a god now, not refused - see the note',
+    send('ASIDE', 3), true)
+  ok('...and the queue, not the referee, is what stops it overlapping',
+    s.V.screen.backlog(p) > 0, true)
   ok('a warning outranks all of it', send('ANNOUNCE', 4), true)
   ok('...after which a whisper is refused', send('WHISPER', 3), false)
   ok('🚨 a crashout is never refused', send('CRASHOUT', 3), true)

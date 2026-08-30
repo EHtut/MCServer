@@ -69,6 +69,21 @@ REG = os.path.join(HERE, '.cache', 'undead_registered.json')
 #   · stray and bogged are NOT in that config at all - they come out empty-handed
 #     because /summon does not run the vanilla equip step. In the wild they are
 #     archers; summoned into a tide they are melee.
+# ── mobs whose ATTACK carries a status effect ─────────────────────────────────
+# 🔴 The live probe cannot see these. It reads attributes off a summoned entity, and an
+# effect-on-hit is code rather than an attribute - so every mob here reads as harmless
+# on paper. Ethan found the first one by fighting it.
+#
+# ⚠️ THE SWEEP THAT PRODUCED THIS LIST: every mob in her fodder was checked for effect
+# references in its entity class. `iceandfire:ghost` came up mentioning WITHER and POISON
+# and is NOT here - it has `canBeAffected` and no `addEffect`, i.e. immunity handling
+# rather than an attack. Undead are immune to both, which is why the reference exists.
+# Checking that distinction is the difference between this list and a keyword grep.
+DEBUFF_ON_HIT = {
+    'minecraft:wither_skeleton':
+        'applies WITHER on hit - ruled a specialist from play, 2026-08-30',
+}
+
 RANGED_SUMMONED = {
     'minecraft:skeleton': '~30% (6/20 summons carried a bow)',
 }
@@ -135,6 +150,23 @@ def role(rec, eid):
         return 'Specialist - Ranged', "ruled by Ethan (attack is mod code, not a bow)"
     if eid in RANGED_SUMMONED:
         return 'Specialist - Ranged', RANGED_SUMMONED[eid]
+
+    # 🔴🔴 STATUS EFFECTS OUTRANK EVERY STAT BAND, and this table was blind to them.
+    # Ethan, from play 2026-08-30: *"wither skeletons are reported as 'too excessive'
+    # they should be specialists."* A wither skeleton measures 20 hp / 0 armour /
+    # 2 damage - LIGHTER than the mob that is the bulk - and applies WITHER on hit.
+    #
+    # 🔑 `generic.attack_damage` reads a number and cannot see a debuff. Damage over
+    # time, stacking across a crowd, health bar blacked out while it runs: none of it
+    # is in the stats every other row here was classified by. A low-damage mob that
+    # applies an effect is precisely what is unfair IN NUMBERS, which is the only place
+    # fodder is ever used.
+    #
+    # ⚠️ HAND-MAINTAINED, AND IT HAS TO BE. The probe cannot measure this - it reads
+    # attributes off a live entity and an effect-on-hit is code. Add to it when play
+    # reports a mob as worse than its numbers.
+    if eid in DEBUFF_ON_HIT:
+        return 'Specialist - Other', DEBUFF_ON_HIT[eid]
     # ⚠️ NOT filed as ranged. An archer that arrives with empty hands is a melee mob
     # until something puts a bow in them - see RANGED_IF_EQUIPPED.
 

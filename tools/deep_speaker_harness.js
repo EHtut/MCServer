@@ -280,14 +280,30 @@ grp('🚨 deep_speaker.js IS ACTUALLY LOADED AND BOOTED — both were missing')
     ['death_doctor', 'death_keeper', 'death_matriarch', 'death_shadow',
      'death_speaker', 'death_stranger'])
 
-  // ⭐ THE EXACT SHAPE THAT BROKE IT. `confession` is optional; Kayer has none on
-  // purpose. One entry without it must cost its own registration and nothing
-  // downstream - and `forge` enumerates after `art`, so it is the canary.
-  ok('art has NO confession, deliberately', !(spk.art && spk.art.confession), true)
-  ok('...and forge, registered AFTER her, survived it', !!spk.forge, true)
-  ok('...with its own three cutscenes intact', spk.forge && spk.forge.confession.length, 3)
-  ok('caebrim holds BOTH blade and forge (docs/61)',
-    [spk.blade && spk.blade.name, spk.forge && spk.forge.name], ['the Shadow', 'the Shadow'])
+  // 🔴 THE CONFESSION IS RETCONNED AWAY, SO THIS GROUP INVERTED. Ethan, 2026-08-30:
+  // *"so we remove deep speaker confession"*, alongside *"im retconning the rule for
+  // unique deep speakers. It will always just be caebrim."*
+  //
+  // ⭐ HIS WRITING IS NOT LOST - all four scripts are archived verbatim in
+  // docs/archive/deep-speaker-confessions-2026-08-30.md. Nothing reads them.
+  //
+  // ⚠️ THIS USED TO CRASH THE FILE, not fail it: `spk.forge.confession.length` threw on
+  // undefined and took the remaining assertions with it. A harness that dies partway
+  // reports the tests it never ran as nothing at all.
+  //
+  // 🔑 The old canary is kept in its inverted form. It asked whether an entry WITHOUT a
+  // confession broke the entries after it; now none of them have one, so the question is
+  // whether every speaker still registers with none - and forge, enumerating after art,
+  // is still the one that would show it first.
+  ok('NO speaker carries a confession any more - the retcon holds',
+    Object.keys(spk).filter(k => spk[k] && spk[k].confession).length, 0)
+  ok('...and forge still registered without one', !!spk.forge, true)
+  // 🔴 SHE IS NAMED, NOT TITLED. `the Shadow` was my placeholder - deep_speaker.js
+  // still flags it as such - and Ethan's retcon replaced it with her actual name:
+  // *"im retconning the rule for unique deep speakers. It will always just be
+  // caebrim."* All five entries now read Caebrim.
+  ok('caebrim holds BOTH blade and forge, by name (docs/61)',
+    [spk.blade && spk.blade.name, spk.forge && spk.forge.name], ['Caebrim', 'Caebrim'])
 
   global.VELDORA.speaker = stubSpeaker
 }

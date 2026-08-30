@@ -159,6 +159,12 @@ grp('THE REAL POOLS, loaded from the shipped *_voice.js files')
   let loaded = true
   try {
     ;(0, eval)(fs.readFileSync(path.join(SS, 'voice.js'), 'utf8'))
+    // 🔴 pantheon.js IS NOT OPTIONAL HERE ANY MORE. Every god registers her pools
+    // through `pantheon.define` since the refactor, so a sandbox holding voice.js and
+    // the god files but not the registrar loads three gods that register NOTHING -
+    // and this file then reported "blade has no real warn_incoming line", which reads
+    // as missing content rather than a missing dependency in the harness.
+    ;(0, eval)(fs.readFileSync(path.join(SS, 'pantheon.js'), 'utf8'))
     for (const f of ['blade_voice.js', 'wall_voice.js', 'salvage_voice.js']) {
       ;(0, eval)(fs.readFileSync(path.join(SS, f), 'utf8'))
     }

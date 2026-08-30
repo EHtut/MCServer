@@ -15,6 +15,23 @@
 // play; "she confessed to somebody who had not earned it" is invisible until the text
 // is already spent — and a confession spent is gone.
 'use strict'
+// -- REWRITTEN AS A REMOVAL GUARD ------------------------------------------
+// 🔴 THE SYSTEM DESCRIBED ABOVE NO LONGER EXISTS, AND THIS FILE NOW GUARDS ITS ABSENCE.
+//
+// Ethan, 2026-08-30: *"so we remove deep speaker confession."* It went with the wider
+// retcon - *"im retconning the rule for unique deep speakers. It will always just be
+// caebrim"* - so there is no per-god deep speaker left to confess to anybody.
+//
+// ⭐ NOTHING IS LOST. All four confession scripts are archived verbatim in
+// docs/archive/deep-speaker-confessions-2026-08-30.md, and the reasoning that made this
+// harness worth writing is kept above ON PURPOSE: the bug was never in the eligibility
+// code, it was that the most guarded writing in the game was gated on a number that
+// rises with the passage of time. That mistake is re-makeable by anyone who builds a
+// gated reveal later, which is why the account of it stays here.
+//
+// 🚨 SO THE ASSERTIONS INVERT. They no longer prove the confession is earned; they prove
+// it is GONE. If the machinery returns, this goes red and whoever brought it back has to
+// read the paragraphs above and decide deliberately - rather than re-deriving Liam's bug.
 const fs = require('fs')
 const path = require('path')
 const SS = path.join(__dirname, '..', 'pack', 'kubejs', 'server_scripts')
@@ -28,140 +45,33 @@ function ok(label, got, want) {
   else { fail++; console.log('  ' + R + 'FAIL' + X + ' ' + label + '\n         got ' + a + '  want ' + b) }
 }
 
-let PHASE = 'helper'
-let TRUST = 0
-let TRUST_THROWS = false
-const server = { players: [], scheduleInTicks: () => { }, persistentData: { getCompound: () => ({}) } }
+const files = fs.readdirSync(SS).filter(f => f.endsWith('.js'))
+const all = files.map(f => ({ f, src: fs.readFileSync(path.join(SS, f), 'utf8') }))
 
-function mkPlayer(opts) {
-  const o = opts || {}
-  const data = {}
-  const p = {
-    username: o.name || 'P', uuid: 'u-' + (o.name || 'P'), server,
-    persistentData: {
-      getInt: (k) => (typeof data[k] === 'number' ? data[k] : 0),
-      putInt: (k, v) => { data[k] = v },
-      getString: (k) => (typeof data[k] === 'string' ? data[k] : ''),
-      putString: (k, v) => { data[k] = v },
-      getBoolean: (k) => !!data[k],
-      putBoolean: (k, v) => { data[k] = v },
-    },
-    tell: () => { }, _data: data,
-  }
-  // stage is stored as stage+1, so 0 means "never heard any"
-  if (o.stage !== undefined) data['veldora_spk_stage_death_speaker'] = o.stage + 1
-  if (o.met !== false) data['veldora_spk_met_death_speaker'] = true
-  return p
-}
-
-global.ServerEvents = { commandRegistry: () => { }, loaded: () => { }, tick: () => { } }
-global.EntityEvents = { death: () => { }, spawned: () => { } }
-global.PlayerEvents = { loggedIn: () => { }, loggedOut: () => { }, tick: () => { }, respawned: () => { } }
-global.ItemEvents = { rightClicked: () => { }, entityInteracted: () => { } }
-global.BlockEvents = { placed: () => { }, broken: () => { }, rightClicked: () => { } }
-global.Text = { of: (s) => s }
-global.Item = { of: () => ({}) }
-global.VELDORA = {
-  paths: { pathOf: () => 'blade' },
-  ritual: { active: () => false },
-  voice: { say: () => true, sayAbout: () => true, line: () => 'x', register: () => true, registerLines: () => true },
-  phase: { of: () => PHASE },
-  trust: () => { if (TRUST_THROWS) throw new Error('no trust'); return TRUST },
-}
-
-const ri = console.info, rw = console.warn, re = console.error
-const hush = () => { console.info = console.warn = console.error = () => { } }
-const speak = () => { console.info = ri; console.warn = rw; console.error = re }
-
-hush()
-try { (0, eval)(fs.readFileSync(path.join(SS, 'deep_speaker.js'), 'utf8')) }
-catch (e) { speak(); console.error('FAIL: deep_speaker.js threw on load :: ' + e); process.exit(1) }
-speak()
-
-const S = global.VELDORA.speaker
-if (!S || typeof S.eligible !== 'function') {
-  console.error('FAIL: VELDORA.speaker.eligible not exported'); process.exit(1)
-}
-const elig = (p) => S.eligible(p, server)
-
-// ═══════════════════════════════════════════════════════════════════════════
-grp('🔴 THE BUG — time alone must no longer be enough')
+grp('THE CONFESSION IS GONE - and must not come back by accident')
 {
-  // Exactly Liam's shape: notoriety drifted up to `companion` on its own, he met her
-  // in the depths, and nothing else was asked of him.
-  const drifter = mkPlayer({ name: 'Drifter', stage: 0 })
-  PHASE = 'companion'; TRUST = 0
-  ok('🚨 phase `companion` with ZERO trust is REFUSED', elig(drifter), false)
+  // ⚠️ Measured at the point of USE across the WHOLE tree, not in deep_speaker.js alone.
+  // A retired idiom returns through NEW code; that has happened in this repo before.
+  const hits = all.filter(x => /confessionEligible|speaker\.eligible|confessionStage/.test(x.src))
+  ok('no file references the confession eligibility machinery', hits.map(x => x.f), [])
 
-  TRUST = 1
-  ok('🚨 ...and trust 1 is still not enough for stage 1', elig(drifter), false)
-
-  TRUST = 2
-  ok('⭐ trust 2 opens stage 1', elig(drifter), true)
+  // The data shape is the other half: an entry still carrying a `confession` array would
+  // be silently unreachable rather than loud, which is the worse failure.
+  const withArray = all.filter(x => /confession: \[/.test(x.src))
+  ok('no deep speaker entry declares a confession array', withArray.map(x => x.f), [])
 }
 
-grp('⚠️ BOTH GATES, NOT EITHER — the half that saves Wall and Forge')
+grp("ETHAN'S WRITING IS ARCHIVED, NOT DELETED")
 {
-  // Wall and Forge start at MAX trust and decay. Gating on trust ALONE would hand them
-  // every stage on day one — the same bug with the opposite sign.
-  const noncombatant = mkPlayer({ name: 'FreshWall', stage: 0 })
-  PHASE = 'helper'; TRUST = 5
-  ok('🚨 MAX trust but no phase is REFUSED', elig(noncombatant), false)
-
-  PHASE = 'companion'
-  ok('...and it opens once the phase is there too', elig(noncombatant), true)
-}
-
-grp('⭐ THE LADDER — each stage costs more')
-{
-  const p1 = mkPlayer({ name: 'S1', stage: 1 })
-  PHASE = 'absence'; TRUST = 3
-  ok('stage 2 refuses trust 3', elig(p1), false)
-  TRUST = 4
-  ok('...and opens at 4', elig(p1), true)
-
-  const p2 = mkPlayer({ name: 'S2', stage: 2 })
-  PHASE = 'harvest'; TRUST = 4
-  ok('🚨 stage 3 refuses trust 4 — it costs everything', elig(p2), false)
-  TRUST = 5
-  ok('⭐ ...and opens only at MAX trust', elig(p2), true)
-}
-
-grp('🚨 IT FAILS CLOSED — the opposite bias to night.js, on purpose')
-{
-  const p = mkPlayer({ name: 'Broken', stage: 0 })
-  PHASE = 'harvest'; TRUST = 5
-  ok('sanity: eligible while everything reads', elig(p), true)
-
-  TRUST_THROWS = true
-  ok('🚨 an unreadable trust says NOTHING', elig(p), false)
-  TRUST_THROWS = false
-
-  const noTrust = global.VELDORA.trust
-  delete global.VELDORA.trust
-  ok('🚨 a MISSING trust module says nothing either', elig(p), false)
-  global.VELDORA.trust = noTrust
-  // ⚠️ night.js fails OPEN because a silence nobody reports is the worse failure there.
-  // Here the worse failure is spending the game's best writing on somebody who has not
-  // earned it — a confession withheld can be given later; a confession spent is gone.
-}
-
-grp('⚠️ THE PRE-EXISTING GUARDS STILL HOLD')
-{
-  PHASE = 'harvest'; TRUST = 5
-  const unmet = mkPlayer({ name: 'Stranger', stage: 0, met: false })
-  ok('never met her → not eligible', elig(unmet), false)
-
-  const done = mkPlayer({ name: 'Finished', stage: 3 })
-  ok('all stages heard → not eligible', elig(done), false)
-
-  PHASE = ''
-  const p = mkPlayer({ name: 'NoPhase', stage: 0 })
-  ok('🚨 an unreadable PHASE is still not treated as `helper`', elig(p), false)
-  PHASE = 'harvest'
+  const arch = path.join(__dirname, '..', 'docs', 'archive',
+    'deep-speaker-confessions-2026-08-30.md')
+  ok('the archive of all four scripts exists', fs.existsSync(arch), true)
+  // 🚨 EXISTS IS NOT ENOUGH - an empty file passes that and loses the writing.
+  ok('...and still holds them',
+    fs.existsSync(arch) && fs.readFileSync(arch, 'utf8').length > 2000, true)
 }
 
 console.log('\n' + (fail === 0
-  ? G + pass + '/' + (pass + fail) + ' passed' + X
-  : R + fail + ' FAILED' + X + ', ' + pass + ' passed'))
+  ? '\x1b[32m' + pass + '/' + (pass + fail) + ' passed\x1b[0m'
+  : '\x1b[31m' + fail + ' FAILED\x1b[0m, ' + pass + ' passed'))
 process.exit(fail === 0 ? 0 : 1)

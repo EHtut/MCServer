@@ -84,6 +84,24 @@ global.VELDORA = {
       const pool = (POOLS[god] || {})[tag]
       return (pool && pool.length) ? pool[0] : null
     },
+    // 🔴 CHAT_COPY IS PINNED FALSE, AND overlay() IS WHERE THE LINES NOW GO.
+    //
+    // Ethan ruled dialogue out of chat on 2026-08-30, so broadcast.js stopped calling
+    // `tell` and delivers through `voice.overlay` instead. This stub had neither key,
+    // so the exchange resolved its lines correctly and then delivered them NOWHERE -
+    // TOLD stayed empty and eight assertions reported an argument that never happened.
+    //
+    // ⚠️ THE GAME WAS FINE; the instrument was watching the channel that was turned off.
+    //
+    // ⛔ Pinned false rather than read from voice.js on purpose - this file must test the
+    // shipped configuration, not quietly go green again if chat is ever switched back on.
+    CHAT_COPY: false,
+    alignedTo: (p, god) => (PATHS[p && p.username] === god),
+    overlay: (p, god, s) => {
+      TOLD.push({ to: p.username, text: String(s) })
+      if (p.username === 'Vic') ORDER.push('SAY')
+      return true
+    },
   },
   spawner: {
     wave: (p, o) => { WAVES.push({ to: p.username, count: o.count, ids: o.ids }); ORDER.push('LASH') },
@@ -354,11 +372,20 @@ grp('* THE CRASHOUT - the moment an argument becomes a strike')
 
   // A substring match survives the call being disabled - `if (false) crashout(...)`
   // still contains the text. The GUARD is matched with it, so a disabled call fails.
+  // 🔴 RETARGETED FROM `crashout` TO `crashoutFor`. The old idiom was
+  // `if (line) VELDORA.voice.crashout(killer, god, line)`; C2d replaced it with
+  // `crashoutFor`, which picks the one- or two-movement staging from what the god has
+  // actually written. Same guarantee, different call - so this grep matched nothing and
+  // reported that the reprisal had gone silent, which it had not.
+  //
+  // ⭐ The GUARD is still matched with the call, so `if (false) crashoutFor(...)` fails
+  // this the way it always did. That property is the whole reason this is a source grep
+  // rather than a behavioural test.
   ok('the reprisal announces itself',
-    /if \(line\) VELDORA\.voice\.crashout\(killer, god, line\)/.test(gr), true)
+    /typeof VELDORA\.voice\.crashoutFor === 'function'\)\s*\{\s*if \(!VELDORA\.voice\.crashoutFor\(killer, god\)\)/.test(gr), true)
   // It goes to the KILLER, never the room. A god screaming into everyone's face about
   // somebody else's business would cheapen the one message allowed to interrupt.
-  ok('...to the killer alone, not broadcast', /crashout\(killer,/.test(gr), true)
+  ok('...to the killer alone, not broadcast', /crashoutFor\(killer,/.test(gr), true)
   // Said FIRST, then done: a debuff landing before the god explains it is a status
   // effect; landing after, it is a consequence. The order is the meaning.
   ok('...BEFORE the effect lands',
@@ -391,10 +418,23 @@ grp('* THE CRASHOUT - the moment an argument becomes a strike')
       line: () => null,
     } }
     const keys = Object.keys(stub)
+    // 🔴 pantheon.js RUNS FIRST, AND WITHOUT IT THIS MEASURED NOTHING.
+    //
+    // The recording stub above replaces `voice.registerLines` and asks each god file what
+    // it registers. Since the refactor a god file calls `pantheon.define`, which then
+    // calls registerLines - so with the registrar absent the define call threw, the catch
+    // returned null, and every god looked like she registers no crashout pool at all.
+    //
+    // ⭐ Loading it into the SAME V keeps the measurement honest: define still lands on
+    // the recording stub, so this is still "what did the god file actually register",
+    // measured at the point of use rather than grepped for.
+    const withPantheon = fs.readFileSync(path.join(SS, 'pantheon.js'), 'utf8')
     try {
-      new Function(...keys, 'VELDORA_IN',
-        'var VELDORA=VELDORA_IN;' + src.replace(/^var VELDORA = .*$/m, '') + ';'
-      )(...keys.map(k => stub[k]), V)
+      for (const s_ of [withPantheon, src]) {
+        new Function(...keys, 'VELDORA_IN',
+          'var VELDORA=VELDORA_IN;' + s_.replace(/^var VELDORA = .*$/m, '') + ';'
+        )(...keys.map(k => stub[k]), V)
+      }
     } catch (e) { return null }
     return tags.crashout || 0
   }

@@ -525,16 +525,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // your screen - She will need an overhaul to make her sentences shorter, with more
     // periods, and more akin to rambling."*
     //
-    // 🔴 SHAKE **AND** SCATTER, WHICH WAS ARGUED AGAINST FOR WALL - and the difference
-    // is the whole point rather than an inconsistency:
+    // 🔴 SHE DOES NOT SHAKE. THIS COMMENT USED TO ARGUE THAT SHE SHOULD.
     //
-    //   Wall    STILL text in the wrong place. She is composed and she is somewhere she
-    //           should not be. Two motions would read as a rendering fault, not menace.
-    //   Forge   MOVING text everywhere. She is not menacing anybody, she is unable to
-    //           settle - and restlessness is exactly two motions at once.
+    // The original case was shake AND scatter together: Wall is STILL text in the wrong
+    // place, Forge is MOVING text everywhere, same two flags carrying opposite meanings
+    // because the character decides what a motion means. It read well and it was wrong in
+    // play - Ethan, 2026-08-30: *"Forge shakes too much, we can remove the shaking."*
     //
-    // 🔑 Same two flags, opposite meanings, because the CHARACTER decides what a motion
-    // means. If these two ever end up feeling alike, the fix is here, not in the engine.
+    // ⭐ THE CHARACTERISATION SURVIVED LOSING THE FLAG, which is the part worth keeping.
+    // Her restlessness is now carried by the SCATTER (a looser box than Wall's) and by
+    // her PACE (beatScale below 1, so she moves on sooner). She is still unable to settle;
+    // she is just not vibrating while she does it.
+    //
+    // ⚠️ Two motions at once turned out to be the thing that read as a rendering fault -
+    // the exact objection originally raised against it for Wall, which applied here too.
       style: {
         anchor: 'CENTER_CENTER',
 

@@ -1,15 +1,11 @@
 # 74 — The waves and the ladder
 
-> **STATUS: WIRED, RE-TUNED TO HIS RATIOS, DEPLOYED.** 2026-08-30. `difficulty.js` and
-> `waves.js` compose every tide wave. The fodder/specialist split is his, measured in
-> play; the fodder table was re-derived from live numbers rather than edited by hand.
-> 1055 assertions green across 23 harnesses.
+> **STATUS: LIVE AND BOOTED.** 2026-08-30, loaded 66/66 with 0 errors. His ratios, both
+> corrections (augment-not-replace, spiders-only), all four rulings, the despawn system,
+> and the infighting fix. **1146 assertions across 23 harnesses.**
 >
-> ⛔ **NOT YET RESTARTED INTO** — deployed to the instance, restart held for the
-> coordinating channel. A wired file is a claim until a boot log agrees.
->
-> 🔴 **OPEN: D-112.** Art's roster is down to one mob and he has no boss — two of his
-> three ids do not survive being summoned. Needs Ethan's ruling, not a guess.
+> 🔧 **Benches:** `/tide_ratio [n]` · `/tide_god <god> [type]` · `/tide_roster` ·
+> `/tide_clear` · `/tide_wave <type>` · `/tide_tier` · `/tide_now` · `/difficulty`
 
 ---
 
@@ -81,7 +77,25 @@ only way the forced bow lands on the archers instead of the whole wave.
 
 ```
 fodder  ⇔  armor ≤ 2  AND  hp ≤ 30  AND  dmg ≤ 5  AND not a baby
+                       AND applies NO STATUS EFFECT on hit
 ```
+
+🔴 **The fourth clause came from play, and the measured table was blind to it.**
+*"wither skeletons are reported as 'too excessive' they should be specialists."* A wither
+skeleton measures **20 hp / 0 armour / 2 damage** — *lighter than the Decrepit Skeleton
+that is the bulk*. It passes every other clause and it is not fodder, because it applies
+**Wither** on hit.
+
+🔑 `generic.attack_damage` reads a number and cannot see a debuff — damage over time,
+stacking across a crowd, the health bar blacked out while it runs. A low-damage mob that
+applies an effect is exactly what is unfair *in numbers*, which is the only place fodder
+is ever used. Moved to **light specialist**; `undead_classify.py` carries a hand-kept
+`DEBUFF_ON_HIT` set so `docs/73` agrees rather than contradicting the code.
+
+⭐ **The rest of her fodder was swept for the same thing.** `iceandfire:ghost` came up
+referencing WITHER and POISON and was **checked rather than cut** — `canBeAffected` with
+no `addEffect` is immunity handling, not an attack. Undead are immune to both, which is
+why the reference is there at all. It stays in fodder.
 
 ⚠️ **The damage clause is an inference, not his words** — flagged because it is the only
 line here he did not dictate. `goety:reaper` is 24 hp with no armour and would pass an
@@ -94,6 +108,74 @@ Two mobs left the bulk on his armour rule alone: **`bone_imp`** (armor 3.5) and
 measured **0 bows in 12 summons**. They are not in epicknights' equipment config and
 `/summon` does not run the vanilla equip step. As archers they were a lie; as skeleton
 fodder they are honest.
+
+---
+
+## 🧹 The despawn — the tide cleans up after itself
+
+> *"if all players die or if no mobs slain in 5(?) minutes the tide despawns. this is for
+> server cleanliness and lag."*
+
+🔴 **Before this, a run ended and the mobs stayed.** Death, dawn and surfacing all reset
+the run state and left twenty-odd undead standing forever — `MAX_ALIVE_NEAR` only stops
+more *arriving*. Every tide anyone had run was still loaded somewhere.
+
+| trigger | despawns? | |
+|---|---|---|
+| **player dies** | immediately | nobody is coming back for that wave |
+| **logs out mid-tide** | immediately | done while the player handle is still usable |
+| **no tide mob slain in 5 min** | yes | keyed to **kills**, so a long fight keeps resetting it |
+| **dawn / surfacing** | ⛔ not at once | his old ruling — no more come, but the ones chasing you don't evaporate. The orphan scan collects them 5 min later |
+
+⚠️ **`discard()`, never `/kill`** — no loot, no XP, no death handlers, nothing feeding the
+slain counters the tide reads back.
+
+🔑 Every exit routes through one `endRun()`, and the harness asserts **exactly one** place
+resets a run, so a new exit cannot forget to clean up. **D-126.**
+
+---
+
+## 🩸 Three mobs were fighting the tide they arrived in
+
+`iceandfire:dread_thrall`, `dread_knight` (`DreadAITargetNonDreadGoal`) and
+`goety:skeleton_wolf` (`Summoned$NaturalAttackGoal`) — **all three added the same day**.
+Glowing blue eyes are the Dread army's signature. Nothing else in the repo could see it:
+the ids are real, measured, undead, and survive being summoned.
+
+⚠️ **My live "confirmation" was false** — the test prey was *burning* in daylight. New
+screen `tools/infight_check.py` catches the known goal families statically; play remains
+the proof. **D-124.**
+
+---
+
+## 🐺 Salvage's dire-wolf run — and the boss that summons
+
+`docs/68` R2 gives Salvage **dire wolves** and she had **one mob**. ⚠️ There is no
+`#minecraft:wolf` tag to census, so this was enumerated from every jar's lang file by
+name (13 candidates), shortlisted, registry-probed with a known-fake control, measured
+live, and persistence-checked.
+
+| role | mobs |
+|---|---|
+| **fodder** | hostile black wolf · hellhound · stormhound · winter wolf · hunter's wolf · dread hound |
+| **specialist** | ⚠️ **none — the mobs do not exist, D-119** |
+| **boss** | **dire hound leader** — 100 hp, and it calls the pack |
+
+⛔ **Excluded, each for a stated reason:** `goety:black_wolf` extends `Summoned` (the
+`hostile_black_wolf` variant is the same statline without it) · `goety:skeleton_wolf` is
+**hers**, in bone fodder, and a mob cannot be two factions or the faction says nothing ·
+`minecraft:wolf` is tameable and neutral · two summon-companions.
+
+### ✅ D-118 — the pack boss calls its pack, and that is the point
+
+`born_in_chaos_v1:dire_hound_leader` — **100 hp / 10 dmg / 0.7 kb-resist** — spawns Dread
+Hounds. Held back pending a ruling; **ruled in on 2026-08-30**, along with the whole
+no-summoner rule. A dire wolf pack arriving with a leader that grows it is what a pack is.
+
+⚠️ **D-119 — she has no specialist tier and the mobs for one do not exist.** Every wolf in
+the pack is 8–17 hp with no armour. Her pressure is **numbers and speed**, which is an
+identity rather than a shortfall — but there is nothing to promote if she should hit
+harder.
 
 ---
 
@@ -134,28 +216,28 @@ wave should feel like.
 
 ## The twelve themes
 
-### GENERAL — fodder + light specialists
+### GENERAL — 90% fodder + 10% light specialists
 
 | | |
 |---|---|
 | **Normal · The Rank and File** | Her ordinary dead, in numbers, with a few that have been down there long enough to be worth noticing. |
-| **Alternate · The Draught** | The same crowd with nothing solid in it. Wraiths and haunted armour — they hit no harder and are far worse to be surrounded by. |
+| **Alternate · The Draught** | The same crowd with nothing solid in it. Wraiths and the restless — they hit no harder and are far worse to be surrounded by. ⚠️ *Haunted armour was in this wave and does not spawn — D-116.* |
 
-### HORDE — fodder + tank specialists · ⛔ no ranged
+### HORDE — 95% fodder + 5% tank specialists · ⛔ no ranged
 
 | | |
 |---|---|
 | **Normal · The Press** | Bodies and bone-armour, shoulder to shoulder. Nothing shoots. The threat is that it does not stop coming. |
 | **Alternate · The Wailing** | The same weight of dead arriving as a *sound* before anything is visible. Still nothing shoots. |
 
-### RANGED — low fodder + high ranged specialists
+### RANGED (his “Specialist”) — 80% fodder + 20% archers · the heaviest of the four
 
 | | |
 |---|---|
-| **Normal · The Volley** | Thin on the ground and murderous at distance. Fewer bodies than any other wave, and the only one that punishes standing still. |
+| **Normal · The Volley** | Murderous at distance — the only wave that punishes standing still. ⚠️ *“Fewer bodies than any other wave” was the 65% model and is no longer true: it is 80% fodder like the rest, and what changes is that a fifth of it shoots.* |
 | **Alternate · The Bonecallers** | The archers stay; the crowd in front of them does not. Almost nothing to hide behind, in either direction. |
 
-### MINIBOSS — high fodder + a miniboss
+### MINIBOSS — 95% fodder + 5% light + one miniboss · ⛔ none of the 5% below Heresy
 
 | | |
 |---|---|
@@ -168,13 +250,18 @@ wave should feel like.
 
 | tier | god | roster |
 |---|---|---|
-| **Malice** | **Blade** | Barrel Zombie · Door Knight · Zombie Bruiser · Skeleton Thrasher |
-| **Heresy** | **Wall** | Baby Spider · Mother Spider |
-| **Damnation** | **Art** | Restless Spirit · Scarlet Persecutor · Dark Vortex |
+| **Malice** | **Blade** | Decaying Zombie (fodder) + Barrel Zombie · Door Knight · Zombie Bruiser · Skeleton Thrasher (specialists) · boss Fallen Chaos Knight |
+| **Heresy** | **Wall** | 🕷 **spiders only** — spider · cave spider · baby spider (specialist) · boss Mother Spider |
+| **Damnation** | **Art** | Scarlet Persecutor · boss **the Lifestealer** — ⭐ the same mob the tide already sends into HER waves as the Taker |
 
-⛔ **Forge and Salvage have none** — his ruling, and it fits: Forge sends nothing at
-anyone, and Salvage deals rather than attacks. Their rosters still exist in
+⛔ **Forge and Salvage have none** — reaffirmed 2026-08-30: *"Salvage does not even
+augment tides."* Forge sends nothing at anyone; Salvage deals rather than attacks. Her
+wolves are for her OWN events only. Their rosters still exist in
 `spawn_pressure.js` for their *own* events.
+
+🔴 **AUGMENTED, NOT SWAPPED.** A god's mobs are ADDED to her cast — measured after the
+fix, a Blade general wave is 13 of hers + 5 of his. The miniboss is the one exception and
+it overrides, because a wave cannot have two. **D-121.**
 
 ⭐ **Cumulative, and that is a choice.** At Damnation all three are possible rather than
 only Art — the alternative is that climbing the ladder **removes** variety, and losing
@@ -184,9 +271,12 @@ Blade's waves by getting better reads as a bug however it is explained.
 
 ## 🚨 What was deliberately left out, and why
 
-⛔ **Necromancers.** `docs/72` flagged that goety's necromancers **raise more undead** — a
-multiplier inside a multiplier, in a 24-mob wave. That risk was flagged and never cleared,
-so nothing that summons is in any roster.
+⛔ ~~**Necromancers.**~~ **RULE RETIRED 2026-08-30** — *"No summoner rule no longer applies
+that is redundant, cut it from everywhere it is mentioned."* It was never measured, and
+what actually bounds the risk is `MAX_ALIVE_NEAR` — a real ceiling on live tide mobs near
+a player — not a ban on a category. Anything excluded **solely** for summoning is eligible
+again and simply has not been re-evaluated: goety's `wight` / `grave_golem` / `skull_lord`
+/ `wither_necromancer`, the `bound_*` casters, `irons_spellbooks:necromancer`.
 
 ⛔ **The 150–320 hp minibosses.** `docs/73` observed that both of the tide's minibosses
 measure as *tanks* while seven heavier mobs sit unused. **Ethan ruled those two**, so they

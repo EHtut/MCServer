@@ -283,8 +283,12 @@ grp('\u2b50 PATHLESS DIALOGUE ARRIVES BROKEN \u2014 75 percent readable')
   const vo = code('voice.js')
   ok('voice.js has a garble registry, like its colour one',
     vo.indexOf('function setGarbled(god)') !== -1, true)
-  ok('\U0001f6a8 say() and sayAbout() BOTH go through paint()',
-    (vo.match(/Text\.of\(paint\(player, god, s\)\)/g) || []).length, 2)
+  // 🔴 THE TELL MOVED BEHIND `voice.chat()` when Ethan ruled dialogue out of chat,
+  // so the old `Text.of(paint(...))` idiom no longer appears at either call site.
+  // Both still paint - the garbling this file tests is unchanged - they just hand the
+  // painted line to the one door instead of telling the player directly.
+  ok('\U0001f6a8 say() and sayAbout() BOTH still paint, via the chat door',
+    (vo.match(/chat\(player, paint\(player, god, s\)\)/g) || []).length, 2)
 
   // \U0001f6a8 SCOPE. A pathless player reads the path OFFER by definition; garbling that
   // would make the most load-bearing prompt in the game 75 percent legible.

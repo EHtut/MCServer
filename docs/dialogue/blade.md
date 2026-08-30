@@ -177,11 +177,11 @@ engine cannot check for you.
 
 ## icarus  (whole)
 
-- For it was Icarus who flew too close to the sun. You will share his fate.
+- For it was Arkh who flew too close to the sun. You will share his fate.
 - You climbed. Of course you climbed.
 - The sky was never yours. Come down, or be brought down.
 - Height is a debt. They are here to collect it.
-- Phaethon took the reins too. Look up.
+- Celebrim took the reins too. Look up.
 
 ## idling  (whole)
 
