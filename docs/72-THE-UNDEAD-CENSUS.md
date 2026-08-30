@@ -1,0 +1,136 @@
+# 72 — The undead census
+
+> **STATUS: MEASURED, NOT BUILT.** 2026-08-29, the tide-tuning channel's first job.
+> ⛔ **Nothing has been changed.** This is a census and a proposal; the roster is
+> authorship, so it stops here for Ethan's ruling.
+
+Reproduce with:
+
+```
+python tools/undead_census.py --json tools/.cache/undead.json
+python tools/undead_shortlist.py
+python tools/undead_probe.py
+```
+
+---
+
+## The number
+
+**150** entities are tagged `#minecraft:undead` in this pack → **59 excluded** as
+unusable → **91 candidates, and all 91 are registered on the live server.** Zero
+tagged-but-absent.
+
+| namespace | usable | |
+|---|--:|---|
+| `goety` | 29 | ⚠️ many are necromancers — see the risk below |
+| `born_in_chaos_v1` | 17 | the pack's core horror roster |
+| `occultism` | 12 | ⚠️ all Wild Hunt event mobs |
+| `minecraft` | 11 | |
+| `cataclysm` | 9 | draugr, koboleton, ignited |
+| `iceandfire` | 5 | dread thralls, ghouls, knights |
+| `grim_and_bleak` | 3 | banshee, damned_templar, ghoul |
+| `galosphere` · `goety_cataclysm` · `irons_spellbooks` · `regions_unexplored` · `spawn` | 1 each | preserved · draugr_necromancer · necromancer · ashen · barbed |
+
+⭐ **Every one of the 91 is tagged undead**, so any of them can enter a roster **without
+touching `UNTAGGED_UNDEAD`** — the harness rule that a roster mob must be tagged-or-
+allowlisted is satisfied by construction.
+
+---
+
+## 🔴 Two things the scan got wrong before it got them right
+
+**1. It reported zero `minecraft:` undead.** Impossible — zombie and skeleton are the
+tag's whole purpose. **Vanilla's data lives in the server jar under `libraries/`, not in
+`mods/`**, so scanning the mods folder silently omitted the single largest contributor.
+⚠️ A census missing its biggest source still *looks* like a census. The tool now scans
+vanilla explicitly and **reports it as unreadable if it finds none.**
+
+**2. The obvious registry probe is backwards.** A real id with no live instance answers
+*"No entity was found"* — but a real id that **is currently alive answers with data**, and
+a check that only accepts the former reads every living mob as fake. That is how
+`minecraft:skeleton` came back FAKE on the first attempt.
+
+⭐ **Detect the failure, not the success**: `Unknown entity type` or a `<--[HERE]` caret.
+Every run now includes a known-fake control and **refuses to report verdicts if the
+control passes** — a detector that never fails is not a detector.
+
+---
+
+## ⚠️ Attack type is NOT in here, and cannot be
+
+The registry confirms an id exists. **It cannot say whether something shoots.** So:
+
+| | |
+|---|---|
+| **RULED by Ethan** | `banshee` and `skeleton_thrasher` are **melee** despite the names. `decrepit_skeleton` = bulk · `minecraft:skeleton`, `bonescaller` = ranged · `skeleton_demoman` = rare/dangerous |
+| **INFERENCE** | `skeleton_pillager` (crossbow), `bogged`/`stray` (vanilla archers) |
+| **UNKNOWN** | the other ~85. Genuinely unknown |
+
+🔴 This matters more than it looks: `decrepit_skeleton` was listed **ranged** while being
+the **bulk**, which inverted every wave's composition. **Any addition must be classified
+before it lands, or it silently mis-weights the pool.**
+
+---
+
+## 🚨 Three risk classes I would not put in a wave without a ruling
+
+**1. NECROMANCERS SUMMON.** `goety` contributes 29 usable mobs and a large share of them
+(`necromancer`, `cairn_necromancer`, `mossy_necromancer`, `wither_necromancer`,
+`skull_lord`, `bone_lord`, `draugr_necromancer`) **raise more undead**. In a 24-mob wave
+that is a multiplier on top of a multiplier. ⚠️ We have already been bitten this week by
+one un-noticed spawn multiplier.
+
+**2. OCCULTISM'S `wild_*` ARE EVENT MOBS.** All twelve belong to the Wild Hunt. Spawning
+them outside it may be fine or may look like a bug in another mod's system.
+
+**3. CATACLYSM'S BIG ONES.** `elite_draugr`, `royal_draugr`, `ignited_revenant`,
+`kobolediator` are arena-grade. They are not bosses (those are excluded) but they are not
+horde members either.
+
+---
+
+## ⭐ THE PROPOSAL
+
+**The weak point is that the bulk is ONE mob.** `decrepit_skeleton` carries every horde
+wave alone, which is why a tide reads the same every time. Everything below adds texture
+**without diluting the thesis** — every suggestion is a skeleton or bone-flavoured.
+
+### A. Widen the bulk from 1 to 3–4
+
+| | |
+|---|---|
+| `born_in_chaos_v1:baby_skeleton` | small and fast — makes a horde *move* differently |
+| `cataclysm:koboleton` | skeletal, low-grade, clearly rank-and-file |
+| `occultism:wild_skeleton` ⚠️ | if the Wild Hunt concern is dismissed |
+| `goety:skeleton_pillager` ⚠️ | almost certainly ranged — belongs in ARCHERS, not bulk |
+
+### B. A second archer, so `specialist` is not two mobs
+
+`minecraft:bogged` and `minecraft:stray` are unambiguously ranged undead and were in the
+old deep roster. ⚠️ They were removed with the depth pools; they would come back **as
+archers**, not as bulk.
+
+### C. A third miniboss, so the pair does not become predictable
+
+`cataclysm:royal_draugr` or `iceandfire:dread_knight`. ⚠️ **Both are inference** — neither
+has been seen in play.
+
+### D. ⛔ Delete `UNTAGGED_UNDEAD`
+
+Its five `rottencreatures` entries are **dead config**: they were carrying the old depth
+pools and no roster can draw them any more. The list now excuses nothing.
+
+---
+
+## 🚨 What I did NOT check
+
+- **How any of these fight.** Not knowable from here. ⛔ Do not treat section A/B/C as
+  classified.
+- **Whether they behave when `/summon`ed** with no owner, no arena and no event. The
+  necromancer and Wild Hunt classes are the live worry.
+- **Their health, damage or drops.** A koboleton and an elite_draugr are both "usable" to
+  this scan and are not remotely the same wave.
+- **Model size / pathing cost.** A 24-mob wave of something large is a different
+  performance question, and this server has already shown tick spikes this week.
+
+**The next honest step is play-testing a shortlist, not adding all of it.**
