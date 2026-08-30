@@ -404,8 +404,8 @@ it can be done tonight.
 
 | | |
 |---|---|
-| **C1** | `tectonic.json` `min_y` back to **−64** |
-| **C2** | **Generate.** ⚠️ Everything in B must be settled first |
+| **C1** | 🔴 **NOT DONE — and it looked done for sixteen days.** `pack/config/tectonic.json` was set to `min_y: -64` on 2026-08-14. The **instance** — the only copy generation reads — is still **−128**. ⚠️ **Config does not travel by packwiz**: `pack/config` is not in `index.toml`, so nothing was ever going to carry it across, and nothing said so. 🔑 Copy the file into `C:\MCServer\instance\config\` as part of C2's pre-flight; `tools/reset_preflight.py` **fails** until it matches. ⚠️ `ore_fix` moves with it — it compensates for a *lowered* `min_y`, so the two are a pair, and the instance currently has `ore_fix: true` to match its −128 |
+| **C2** | **Generate.** ⚠️ Everything in B must be settled first. 🔑 **Run `python tools/reset_preflight.py` first — it exits non-zero until every input is actually true, and an UNKNOWN counts as a failure.** C2 is the only irreversible chunk in the plan: a config that never reached the instance is not a bug you notice, it is a world that is quietly wrong forever |
 | **C3** | Free with the reset: Crown → Wall · The Arrival · `/path forcereset` |
 | **C4** | ⛔ **REMOVE `the-knocker`** — Ethan, 2026-08-29. *"An unpredictable human-like stalker that follows and visits."* ⚠️ Staged for the reset, not done now: pulling a mod whose entities are already in a live world leaves them as unknown-entity stubs. 🔑 Change `index.toml`, `pack.toml`'s index hash and `resolved.json` **together** — a `.pw.toml` deleted alone is invisible to the installer, and a stale index hash makes every client refuse the pack |
 
@@ -414,7 +414,7 @@ it can be done tonight.
 | | |
 |---|---|
 | **D1** | 🔑 **THE KEYSTONE.** Night detection + the god-silencing gate. Blade and Salvage go quiet; Wall, Forge and Art do not. **Touches every god system** — voice, idle, events, sounds, the aura. **Falsified if:** a silenced god speaks at night, or a permitted one goes quiet |
-| **D2** | The deep Speaker's introduction on the **30th night** |
+| **D2** | ✅ **DONE.** Two routes to the same event — met in the depths, or on the 30th night. ⭐ The introduction is **extracted, not duplicated**: a second copy of *set met · log · say intro* in `night.js` would be one edit from drifting, and the drift would be invisible — two introductions look like one introduction plus a bug nobody can reproduce |
 | **D3** | Night danger scaling by the highest god's trust. **No inversion** |
 | **D4** | The night tide — the tide, on the surface, night-only. **Depends on B2** |
 | **D5** | Tide modifiers: pure horde / specialist / miniboss+horde / general |
@@ -432,15 +432,15 @@ prove a silenced god *cannot* speak, not merely that a permitted one can.
 |---|---|
 | **E1** | ✅ **DONE.** Blade — 500 slain, lifetime, `slain.js`. The trust-counter warning was REAL: `counters.js:219` zeroes every patron counter |
 | **E2** | ✅ **DONE.** Ten deals, four costs, accept five. ⭐ She gets *more honest* as the count climbs — the answer to "convince five times against a suspicious reader" |
-| **E3** | Wall — killed by a pathed player, or **30 days godless in PLAYED TIME** (ruled 2026-08-29) |
-| **E4** | Art — 50 levels, she takes them all. 🔴 **Needs new machinery**: `speakerFor()` returns null for the pathless, so they hear nobody |
-| **E5** | Forge — the dialogue tree, long cooldown, per-prompt timer |
+| **E3** | ✅ **DONE.** Wall — killed by a pathed player, or **30 godless days in PLAYED TIME**. The accumulator is `veldora_pathless_ticks`, ticked in the sweep where *online* is true by construction — an offline player does not drift, which is the whole mechanism. ⚠️ The legacy `veldora_pathless_since` **timestamp** key is still cleared but never read: reusing a timestamp as an accumulator is the exact bug that silently broke Wall's unlock once already |
+| **E4** | ✅ **DONE.** Art — 50+ levels, she takes **all** of them, and it kills you. The pathless machinery it needed got built rather than worked around, so `speakerFor()` returning null no longer means silence. ⭐ Blunt and noninformative per Ethan's ruling — she demands, she never reveals what she wants |
+| **E5** | ✅ **DONE.** Forge — Ethan's five-prompt tree **verbatim**, options shuffled, a 5-minute timer **per prompt** (not per tree), 3-day retry. ⛔ Does not cutscene |
 
 ### F — voice
 
 | | |
 |---|---|
-| **F1** | The Nether and End ambient lines (`69`) — **their own channel, no speaker, not `voice.js`** |
+| **F1** | ✅ **DONE.** `trespass.js` — the Nether and End ambient lines on their own channel: no speaker, ambient priority, consuming announce.js's bar. Not `voice.js`, so no god owns the place talking |
 | **F2** | ✅ **DONE.** Salvage's register fixed · Blade's rebalance proved OBSOLETE · the register was under-reporting itself by four pools. ⛔ What remains is **Ethan's writing pass on 458 lines**, which cannot be done for him |
 
 ---

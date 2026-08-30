@@ -479,3 +479,80 @@ boot settles it, and the restart is Ethan's call.
 bolded or colored words for emphasis looks a hell of a lot better than just flat colored
 text."* `/im codes` and `/im font` are built to settle whether inline § emphasis survives
 the send, or whether emphasis has to come from the tag keys instead.
+
+---
+
+## 🔴 D-112 — C1 was marked done for sixteen days and never reached the world ⚠️ OPEN
+
+**Found by**: building a pre-flight for C2 and pointing its first check at the instance
+instead of the repo.
+
+`pack/config/tectonic.json` was set to `min_y: -64` on **2026-08-14** and C1 was treated
+as complete. `C:\MCServer\instance\config\tectonic.json` — **the only copy world
+generation reads** — was still `-128` on **2026-08-30**.
+
+⚠️ **Config does not travel by packwiz.** `pack/config` is not in `index.toml`, so no
+mechanism was ever going to carry that change across, and nothing anywhere said so. The
+repo copy was a statement of intent that read like a completed task.
+
+🔴 **C2 is the only irreversible chunk in the plan.** Every other chunk can be reverted;
+this one bakes its inputs into terrain. Generated at `-128`, C1 would have been silently
+wrong forever, with a ✅ beside it.
+
+### The wider finding
+
+`pack/config` holds **64 files**; the instance holds **961**. There is no sync in either
+direction. Comparing them (normalising line endings, which the mods rewrite at every
+boot) leaves three real differences and six repo files absent from the instance:
+
+| file | state |
+|---|---|
+| `tectonic.json` | 🔴 repo `-64` / instance `-128` — **C1** |
+| `incontrol/spawn.json` | ⚠️ real content difference, **identical mtimes**, so timestamps cannot say which is newer |
+| `toughasnails/*.toml` | ✅ identical apart from CRLF — noise, not drift |
+| 6 repo files | ⚠️ absent from the instance entirely |
+
+⚠️ **`incontrol/spawn.json` is the one to look at before C2.** The difference is not only
+an extra denied mob — a `"result": "default"` rule sits at position ~4 in the repo and
+near the end in the instance. **InControl evaluates in order and the first match wins**,
+so that reordering changes which rules are ever reached. Whichever way it is resolved, it
+should be resolved deliberately rather than by whichever file someone copies last.
+
+### What stops it recurring
+
+`tools/reset_preflight.py` — a gate, not a report. It **reads the instance, never the
+repo**, on the principle that the repo records intent and the instance is what runs.
+Checks: tectonic `min_y` + `ore_fix` consistency · C4's four-place removal · packwiz hash
+integrity · modlist↔resolved parity · repo↔instance config drift · a recent backup · and
+**the server being down**, because generation must not race a live one.
+
+🔑 **An UNKNOWN exits non-zero.** A check that cannot answer has not passed — the same
+rule the live-path smoke enforces, and the one the dependency checker broke when it
+printed *"MISSING DEPS: none"* while every request errored.
+
+### 🔴 Three things went wrong while writing the gate itself
+
+* **Its modlist extractor lied three times.** First it walked the top-level dict and took
+  `_comment`, `game_version`, `budget` as mod slugs — **"324 mods missing"**. Then it read
+  only `categories` and reported **6**. Then it learned that the shader and resourcepack
+  sections spell the list `packs`, not `mods` — **0**, which is the truth. ⚠️ *Every wrong
+  answer was plausible and none of them errored.* A surprisingly **alarming** result
+  deserves the same suspicion as a surprisingly clean one.
+* **The `ore_fix` check only ran when `min_y` was already wrong.** In the one case where
+  it had any value — `min_y` correct, `ore_fix` stale — it returned early and said
+  nothing. Caught by `tools/test_reset_preflight.py`, not by reading it.
+* **I marked C1 ✅ DONE in the gameplan before checking the instance**, which is the
+  eighth lying banner on this project and was written by the same hand that keeps filing
+  them. The row now says NOT DONE and names the instance value.
+
+`tools/test_reset_preflight.py` proves the gate can fail: 16 cases across missing files,
+unparseable files, genuine drift, stale hashes, and shapes the extractor does not
+understand. ⭐ *A gate that cannot fail is a banner.*
+
+### Still open
+
+* ⚠️ **C1 itself.** The instance is still `-128`. It is deliberately **not** being changed
+  under a running server with two players on it — the fix belongs in C2's pre-flight,
+  where it will be verified rather than assumed.
+* ⚠️ **`incontrol/spawn.json`** needs a ruling on which copy is authoritative.
+* ⚠️ **`simple-hats`** is RESOLVED but also listed under `unavailable`/`cut_for_budget`.
