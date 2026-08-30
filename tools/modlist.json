@@ -98,6 +98,10 @@
    [
     "modernnetworking",
     "Removed with talk-balloons 2026-08-29 - it was pulled in ONLY as its dependency and nothing else in the pack requires it. Verified before removing."
+   ],
+   [
+    "fog",
+    "CUT 2026-08-29 after breaking BOTH sides in one day. (1) It loads net/minecraft/client/KeyMapping during mod construction, which is an instant hard failure on a DEDICATED_SERVER - Modrinth said server_side \"optional\" and the jar itself declares side=\"BOTH\", so neither source was the code. Forced client-only. (2) Then it crashed the CLIENT: NoSuchFieldError on Polytone.BIOME_MODIFIERS from its own PolytoneCompat, because fog was unpinned and resolved to newest while polytone is PINNED - the third unpinned-vs-pinned-library failure of the day after supplementaries/moonlight. It is cosmetic (\"just makes the world beautiful\") and it cost two crashes, so it is out rather than pinned."
    ]
   ]
  },
@@ -1941,10 +1945,6 @@
     [
      "easy-npc-core",
      "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
-    ],
-    [
-     "fog",
-     "Configurable fog. Ethan: \"Just makes the world beautiful.\""
     ],
     [
      "fragmentum",

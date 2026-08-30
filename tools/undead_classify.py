@@ -6,7 +6,9 @@
 
 Ethan, 2026-08-29: *"We can use that to sort all the mobs into Fodder, Specialist -
 Ranged, Specialist - Tank, Specialist - Other, and miniboss. Also do your best to sort
-them also into Skeleton, Zombie, other aswell."*
+them also into Skeleton, Zombie, other aswell."* — and 2026-08-29:
+*"lets sort the table into 3 different subfactions aswell: Skeleton, Zombie,
+Ghost, other."*
 
 HOW EACH AXIS IS DECIDED, AND HOW CONFIDENT IT IS
 -------------------------------------------------
@@ -88,22 +90,36 @@ RANGED_RULED = {
 }
 
 # ── families. ⚠️ A HEURISTIC ON NAMES, and it is labelled as one in the output. ──
+# ⭐ FOUR SUBFACTIONS, Ethan 2026-08-29: Skeleton · Zombie · Ghost · other.
 SKELETON = re.compile(
     r'skeleton|bone|skull|koboleton|bonescaller|demoman|thrasher|siamese|lich|'
     r'templar|draugr_necromancer', re.I)
+GHOST = re.compile(
+    r'ghost|wraith|spirit|phantom|haunt|banshee|reaper|shade|spect|apparition|'
+    r'poltergeist|soul|revenant', re.I)
 ZOMBIE = re.compile(
     r'zombie|husk|drowned|ghoul|decaying|barrel|bruiser|clown|fisherman|lumberjack|'
-    r'draugr|aptrgangr|remnant|revenant|berserker|zoglin|zpiglin|piglin|frayed|'
+    r'draugr|aptrgangr|remnant|berserker|zoglin|zpiglin|piglin|frayed|'
     r'rattled|thrall', re.I)
 
 
 def family(eid, name):
     blob = eid + ' ' + name
-    # 🚨 SKELETON IS CHECKED FIRST. "draugr_necromancer" and "skeleton_villager" both
-    # match ZOMBIE too, and the bone half is the more useful read for a tide that is
-    # explicitly hers.
+    # 🚨 ORDER IS LOAD-BEARING and each position is a decision:
+    #
+    #   SKELETON first - "draugr_necromancer" and "haunted_skull" match other patterns
+    #   too, and the BONE half is the more useful read for a tide that is explicitly
+    #   hers. A skull is hers before it is anything else.
+    #
+    #   GHOST before ZOMBIE - "ignited_revenant" is a revenant (a returned spirit)
+    #   rather than a corpse, and "possessed_phantom" would otherwise never be reached.
+    #
+    #   ⚠️ These are NAME MATCHES, not tags. Nothing in the game says "ghost"; this is
+    #   a reading of what each mob is called, and it can be argued with.
     if SKELETON.search(blob):
         return 'Skeleton'
+    if GHOST.search(blob):
+        return 'Ghost'
     if ZOMBIE.search(blob):
         return 'Zombie'
     return 'Other'
@@ -237,6 +253,35 @@ def main():
                  'the melee bruisers you would most want to rank. Treat damage as a '
                  'floor, not a measurement.\n')
         L.append('\n---\n')
+        L.append('\n## ⭐ THE FOUR WAVE VARIATIONS — Ethan, 2026-08-29\n')
+        L.append('\n> *"Tides are scaled by difficulty depending on god trust through a '
+                 'stepped ladder but\n> there are 3 main variations"* — four are listed, '
+                 'and the roles below map onto them\n> directly.\n')
+        L.append('\n| wave | composition |')
+        L.append('|---|---|')
+        L.append('| **General** | fodder + light specialists |')
+        L.append('| **Horde** | fodder + **tank** specialists · ⛔ no ranged |')
+        L.append('| **Ranged** | *low* fodder + **high** ranged specialists |')
+        L.append('| **Miniboss** | *high* fodder + a miniboss |')
+        L.append('\n### 🚨 This is NOT what is live, and two of the four change meaning\n')
+        L.append('\n| | live in `tide.js` | his spec |')
+        L.append('|---|---|---|')
+        L.append('| `horde` | bulk ONLY, 0% ranged | fodder + **tank specialists** |')
+        L.append('| `general` | bulk + archers at 15% | fodder + **light** specialists |')
+        L.append('| `specialist` | 40% ranged | **renamed `Ranged`** — low fodder, high ranged |')
+        L.append('| `miniboss` | bulk + a boss | **high** fodder + a miniboss |')
+        L.append('\n⚠️ So this is a rename *and* a re-composition, not a tuning pass. '
+                 '`specialist` disappears\nas a name.\n')
+        L.append('\n### 🔴 And the Ranged wave has a problem the table just exposed\n')
+        L.append('\n*"Low fodder + high ranged specialists"* needs a deep ranged pool. '
+                 '**There are three\nranged mobs in the entire pack**, and one of them '
+                 '(`minecraft:skeleton`) arrives armed only\nabout 30% of the time.\n')
+        L.append('\n⭐ A Ranged wave built today would be **mostly melee skeletons** — '
+                 'the exact failure the\nbow section above describes, but concentrated '
+                 'into the one wave type whose entire\nidentity is being shot at. '
+                 '**The bow fix is a prerequisite for this variation, not a\npolish '
+                 'item.**\n')
+        L.append('\n---\n')
         for r in ORDER:
             sub = [x for x in rows if x['role'] == r]
             L.append('\n## %s  — %d\n' % (r, len(sub)))
@@ -248,7 +293,7 @@ def main():
                             x['hp'], x['armor'], x['dmg'], x['mod'], x['id']))
         L.append('\n---\n')
         L.append('\n## By family\n')
-        for f in ['Skeleton', 'Zombie', 'Other']:
+        for f in ['Skeleton', 'Zombie', 'Ghost', 'Other']:
             sub = [x for x in rows if x['fam'] == f]
             L.append('\n**%s — %d.** ⚠️ Family is a NAME HEURISTIC, not a tag.\n' % (f, len(sub)))
             L.append('\n' + ', '.join('%s (`%s`)' % (x['name'], x['id'].split(':')[0])

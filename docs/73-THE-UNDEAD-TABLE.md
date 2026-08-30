@@ -86,17 +86,66 @@ the melee bruisers you would most want to rank. Treat damage as a floor, not a m
 ---
 
 
+## ⭐ THE FOUR WAVE VARIATIONS — Ethan, 2026-08-29
+
+
+> *"Tides are scaled by difficulty depending on god trust through a stepped ladder but
+> there are 3 main variations"* — four are listed, and the roles below map onto them
+> directly.
+
+
+| wave | composition |
+|---|---|
+| **General** | fodder + light specialists |
+| **Horde** | fodder + **tank** specialists · ⛔ no ranged |
+| **Ranged** | *low* fodder + **high** ranged specialists |
+| **Miniboss** | *high* fodder + a miniboss |
+
+### 🚨 This is NOT what is live, and two of the four change meaning
+
+
+| | live in `tide.js` | his spec |
+|---|---|---|
+| `horde` | bulk ONLY, 0% ranged | fodder + **tank specialists** |
+| `general` | bulk + archers at 15% | fodder + **light** specialists |
+| `specialist` | 40% ranged | **renamed `Ranged`** — low fodder, high ranged |
+| `miniboss` | bulk + a boss | **high** fodder + a miniboss |
+
+⚠️ So this is a rename *and* a re-composition, not a tuning pass. `specialist` disappears
+as a name.
+
+
+### 🔴 And the Ranged wave has a problem the table just exposed
+
+
+*"Low fodder + high ranged specialists"* needs a deep ranged pool. **There are three
+ranged mobs in the entire pack**, and one of them (`minecraft:skeleton`) arrives armed only
+about 30% of the time.
+
+
+⭐ A Ranged wave built today would be **mostly melee skeletons** — the exact failure the
+bow section above describes, but concentrated into the one wave type whose entire
+identity is being shot at. **The bow fix is a prerequisite for this variation, not a
+polish item.**
+
+
+---
+
+
 ## Fodder  — 47
 
 
 | family | mob | hp | armor | dmg | mod | id |
 |---|---|--:|--:|--:|---|---|
+| Ghost | Ghost | 30.0 | 1.0 | 3.0 | Ice And Fire Community Edition | `iceandfire:ghost` |
+| Ghost | Border Wraith | 25.0 | 0.0 | 4.0 | Goety | `goety:border_wraith` |
+| Ghost | Haunted Armor | 25.0 | 0.0 | 3.0 | Goety | `goety:haunted_armor` |
+| Ghost | Muck Wraith | 25.0 | 0.0 | 4.0 | Goety | `goety:muck_wraith` |
+| Ghost | Wraith | 25.0 | 0.0 | 4.0 | Goety | `goety:wraith` |
+| Ghost | Phantom | 20.0 | 0.0 | 2.0 | Minecraft (vanilla) | `minecraft:phantom` |
+| Ghost | Possessed Phantom | 20.0 | 2.0 | 3.0 | Occultism | `occultism:possessed_phantom` |
+| Ghost | Haunt | 6.0 | 0.0 | 2.0 | Goety | `goety:haunt` |
 | Other | Dread Beast | 30.0 | 1.0 | 4.0 | Ice And Fire Community Edition | `iceandfire:dread_beast` |
-| Other | Ghost | 30.0 | 1.0 | 3.0 | Ice And Fire Community Edition | `iceandfire:ghost` |
-| Other | Border Wraith | 25.0 | 0.0 | 4.0 | Goety | `goety:border_wraith` |
-| Other | Haunted Armor | 25.0 | 0.0 | 3.0 | Goety | `goety:haunted_armor` |
-| Other | Muck Wraith | 25.0 | 0.0 | 4.0 | Goety | `goety:muck_wraith` |
-| Other | Wraith | 25.0 | 0.0 | 4.0 | Goety | `goety:wraith` |
 | Other | Necromancer | 25.0 | 0.0 | 3.0 | Iron's Spells 'n Spellbooks | `irons_spellbooks:necromancer` |
 | Other | Bound Cryologer | 24.0 | 0.0 | 5.0 | Goety | `goety:bound_cryologer` |
 | Other | Bound Evoker | 24.0 | 0.0 | 2.0 | Goety | `goety:bound_evoker` |
@@ -104,14 +153,11 @@ the melee bruisers you would most want to rank. Treat damage as a floor, not a m
 | Other | Bound Wind Caller | 24.0 | 0.0 | 2.0 | Goety | `goety:bound_wind_caller` |
 | Other | Preserved | 20.0 | 2.0 | 4.0 | Galosphere | `galosphere:preserved` |
 | Other | Bound Iceologer | 20.0 | 0.0 | 2.0 | Goety | `goety:bound_iceologer` |
-| Other | Phantom | 20.0 | 0.0 | 2.0 | Minecraft (vanilla) | `minecraft:phantom` |
 | Other | Stray ⚠️ | 20.0 | 0.0 | 2.0 | Minecraft (vanilla) | `minecraft:stray` |
-| Other | Possessed Phantom | 20.0 | 2.0 | 3.0 | Occultism | `occultism:possessed_phantom` |
 | Other | Ashen | 20.0 | 2.0 | 3.0 | Regions Unexplored | `regions_unexplored:ashen` |
 | Other | Barbed | 20.0 | 0.0 | 2.0 | Spawn | `spawn:barbed` |
 | Other | Bound Geomancer | 18.0 | 0.0 | 2.0 | Goety | `goety:bound_geomancer` |
 | Other | Bogged ⚠️ | 16.0 | 0.0 | 2.0 | Minecraft (vanilla) | `minecraft:bogged` |
-| Other | Haunt | 6.0 | 0.0 | 2.0 | Goety | `goety:haunt` |
 | Other | Crypt Slime | 1.0 | 0.0 | 1.0 | Goety | `goety:crypt_slime` |
 | Skeleton | Possessed Skeleton | 30.0 | 0.0 | 4.0 | Occultism | `occultism:possessed_skeleton` |
 | Skeleton | Koboleton | 25.0 | 0.0 | 3.0 | L_Ender's Cataclysm 1.21.1 | `cataclysm:koboleton` |
@@ -153,20 +199,20 @@ the melee bruisers you would most want to rank. Treat damage as a floor, not a m
 
 | family | mob | hp | armor | dmg | mod | id |
 |---|---|--:|--:|--:|---|---|
+| Ghost | Ignited Revenant | 80.0 | 12.0 | 6.0 | L_Ender's Cataclysm 1.21.1 | `cataclysm:ignited_revenant` |
+| Ghost | Banshee | 40.0 | 13.0 | 5.0 | Grim & bleak | `grim_and_bleak:banshee` |
 | Other | Wild Bogged | 60.0 | 15.0 | 2.0 | Occultism | `occultism:wild_bogged` |
 | Other | Cairn Necromancer | 50.0 | 0.0 | 3.0 | Goety | `goety:cairn_necromancer` |
 | Other | Mossy Necromancer | 50.0 | 0.0 | 3.0 | Goety | `goety:mossy_necromancer` |
 | Other | Necromancer | 50.0 | 0.0 | 4.0 | Goety | `goety:necromancer` |
 | Other | Wild Stray | 45.0 | 10.0 | 2.0 | Occultism | `occultism:wild_stray` |
 | Other | Fallen Chaos Knight | 40.0 | 20.0 | 5.0 | Born in Chaos  | `born_in_chaos_v1:fallen_chaos_knight` |
-| Other | Banshee | 40.0 | 13.0 | 5.0 | Grim & bleak | `grim_and_bleak:banshee` |
 | Other | Dread Knight | 40.0 | 20.0 | 2.0 | Ice And Fire Community Edition | `iceandfire:dread_knight` |
 | Skeleton | Supreme Bonescaller | 65.0 | 5.0 | 5.0 | Born in Chaos  | `born_in_chaos_v1:supreme_bonescaller` |
 | Skeleton | Wild Hunt Wither Skeleton | 60.0 | 0.0 | 6.0 | Occultism | `occultism:wild_hunt_wither_skeleton` |
 | Skeleton | Skeleton Thrasher | 50.0 | 10.0 | 8.0 | Born in Chaos  | `born_in_chaos_v1:skeleton_thrasher` |
 | Skeleton | Draugr Necromancer | 50.0 | 5.0 | 5.0 | Goety Cataclysm | `goety_cataclysm:draugr_necromancer` |
 | Skeleton | Damned Templar | 40.0 | 10.0 | 0.0 | Grim & bleak | `grim_and_bleak:damned_templar` |
-| Zombie | Ignited Revenant | 80.0 | 12.0 | 6.0 | L_Ender's Cataclysm 1.21.1 | `cataclysm:ignited_revenant` |
 | Zombie | Possessed Zombified Piglin | 80.0 | 6.0 | 6.0 | Occultism | `occultism:possessed_zombie_piglin` |
 | Zombie | Zombie Ravager | 75.0 | 2.0 | 12.0 | Goety | `goety:zombie_ravager` |
 | Zombie | Ignited Berserker | 65.0 | 8.0 | 7.5 | L_Ender's Cataclysm 1.21.1 | `cataclysm:ignited_berserker` |
@@ -180,9 +226,9 @@ the melee bruisers you would most want to rank. Treat damage as a floor, not a m
 
 | family | mob | hp | armor | dmg | mod | id |
 |---|---|--:|--:|--:|---|---|
+| Ghost | Reaper | 24.0 | 0.0 | 8.0 | Goety | `goety:reaper` |
 | Other | Swarmer | 40.0 | 4.0 | 4.0 | Born in Chaos  | `born_in_chaos_v1:swarmer` |
 | Other | Door Knight | 30.0 | 7.0 | 6.0 | Born in Chaos  | `born_in_chaos_v1:door_knight` |
-| Other | Reaper | 24.0 | 0.0 | 8.0 | Goety | `goety:reaper` |
 | Skeleton | Wild Skeleton | 30.0 | 5.0 | 2.0 | Occultism | `occultism:wild_skeleton` |
 | Zombie | Zombie Clown | 35.0 | 4.0 | 3.0 | Born in Chaos  | `born_in_chaos_v1:zombie_clown` |
 | Zombie | Barrel Zombie | 30.0 | 6.0 | 3.0 | Born in Chaos  | `born_in_chaos_v1:barrel_zombie` |
@@ -217,14 +263,20 @@ the melee bruisers you would most want to rank. Treat damage as a floor, not a m
 Baby Skeleton (`born_in_chaos_v1`), Bone Imp (`born_in_chaos_v1`), Bone Lord (`goety`), Bonescaller (`born_in_chaos_v1`), Damned Templar (`grim_and_bleak`), Decrepit Skeleton (`born_in_chaos_v1`), Draugr Necromancer (`goety_cataclysm`), Haunted Skull (`goety`), Koboleton (`cataclysm`), Possessed Skeleton (`occultism`), Siamese Skeletons (`born_in_chaos_v1`), Skeleton (`minecraft`), Skeleton Demoman (`born_in_chaos_v1`), Skeleton Thrasher (`born_in_chaos_v1`), Skeleton Wolf (`goety`), Skull Lord (`goety`), Supreme Bonescaller (`born_in_chaos_v1`), Wild Hunt Skeleton (`occultism`), Wild Hunt Wither Skeleton (`occultism`), Wild Skeleton (`occultism`), Wither Skeleton (`minecraft`)
 
 
-**Zombie — 30.** ⚠️ Family is a NAME HEURISTIC, not a tag.
+**Zombie — 29.** ⚠️ Family is a NAME HEURISTIC, not a tag.
 
 
-Aptrgangr (`cataclysm`), Barrel Zombie (`born_in_chaos_v1`), Decaying Zombie (`born_in_chaos_v1`), Draugr (`cataclysm`), Dread Ghoul (`iceandfire`), Dread Thrall (`iceandfire`), Drowned (`minecraft`), Drowned Host (`cataclysm`), Elite Draugr (`cataclysm`), Frayed (`goety`), Ghoul (`grim_and_bleak`), Husk (`minecraft`), Ignited Berserker (`cataclysm`), Ignited Revenant (`cataclysm`), Possessed Zombified Piglin (`occultism`), Rattled (`goety`), Royal Draugr (`cataclysm`), Wild Horde Drowned (`occultism`), Wild Horde Husk (`occultism`), Wild Husk (`occultism`), Wild Zombie (`occultism`), Zoglin (`minecraft`), Zombie (`minecraft`), Zombie Bruiser (`born_in_chaos_v1`), Zombie Clown (`born_in_chaos_v1`), Zombie Fisherman (`born_in_chaos_v1`), Zombie Lumberjack (`born_in_chaos_v1`), Zombie Ravager (`goety`), Zombie Villager (`minecraft`), Zombified Piglin (`minecraft`)
+Aptrgangr (`cataclysm`), Barrel Zombie (`born_in_chaos_v1`), Decaying Zombie (`born_in_chaos_v1`), Draugr (`cataclysm`), Dread Ghoul (`iceandfire`), Dread Thrall (`iceandfire`), Drowned (`minecraft`), Drowned Host (`cataclysm`), Elite Draugr (`cataclysm`), Frayed (`goety`), Ghoul (`grim_and_bleak`), Husk (`minecraft`), Ignited Berserker (`cataclysm`), Possessed Zombified Piglin (`occultism`), Rattled (`goety`), Royal Draugr (`cataclysm`), Wild Horde Drowned (`occultism`), Wild Horde Husk (`occultism`), Wild Husk (`occultism`), Wild Zombie (`occultism`), Zoglin (`minecraft`), Zombie (`minecraft`), Zombie Bruiser (`born_in_chaos_v1`), Zombie Clown (`born_in_chaos_v1`), Zombie Fisherman (`born_in_chaos_v1`), Zombie Lumberjack (`born_in_chaos_v1`), Zombie Ravager (`goety`), Zombie Villager (`minecraft`), Zombified Piglin (`minecraft`)
 
 
-**Other — 38.** ⚠️ Family is a NAME HEURISTIC, not a tag.
+**Ghost — 11.** ⚠️ Family is a NAME HEURISTIC, not a tag.
 
 
-Apostle (`goety`), Ashen (`regions_unexplored`), Banshee (`grim_and_bleak`), Barbed (`spawn`), Bogged (`minecraft`), Border Wraith (`goety`), Bound Cryologer (`goety`), Bound Evoker (`goety`), Bound Geomancer (`goety`), Bound Iceologer (`goety`), Bound Storm Caster (`goety`), Bound Wind Caller (`goety`), Cairn Necromancer (`goety`), Crypt Slime (`goety`), Door Knight (`born_in_chaos_v1`), Dread Beast (`iceandfire`), Dread Knight (`iceandfire`), Fallen Chaos Knight (`born_in_chaos_v1`), Ghost (`iceandfire`), Grave Golem (`goety`), Haunt (`goety`), Haunted Armor (`goety`), Kobolediator (`cataclysm`), Mossy Necromancer (`goety`), Muck Wraith (`goety`), Necromancer (`goety`), Necromancer (`irons_spellbooks`), Phantom (`minecraft`), Possessed Phantom (`occultism`), Preserved (`galosphere`), Reaper (`goety`), Stray (`minecraft`), Swarmer (`born_in_chaos_v1`), Wight (`goety`), Wild Bogged (`occultism`), Wild Stray (`occultism`), Wither Necromancer (`goety`), Wraith (`goety`)
+Banshee (`grim_and_bleak`), Border Wraith (`goety`), Ghost (`iceandfire`), Haunt (`goety`), Haunted Armor (`goety`), Ignited Revenant (`cataclysm`), Muck Wraith (`goety`), Phantom (`minecraft`), Possessed Phantom (`occultism`), Reaper (`goety`), Wraith (`goety`)
+
+
+**Other — 28.** ⚠️ Family is a NAME HEURISTIC, not a tag.
+
+
+Apostle (`goety`), Ashen (`regions_unexplored`), Barbed (`spawn`), Bogged (`minecraft`), Bound Cryologer (`goety`), Bound Evoker (`goety`), Bound Geomancer (`goety`), Bound Iceologer (`goety`), Bound Storm Caster (`goety`), Bound Wind Caller (`goety`), Cairn Necromancer (`goety`), Crypt Slime (`goety`), Door Knight (`born_in_chaos_v1`), Dread Beast (`iceandfire`), Dread Knight (`iceandfire`), Fallen Chaos Knight (`born_in_chaos_v1`), Grave Golem (`goety`), Kobolediator (`cataclysm`), Mossy Necromancer (`goety`), Necromancer (`goety`), Necromancer (`irons_spellbooks`), Preserved (`galosphere`), Stray (`minecraft`), Swarmer (`born_in_chaos_v1`), Wight (`goety`), Wild Bogged (`occultism`), Wild Stray (`occultism`), Wither Necromancer (`goety`)
 

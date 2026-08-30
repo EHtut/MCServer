@@ -666,11 +666,6 @@ hash = "9ab20de2d63037f055d6b614013389e0198068bab536dfd62eebd913e5222fe1"
 metafile = true
 
 [[files]]
-file = "mods/fog.pw.toml"
-hash = "3a90f022d0ac776053cfb3a74de2f5df7b1a1388c1fb223ea7396a052843989f"
-metafile = true
-
-[[files]]
 file = "mods/forgified-fabric-api.pw.toml"
 hash = "bdc751ad0e632ae3b25839d12bd5d548f575719baf61767b5ab64aa99d120ccc"
 metafile = true
