@@ -847,6 +847,38 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // finish the story is the point, not a loophole.
   var CONFESSION_PHASES = ['companion', 'absence', 'harvest']
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔴 THE PHASE GATE ALONE WAS THE WRONG QUANTITY. Ethan, 2026-08-29:
+  //
+  //     "confession for the speaker? That needs to be gated behind highest trust.
+  //      I think liam stepped into the depths and instantly got it a few sessions ago."
+  //
+  // He is right, and it was not a code fault - `confessionEligible` did exactly what it
+  // said. The fault is WHICH NUMBER it read. Phase is a band over **notoriety**, and
+  // `/path` states plainly what notoriety is: *"It rises with the levels you gain, and
+  // on its own with the days."*
+  //
+  // 🔑 A CLOCK IS NOT AN ACHIEVEMENT. A player who simply existed long enough reached
+  // `companion`, and then the only remaining condition was walking downstairs. The most
+  // guarded writing in the game - Ethan's own confession stages - was gated on the
+  // passage of time.
+  //
+  // ⭐ TRUST IS THE RIGHT NUMBER, and his reason is better than "it is harder": trust
+  // *"indicates how dangerous you are to the goddess of death."* Notoriety measures how
+  // long you have been here. Trust measures what your god has decided about you, and
+  // that is the thing she would actually weigh.
+  //
+  // ── ⚠️ WHY BOTH, AND NOT TRUST INSTEAD OF PHASE ────────────────────────────
+  // **Wall and Forge start at MAX trust and decay** (`ranks.js`). Gating on trust ALONE
+  // would hand their champions every stage on day one - the exact bug being fixed,
+  // wearing the opposite sign. Keeping the phase check means the confession needs BOTH
+  // standing with your god AND time in the world, and the half that saves the
+  // non-combatants is the half that was already there.
+  //
+  // Trust required per stage. The last is MAX on purpose: stage 3 is
+  // "Gregor, I am sorry." - the best text in the game, and it should cost everything.
+  var CONFESSION_TRUST = [2, 4, 5]
+
   function phaseRank(ph) {
     if (ph === 'helper') return 0
     if (ph === 'companion') return 1
@@ -873,7 +905,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
     var stage = stageOf(p, s)
     var need = phaseRank(CONFESSION_PHASES[stage] || 'harvest')
-    return have >= need
+    if (have < need) return false
+
+    // ⭐ AND the trust gate. See CONFESSION_TRUST above for why this is an AND.
+    //
+    // ⚠️ FAILS CLOSED, unlike the night gate. An unreadable trust means she says
+    // NOTHING - the opposite bias to `night.js`, and deliberately so: there the risk was
+    // a silence nobody reports, here the risk is spending the game's best writing on
+    // somebody who has not earned it. A confession withheld can still be given later; a
+    // confession spent is gone.
+    var trust = -1
+    try {
+      if (typeof VELDORA.trust === 'function') trust = VELDORA.trust(server, p)
+    } catch (e) { return false }
+    if (typeof trust !== 'number' || !isFinite(trust) || trust < 0) return false
+    var needTrust = CONFESSION_TRUST[stage]
+    if (typeof needTrust !== 'number') needTrust = CONFESSION_TRUST[CONFESSION_TRUST.length - 1]
+    return trust >= needTrust
   }
 
   // The roll is still a roll - a stage that fired the instant a band changed would
