@@ -63,6 +63,19 @@ SIDE_OVERRIDES: dict[str, str] = {
     "smartbrainlib": "both",
     # Marked server-only; Oh The Biomes We've Gone requires it client-side.
     "oh-the-trees-youll-grow": "both",
+
+    # Added 2026-08-29. All three report client_side "unsupported" on Modrinth.
+    #
+    # THE METADATA IS NOT THE JAR, and this pack has already paid for believing it:
+    # realm-rpg-treasure-balloons said client_side "unsupported", was marked server,
+    # and registered a client-bound network channel that broke EVERY connection to the
+    # server. The failure looked like a pack corruption, not a sidedness mistake.
+    #
+    # Shipping a server-only jar to a client is harmless - it does nothing. The reverse
+    # is a broken pack. The asymmetry is the whole argument.
+    "sparsestructures": "both",
+    "village-spawn-point": "both",
+    "companion": "both",
 }
 
 

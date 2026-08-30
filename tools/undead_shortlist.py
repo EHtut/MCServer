@@ -38,6 +38,12 @@ CENSUS = os.path.join(HERE, '.cache', 'undead.json')
 # (regex, reason). Order matters only for which reason gets reported first.
 EXCLUDE = [
     (r'_servant$', 'a Goety summon - expects an owner'),
+    # 🔴 THE ID DOES NOT SAY SERVANT BUT THE MOB IS ONE. Goety's own lang calls these
+    # "Skeleton Pillager Servant" and "Zombie Vindicator Servant" - they slipped the
+    # pattern above because only their DISPLAY NAME gives them away. Found by putting
+    # the name column next to the id, which is the whole argument for having one.
+    (r'^goety:(skeleton_pillager|zombie_vindicator)$',
+     'a Goety summon - its display name says Servant even though its id does not'),
     (r'_minion$', 'a summon - expects an owner'),
     (r'^.*:controlled_', 'a controlled summon - expects an owner'),
     (r'_not_despawn$', 'persistence twin of another entry - same creature'),

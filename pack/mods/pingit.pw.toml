@@ -1,0 +1,13 @@
+name = "Ping It!"
+filename = "pings-neoforge-2.0.5.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/hdLwGiza/versions/v1H3jjtB/pings-neoforge-2.0.5.jar"
+hash-format = "sha512"
+hash = "0da8e22d704150858409353c67a23208cd832f29ab93ebdbb679142f4d7ca3a7bebb887098b7167dbd2ea426d3d632444599a8bad425f5e0785f8951bc7ff4c9"
+
+[update]
+[update.modrinth]
+mod-id = "hdLwGiza"
+version = "v1H3jjtB"
