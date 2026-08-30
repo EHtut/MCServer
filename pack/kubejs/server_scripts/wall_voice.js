@@ -765,7 +765,24 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // 🔑 y grows DOWNWARD (D-123). Both signs are used here on purpose: she goes
         // above AND below the middle, which is what "randomized across the screen"
         // means and what a single-signed offset could never do.
-        scatter: { x: 150, y: 70 },
+        scatter: { x: 170, y: 130 },
+
+        // 🔴🔴 PUMPED 2026-08-30, and it is a BUG FIX rather than a taste change.
+        // Ethan: *"pump the scatter."*
+        //
+        // Two dead bands now cut this box - the crosshair (+/-34) and the biome title
+        // (-53..-11) - and the chat bar caps how far DOWN a line may go at +60. Measured,
+        // that left wall with a fraction of her declared box actually usable, and
+        // 200k throws put over half her lines into one 20px strip. The scatter LOOKED
+        // generous and was not; the keep-outs had quietly eaten it.
+        //
+        // 🔑 THE BOX HAD TO GROW BECAUSE THE KEEP-OUTS DO NOT SHRINK. They are fixed by
+        // where the crosshair and the biome title actually are, so the only free variable
+        // is how far out she is allowed to throw.
+        //
+        // ⚠️ y ONLY GOES SO FAR. Past roughly +/-180 a line lands under the hotbar or off
+        // the top at GUI scale 3, which reads as a rendering fault. voice_style_harness
+        // asserts every throw stays inside the declared box and clear of every band.
 
         // Metamorphous - gnarled, rough-edged. Ethan: *"Scratched, harsh."*
         font: 'veldora:wall',

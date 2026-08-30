@@ -580,7 +580,19 @@ grp('* THE DEAD BANDS - a scattered line never lands where it cannot be read')
   const CHAT = 60                         // voice.CHAT_FLOOR
   const N = 20000
 
-  for (const pair of [['wall', 70], ['forge', 95]]) {
+  // 🔑 THE REACH IS READ FROM THE GOD FILES, NOT HARDCODED HERE. It was written as
+  // [['wall',70],['forge',95]] and both were pumped hours later; a test carrying its own
+  // stale copy of a number would have gone on proving something about a box that no
+  // longer exists, and passed while doing it.
+  const reachOf = (f) => {
+    const m = fs.readFileSync(path.join(SS, f), 'utf8').match(/scatter:\s*\{\s*x:\s*-?\d+,\s*y:\s*(\d+)/)
+    return m ? parseInt(m[1], 10) : null
+  }
+  const WALL = reachOf('wall_voice.js'), FORGE = reachOf('forge_voice.js')
+  ok('wall declares a scatter reach at all', WALL > 0, true)
+  ok('forge declares a scatter reach at all', FORGE > 0, true)
+
+  for (const pair of [['wall', WALL], ['forge', FORGE]]) {
     const god = pair[0], reach = pair[1]
     let onCross = 0, onTitle = 0, belowChat = 0, outOfBox = 0
     for (let i = 0; i < N; i++) {
@@ -610,7 +622,7 @@ grp('* THE DEAD BANDS - a scattered line never lands where it cannot be read')
     }
     return n
   }
-  const fw = free(70), ff = free(95)
+  const fw = free(WALL), ff = free(FORGE)
   ok('wall still has real vertical room after both bands', fw > 20, true)
   ok('forge has more room than wall - her box is wider on purpose', ff > fw, true)
 }

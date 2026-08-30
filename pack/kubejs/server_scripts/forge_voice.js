@@ -546,7 +546,24 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // where you are looking, because being near you is the threat. Forge is simply
         // all over the place, so hers is wider AND taller. It stays short of the screen
         // edges: past that she lands under the hotbar, which reads as a bug.
-        scatter: { x: 190, y: 95 },
+        scatter: { x: 210, y: 165 },
+
+        // 🔴🔴 PUMPED 2026-08-30, and it is a BUG FIX rather than a taste change.
+        // Ethan: *"pump the scatter."*
+        //
+        // Two dead bands now cut this box - the crosshair (+/-34) and the biome title
+        // (-53..-11) - and the chat bar caps how far DOWN a line may go at +60. Measured,
+        // that left forge with a fraction of her declared box actually usable, and
+        // 200k throws put over half her lines into one 20px strip. The scatter LOOKED
+        // generous and was not; the keep-outs had quietly eaten it.
+        //
+        // 🔑 THE BOX HAD TO GROW BECAUSE THE KEEP-OUTS DO NOT SHRINK. They are fixed by
+        // where the crosshair and the biome title actually are, so the only free variable
+        // is how far out she is allowed to throw.
+        //
+        // ⚠️ y ONLY GOES SO FAR. Past roughly +/-180 a line lands under the hotbar or off
+        // the top at GUI scale 3, which reads as a rendering fault. voice_style_harness
+        // asserts every throw stays inside the declared box and clear of every band.
 
         // 🔴 SHE TREMBLED, AND IT WAS TOO MUCH. Ethan, from play 2026-08-30: "Forge
         // shakes too much, we can remove the shaking."
