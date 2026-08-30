@@ -128,6 +128,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       yes: "So close.",
       after: "So close. Nearly there." },
 
+    // ⚠️ ADDED, not swapped: the four costs Ethan named keep every deal they had.
+    { id: 'wellwisher', cost: 'thirst', tier: 1,
+      pitch: "You look parched, friend. I have exactly the thing, and it's cheap today.",
+      yes: "I'll take it.",
+      after: "There you go. Drink deep." },
+
     { id: 'lasthand', cost: 'life', tier: 3,
       pitch: "Last one, friend. Give me something of yours, and I'll give you the world.",
       yes: "Take her hand.",
@@ -235,6 +241,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // lot is the only version that matches "there's no upside".
         try { server.runCommandSilent('xp set ' + p.username + ' 0 levels'); return true }
         catch (e) { return false }
+      }
+      // ⭐ THIRST. Ethan installed Tough As Nails 2026-08-29 and the accident is worth
+      // naming: her deals already took HUNGER, and thirst hands her a second currency
+      // without anybody writing a line for it. She is the god who sells you what you
+      // need; TAN just added a new need.
+      //
+      // ⚠️ FAILS TO 'NOT CHARGED' IF TAN IS ABSENT, which the caller then treats as a
+      // void deal - she is not paid and the counter does not move. A deal that counts
+      // without collecting is the bug this whole path guards against.
+      if (cost === 'thirst') {
+        try {
+          if (!VELDORA.tan || !VELDORA.tan.present()) return false
+          return VELDORA.tan.drain(p) === 0
+        } catch (e) { return false }
       }
       if (cost === 'debuff') {
         // "Terrible", per Ethan. Long, stacked, and genuinely unpleasant - but NOT

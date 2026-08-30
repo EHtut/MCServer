@@ -1,6 +1,6 @@
 name = "Fog"
 filename = "Fog-neoforge-1.11.0-1.21.1.jar"
-side = "both"
+side = "client"
 
 [download]
 url = "https://cdn.modrinth.com/data/WuGVWUF2/versions/c4ytB02Y/Fog-neoforge-1.11.0-1.21.1.jar"

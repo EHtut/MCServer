@@ -667,7 +667,7 @@ metafile = true
 
 [[files]]
 file = "mods/fog.pw.toml"
-hash = "ce8b4c6596fac67fd0d8ba6193a4a868699d9447c7eefb5a830ec23d211a04e6"
+hash = "3a90f022d0ac776053cfb3a74de2f5df7b1a1388c1fb223ea7396a052843989f"
 metafile = true
 
 [[files]]
@@ -1442,7 +1442,7 @@ metafile = true
 
 [[files]]
 file = "mods/supplementaries.pw.toml"
-hash = "1346aad3f6eddc018c4298efab1d5f1f3e5c4a183378157011907eb6f3519e65"
+hash = "2a2b9478b96d83d7ab8d62f17a4acc68332df7efaecad3b584f781b589a22228"
 metafile = true
 
 [[files]]

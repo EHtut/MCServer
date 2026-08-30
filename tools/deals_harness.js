@@ -106,14 +106,22 @@ function choose(id) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-grp('⭐ THE SHAPE — ten deals, four costs, five to be had')
+grp('⭐ THE SHAPE — five costs, five to be had')
 {
   ok('five is the threshold', D.threshold, 5)
-  ok('ten deals', D.deals.length, 10)
+
+  // ⚠️ WAS "ten deals" and "all FOUR costs". Tough As Nails landed 2026-08-29 and
+  // thirst became a fifth - ADDED, not swapped, so every deal the original four had is
+  // still there. The COST LIST is the design and is asserted exactly; the deal COUNT is
+  // just how many were written, so it is asserted as a floor.
+  ok('at least ten deals', D.deals.length >= 10, true)
   const costs = {}
   D.deals.forEach(d => { costs[d.cost] = (costs[d.cost] || 0) + 1 })
-  ok('⭐ all four of Ethan\'s costs are used', Object.keys(costs).sort(),
-    ['debuff', 'hunger', 'levels', 'life'])
+  ok('⭐ all four of his original costs survive',
+    ['debuff', 'hunger', 'levels', 'life'].every(c => costs[c] > 0), true)
+  ok('⭐ ...and thirst joined them', costs['thirst'] > 0, true)
+  ok('🚨 nothing was invented beyond those five', Object.keys(costs).sort(),
+    ['debuff', 'hunger', 'levels', 'life', 'thirst'])
   ok('every deal has a pitch, a yes and an after',
     D.deals.every(d => d.pitch && d.yes && d.after), true)
   ok('🚨 Ethan\'s laughter line is verbatim',

@@ -76,6 +76,20 @@ SIDE_OVERRIDES: dict[str, str] = {
     "sparsestructures": "both",
     "village-spawn-point": "both",
     "companion": "both",
+
+    # CLIENT ONLY, AND IT CRASHED THE SERVER TO PROVE IT (2026-08-29).
+    #
+    # `fog` loads net/minecraft/client/KeyMapping during mod construction, which on a
+    # DEDICATED_SERVER is an instant hard failure - "Attempted to load class ... for
+    # invalid dist DEDICATED_SERVER". Mod loading aborted and the server never came up.
+    #
+    # BOTH SOURCES OF TRUTH WERE WRONG. Modrinth said server_side "optional", and the
+    # jar's OWN neoforge.mods.toml declares side="BOTH". Neither is the code.
+    #
+    # THIS IS THE TREASURE BALLOONS LESSON MIRRORED. That mod was marked server and
+    # broke every client; this one claims both and breaks the server. The metadata is
+    # not the jar in EITHER direction - only a boot is.
+    "fog": "client",
 }
 
 

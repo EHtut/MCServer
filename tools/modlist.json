@@ -110,7 +110,8 @@
    "It is a beta, and it is the only build that works with the Sodium everything else needs.",
    "",
    "Format: slug -> exact Modrinth version_number.",
-   "moreculling: 1.0.7 is the newest RELEASE and it crashes. It calls SodiumClientMod.options() expecting SodiumGameOptions, but Sodium 0.8 renamed that class to SodiumOptions - so every leaves render throws NoSuchMethodError. 1.0.8-beta is the build compiled against the new name; verified by reading both jars' constant pools against the installed sodium 0.8.12. Beta is the only correct choice here."
+   "moreculling: 1.0.7 is the newest RELEASE and it crashes. It calls SodiumClientMod.options() expecting SodiumGameOptions, but Sodium 0.8 renamed that class to SodiumOptions - so every leaves render throws NoSuchMethodError. 1.0.8-beta is the build compiled against the new name; verified by reading both jars' constant pools against the installed sodium 0.8.12. Beta is the only correct choice here.",
+   "supplementaries pinned 2026-08-29 to 3.8.9. It was NOT pinned, so it resolved to newest (3.9.5), which declares moonlight [1.21-3.5.2,] - and moonlight IS pinned, at 3.3.0. The server booted and then died at world load with NoSuchMethodError on ILightable.isIgniter: the range was violated and nothing refused to load. 3.8.9 is the newest supplementaries that accepts 3.3.0 (it asks for [1.21-3.1.3,]). Read out of each jar's own neoforge.mods.toml rather than guessed. This is the exact failure the Iris/Sodium note above describes, with a different pair."
   ],
   "versions": {
    "iris": "1.8.14-beta.1+1.21.1-neoforge",
@@ -362,7 +363,8 @@
    "fresh-animations": "1.10.4",
    "tras-fresh-player": "3.1",
    "faithful-32x": "1.21.1-june-2026",
-   "travelers-titles": "1.21.1-NeoForge-5.1.3"
+   "travelers-titles": "1.21.1-NeoForge-5.1.3",
+   "supplementaries": "1.21.1-3.8.9"
   }
  },
  "shaderpacks": {
