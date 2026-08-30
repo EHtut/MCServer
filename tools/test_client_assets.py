@@ -144,6 +144,84 @@ def _():
         shutil.rmtree(root, ignore_errors=True)
 
 
+# ── check_providers — D-130 ──────────────────────────────────────────────────
+# 🔴 Every definition said "veldora:font/wall.ttf", which reads as obviously correct and
+# is wrong: Minecraft prepends font/ itself, so it resolved to
+# assets/veldora/font/font/wall.ttf and every builder was rejected. All five gods, from
+# the day the fonts were fetched to the day someone read the client log.
+#
+# ⚠️ The symptom was identical to D-129 — boxes — because a rejected builder and an
+# unloaded pack both end in an empty font set. The first fault masked the second.
+
+def make_pack(file_ref, put_ttf_at="wall.ttf"):
+    """A throwaway assets root: one font json with `file_ref`, one ttf at `put_ttf_at`
+    (relative to assets/veldora/font/). Returns (root, assets_dir)."""
+    root = tempfile.mkdtemp(prefix="veldora_prov_")
+    fontdir = os.path.join(root, "veldora", "font")
+    os.makedirs(fontdir)
+    with io.open(os.path.join(fontdir, "wall.json"), "w", encoding="utf-8") as fh:
+        fh.write('{"providers":[{"type":"ttf","file":"%s","size":10}]}' % file_ref)
+    target = os.path.join(fontdir, put_ttf_at)
+    d = os.path.dirname(target)
+    if not os.path.isdir(d):
+        os.makedirs(d)
+    with io.open(target, "w", encoding="utf-8") as fh:
+        fh.write("not really a ttf, existence is what is checked")
+    return root
+
+
+@case("the D-130 shape - a doubled font/ prefix - is CAUGHT")
+def _():
+    root = make_pack("veldora:font/wall.ttf")
+    try:
+        bad = bca.check_providers(root)
+        assert len(bad) == 1, "expected exactly one bad provider, got %r" % (bad,)
+        assert "font" in bad[0][1], bad
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+
+
+@case("the correct form resolves clean")
+def _():
+    root = make_pack("veldora:wall.ttf")
+    try:
+        bad = bca.check_providers(root)
+        assert bad == [], "correct definition must not be flagged: %r" % (bad,)
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+
+
+@case("a genuinely missing ttf is CAUGHT")
+def _():
+    # ⚠️ Distinct from the prefix bug: right shape, absent bytes.
+    root = make_pack("veldora:wall.ttf", put_ttf_at="something_else.ttf")
+    try:
+        bad = bca.check_providers(root)
+        assert len(bad) == 1, "a missing ttf must be caught, got %r" % (bad,)
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+
+
+@case("the check is not vacuous - it fails the real pre-fix definitions")
+def _():
+    # 🔑 THE CONTROL THAT MATTERS. A check that returns [] for everything would pass
+    # every case above that expects []. This feeds it the exact five definitions that
+    # shipped, reconstructed, and requires all five to be rejected.
+    root = tempfile.mkdtemp(prefix="veldora_prov_real_")
+    try:
+        fontdir = os.path.join(root, "veldora", "font")
+        os.makedirs(fontdir)
+        for g in ("art", "blade", "forge", "salvage", "wall"):
+            with io.open(os.path.join(fontdir, g + ".json"), "w", encoding="utf-8") as fh:
+                fh.write('{"providers":[{"type":"ttf","file":"veldora:font/%s.ttf"}]}' % g)
+            with io.open(os.path.join(fontdir, g + ".ttf"), "w", encoding="utf-8") as fh:
+                fh.write("x")
+        bad = bca.check_providers(root)
+        assert len(bad) == 5, "all five shipped definitions must be rejected, got %d" % len(bad)
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+
+
 def main():
     failed = 0
     for name, fn in CASES:

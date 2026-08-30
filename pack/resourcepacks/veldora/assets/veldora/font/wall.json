@@ -2,7 +2,7 @@
   "providers": [
     {
       "type": "ttf",
-      "file": "veldora:font/wall.ttf",
+      "file": "veldora:wall.ttf",
       "shift": [
         0,
         0

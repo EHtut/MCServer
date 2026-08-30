@@ -2,7 +2,7 @@
   "providers": [
     {
       "type": "ttf",
-      "file": "veldora:font/art.ttf",
+      "file": "veldora:art.ttf",
       "shift": [
         0,
         0

@@ -161,11 +161,23 @@ def fetch():
             with io.open(os.path.join(ASSETS, god + ".ttf"), "wb") as f:
                 f.write(data)
 
-            # The Minecraft font definition. `file` resolves under assets/<ns>/font/.
+            # 🔴 `file` IS ALREADY ROOTED AT assets/<ns>/font/ - do NOT add the `font/`
+            # prefix yourself. Minecraft's TrueTypeGlyphProviderDefinition calls
+            # `.withPrefix("font/")` on this value, so "veldora:font/wall.ttf" resolves to
+            # assets/veldora/font/FONT/wall.ttf and throws FileNotFoundException.
+            #
+            # ⚠️ THE SYMPTOM IS NOT A MISSING FONT, IT IS BOXES. A rejected builder leaves
+            # an EMPTY font set, and an empty font set draws every codepoint as the
+            # missing glyph - so the screen fills with rectangles at the right colour and
+            # the right length, while the reason sits in the CLIENT log (D-130).
+            #
+            # 🔑 The comment that used to sit on this line already stated the rule
+            # correctly - "resolves under assets/<ns>/font/" - and the code below it
+            # added the prefix anyway. Documented and wrong in the same three lines.
             defn = {
                 "providers": [{
                     "type": "ttf",
-                    "file": "veldora:font/%s.ttf" % god,
+                    "file": "veldora:%s.ttf" % god,
                     "shift": [0, 0],
                     "size": size,
                     "oversample": over,

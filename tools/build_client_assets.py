@@ -37,6 +37,7 @@ import datetime
 import filecmp
 import hashlib
 import io
+import json
 import os
 import re
 import shutil
@@ -138,6 +139,56 @@ def check_loaded(dest):
             % (newest.strftime("%H:%M:%S"), at.strftime("%H:%M:%S")))
 
 
+# ⭐⭐ DOES EACH FONT DEFINITION POINT AT A FILE THAT EXISTS?
+#
+# 🔴 D-130. Every definition said `"file": "veldora:font/wall.ttf"`, which looks obviously
+# right and is wrong: Minecraft's TrueTypeGlyphProviderDefinition calls
+# `.withPrefix("font/")` on that value, so it resolved to
+#
+#     assets/veldora/font/FONT/wall.ttf
+#
+# and every builder was rejected with FileNotFoundException. All five gods, since the day
+# the fonts were fetched.
+#
+# ⚠️ AND THE SYMPTOM WAS IDENTICAL TO D-129 - boxes on screen - because a rejected
+# builder and an unloaded pack both end in an EMPTY font set. Two different faults, one
+# appearance, and the first one masked the second: the fonts were fixed, reloaded, and
+# still wrong, which read as "the fix did not work" rather than "there is a second bug".
+#
+# 🔑 This resolves `file` EXACTLY THE WAY MINECRAFT DOES and checks the bytes are there.
+# It is the check that turns a silent screen of rectangles into one line of output.
+def check_providers(assets_root):
+    """[(font_json, missing_path)] for every provider whose file does not resolve."""
+    bad = []
+    for dp, _dn, fn in os.walk(assets_root):
+        for f in fn:
+            if not f.endswith(".json"):
+                continue
+            if os.path.basename(dp) != "font":
+                continue
+            jp = os.path.join(dp, f)
+            try:
+                with io.open(jp, encoding="utf-8") as fh:
+                    doc = json.load(fh)
+            except Exception as e:
+                bad.append((jp, "unreadable: %s" % e))
+                continue
+            for prov in doc.get("providers", []):
+                ref = prov.get("file")
+                if not ref or prov.get("type") != "ttf":
+                    continue
+                ns, _, path = ref.partition(":")
+                if not path:
+                    ns, path = "minecraft", ref
+                # ⚠️ THE WHOLE POINT: Minecraft prepends font/ itself.
+                resolved = os.path.join(assets_root, ns, "font", path)
+                if not os.path.isfile(resolved):
+                    bad.append((os.path.relpath(jp, assets_root),
+                                "%s -> %s (missing)" % (ref, os.path.relpath(resolved,
+                                                                             assets_root))))
+    return bad
+
+
 def sha(path):
     with open(path, "rb") as f:
         return hashlib.sha256(f.read()).hexdigest()
@@ -227,6 +278,20 @@ def main():
         print("     Run: python tools/fetch_fonts.py --fetch")
         return 1
     print("  source: %d file(s) in pack/resourcepacks/veldora/assets" % len(src))
+
+    # ⭐ BEFORE anything is copied. Shipping a definition that cannot resolve just puts
+    # the boxes on more screens.
+    broken = check_providers(SRC_ASSETS)
+    if broken:
+        print()
+        print("  🔴 %d FONT DEFINITION(S) POINT AT A FILE THAT DOES NOT EXIST:" % len(broken))
+        for jp, why in broken:
+            print("       %s : %s" % (jp, why))
+        print("     Minecraft prepends font/ to `file` itself - so `veldora:wall.ttf`,")
+        print("     never `veldora:font/wall.ttf`. A rejected builder renders as BOXES,")
+        print("     not as missing text (D-130).")
+        return 1
+    print("  ✓ all font definitions resolve to a real file")
     print()
 
     targets = [("client pack (ships to everyone)", CLIENTPACK)]
