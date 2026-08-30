@@ -36,7 +36,15 @@ import sys
 REPO = pathlib.Path(__file__).resolve().parent.parent
 SS = REPO / "pack" / "kubejs" / "server_scripts"
 OUT = REPO / "docs" / "51-LINES-TO-REFRESH.md"
-MARK = re.compile(r'\[CLAUDE-DRAFT\]\s*(.+)$')
+# ⚠️ ANCHORED TO THE START OF A COMMENT. The first version searched anywhere in the
+# line, so blade_voice.js:69 - the PROSE sentence "Every one is marked [CLAUDE-DRAFT]
+# and appears in" - was reported as a malformed marker forever. Any file that explains
+# this convention in its own header will trip an unanchored matcher.
+#
+# 🔑 And a permanent false positive is how the four REAL ones hid in plain sight: five
+# complaints, one of them known noise, so the whole list read as noise. The four deep
+# Speaker heralds were genuinely missing from the register for weeks because of it.
+MARK = re.compile(r'^\s*//\s*\[CLAUDE-DRAFT\]\s*(.+)$')
 # ⚠️ STRICT. The first version split on the separator and took whatever followed,
 # so a marker with a trailing sentence produced a "tag" called
 # `argue_unanswered  - ALL FIVE are drafts.` and counted its lines as unknown.

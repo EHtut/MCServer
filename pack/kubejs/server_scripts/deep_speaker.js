@@ -114,7 +114,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
                                          // "She is not a god" was always true and is now
                                          // the tell: a falsehood, not a god.
     lines: {
-      // [CLAUDE-DRAFT] the Speaker's tide herald
+      // [CLAUDE-DRAFT] death_speaker/warn_wave
+      // the Shadow's tide herald
       // 🚨 tide.js CALLS speaker.say(p, 'warn_wave') AND NO SPEAKER HAD THE POOL. The
       // deep herald silently fell through to the god's own voice - which is the exact
       // thing the design says cannot happen down here. Found by diffing the tags
@@ -224,7 +225,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     name: 'the Doctor',
     colour: '§b',                        // light blue. She IS the goddess.
     lines: {
-      // [CLAUDE-DRAFT] the Doctor's tide herald
+      // [CLAUDE-DRAFT] death_doctor/warn_wave
+      // the Doctor's tide herald
       warn_wave: [
         'Oh. Oh dear. They are awake, and they are coming.',
         'You should not be here for this. Neither should I.',
@@ -326,7 +328,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     name: 'the Keeper',
     colour: '§e',                        // yellow
     lines: {
-      // [CLAUDE-DRAFT] the Keeper's tide herald
+      // [CLAUDE-DRAFT] death_keeper/warn_wave
+      // the Keeper's tide herald
       warn_wave: [
         "That sound? That's them. I'd get ready.",
         "Something's coming. I'm sorry, I can't stop it.",
@@ -399,7 +402,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     name: 'the Matriarch',
     colour: '§b',                        // pale blue - hers, and colder than the rest
     lines: {
-      // [CLAUDE-DRAFT] her tide herald - the only one who is ANNOYED by it
+      // [CLAUDE-DRAFT] death_matriarch/warn_wave
+      // her tide herald - the only one who is ANNOYED by it
       warn_wave: [
         'Something is coming. Deal with it.',
         'Company. Try not to embarrass either of us.',

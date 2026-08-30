@@ -111,20 +111,29 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var DEBT_PER_TRADE = 1
 
   // ── her voice ──────────────────────────────────────────────────────────────
+  // ⚠️ REGISTER FIX, 2026-08-29 (F2). These nine carried NO contractions while her
+  // authored rules mandate them - "You are having a bad night" against "Something's
+  // coming. Count your ammo." from the same god. That is the whole "her trade voice
+  // and her collection voice are audibly different people" finding, and it was
+  // measurable rather than a matter of taste.
+  //
+  // 🔑 CONTRACTIONS ONLY. Not one image is changed - authorship of these is unclear
+  // (they predate the voice split) so the fix is the smallest one that lands her
+  // register. "Lets" -> "Let's" was also a plain apostrophe typo.
   var OPENERS = [
-    'Lets do a deal.',
+    "Let's do a deal.",
     'Friend. You look like you need something.',
     'No charge for looking.',
-    'You are having a bad night. I am having a good one.',
+    "You're having a bad night. I'm having a good one.",
   ]
   var TOOK = {
-    hunger: 'Hunger for life. You will be hungry again. That is the beauty of it.',
-    levels: 'Levels for lead. Spend them, friend - you were only going to get eaten with them.',
-    sight: 'Sight for teeth. Do not worry. It comes back.',
+    hunger: "Hunger for life. You'll be hungry again. That's the beauty of it.",
+    levels: "Levels for lead. Spend them, friend - you'd only have been eaten with them.",
+    sight: "Sight for teeth. Don't worry. It comes back.",
   }
   var REFUSED = [
-    'Suit yourself. I will be here.',
-    'No? Come back when it is worse.',
+    "Suit yourself. I'll be here.",
+    "No? Come back when it's worse.",
   ]
 
   function pick(a) { return a[Math.floor(Math.random() * a.length)] }
@@ -227,14 +236,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     try { after = p.foodData.foodLevel } catch (e) { }
     if (after === null || after >= before) {
       console.error(TAG + '!! hunger charge did not stick (' + before + ' -> ' + after + ')')
-      speak(p, pooled('kept_it', 'You kept it. How.'))
+      speak(p, pooled('kept_hunger', 'You kept it. How.'))
       return false
     }
     try {
       var max = p.getAttribute('minecraft:generic.max_health').getValue()
       p.setHealth(Math.min(max, p.health + HEALTH_GAIN))
     } catch (e) { console.warn(TAG + 'could not heal: ' + e) }
-    speak(p, TOOK.hunger)
+    speak(p, pooled('took_hunger', TOOK.hunger))
     return true
   }
 
@@ -260,11 +269,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     try { after = p.xpLevel } catch (e) { }
     if (after === null || after >= before) {
       console.error(TAG + '!! level charge did not stick (' + before + ' -> ' + after + ')')
-      speak(p, pooled('kept_it', 'You kept them. How.'))
+      speak(p, pooled('kept_levels', 'You kept them. How.'))
       return false
     }
     try { p.give(st) } catch (e) { console.error(TAG + 'could not give ammo: ' + e) }
-    speak(p, TOOK.levels)
+    speak(p, pooled('took_levels', TOOK.levels))
     note(p, rounds + ' x ' + gun.ammoId.replace('tacz:', '') + ' for ' + levelCost + ' levels.')
     return true
   }
@@ -306,7 +315,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // She took the sight already. Give it back rather than charge for nothing.
       try { srv.runCommandSilent('effect clear ' + name + ' minecraft:blindness') } catch (e) { }
       console.error(TAG + '!! sight trade granted NOTHING - blindness refunded')
-      speak(p, pooled('kept_it', 'On second thought. Keep your eyes.'))
+      speak(p, pooled('kept_sight', 'On second thought. Keep your eyes.'))
       return false
     }
 
@@ -316,7 +325,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         console.warn(TAG + 'could not claim the blindness keep - sight may clear early')
     } catch (e) { console.error(TAG + 'keepOnRelease threw :: ' + e) }
 
-    speak(p, TOOK.sight)
+    speak(p, pooled('took_sight', TOOK.sight))
     note(p, 'Strength and speed, five minutes. You will not see them coming.')
     return true
   }
@@ -358,7 +367,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     ]
 
     return VELDORA.ritual.begin(p, {
-      lines: [pick(OPENERS), 'Give me your hunger, and i\'ll give you life.',
+      lines: [pooled('open', pick(OPENERS)), 'Give me your hunger, and i\'ll give you life.',
         'Give me your levels and i shall grant you ammo.',
         'Give me your sight and i will grant you the power to kill.'],
       options: options,
@@ -374,7 +383,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         var srv = null
         try { srv = player.server } catch (e) { }
         if (id === 'no') {
-          speak(player, pick(REFUSED))
+          speak(player, pooled('refused', pick(REFUSED)))
           try {
             if (VELDORA.release) VELDORA.release.denied(srv, player, PATRON, 'counter')
             else console.warn(TAG + 'release.js missing - refusals count for NOTHING')
@@ -403,7 +412,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // from the counter is AFK as often as it is "no" and this code cannot tell
       // them apart. Logged so the rate is visible; never counted.
       onTimeout: function (player) {
-        speak(player, pick(REFUSED))
+        speak(player, pooled('refused', pick(REFUSED)))
         try {
           var srv = null
           try { srv = player.server } catch (e) { }

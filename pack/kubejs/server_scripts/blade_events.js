@@ -1360,12 +1360,29 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // ═══════════════════════════════════════════════════════════════════════
     // THE THREE ROWS THE TAXONOMY FOUND EMPTY (docs/23 §VI.0)
     //
-    // ⚠️ WEIGHTS ARE PER-EVENT; HIS CHART IS PER-CATEGORY. He rates Challenges and
-    // Buffs both ++++, but he has SEVEN Challenges and two Buffs, so equal per-event
-    // weights would leave Challenges ~3.5x heavier than the chart asks for. These
-    // are set high (w4/w3) to close some of that, and the rest of the gap is a
-    // REBALANCE OF THE SEVEN CHALLENGES DOWNWARD, which is a separate pass and
-    // Ethan's call. Recorded here rather than fudged silently.
+    // ⭐ RESOLVED 2026-08-29 (F2) - AND THE REBALANCE IS NOT NEEDED.
+    //
+    // This block used to say: weights are per-event but his chart is per-category, so
+    // seven Challenges against two Buffs left Challenges ~3.5x heavier than the chart
+    // asks for; w4/w3 here closed some of it and the rest wanted "a rebalance of the
+    // seven Challenges downward, which is a separate pass and Ethan's call".
+    //
+    // 🔑 THE TWO-STAGE ROLL ALREADY FIXED IT (godevents.js). The roll now picks a KIND
+    // from the chart first, then an event inside that kind - so event weights are
+    // RELATIVE WITHIN A CATEGORY and the number of Challenges cannot move the category
+    // share at all. Measured on the live boot 2026-08-29:
+    //
+    //     blade rolls BY KIND: challenge 20% (8 ev) - the chart asks for exactly 20%
+    //
+    // The old note recorded 47.1% against a wanted 20.0% with the same eight events.
+    // Nothing was rebalanced; the selection stopped being wrong.
+    //
+    // ⚠️ SO THE w4/w3 BELOW NO LONGER MEAN WHAT THEY SAY. They were chosen to inflate
+    // the Buff CATEGORY, and a per-event weight can no longer do that - all they do
+    // now is split the Buff band between harden, burden and tithe (4:3:1). That ratio
+    // has never been decided on its own merits, and it makes tithe ~2.5% of all rolls.
+    // Left alone rather than quietly re-tuned: it is a real question for Ethan, and
+    // it is a different question from the one this comment used to ask.
     // ═══════════════════════════════════════════════════════════════════════
     VELDORA.events.register(GOD, {
       id: 'harden', kind: 'buff', run: runHarden, hostile: false, cooldown: 2, weight: 4,

@@ -53,12 +53,37 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // A `rare_<tag>` pool is rolled by idle.js at 15% BEFORE its common twin. Put the
   // lines where this god is a person in there, and nowhere else.
   var LINES = {
-    // ── lifted out of salvage.js, 2026-08-15 ────────────────────────────────
+    // ── lifted out of salvage.js, 2026-08-15 · COMPLETED 2026-08-29 (F2) ────
     // These were string literals inside the trade code. They are the lines a player
-    // hears MOST - "you are too poor even for me" fires far more often than any idle
+    // hears MOST - "you're too poor even for me" fires far more often than any idle
     // line - and they were the nine Ethan could not edit without opening a script.
-    // Empty here means the old literal is still used, so nothing breaks while he
-    // writes. TODO(ethan).
+    //
+    // ⭐ ALL TWELVE TRADE TAGS NOW ROUTE THROUGH HERE. Add an array under any of
+    // these names and it overrides the literal immediately; leave it out and the
+    // literal still fires, byte for byte. Nothing to un-break while writing.
+    //
+    //     open           her greeting, once per trade
+    //     took_hunger    took_levels    took_sight      what she says as she takes it
+    //     refused        you walked away
+    //     deal_poor      you cannot pay
+    //     no_stock       she has nothing to sell
+    //     need_gun       you are not holding the thing you want fed
+    //     unreadable     she cannot read your state
+    //     kept_hunger    kept_levels    kept_sight      ⚠️ THE CHARGE DIDN'T STICK
+    //
+    // ⚠️ THOSE LAST THREE WERE ONE TAG (`kept_it`) UNTIL 2026-08-29, and filling it
+    // would have been a trap: the three call sites say "You kept it", "You kept
+    // them" and "Keep your eyes", so one shared pool would have answered a single
+    // item with "You kept them. How." Split on the same hunger/levels/sight axis
+    // TOOK already uses.
+    //
+    // 🔑 AND HER REGISTER WAS THE REAL FINDING. The nine carried NO contractions
+    // while her own rules below mandate them - "You are having a bad night" from the
+    // same god as "Something's coming. Count your ammo." That is what "her trade
+    // voice and her collection voice are audibly different people" (`34` §3) meant,
+    // and it was countable rather than a matter of taste. Fixed in salvage.js with
+    // CONTRACTIONS ONLY - not one image changed, because authorship of those nine
+    // predates the voice split and is unclear.
     // ═══════════════════════════════════════════════════════════════════════
     // ⭐ THE FOUR ROWS HER CHART RATED AND SHE HAD NOTHING IN (docs/23 §VI.0).
     // [CLAUDE-DRAFT] salvage/bounty_offer · salvage/bounty_paid

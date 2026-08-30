@@ -707,3 +707,87 @@ after the restart, which is how the other six were caught. It now names both mod
 reads `NIGHT_TIDE` so it cannot describe a mode that is switched off.
 
 **534 assertions across 15 harnesses. Live: 55/55 scripts, 0 errors.**
+
+---
+
+# ✅ F2 DONE — 2026-08-29. Two of three items were not what the plan thought.
+
+F2 read: *Ethan's pass on 446 draft lines · Salvage's register · Blade's Challenge
+rebalance.* **The first is his and cannot be done for him. The other two were both
+mis-scoped**, and finding that out was most of the work.
+
+## 🔑 Blade's Challenge rebalance — ALREADY FIXED, retire it
+
+His file carried: *"a REBALANCE OF THE SEVEN CHALLENGES DOWNWARD, which is a separate
+pass and Ethan's call."* The stated problem was that seven Challenges against two Buffs
+made Challenges ~3.5× the share his chart asks for.
+
+⭐ **The two-stage roll in `godevents.js` already solved it.** The roll picks a **KIND**
+from the chart first, then an event inside that kind — so event weights are *relative
+within a category* and the number of Challenges cannot move the category share at all.
+
+**Measured on the live boot, not read off the code:**
+
+```
+blade rolls BY KIND: challenge 20% (8 ev) · boon 20% · buff 20% · duel 15% · assassination 10%
+```
+
+The old note recorded **47.1% against a wanted 20.0% with the same eight events**. The
+chart asks for exactly 20%. **Nothing needed rebalancing; the selection stopped being
+wrong.** ⚠️ The report also showed no UNDECIDED, no UNTAGGED and no missing charts —
+all five gods are honouring their vector.
+
+⚠️ **One real residue.** The Buff weights `w4/w3` were chosen to inflate the Buff
+*category*, which a per-event weight can no longer do. They now only split the Buff band
+between harden/burden/tithe **4:3:1**, making tithe ~2.5% of all rolls. That ratio has
+never been decided on its merits. **Left alone rather than quietly re-tuned** — it is a
+real question, and a different one from what the comment used to ask.
+
+## 🔑 Salvage's register — the finding was COUNTABLE
+
+*"Her trade voice and her collection voice are audibly different people."* True, and the
+difference is not a matter of taste:
+
+| trade (literals in `salvage.js`) | collection (pools in `salvage_voice.js`) |
+|---|---|
+| "**You are** having a bad night. **I am** having a good one." | "**Something's** coming. Count your ammo." |
+| "**Do not** worry. It comes back." | "You want an apology? **I don't** stock them." |
+
+**Her own documented rules mandate contractions. The nine trade lines had none.**
+
+⭐ Fixed with **contractions only — not one image changed**, because authorship of those
+nine predates the voice split and is unclear. (`Lets` → `Let's` was also just a typo.)
+
+## ⚠️ And a trap avoided: `kept_it` was one tag for three sentences
+
+`pooled('kept_it', …)` fired at three sites whose literals read *"You kept **it**"*,
+*"You kept **them**"*, and *"Keep your **eyes**"*. **Filling that pool would have
+answered a single item with "You kept them. How."** Split into `kept_hunger` /
+`kept_levels` / `kept_sight`, on the same axis `TOOK` already uses.
+
+## ⭐ All twelve trade tags now route through the voice system
+
+The original lift's goal was *"the nine Ethan could not edit without opening a script."*
+**Five were routed; nine were not.** Now all twelve are, with the literal as the
+fallback — so an empty pool is byte-identical behaviour and there is nothing to
+un-break while writing.
+
+## 🔴 And the register was under-reporting itself
+
+`gen_lines.py` complained of **5 malformed markers**. One — `blade_voice.js:69` — was a
+**false positive**: the matcher searched anywhere in the line, so the prose sentence
+*"Every one is marked [CLAUDE-DRAFT] and appears in"* tripped it permanently.
+
+🚨 **That permanent false positive is how the other four hid.** Five complaints, one
+known noise, so the whole list read as noise — and **four real pools (the deep Speaker's
+four tide heralds) were genuinely missing from `docs/51` for weeks.** Marker anchored to
+the start of a comment; the four given proper `god/tag` specs.
+
+**`docs/51`: 128 pools / 446 lines / 6 gods → 132 pools / 458 lines / 10 gods.**
+
+## What is left of F2
+
+⛔ **Ethan's pass on the 458 lines.** That is writing, it is his, and the register now
+lists all of it. Nothing blocks it.
+
+**578 passed / 0 failed across 16 harnesses. Live 56/56, 0 errors.**
