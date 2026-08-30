@@ -745,6 +745,52 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         '[CLAUDE-DRAFT] Everything has a price. You have not paid this one.',
       ])
     }
+
+    // ⭐⭐ TOP RIGHT, LIKE A QUEST LOG. Ethan ruled it 2026-08-30 (E2a) after holding the
+    // question open: *"Salvage speaks top-right, like a quest log."*
+    //
+    // 🔑 AND IT CHARACTERISES HER BETTER THAN THE ALTERNATIVE DID. The other four gods
+    // take the middle of your screen because they are addressing you and expect to be
+    // looked at. She sits where the game puts its BOOKKEEPING - offers, objectives, the
+    // things you get round to. That is exactly her: a standing offer in the corner of
+    // your eye that never once demands you turn your head.
+    //
+    // ⚠️ SO SHE IS THE ONE GOD YOU CAN IGNORE, and that is the design rather than a
+    // weakness of it. Blade talks down from the top, Art plants herself dead centre,
+    // Wall arrives wherever you were not looking. Salvage waits. Ignoring her costs
+    // nothing right up until it costs everything, which is the whole shape of a deal.
+    //
+    // 🔴 y IS POSITIVE HERE. TOP_RIGHT anchors at the top and y grows DOWNWARD (D-123),
+    // so this pushes DOWN and clear of the vanilla effect icons that live in that corner.
+    // A negative y would put her off the top of the screen - the sign error that cost a
+    // whole evening once already.
+    if (typeof VELDORA.voice.setStyle === 'function') {
+      VELDORA.voice.setStyle(GOD, {
+        anchor: 'TOP_RIGHT',
+        y: 30,
+
+        // ⚠️ Pulled in off the edge. At x:0 a long line runs to the screen border and
+        // the last characters sit in the bezel of the reader's attention.
+        x: -12,
+
+        // Special Elite - a struck typewriter, uneven and inky. Ethan: *"Salvage -
+        // Typed."* ⭐ It also happens to be the only font here that looks FILED, which
+        // is the joke of putting her in the quest log.
+        font: 'veldora:salvage',
+
+        // 🔑 SMALLER THAN THE OTHERS, deliberately. A quest-log entry is not a
+        // proclamation. She is the only god not competing for the middle, so she does
+        // not need the size that competition buys.
+        size: 0.9,
+
+        // She never trembles. Whatever else she is, she is composed - the offer is
+        // always calm, because it is always in her favour.
+        shake: false,
+
+        // ⛔ NO `color`. Colour is emphasis now, not identity (voice.js overlayColour,
+        // Ethan 2026-08-30). Her font and her corner say who she is.
+      })
+    }
     var n = 0, tags = 0
     for (var k in LINES) {
       if (!LINES.hasOwnProperty(k)) continue

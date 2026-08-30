@@ -228,3 +228,65 @@ everything else in C.
 4. **Then** sentence-by-sentence, which is a real engine change plus a priority model.
 5. **Then** Forge's writing pass — Ethan's, not mine.
 6. **The introduction** rides with the world reset regardless.
+
+---
+
+# ADDENDUM 2026-08-30 (evening) — the rulings that came out of first contact
+
+The fonts rendered for the first time at 13:18 (D-130 — every provider had been rejected
+since the day they were fetched, for a doubled `font/`). Three rulings followed from
+actually looking at it.
+
+## ⭐⭐ 6. COLOUR IS EMPHASIS, NOT IDENTITY — a standing rule
+
+> Ethan: *"God colors need to go away, color will only be used for emphasis now."*
+
+🔑 **The fonts are what made this possible, and that is the whole argument.** While no god
+font rendered, colour was carrying identity alone and had to. Now Cinzel, Cormorant,
+Metamorphous, Rye and Special Elite do that job — and a permanent per-god colour spends
+the loudest signal the screen has on the one thing the typeface already says.
+
+**The rule, for any new work:**
+
+* A god's ordinary line carries **no colour**. `voice.overlayColour()` returns `null`,
+  `immersive.js` omits the tag, the mod defaults.
+* A **moment** may still be coloured, and that is not an exception — it is the point.
+  Wall's flat *"I will kill you"* stays dark red because it means something *there*.
+* ⛔ **Never write `color: '#FFFFFF'`.** That is a colour decision dressed as no decision,
+  and it drifts silently the moment the default moves. Blade carried one for a few hours
+  and it was removed for exactly this reason.
+
+⚠️ **THE SCREEN ONLY.** The chat copy keeps `colourOf(god)`. Chat has no fonts, so colour
+is the only thing separating speakers in a scrolling record — removing it there is a
+different decision and has not been made. (**E2c** is now the narrower question of whether
+chat should change at all.)
+
+## ⭐ 7. A WHISPER MUST BE READABLE, AND THAT COSTS THE REFEREE SOMETHING
+
+> Ethan, from play: *"Whispers disappear way too fast and are unreadable. 1-2s"*
+
+🔴 **The flat duration was the bug, not merely a short one.** *"we were told to wait and we
+waited"* and *"stop"* both got 1.4s. Now scaled by length at ~13 characters per second,
+floored at 2.6s, and **obfuscated fragments get longer** — broken text is read twice, once
+to see it and once to work it out.
+
+⚠️ **This was not a local change.** A whisper holding 4s costs 4.5s of queue, and at the
+old tolerances every interior line and every god line landing inside one would have been
+**refused outright — dropped, not delayed**. `screen.js`'s boot invariant is what refused
+to let that ship. So `ASIDE` went 2.0 → 4.5 and `GOD` 4.0 → 5.0.
+
+🔑 **The cost is real and it is stated:** an aside may now arrive up to 4.5s after the
+moment that prompted it. Late is the right failure for an interior line — it still reads
+as your own head catching up. It would be the wrong failure for a warning, which is why
+`ANNOUNCE` did not move.
+
+## ⭐ 8. SALVAGE IS IN THE QUEST LOG — E2a ruled
+
+> *"Salvage speaks top-right, like a quest log."*
+
+⭐ It characterises her better than the middle ever would. The other four take the centre
+of your screen because they are addressing you and expect to be looked at. She sits where
+the game keeps its **bookkeeping** — offers, objectives, the things you get round to.
+
+⚠️ **She is the one god you can ignore, and that is the design.** Ignoring her costs
+nothing right up until it costs everything, which is the entire shape of a deal.

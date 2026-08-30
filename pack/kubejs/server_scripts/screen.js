@@ -56,11 +56,28 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var P = {
     WHISPER: 0.0,    // the dead muttering - only into a genuinely empty screen
     AMBIENT: 0.0,    // the place talking - same
-    ASIDE: 2.0,      // your own head; may follow closely behind one thing
-    GOD: 4.0,        // a god addressing you
+    ASIDE: 4.5,      // your own head; may follow closely behind one thing
+    GOD: 5.0,        // a god addressing you
     ANNOUNCE: 9.0,   // something is ABOUT to happen - a warning is worth a wait
     CRASHOUT: 999,   // a god announcing their own tide. Always.
   }
+
+  // ⭐⭐ WHY ASIDE AND GOD WENT UP ON 2026-08-30, because the numbers alone will not say.
+  //
+  // Ethan: *"Whispers disappear way too fast and are unreadable. 1-2s"* - so a whisper
+  // now holds up to 4.0s instead of 1.5s, because a fragment you cannot finish reading
+  // is not atmosphere, it is a glitch you learn to ignore.
+  //
+  // 🔴 THAT IS NOT A LOCAL CHANGE. A whisper holding 4.0s costs 4.5s of queue, and
+  // anything tolerating less than 4.5s is REFUSED outright while it plays - not delayed,
+  // DROPPED. At the old ASIDE=2.0 and GOD=4.0 every interior line and every god line
+  // landing inside a whisper would have been silently discarded, and the boot invariant
+  // below is precisely the thing that refuses to let that ship.
+  //
+  // ⚠️ SO THE COST IS REAL AND IT IS PAID HERE: an aside may now arrive up to 4.5s after
+  // the moment that prompted it, where before it would have been dropped. Late is the
+  // better failure for an interior line - it still reads as your own head catching up.
+  // For a WARNING it would not be, which is why ANNOUNCE did not move.
 
   // ⭐⭐ HOW LONG EACH MAY HOLD THE SCREEN, and this is the half that was missing.
   //
@@ -70,7 +87,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // itself. Priority is not only "who may speak into a busy screen", it is also "how
   // much screen may this take", and only the second one is enforceable in advance.
   var HOLD = {
-    WHISPER: 1.5,
+    // 🔴 1.5 -> 4.0 on 2026-08-30. At 1.5s the dead were unreadable (Ethan, from play),
+    // and tidewhispers.js now scales each fragment by its length and clamps to this
+    // ceiling. ⚠️ Lower it and the whispers follow silently - the referee wins, which is
+    // the correct direction for a cap.
+    WHISPER: 4.0,
     AMBIENT: 1.5,
     ASIDE: 2.5,
     GOD: 6.0,

@@ -58,7 +58,7 @@ are all real combinations.
 
 | # | decision | blocks |
 |---|---|---|
-| **E2a** | 🔴 **Where does Salvage speak?** *"the chat bar or maybe top right like a quest log?"* | her placement (held to last by his instruction anyway) |
+| ~~**E2a**~~ | ✅ **RULED 2026-08-30 — TOP RIGHT, LIKE A QUEST LOG.** *"Salvage speaks top-right, like a quest log."* ⭐ It characterises her better than the middle would: the other four take the centre because they expect to be looked at, and she sits where the game puts its BOOKKEEPING. She is the one god you can ignore — which is the whole shape of a deal | — |
 | ~~**E2b**~~ | ✅ **RULED 2026-08-30 — SPLIT BY AUDIENCE.** Pathed hear **their own god**; pathless hear **Caebrim**. Not a compromise: your god warning you is the relationship working, and Caebrim reaching the pathless is already her job. ⭐ It also buys a real beat free — the first tide after taking a path, the announcement **changes voice**, and the reverse when a path is lost. Drama still scales with wave difficulty, independent of who speaks | — |
 | **E2c** | ⚠️ Should chat go white for Blade too, or stay `§4§l`? Chat is a scrolling record where colour separates speakers | cosmetic, not blocking |
 
@@ -186,7 +186,7 @@ am not in it.
 | **Art** | dead centre, `wave`, never shakes | `veldora:art` (Cormorant Garamond) | ✅ **done** |
 | **Wall** | scattered, **still** | `veldora:wall` (Metamorphous) | ✅ **done** |
 | **Forge** | scattered + shake, fast beat | `veldora:forge` (Rye) | ✅ **done** |
-| **Salvage** | ⛔ blocked on **E2a** | `veldora:salvage` (Special Elite) | ⛔ **held last** — Ethan: *"creatively she's in the worst state"* |
+| **Salvage** | TOP_RIGHT, y +30, x −12 | `veldora:salvage` (Special Elite) | ✅ **placed 2026-08-30** — the writing is still his (E4) |
 
 ⚠️ **Placement is structure; the words are his.** I set where and how a god speaks and
 never what it says.
@@ -287,11 +287,29 @@ treat it as a floor and let the real extractor produce the true number — the f
 already undercounted by 176 because it only matched bare array entries and missed every
 `pitch: "..."` field.
 
-## C3 · Player action pass
+## C3 · Player action pass — ✅ **SCOPED 2026-08-30**
 
-The interior surface (`voice.aside`) exists and covers whispers, the stalker and the
-pathless interior. ⚠️ **Scope not yet agreed** — "player action" needs a sentence from
-Ethan about what it covers before I guess at it.
+> Ethan: *"Action pass is things like 'You hold your breath' which are your character
+> reacting to the world. Simply put, this is the player as the character is a person too."*
+
+⭐ **This is the one voice in the game that is not a god.** Everything built so far is
+somebody talking AT you — a god, the dead, a deep speaker. This is you, having a body and
+a nervous system, in second person.
+
+🔑 **The surface already exists and is the right one.** `voice.aside()` — ASIDE priority,
+no god, no colour, no chime, no silencing rule, grey and italic. It was built for exactly
+this register and currently carries the stalker and the pathless interior.
+
+⚠️ **The design risk is that it becomes narration.** *"You hold your breath"* works
+because it reports a body doing something involuntary. *"You feel a sense of dread"* is a
+writer telling the player how to feel, and it is the same sentence shape. The line to hold:
+**report the body, never assign the emotion.** The player supplies the meaning.
+
+⚠️ **And it must be rare.** A character who reacts to everything reacts to nothing — this
+is the one surface with no natural rate limit, since the world is always doing something.
+
+What it hangs off is mine to work out (low light, deep water, a mob behind you, the first
+night, being hurt badly, a tide starting). The writing is his.
 
 ## C4 · Controls pass
 
@@ -307,8 +325,10 @@ default keys.
 Everything here must be true before C2 generates. `python tools/reset_preflight.py` is the
 gate and exits non-zero until it is — **an UNKNOWN counts as a failure**.
 
-* 🔴 **D-112** — `tectonic.json` is `-64` in the repo and `-128` live. Land it with
-  `config_sync.py --push-pending tectonic.json`. **Ethan's call**, it is a live config change.
+* ~~**D-112**~~ ✅ **LANDED 2026-08-30** — Ethan: *"Push 64 to live."* `tectonic min_y` now reads
+  `instance and repo agree at -64`, and the file is out of `config_sync.PENDING` (a landed
+  decision left in that list blocks every future `--pull`). ⚠️ Worldgen applies to NEW
+  generation only — this is a fact about the world C2 creates, not the current one.
 * ⚠️ **C4 removals** — `the-knocker` and `grim-and-bleak`, in **five** places at once
   (`pack/mods`, `index.toml`, the index hash, `resolved.json`, and `modlist.json`'s
   **`pins.versions`** — the one that gets missed). A partial removal is worse than none.

@@ -808,15 +808,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         anchor: 'TOP_CENTER',
         y: 40,
 
-        // ⭐ WHITE, NOT RED. Ethan, 2026-08-30. The pack's one delivery channel was
-        // bold dark red for everybody because Blade was the only god with a voice for
-        // months; now that placement and font carry the identity, the colour does not
-        // have to, and the straight man reads plainest.
+        // ⛔ NO `color`, AND IT IS NOW THE RULE RATHER THAN HIS EXCEPTION.
         //
-        // ⚠️ THIS IS THE SCREEN ONLY. The chat copy keeps colourOf(GOD), because chat
-        // is a scrolling record where colour is how you tell speakers apart. Changing
-        // that is a separate decision and has not been made.
-        color: '#FFFFFF',
+        // He went white alone earlier on 2026-08-30 - the first god whose colour stopped
+        // carrying identity once placement and font could do it. Later the same day
+        // Ethan generalised it: *"God colors need to go away, color will only be used
+        // for emphasis now."*
+        //
+        // 🔑 So the decision moved to voice.js `overlayColour`, which returns null and
+        // lets the mod default. An explicit #FFFFFF here would be Blade opting IN to a
+        // colour that happens to equal the default - a special case that only looks like
+        // agreement, and drifts silently the moment the default moves.
+        //
+        // ⚠️ THE SCREEN ONLY, still. The chat copy keeps colourOf(GOD): chat has no
+        // fonts, so colour is the only thing separating speakers in a scrolling record.
 
         // ⭐ A REAL FONT, AND NO CAXTON NEEDED. `font(String)` goes straight to vanilla
         // Style.withFont(ResourceLocation), so ANY font resource works.

@@ -327,6 +327,37 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return null
   }
 
+  // ══════════════════════════════════════════════════════════════════════════
+  // ⭐⭐ COLOUR IS EMPHASIS NOW, NOT IDENTITY.
+  //
+  // Ethan, 2026-08-30, on first seeing the fonts actually render:
+  //     "God colors need to go away, color will only be used for emphasis now."
+  //
+  // 🔑 THE FONTS ARE WHAT CHANGED. No god font had ever rendered until 13:18 that day
+  // (D-130 - every provider was rejected for a doubled `font/`), so a standing colour
+  // was carrying identity by itself. Now Cinzel, Cormorant, Metamorphous and Rye do
+  // that, and a permanent per-god colour spends the loudest signal on the one thing the
+  // typeface already says.
+  //
+  // ⚠️ NULL MEANS "LET THE MOD PICK", NOT WHITE-BY-HARDCODE. immersive.js omits the tag
+  // entirely when there is no colour, and the mod's own default is white. Writing
+  // #FFFFFF here would be a colour decision wearing the costume of no decision.
+  //
+  // ⭐ EMPHASIS STILL GETS THROUGH, and that is the whole point of the rule rather than
+  // an exception to it - a per-CALL `color` still wins, so a moment that means something
+  // can still be coloured. The crashout's flat line is dark red for exactly that reason.
+  // What is gone is colour that is true of a god permanently, which says nothing.
+  //
+  // 🔴 THE SCREEN ONLY. The chat copy keeps colourOf(god): chat has no fonts, so colour
+  // is the only thing separating speakers in a scrolling record. That distinction was
+  // already drawn in blade_voice.js when he went white alone, and this ruling extends
+  // the screen half of it to everyone - it does not reach chat.
+  function overlayColour(god, st, o) {
+    if (st && st.color) return st.color        // a god may still ask, deliberately
+    if (o && o.color) return o.color           // a moment may still ask, deliberately
+    return null
+  }
+
   function scatterOf(st) {
     if (!st.scatter) return null
     var sp = st.scatter
@@ -432,7 +463,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // ⭐ colourOf() is already the one place that knows what colour a god is - the
         // registry that exists because every file used to hardcode Blade's red. Reading
         // it here is the same fix as setColour() was, applied to the second surface.
-        color: st.color || hexOfGod(god),
+        color: overlayColour(god, st, o),
         // ⭐ The mod obfuscates properly, so a garbled speaker does not need §k woven in
         // by hand for THIS surface. garble.js still owns the chat copy.
         obfuscate: GARBLED[god] ? 'RANDOM' : null,
@@ -534,7 +565,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           size: (typeof st.size === 'number' ? st.size : 1) + 0.55,
           shake: true,
           font: st.font,
-          color: st.color || hexOfGod(god),
+          color: overlayColour(god, st, opts),
           typewriter: TYPEWRITER,
           seconds: Math.max(1.6, beatFor(parts[i], st) / 20),
           priority: 'CRASHOUT',
@@ -603,7 +634,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // ── movement 1 ────────────────────────────────────────────────────────
       var held = 0, first = false
       for (var i = 0; i < lines.length; i++) {
-        var txt = String(lines[i])
+        // ⚠️ STRIPPED, like crashout() does. The overlay has no § parser, so a line
+        // written with a colour code for the chat copy would render "§4" as two visible
+        // characters. Missing this in the first version made the two paths disagree
+        // about the same pool.
+        var txt = String(VELDORA.garble ? VELDORA.garble.strip(lines[i]) : lines[i])
         var secs = Math.max(0.9, beatFor(txt, st) / 20)
         var sc = scatterOf(st) || { x: 0, y: 0 }
         var okd = VELDORA.im.show(player, txt, {
@@ -617,7 +652,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           size: (typeof st.size === 'number' ? st.size : 1) + 0.2,
           shake: true,
           font: st.font,
-          color: st.color || hexOfGod(god),
+          color: overlayColour(god, st, opts),
           typewriter: TYPEWRITER,
           seconds: secs,
           priority: 'CRASHOUT',

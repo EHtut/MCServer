@@ -54,8 +54,15 @@ ICFG = os.path.join(r"C:\MCServer\instance", "config")
 # 🔴 Files where the REPO deliberately holds a decision the instance has not received.
 # These are never pulled over. Empty is the healthy state.
 PENDING = {
-    "tectonic.json": "gameplan §0.2 — min_y back to -64 (repo) vs -128 (live). "
-                     "Must land BEFORE C2 generates, or the reset bakes in -128 (D-112).",
+    # ✅ tectonic.json LANDED 2026-08-30 — Ethan: *"Push 64 to live."* min_y is -64 in
+    # both now, which closes D-112.
+    #
+    # ⚠️ Worldgen values apply to NEW generation only, so this is a fact about the world
+    # C2 will create; the CURRENT world keeps the -128 it was generated with.
+    #
+    # 🔑 Deleted from the list rather than left here with a "done" note. A landed
+    # decision kept in PENDING blocks every future --pull forever, and a comment saying
+    # "this one is finished" is exactly how that happens.
 }
 
 

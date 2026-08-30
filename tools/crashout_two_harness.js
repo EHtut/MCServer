@@ -182,6 +182,37 @@ t('the flat line is dark red, held, and never garbled', () => {
   assert(flat.color !== own, 'the flat line must break from her own colour')
 })
 
+t('the panic carries NO colour - identity is the font now', () => {
+  // ⭐ Ethan 2026-08-30: "God colors need to go away, color will only be used for
+  // emphasis now." A god's ordinary lines get null, which immersive.js turns into no
+  // colour tag at all and the mod defaults.
+  const e = realRun(true)
+  const panic = e.sent.filter(s => !(s.x === 0 && s.y === 0))
+  assert(panic.every(s => !s.color), 'panic lines must be uncoloured, got ' +
+    JSON.stringify(panic.map(s => s.color)))
+  // 🔑 THE CONTROL: the rule is "no IDENTITY colour", not "no colour". The flat line is
+  // still red, and if this assertion ever passes for it too, the rule has been
+  // over-applied and the emphasis is gone with it.
+  const flat = e.sent.filter(s => s.x === 0 && s.y === 0)[0]
+  assert(flat.color === '#AA0000', 'emphasis must survive the rule, got ' + flat.color)
+})
+
+t('a god may still ask for a colour deliberately', () => {
+  // ⚠️ overlayColour returns null by DEFAULT, not always. A style that sets one wins -
+  // otherwise the rule would be a hardcode wearing the costume of a default.
+  const env = build()
+  load(env, 'screen.js')
+  spyReserve(env)
+  load(env, 'voice.js')
+  env.ctx.VELDORA.voice.setStyle('wall', { anchor: 'CENTER_CENTER', color: '#123456' })
+  env.ctx.VELDORA.voice.registerLines('wall', 'crashout', ['One.', 'Two.', 'Three.'])
+  env.ctx.VELDORA.voice.registerLines('wall', 'crashout_flat', ['Flat.'])
+  env.ctx.VELDORA.voice.crashoutFor(env.player, 'wall')
+  const panic = env.sent.filter(s => !(s.x === 0 && s.y === 0))
+  assert(panic.every(s => s.color === '#123456'),
+    'an explicit style colour must win, got ' + JSON.stringify(panic.map(s => s.color)))
+})
+
 t('the silence is RESERVED, not merely waited out', () => {
   const e = realRun(true)
   assert(e.reserved.length === 1, 'expected exactly one reservation, got ' + e.reserved.length)

@@ -134,6 +134,25 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { return null }
   }
 
+  // ⭐ HOW LONG A FRAGMENT STAYS UP. Reading speed, not a vibe: ~13 characters a second
+  // is a slow, unhurried read, which is the register these are in - you are not meant to
+  // be scanning them.
+  //
+  // ⚠️ CAPPED at HOLD.WHISPER in screen.js (4.0s). The dead may be readable; they may
+  // not own the screen. If that cap is lowered, this silently follows it, which is the
+  // right direction - the referee wins.
+  var WHISPER_FLOOR = 2.6
+  var WHISPER_CEIL = 4.0
+  var CHARS_PER_SEC = 13
+
+  function whisperSeconds(text, band) {
+    var n = String(text || '').length
+    var s = n / CHARS_PER_SEC
+    // Broken text is read twice: once to see it, once to work it out.
+    if (band && band[3] > 0) s *= (1 + band[3] * 0.5)
+    return Math.max(WHISPER_FLOOR, Math.min(WHISPER_CEIL, s))
+  }
+
   function speak(p, band) {
     var text = fragment(p, band)
     if (!text) return false                 // nothing written for this band: say nothing
@@ -150,7 +169,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // ⚠️ Presence-only in the mod: the KEY existing switches it on. So brokenness
         // is a per-fragment coin flip, not a value that gets passed through.
         obfuscate: (Math.random() < band[3]) ? 'RANDOM' : null,
-        seconds: 1.4,
+
+        // 🔴 WAS A FLAT 1.4s. Ethan, 2026-08-30: *"Whispers disappear way too fast and
+        // are unreadable. 1-2s"* - and a fragment you cannot finish reading is not
+        // atmosphere, it is a rendering glitch you learn to ignore.
+        //
+        // ⚠️ A FLAT DURATION WAS THE BUG, not just a short one. "we were told to wait
+        // and we waited" and "stop" had the same 1.4s, so the long ones were unreadable
+        // while the short ones sat there. Scaled by length, with a floor that covers the
+        // shortest fragment being noticed at all.
+        //
+        // 🔑 AND BROKEN TEXT NEEDS LONGER, NOT THE SAME. An obfuscated fragment has to
+        // be read THROUGH the noise, so it gets a second pass worth of time - the
+        // brokenness is the point, and it costs reading speed by design.
+        seconds: whisperSeconds(text, band),
         italic: true,
         color: '#6E6E6E',
         // 🚨 The dead never outrank a god, and never delay a warning. screen.js grants
