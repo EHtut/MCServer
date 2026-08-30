@@ -513,6 +513,24 @@ grp('* PER-GOD SPEAKING STYLE - 2026-08-30')
 
   // Ethan: "All dialogue should be typed."
   ok('typing is ON now that the speed was measured', /var TYPEWRITER = true/.test(vo3), true)
+
+  // Ethan: "how possible is it to just change his dialogue to white and then give him font?"
+  ok('blade is white on screen', /color: '#FFFFFF'/.test(bl), true)
+  ok('...and carries a font', /font: 'minecraft:uniform'/.test(bl), true)
+  // The five fonts the MOD ships need the caxton mod, which is installed NOWHERE in this
+  // pack - naming one would silently render as vanilla default and look like nothing
+  // happened. font(String) goes to vanilla Style.withFont, so a resource-pack font needs
+  // no caxton at all.
+  ok('...and NOT one of the caxton-gated bundled fonts',
+    /font: '(kalam|roboto|minecrafter|norse|anton)'/.test(bl), false)
+
+  // The colour must come from the REGISTRY, not from sniffing the text: garble.strip()
+  // removes every section code before im.show() can see one, so the sniffer never fired
+  // through this path and on-screen god dialogue rendered colourless.
+  ok('a god with no declared colour is coloured from the REGISTRY',
+    /color: st\.color \|\| hexOfGod\(god\)/.test(vo3), true)
+  ok('...and the code->hex table has ONE home, in immersive.js',
+    /VELDORA\.im\.hexFor\(colourOf\(god\)\)/.test(vo3), true)
 }
 
 process.exit(fail ? 1 : 0)

@@ -314,7 +314,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     obfuscateModes: OBFUSCATE,
     stats: function () { return { sent: sent, failed: failed, lastError: lastError } },
     _probe: probe,
-    _buildTag: buildTag
+    _buildTag: buildTag,
+    // ⭐ Published so voice.js can turn a god's registered § colour into a real hex one
+    // without a second copy of this table. One place that knows.
+    hexFor: function (code) {
+      var m = String(code || '').match(/§([0-9a-fA-F])/)
+      return m ? (CODE_HEX[String(m[1]).toLowerCase()] || null) : null
+    }
   }
 
   ServerEvents.loaded(function () {

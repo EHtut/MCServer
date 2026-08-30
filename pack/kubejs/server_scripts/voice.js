@@ -316,6 +316,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   // A scattered god gets a fresh position per line. Wall is "whispering into your
   // skull" and Forge rambles - neither should sit still.
+  // A god's registered § colour as a real hex value, for the overlay. Falls back to
+  // null - which means "let the mod pick" - rather than to a guess.
+  function hexOfGod(god) {
+    try {
+      if (VELDORA.im && typeof VELDORA.im.hexFor === 'function') {
+        return VELDORA.im.hexFor(colourOf(god))
+      }
+    } catch (e) { }
+    return null
+  }
+
   function scatterOf(st) {
     if (!st.scatter) return null
     var sp = st.scatter
@@ -377,22 +388,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         anchor: st.anchor || 'BOTTOM_CENTER',
         y: (sc ? (st.y || 0) + sc.y : st.y),
         x: (sc ? sc.x : st.x),
-        // 🔴 TYPEWRITER IS OFF, AND IT IS NOT A CHOICE - IT IS THE MOD'S SPEED.
-        // Ethan asked for typing on 2026-08-30 and this shipped with it on. Every god
-        // line then rendered nothing at all, and the reason is in tickTypewriter:
+        // ⭐ TYPING IS ON, AND THE SPEED WAS MEASURED. `/gd type` on 2026-08-30
+        // showed a character costs a TICK, not a second - Ethan: "yes both tests works".
         //
-        //     typewriterTicks += delta
-        //     if (typewriterTicks > typewriterTimes * (1.0 / typewriterSpeed)) reveal++
-        //
-        // so one character per `1.0 / speed` - and the COMMAND hardcodes
-        // typewriter(1.0f, false). The speed is not reachable from this route at all.
-        // At one character per unit, "You are marked." needs 15 of them and the message
-        // is gone long before anything readable appears.
-        //
-        // ⚠️ WORKING DIALOGUE BEATS THE EFFECT. It is off until `/gd type` measures
-        // what that unit actually is; if it is ticks the effect is free and this flips
-        // straight back, if it is seconds then typing needs the Java API rather than
-        // the command and that is a bigger piece of work.
+        // ⚠️ The speed itself is NOT reachable from this route: the command hardcodes
+        // typewriter(1.0f, false), and tickTypewriter reveals one character per
+        // `1.0 / typewriterSpeed`. It happens to be usable at the hardcoded value. If a
+        // slower, deliberate crawl is ever wanted - Wall's flat line in docs/75 asks for
+        // exactly that - it needs the Java API, not this command.
         typewriter: TYPEWRITER,
         seconds: o.seconds,
         shake: !!(o.shake || st.shake),
@@ -400,6 +403,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         background: !!o.background,
         size: (typeof st.size === 'number') ? st.size : o.size,
         font: st.font,
+        // 🔴 THE COLOUR COMES FROM THE REGISTRY, NOT FROM THE TEXT. im.show() sniffs a
+        // leading § code, but garble.strip() runs FIRST and removes every code - so the
+        // sniffer never saw one through this path and on-screen god dialogue has been
+        // rendering colourless since the overlay was added. Nobody noticed because it
+        // was not rendering at all (D-123).
+        //
+        // ⭐ colourOf() is already the one place that knows what colour a god is - the
+        // registry that exists because every file used to hardcode Blade's red. Reading
+        // it here is the same fix as setColour() was, applied to the second surface.
+        color: st.color || hexOfGod(god),
         // ⭐ The mod obfuscates properly, so a garbled speaker does not need §k woven in
         // by hand for THIS surface. garble.js still owns the chat copy.
         obfuscate: GARBLED[god] ? 'RANDOM' : null,

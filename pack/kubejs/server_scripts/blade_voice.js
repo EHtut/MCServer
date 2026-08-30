@@ -788,6 +788,30 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       VELDORA.voice.setStyle(GOD, {
         anchor: 'TOP_CENTER',
         y: 40,
+
+        // ⭐ WHITE, NOT RED. Ethan, 2026-08-30. The pack's one delivery channel was
+        // bold dark red for everybody because Blade was the only god with a voice for
+        // months; now that placement and font carry the identity, the colour does not
+        // have to, and the straight man reads plainest.
+        //
+        // ⚠️ THIS IS THE SCREEN ONLY. The chat copy keeps colourOf(GOD), because chat
+        // is a scrolling record where colour is how you tell speakers apart. Changing
+        // that is a separate decision and has not been made.
+        color: '#FFFFFF',
+
+        // ⭐ A REAL FONT, AND NO CAXTON NEEDED. `font(String)` goes straight to vanilla
+        // Style.withFont(ResourceLocation), so ANY font resource works.
+        //
+        // ⛔ The five fonts the MOD ships - kalam, roboto, minecrafter, norse, anton -
+        // are a different path: ImmersiveFont.getLocation() checks isModLoaded("caxton")
+        // and returns minecraft:font/default when it is absent. Caxton is not installed
+        // anywhere in this pack, so naming one of those would silently render as vanilla
+        // and look like nothing happened.
+        //
+        // ⚠️ minecraft:uniform is a PLACEHOLDER - flat, even-width, visibly not
+        // Minecraft's chunky default, and free. A Veldora-owned font is the real answer
+        // and needs a resource pack this server does not have yet.
+        font: 'minecraft:uniform',
       })
     }
 
