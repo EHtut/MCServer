@@ -136,7 +136,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
             try {
               var ps = audience(server)
               for (var k = 0; k < ps.length; k++) {
-                try { ps[k].tell(Text.of(colourOf(row.god) + row.text)) } catch (e) { }
+                // ⛔ CHAT COPY OFF (2026-08-30) - see voice.js CHAT_COPY. The overlay
+                // carries every god now, with their own place and font.
+                if (VELDORA.voice && VELDORA.voice.CHAT_COPY) {
+                  try { ps[k].tell(Text.of(colourOf(row.god) + row.text)) } catch (e) { }
+                }
                 // ⭐ THE GODS ON SCREEN WHILE THEY BICKER. Ethan, 2026-08-30:
                 // *"during god bickering, the gods you aren't aligned to should be
                 // garbled."*
@@ -241,7 +245,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
               var ps = audience(server)
               for (var k = 0; k < ps.length; k++) {
                 for (var c = 0; c < turn.chunks.length; c++) {
-                  try { ps[k].tell(Text.of(colourOf(turn.god) + turn.chunks[c])) } catch (e) { }
+                  if (VELDORA.voice && VELDORA.voice.CHAT_COPY) {
+                    try { ps[k].tell(Text.of(colourOf(turn.god) + turn.chunks[c])) } catch (e) { }
+                  }
                 }
                 try {
                   // ⭐ Same garbling rule as `exchange`: readable to that god's own

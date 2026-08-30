@@ -117,6 +117,21 @@ function setupGod(env, withFlat) {
 }
 
 // ── cases ────────────────────────────────────────────────────────────────────
+
+// 🔴 THE MOVEMENTS ARE IDENTIFIED BY ORDER, NOT BY POSITION.
+//
+// These used to find the flat line with `x === 0 && y === 0` — which broke the moment
+// the crashout was lifted off the crosshair, and broke SILENTLY into "0 centred lines"
+// rather than into anything that named the real change. A test that identifies its
+// subject by a coordinate is a test that fails whenever the coordinate is tuned.
+//
+// The flat line is always the LAST thing sent, because it is scheduled after the panic.
+// That is structural and survives any amount of repositioning.
+function movements(env) {
+  const n = env.sent.length
+  return { panic: env.sent.slice(0, n - 1), flat: env.sent[n - 1] }
+}
+
 const CASES = []
 const t = (name, fn) => CASES.push([name, fn])
 
@@ -134,17 +149,20 @@ t('a crashout_flat pool routes to TWO movements', () => {
   const two = realRun(true)
   const one = realRun(false)
   // Movement 2 is the extra send, and it is the CENTRED one.
-  const centred = (e) => e.sent.filter(s => s.x === 0 && s.y === 0)
-  assert(centred(two).length === 1, 'two-movement must emit exactly one centred line, got ' +
-    centred(two).length)
-  assert(centred(one).length === 0, 'the one-movement version must emit NO centred line')
-  // 🔑 MUTATION: the routing must be decided by the pool, so removing it must change it.
+  // ⚠️ Identified by the FLAT LINE's colour, not by a line count: the one-movement path
+  // sends a single line and the two-movement path sends a panic plus the flat, so the
+  // counts differ by more than one and a count comparison says nothing useful.
+  assert(movements(two).flat.color === '#AA0000',
+    'the two-movement run must end on the dark-red flat line')
+  assert(one.sent.every(s => s.color !== '#AA0000'),
+    'the one-movement run must produce NO flat line')
+  // 🔑 MUTATION: the routing is decided by the pool, so removing it must change it.
   assert(two.sent.length > one.sent.length, 'the two-movement run must send more')
 })
 
 t('movement 1 alternates clean and garbled', () => {
   const e = realRun(true)
-  const panic = e.sent.filter(s => !(s.x === 0 && s.y === 0))
+  const panic = movements(e).panic
   assert(panic.length === 3, 'expected 3 panic lines, got ' + panic.length)
   const flags = panic.map(s => !!s.obfuscate)
   assert(flags[0] === false && flags[1] === true && flags[2] === false,
@@ -156,7 +174,7 @@ t('movement 1 alternates clean and garbled', () => {
 
 t('movement 1 shakes even though Wall never shakes', () => {
   const e = realRun(true)
-  const panic = e.sent.filter(s => !(s.x === 0 && s.y === 0))
+  const panic = movements(e).panic
   assert(panic.every(s => s.shake === true), 'every panic line must shake')
   // The control: her configured style says otherwise, so this cannot be a default.
   assert(e.ctx.VELDORA.voice.styleOf('wall').shake === false,
@@ -165,15 +183,15 @@ t('movement 1 shakes even though Wall never shakes', () => {
 
 t('movement 1 is scattered, movement 2 is not', () => {
   const e = realRun(true)
-  const panic = e.sent.filter(s => !(s.x === 0 && s.y === 0))
-  assert(panic.some(s => s.x !== 0 || s.y !== 0), 'panic must scatter')
-  const flat = e.sent.filter(s => s.x === 0 && s.y === 0)[0]
-  assert(flat.anchor === 'CENTER_CENTER', 'the flat line must be dead centre')
+  const { panic, flat } = movements(e)
+  assert(panic.some(s => s.x !== 0), 'panic must scatter horizontally')
+  assert(flat.anchor === 'CENTER_CENTER' && flat.x === 0,
+    'the flat line must be horizontally centred and not scattered')
 })
 
 t('the flat line is dark red, held, and never garbled', () => {
   const e = realRun(true)
-  const flat = e.sent.filter(s => s.x === 0 && s.y === 0)[0]
+  const flat = movements(e).flat
   assert(flat.color === '#AA0000', 'flat line colour was ' + flat.color)
   assert(!flat.obfuscate, 'the flat line must never be garbled - it is the one she means')
   assert(flat.seconds >= 5, 'the flat line must be HELD, got ' + flat.seconds + 's')
@@ -187,14 +205,14 @@ t('the panic carries NO colour - identity is the font now', () => {
   // emphasis now." A god's ordinary lines get null, which immersive.js turns into no
   // colour tag at all and the mod defaults.
   const e = realRun(true)
-  const panic = e.sent.filter(s => !(s.x === 0 && s.y === 0))
+  const panic = movements(e).panic
   assert(panic.every(s => !s.color), 'panic lines must be uncoloured, got ' +
     JSON.stringify(panic.map(s => s.color)))
   // 🔑 THE CONTROL: the rule is "no IDENTITY colour", not "no colour". The flat line is
   // still red, and if this assertion ever passes for it too, the rule has been
   // over-applied and the emphasis is gone with it.
-  const flat = e.sent.filter(s => s.x === 0 && s.y === 0)[0]
-  assert(flat.color === '#AA0000', 'emphasis must survive the rule, got ' + flat.color)
+  assert(movements(e).flat.color === '#AA0000',
+    'emphasis must survive the rule, got ' + movements(e).flat.color)
 })
 
 t('a god may still ask for a colour deliberately', () => {
@@ -208,7 +226,7 @@ t('a god may still ask for a colour deliberately', () => {
   env.ctx.VELDORA.voice.registerLines('wall', 'crashout', ['One.', 'Two.', 'Three.'])
   env.ctx.VELDORA.voice.registerLines('wall', 'crashout_flat', ['Flat.'])
   env.ctx.VELDORA.voice.crashoutFor(env.player, 'wall')
-  const panic = env.sent.filter(s => !(s.x === 0 && s.y === 0))
+  const panic = movements(env).panic
   assert(panic.every(s => s.color === '#123456'),
     'an explicit style colour must win, got ' + JSON.stringify(panic.map(s => s.color)))
 })
@@ -226,39 +244,55 @@ function beatOf(text, style) {
   return env.ctx.VELDORA.voice.beatFor(text, env.ctx.VELDORA.voice.styleOf('t'))
 }
 
-t('🔴 a line is ALWAYS given at least its typing time', () => {
+function typewriterOn() {
+  const env = build()
+  load(env, 'screen.js')
+  load(env, 'voice.js')
+  // ⚠️ Read it rather than assume it - this suite has to be correct on both sides of
+  // that switch, because the switch is the thing most likely to be flipped back.
+  return env.ctx.VELDORA.voice.beatFor('xxxxxxxxxx', {}) > 10 + 40
+}
+
+t('🔴 a line is ALWAYS given at least its typing time (when typing is on)', () => {
+  if (!typewriterOn()) {
+    // Typing is OFF (it runs at ~1 char/SECOND from this route and is unusable), so
+    // there is no typing time to cover. The duration must still scale with length.
+    const a = beatOf('x'.repeat(20)), b = beatOf('x'.repeat(120))
+    assert(b > a, 'with typing off, a longer line must still hold longer')
+    return
+  }
   for (const n of [10, 40, 72, 95, 110, 161, 240]) {
-    const text = 'x'.repeat(n)
-    const t2 = beatOf(text)
+    const t2 = beatOf('x'.repeat(n))
     assert(t2 > n, n + ' chars types for ' + n + ' ticks but was given ' + t2 +
       ' - it would fade mid-word')
   }
 })
 
-t('...and reading time ON TOP of typing, not instead of it', () => {
-  // The old formula gave a 110-char line exactly 110 ticks: zero time to read it
-  // after it finished appearing.
-  const n = 110
-  const t2 = beatOf('x'.repeat(n))
-  assert(t2 - n >= 40, 'only ' + (t2 - n) + ' ticks to read a ' + n + '-char line ' +
-    'after it finishes typing')
+t('a line is never given less than a readable floor', () => {
+  // 🔑 The floor is what stops a one-word line vanishing, and it holds whether or not
+  // typing is on.
+  for (const n of [1, 5, 12]) {
+    assert(beatOf('x'.repeat(n)) >= 30,
+      'a ' + n + '-char line got ' + beatOf('x'.repeat(n)) + ' ticks')
+  }
 })
 
 t('🚨 beatScale can never truncate a line', () => {
-  // Forge is 0.6. A pace dial that scales the TYPING half guarantees a cut-off, which
-  // is what the old formula did to her specifically.
   const n = 161
   const text = 'x'.repeat(n)
   const fast = beatOf(text, { anchor: 'CENTER_CENTER', beatScale: 0.6 })
   const norm = beatOf(text, { anchor: 'CENTER_CENTER' })
-  assert(fast > n, 'a fast god must still finish typing: ' + fast + ' vs ' + n + ' ticks')
+  if (typewriterOn()) {
+    assert(fast > n, 'a fast god must still finish typing: ' + fast + ' vs ' + n)
+  }
+  assert(fast >= 30, 'a pace dial must never take a line below the readable floor')
   assert(fast < norm, 'but beatScale must still make her faster overall')
 })
 
 t('longer lines get longer, without a ceiling that clips them', () => {
   const a = beatOf('x'.repeat(60)), b = beatOf('x'.repeat(160))
   assert(b > a, 'a longer line must hold longer')
-  assert(b - a >= 100, 'and by roughly its extra typing cost, got ' + (b - a) + ' ticks')
+  assert(b - a >= 30, 'and meaningfully, got ' + (b - a) + ' ticks')
 })
 
 t('every god got BIGGER, and the relative sizes survived', () => {
@@ -274,6 +308,47 @@ t('every god got BIGGER, and the relative sizes survived', () => {
   // the thing that must survive a global change.
   assert(V.sized(1.25) > V.sized(0.9), 'Art must still be bigger than Forge')
   assert(V.sized(1.25) / V.sized(0.9) - 1.25 / 0.9 < 0.01, 'the ratio must be preserved')
+})
+
+t('🔴 nothing lands on the crosshair', () => {
+  // Ethan, from play: "We cannot have any text be on the cross hair, or across the
+  // cross hair, that is unreadable." A CENTER_CENTER anchor with a scatter box centred
+  // on the origin does not merely sometimes clip it - it is centred ON it.
+  const env = build()
+  load(env, 'screen.js')
+  load(env, 'voice.js')
+  const V = env.ctx.VELDORA.voice
+  const band = V.CROSSHAIR_BAND
+  assert(band > 0, 'there must be a dead band at all')
+  for (let i = 0; i < 400; i++) {
+    const y = V.dodgeCrosshair(Math.round((Math.random() * 2 - 1) * 70), 70)
+    assert(Math.abs(y) >= band, 'a line landed at y=' + y + ', inside the ±' + band + ' band')
+  }
+  // 🔑 THE CONTROL: it must still scatter BOTH ways. Pushing everything to one side
+  // would pass the assertion above and destroy the "never the same place twice" design.
+  let up = 0, down = 0
+  for (let i = 0; i < 400; i++) {
+    const y = V.dodgeCrosshair(Math.round((Math.random() * 2 - 1) * 70), 70)
+    if (y < 0) up++; else down++
+  }
+  assert(up > 40 && down > 40, 'must still land above AND below: ' + up + ' up, ' + down + ' down')
+})
+
+t('the crashout flat line is off the crosshair too', () => {
+  const e = realRun(true)
+  const flat = movements(e).flat
+  assert(flat && flat.x === 0, 'the flat line should be horizontally centred')
+  const band = e.ctx.VELDORA.voice.CROSSHAIR_BAND
+  assert(Math.abs(flat.y) >= band,
+    'the loudest line in the game must not sit on the crosshair, got y=' + flat.y)
+})
+
+t('the chat copy is off', () => {
+  const env = build()
+  load(env, 'screen.js')
+  load(env, 'voice.js')
+  assert(env.ctx.VELDORA.voice.CHAT_COPY === false,
+    'Ethan: "We still have text in the chat bar. That should be gone by now."')
 })
 
 t('the silence is RESERVED, not merely waited out', () => {
@@ -295,7 +370,7 @@ t('the silence is RESERVED, not merely waited out', () => {
 t('movement 2 is scheduled after the panic AND the silence', () => {
   const e = realRun(true)
   assert(e.scheduled.length === 1, 'expected one scheduled callback, got ' + e.scheduled.length)
-  const panic = e.sent.filter(s => !(s.x === 0 && s.y === 0))
+  const panic = movements(e).panic
   const held = panic.reduce((a, s) => a + s.seconds + 0.5, 0)
   const silence = e.ctx.VELDORA.voice.SILENCE_SECONDS
   const want = Math.round((held + silence) * 20)

@@ -403,6 +403,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       style: {
         anchor: 'CENTER_CENTER',
 
+        // 🔴 SHE HAD NO OFFSET AND SAT ON THE CROSSHAIR. Ethan, from play 2026-08-30:
+        // "We cannot have any text be on the cross hair... that is unreadable."
+        //
+        // ⚠️ "Dead centre" was the brief and it is still the effect - she is ABOVE the
+        // crosshair rather than beside it, so she still blocks your view and still
+        // cannot be looked past. y grows DOWNWARD, so negative lifts her (D-123).
+        y: -70,
+
         // ⭐ THE DANCING IS THE WAVE, NOT THE FONT. Ethan asked for *"Elegant, almost
         // dancing across your screen"*, and those are two different jobs: Cormorant
         // Garamond is a high-contrast old-style face that is elegant and STILL, and the

@@ -82,7 +82,12 @@ t('⭐ the tide announcement is CENTRED and does not scatter', () => {
   assert(e.ctx.VELDORA.caebrim.tide(e.player, 'start') === true, 'should announce')
   const s = e.sent[0]
   assert(!s.o.scatter, 'the one thing she says that must not be missed must not scatter')
-  assert(s.o.x === 0 && s.o.y === 0, 'dead centre, got ' + s.o.x + ',' + s.o.y)
+  // ⚠️ CENTRED HORIZONTALLY, AND CLEAR OF THE CROSSHAIR. "In the middle" was the brief
+  // and x:0 is still exactly that; y was lifted on 2026-08-30 because text sitting ON the
+  // crosshair is unreadable (Ethan, from play) - and this is the one line of hers that
+  // must not be missed, so it is the last one that should be sitting there.
+  assert(s.o.x === 0, 'must be horizontally centred, got x=' + s.o.x)
+  assert(Math.abs(s.o.y) >= 34, 'must clear the crosshair band, got y=' + s.o.y)
   assert(s.o.priority === 'ANNOUNCE',
     'a warning behind ambience arrives after the thing it warned about')
 })

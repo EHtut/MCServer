@@ -8,7 +8,8 @@
    "font": "veldora:art",
    "shake": false,
    "size": 1.25,
-   "wave": true
+   "wave": true,
+   "y": -70
   },
   "whole": {
    "combat": [
@@ -699,7 +700,7 @@
     "x": 190,
     "y": 95
    },
-   "shake": true,
+   "shake": false,
    "size": 0.9
   },
   "whole": {

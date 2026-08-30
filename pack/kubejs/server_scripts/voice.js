@@ -220,8 +220,39 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // 60 is what the sweep showed sitting clear above the armour bar. 80 is the other
   // value Ethan named and is the number to raise it to if a shaking or oversized line
   // ever clips the HUD — the `weight` tone uses both.
-  // ⛔ ONE SWITCH. Flip to true the moment `/gd type` shows the speed is usable.
-  var TYPEWRITER = true
+  // ⛔⛔ OFF AGAIN, 2026-08-30, AND THE MEASUREMENT THAT TURNED IT ON WAS MINE AND WRONG.
+  //
+  // Ethan, from play: *"Text still fades before it fully plays out. Pretty much every
+  // scene gets 1 or 2 characters then gone."*
+  //
+  // 🔴 THE ARITHMETIC IS UNAMBIGUOUS. A real emitted command:
+  //
+  //     sendcustom Rehykt {...,typewriter:1b} 2.6 Do not run deeper.
+  //
+  // Eighteen characters, 2.6 seconds, and he sees one or two of them. That is ~1
+  // character per SECOND, not per tick. At that rate the median line (72 chars) needs
+  // seventy-two seconds and the longest (161) needs nearly three minutes.
+  //
+  // 🚨 HOW THE WRONG NUMBER GOT WRITTEN DOWN. This file claimed *"the speed WAS MEASURED.
+  // /gd type on 2026-08-30 showed a character costs a TICK, not a second - Ethan: 'yes
+  // both tests works'."* That confirmation was him answering about the Y-SIGN fix in a
+  // different message. I attached it to the typing test, wrote it up as a measurement,
+  // and every duration in this file was then built on it.
+  //
+  // ⚠️ A QUOTED CONFIRMATION IS EVIDENCE OF WHATEVER IT WAS ACTUALLY ANSWERING. Attaching
+  // one to the nearest open question is how a guess acquires a citation - and a cited
+  // guess is harder to dislodge than an uncited one, because the next reader stops
+  // checking.
+  //
+  // ⛔ AND THE SPEED IS NOT TUNABLE. `sendcustom` hardcodes `typewriter(1.0f, false)`;
+  // reflection into the mod is dead (D-123). So this is not "slow typing", it is no
+  // usable typing at all from this route, and the only honest state is off.
+  //
+  // 🔑 TO RE-TEST: `/gd type` sends 26 letters at 30s and at 6s. If the 6s line finishes
+  // the alphabet, the rate is usable and this may flip. If it shows six letters, it is a
+  // character a second and it may not. That command exists for exactly this question and
+  // should have been read before this was ever set true.
+  var TYPEWRITER = false
 
   // 🔴 NEGATIVE, AND THE SIGN IS THE WHOLE BUG. y grows DOWNWARD in GUI space, so from a
   // BOTTOM anchor a POSITIVE y pushes the line off the bottom edge of the screen. It
@@ -358,12 +389,37 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return null
   }
 
+  // ⭐⭐ NOTHING MAY LAND ON THE CROSSHAIR. Ethan, from play 2026-08-30:
+  //     *"We cannot have any text be on the cross hair, or across the cross hair,
+  //      that is unreadable."*
+  //
+  // 🔴 AND IT WAS ALWAYS GOING TO HAPPEN. A CENTER_CENTER anchor puts text at the exact
+  // middle of the screen, which is precisely where the crosshair is - so a scatter box
+  // centred on the origin does not merely sometimes clip it, it is CENTRED on it. The
+  // most likely single position was the one unreadable position.
+  //
+  // 🔑 THE FIX IS A DEAD BAND, NOT A SMALLER BOX. Shrinking the scatter would push every
+  // line closer to the middle, which is worse. Instead the vertical result is pushed OUT
+  // of a central band: a line is thrown either clearly above or clearly below, never
+  // through it. The horizontal spread is untouched, because a line to the left or right
+  // of the crosshair is perfectly readable - it is only the vertical overlap that ruins
+  // it, since text is a horizontal band.
+  var CROSSHAIR_BAND = 34        // half-height of the region a line must never occupy
+
+  function dodgeCrosshair(y, reach) {
+    var r = Math.abs(reach) || CROSSHAIR_BAND
+    // Below the band, push it to the nearer edge, keeping the side it was already on.
+    if (Math.abs(y) >= CROSSHAIR_BAND) return y
+    var out = CROSSHAIR_BAND + Math.round(Math.random() * Math.max(1, r - CROSSHAIR_BAND))
+    return (y < 0 || (y === 0 && Math.random() < 0.5)) ? -out : out
+  }
+
   function scatterOf(st) {
     if (!st.scatter) return null
     var sp = st.scatter
     return {
       x: Math.round((Math.random() * 2 - 1) * (sp.x || 0)),
-      y: Math.round((Math.random() * 2 - 1) * (sp.y || 0)),
+      y: dodgeCrosshair(Math.round((Math.random() * 2 - 1) * (sp.y || 0)), sp.y || 0),
     }
   }
 
@@ -470,8 +526,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   function beatFor(sentence, st) {
     var n = String(sentence).length
+    // ⚠️ `typing` is 0 while TYPEWRITER is off, and the term stays here on purpose: the
+    // day it flips back, the duration has to account for it again or long lines truncate
+    // exactly as they did before. Deleting it would remove the fix along with the symptom.
     var typing = TYPEWRITER ? n : 0
-    var read = 25 + Math.min(60, Math.round(n * 0.5))
+    var read = 30 + Math.min(90, Math.round(n * 0.9))
     var k = (st && typeof st.beatScale === 'number') ? st.beatScale : 1
     return typing + Math.max(15, Math.round(read * k))
   }
@@ -670,6 +729,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           // their temper does not keep to their corner, and the break from their usual
           // position is itself the signal that something is wrong.
           anchor: 'CENTER_CENTER',
+          // ⚠️ LIFTED OFF THE CROSSHAIR (2026-08-30). A crashout is the biggest text in
+          // the game and sat exactly on it - the loudest line was the least readable.
+          y: -70,
           size: sized((typeof st.size === 'number' ? st.size : 1) + 0.55),
           shake: true,
           font: st.font,
@@ -785,7 +847,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         var show = {
           anchor: 'CENTER_CENTER',
           x: 0,
-          y: 0,                      // 🔑 dead centre. She does not scatter here.
+          // 🔑 Centred horizontally, and LIFTED clear of the crosshair. She does not
+          // scatter here - the stillness is the point - but "still" must not mean
+          // "unreadable", and this is the one line in her crashout that has to land.
+          y: -70,
           size: sized((typeof st.size === 'number' ? st.size : 1) + 0.35),
           shake: true,               // "slightly shaking"
           font: st.font,
@@ -852,11 +917,31 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { return false }
   }
 
+  // ⭐⭐ THE CHAT COPY IS OFF. Ethan, from play 2026-08-30:
+  //     *"We still have text in the chat bar. That should be gone by now."*
+  //
+  // 🔑 IT WAS KEPT DELIBERATELY AND THAT REASONING IS NOW SPENT. The argument was that
+  // chat is a scrolling record where COLOUR is the only thing separating speakers - true
+  // while the overlay was unreliable and while gods had no fonts. Both changed: the
+  // fonts render, and each god has a place on screen. The record is no longer the only
+  // way to tell who spoke, so it is just a second copy of every line.
+  //
+  // ⚠️ ONE SWITCH, because "the gods are silent" is the hardest symptom in this project
+  // to diagnose. If the overlay ever breaks, flipping this back puts every god's words
+  // somewhere visible in one edit rather than a hunt.
+  //
+  // 🚨 IT CHANGED WHAT say() RETURNS, and that is worth knowing. The tell was inside the
+  // try/catch whose failure returned false, so "did the god speak" USED to mean "did the
+  // chat line land". Callers key off it - blade_events.js gates events on hasVoice/mute -
+  // so the answer now comes from whether a line existed and was dispatched, which is what
+  // the question always meant.
+  var CHAT_COPY = false
+
   function say(player, god, tag) {
     if (silenced(player, god)) return false
     var s = line(god, tag, player)
     if (!s) return false
-    try { player.tell(Text.of(paint(player, god, s))) } catch (e) { return false }
+    if (CHAT_COPY) { try { player.tell(Text.of(paint(player, god, s))) } catch (e) { } }
     speak(player, god, s, tag)       // ⚠️ additive - a failure here costs nothing
     chime(player, god, tag)
     return true
@@ -870,7 +955,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (subs) for (var k in subs) {
       if (subs.hasOwnProperty(k)) s = s.split('{' + k + '}').join(String(subs[k]))
     }
-    try { player.tell(Text.of(paint(player, god, s))) } catch (e) { return false }
+    if (CHAT_COPY) { try { player.tell(Text.of(paint(player, god, s))) } catch (e) { } }
     // 🔴 THIS LINE DID NOT EXIST, and that was the biggest hole in the transfer.
     // `say()` has had an overlay since 08-29; `sayAbout()` never did — so the Mark,
     // the contract offer and the incoming warning were chat-only while every other
@@ -936,6 +1021,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // from outside: that a line is always given at least its TYPING time. That was
     // false for every line over 110 characters until 2026-08-30.
     beatFor: beatFor,
+    CHAT_COPY: CHAT_COPY,
+    dodgeCrosshair: dodgeCrosshair,
+    CROSSHAIR_BAND: CROSSHAIR_BAND,
     sized: sized,
     SIZE_BOOST: SIZE_BOOST,
     alignedTo: alignedTo,

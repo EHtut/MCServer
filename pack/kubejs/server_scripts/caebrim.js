@@ -52,7 +52,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // says that must not be missed, so it is the one thing that does not scatter.
   var TIDE_STYLE = {
     anchor: 'CENTER_CENTER',
-    x: 0, y: 0,
+    // ⚠️ LIFTED OFF THE CROSSHAIR (2026-08-30). "In the middle" is still true - it is
+    // centred horizontally and does not scatter - but text sitting ON the crosshair is
+    // unreadable, and this is the one line of hers that must not be missed.
+    x: 0, y: -80,
     font: 'veldora:wall',
     color: '#AA0000',
     size: 1.15,

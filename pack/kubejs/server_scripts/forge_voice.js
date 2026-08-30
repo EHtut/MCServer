@@ -544,8 +544,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // edges: past that she lands under the hotbar, which reads as a bug.
         scatter: { x: 190, y: 95 },
 
-        // She trembles. Not with menace - with not being able to stop talking.
-        shake: true,
+        // 🔴 SHE TREMBLED, AND IT WAS TOO MUCH. Ethan, from play 2026-08-30: "Forge
+        // shakes too much, we can remove the shaking."
+        //
+        // ⚠️ The restlessness now has to come from the SCATTER and the PACE alone -
+        // she is still the only god thrown across a wider box than Wall's, and still
+        // the only one whose beats arrive faster than you finish the last. Shaking was
+        // a third motion on top of two and it read as a rendering fault rather than as
+        // a character who cannot settle.
+        shake: false,
 
         // Rye - the western slab. Ethan: *"Western? if that is a thing"* - it is.
         font: 'veldora:forge',
