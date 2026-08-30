@@ -222,11 +222,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // ⚠️ Only if she has something written. A god with no crashout pool strikes in
     // silence, which is a posture too - and Forge, who never retaliates at all, never
     // reaches this line.
+    //
+    // ⭐ `crashoutFor` rather than `crashout`: it picks the ONE- or TWO-movement staging
+    // from what the god has written (a `crashout_flat` pool means she comes apart and
+    // then goes flat - docs/75 §2). Nothing here knows which god that is, and it stays
+    // that way; adding the pool is a writing decision that restages her by itself.
     try {
-      if (VELDORA.voice && typeof VELDORA.voice.crashout === 'function') {
-        var line = VELDORA.voice.line(god, 'crashout', killer)
-        if (line) VELDORA.voice.crashout(killer, god, line)
-        else console.info(TAG + god + ' has no crashout pool - striking in silence')
+      if (VELDORA.voice && typeof VELDORA.voice.crashoutFor === 'function') {
+        if (!VELDORA.voice.crashoutFor(killer, god)) {
+          console.info(TAG + god + ' has no crashout pool - striking in silence')
+        }
       }
     } catch (e) { console.warn(TAG + 'crashout threw :: ' + e) }
 

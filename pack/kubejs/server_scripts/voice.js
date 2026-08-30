@@ -549,6 +549,166 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { return false }
   }
 
+  // ══════════════════════════════════════════════════════════════════════════
+  // ⭐⭐ THE TWO-MOVEMENT CRASHOUT — docs/75 §2. Ethan's brief, for Wall:
+  //
+  //     "normal and garbled text across your screen before a flat 'I will kill you' in
+  //      slow dark red slightly shaking typed text in the middle of the screen."
+  //
+  // Two movements, and `75` is explicit that THE CONTRAST IS THE EFFECT:
+  //
+  //   1. THE PANIC. Short lines in quick succession, scattered, alternating clean and
+  //      garbled, shaking. She is coming apart and you are watching it happen.
+  //   2. THE FLAT LINE. Everything stops. One line, dead centre, dark red, still-ish,
+  //      held.
+  //
+  // 🔑 THE SILENCE BETWEEN THEM IS PART OF THE CONTENT, not a delay. `75`: *"the second
+  // only lands because the first was noisy ... the silence before that line is
+  // load-bearing and must be protected."* So it is RESERVED on the screen model
+  // (screen.reserve) rather than merely waited out — otherwise the panic drains, the
+  // model reads empty, and the first whisper in the queue speaks into the pause.
+  //
+  // ── ⚠️ WHAT IS NOT DELIVERED, AND IS NOT FAKED ────────────────────────────────
+  // 🔴 SLOW IS NOT REACHABLE (B2). `sendcustom` hardcodes `typewriter(1.0f, false)`, so
+  // the typing SPEED cannot be set from the command route, and reflection into this mod
+  // is dead (D-123). The flat line types at the same rate as everything else and is
+  // then HELD on screen — which buys the STILLNESS the movement needs, but not the
+  // slowness Ethan asked for. Holding it longer is not the same effect and is not
+  // claimed to be. This is the whole of B2's remaining cost, in one line of dialogue.
+  //
+  // ⚠️ SHE SHAKES HERE AND NOWHERE ELSE. wall_voice.js sets `shake: false` deliberately
+  // — her menace is that she is STILL and in the wrong place. The panic overrides it,
+  // and it only reads as coming apart BECAUSE she has never trembled before.
+
+  // Vanilla dark_red. ⚠️ Deliberately NOT the god's own colour: the break from her
+  // purple is part of the movement — this is not her talking to you any more.
+  var FLAT_RED = '#AA0000'
+  var FLAT_HOLD = 6.0          // seconds the flat line is held after it finishes typing
+  var SILENCE = 1.5            // seconds of protected nothing between the movements
+
+  /**
+   * @param panicLines array of short lines — movement 1
+   * @param flatLine   the single line — movement 2
+   */
+  function crashoutTwo(player, god, panicLines, flatLine, opts) {
+    try {
+      if (!VELDORA.im || typeof VELDORA.im.show !== 'function') return false
+      var st = styleOf(god)
+      var lines = [].concat(panicLines || [])
+      if (!lines.length && !flatLine) return false
+
+      var gap = 0.5
+      try { if (VELDORA.screen && VELDORA.screen.gap) gap = VELDORA.screen.gap() } catch (e) { }
+
+      // ── movement 1 ────────────────────────────────────────────────────────
+      var held = 0, first = false
+      for (var i = 0; i < lines.length; i++) {
+        var txt = String(lines[i])
+        var secs = Math.max(0.9, beatFor(txt, st) / 20)
+        var sc = scatterOf(st) || { x: 0, y: 0 }
+        var okd = VELDORA.im.show(player, txt, {
+          anchor: st.anchor || 'CENTER_CENTER',
+          x: sc.x,
+          y: sc.y,
+          // ⭐ ALTERNATING, NOT RANDOM. Random garbling would sometimes produce three
+          // legible lines in a row and sometimes none; the effect is the FLICKER
+          // between readable and not, and only a deterministic alternation gives it.
+          obfuscate: (i % 2 === 1) ? 'RANDOM' : null,
+          size: (typeof st.size === 'number' ? st.size : 1) + 0.2,
+          shake: true,
+          font: st.font,
+          color: st.color || hexOfGod(god),
+          typewriter: TYPEWRITER,
+          seconds: secs,
+          priority: 'CRASHOUT',
+          continuation: (i > 0),
+        })
+        if (i === 0) first = okd
+        held += secs + gap
+      }
+
+      if (!flatLine) return first
+
+      // ── the silence, held rather than hoped for ───────────────────────────
+      try {
+        if (VELDORA.screen && typeof VELDORA.screen.reserve === 'function') {
+          VELDORA.screen.reserve(player, SILENCE)
+        }
+      } catch (e) { }
+
+      // ── movement 2 ────────────────────────────────────────────────────────
+      var flat = String(flatLine)
+      function send(p) {
+        var show = {
+          anchor: 'CENTER_CENTER',
+          x: 0,
+          y: 0,                      // 🔑 dead centre. She does not scatter here.
+          size: (typeof st.size === 'number' ? st.size : 1) + 0.35,
+          shake: true,               // "slightly shaking"
+          font: st.font,
+          color: FLAT_RED,
+          typewriter: TYPEWRITER,
+          seconds: FLAT_HOLD,
+          priority: 'CRASHOUT',
+        }
+        if (opts) for (var k in opts) if (opts.hasOwnProperty(k)) show[k] = opts[k]
+        // ⚠️ Never garbled. This is the one line she means.
+        VELDORA.im.show(p, VELDORA.garble ? VELDORA.garble.strip(flat) : flat, show)
+      }
+
+      var srv = null, uid = null
+      try { srv = player.server; uid = String(player.uuid) } catch (e) { }
+      if (!srv || !uid) {
+        // 🔑 Cannot schedule, so there is no silence to give. Send it anyway: the line
+        // arriving flat-but-early beats the line not arriving.
+        send(player)
+        return first
+      }
+      srv.scheduleInTicks(Math.round((held + SILENCE) * 20), function () {
+        try {
+          // ⚠️ RE-LOOKED-UP, not captured. A player reference held across several
+          // seconds can outlive the player; someone who logged out mid-crashout gets
+          // nothing, and that is correct rather than an error.
+          var ps = srv.players
+          for (var j = 0; j < ps.length; j++) {
+            if (String(ps[j].uuid) === uid) { send(ps[j]); return }
+          }
+        } catch (e) { }
+      })
+      return first
+    } catch (e) { return false }
+  }
+
+  /**
+   * ⭐ WHICH CRASHOUT A GOD GETS IS DECIDED BY WHAT IS WRITTEN FOR THEM, not by a name
+   * in a branch. A god with a `crashout_flat` pool comes apart in two movements; a god
+   * without one gets the single-movement version. Wall is the only one written that way
+   * today, and nothing here knows her name.
+   *
+   * 🔑 That keeps Ethan's half and mine separate the way the rest of the pass does:
+   * adding the pool is a WRITING decision that changes the staging by itself.
+   */
+  function crashoutFor(player, god, opts) {
+    try {
+      var flat = line(god, 'crashout_flat', player)
+      if (!flat) {
+        var one = line(god, 'crashout', player)
+        return one ? crashout(player, god, one, opts) : false
+      }
+      // Movement 1 wants SEVERAL lines. `line()` picks one at a time, so it is called
+      // repeatedly and deduped — a pool of three that returns the same line twice reads
+      // as a stutter, not a panic.
+      var panic = [], seen = {}
+      for (var i = 0; i < 8 && panic.length < 3; i++) {
+        var s = line(god, 'crashout', player)
+        if (!s || seen[s]) continue
+        seen[s] = true
+        panic.push(s)
+      }
+      return crashoutTwo(player, god, panic, flat, opts)
+    } catch (e) { return false }
+  }
+
   function say(player, god, tag) {
     if (silenced(player, god)) return false
     var s = line(god, tag, player)
@@ -621,6 +781,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     overlay: overlay,
     speak: speak,
     crashout: crashout,
+    crashoutTwo: crashoutTwo,
+    crashoutFor: crashoutFor,
+    SILENCE_SECONDS: SILENCE,
     setStyle: setStyle,
     styleOf: styleOf,
     sentences: sentences,
@@ -750,6 +913,24 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         p.tell(Text.of('§8Three lines, 26 letters each, at the TOP of the screen.'))
         p.tell(Text.of('§8If TYPING 30s finishes the alphabet, a character is a TICK'))
         p.tell(Text.of('§8and typing is usable. If it crawls a letter a second, it is not.'))
+        return 1
+      }))
+      // ⭐ THE TWO-MOVEMENT CRASHOUT, on demand. It is otherwise only reachable by
+      // getting killed by a god's champion, which is not a test loop.
+      //
+      // ⚠️ WATCH FOR THE SILENCE, not just the lines. The whole movement is whether the
+      // pause between the panic and the flat line reads as a stop or as a stutter.
+      .then(Commands.literal('crash').executes(function (ctx) {
+        var p = ctx.source.player
+        var g = 'wall'
+        var flat = line(g, 'crashout_flat', p)
+        p.tell(Text.of('§8' + g + ': §f' + (flat ? 'TWO-movement' : 'one-movement') +
+          '§8 (decided by whether a crashout_flat pool exists)'))
+        p.tell(Text.of('§8panic scattered + alternating garble, then §f' +
+          VELDORA.voice.SILENCE_SECONDS + 's§8 of PROTECTED silence, then the flat line'))
+        p.tell(Text.of('§c⚠ the flat line is NOT slow §8- speed is unreachable from the ' +
+          'command route (B2). It types at normal rate and is HELD.'))
+        crashoutFor(p, g)
         return 1
       }))
       .then(Commands.literal('place').executes(function (ctx) {

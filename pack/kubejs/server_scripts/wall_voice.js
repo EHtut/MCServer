@@ -705,6 +705,27 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         '[CLAUDE-DRAFT] You do not get to walk away from that.',
         '[CLAUDE-DRAFT] I am sending them now. All of them.',
       ])
+
+      // ⭐⭐ MOVEMENT 2. Ethan, docs/75 §2: *"normal and garbled text across your screen
+      // before a flat 'I will kill you' in slow dark red slightly shaking typed text in
+      // the middle of the screen."*
+      //
+      // 🔑 THE EXISTENCE OF THIS POOL IS WHAT RESTAGES HER. `voice.crashoutFor` gives a
+      // god with a `crashout_flat` pool the two-movement version and everyone else the
+      // one-movement version - so this is a WRITING decision rather than a branch on her
+      // name, and any god Ethan writes one of these for is restaged for free.
+      //
+      // ⚠️ ONE SHORT LINE, and it has to stay one. The movement IS the contrast between
+      // three scattered garbled lines and a single still one; a flat line that runs to
+      // two sentences is just more talking, and the panic was already the talking.
+      //
+      // 🔴 NOT SLOW. Ethan asked for slow typed text and the speed is unreachable from
+      // the command route (B2 / D-123 - `sendcustom` hardcodes typewriter(1.0f, false)).
+      // It types at the normal rate and is then HELD for six seconds, which buys the
+      // stillness but not the slowness. Flagged rather than quietly called done.
+      VELDORA.voice.registerLines(GOD, 'crashout_flat', [
+        '[CLAUDE-DRAFT] I will kill you.',
+      ])
     }
 
     // ⭐⭐ SHE IS NOT ON THE SCREEN, SHE IS INSIDE YOUR HEAD. Ethan, 2026-08-30:

@@ -186,11 +186,42 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (k) delete drain[k]
   }
 
+  /**
+   * ⭐⭐ HOLD THE SCREEN WITHOUT PUTTING ANYTHING ON IT.
+   *
+   * 🔑 Wall's two-movement crashout (docs/75 §2) puts a deliberate SILENCE between her
+   * panic and her flat line, and `75` is explicit that *"the silence before that line is
+   * load-bearing and must be protected"*.
+   *
+   * 🚨 Merely waiting does not protect it. The moment the panic drains, the model reads
+   * empty, and the next whisper or ambient line is granted immediately - so the flat
+   * line arrives as the SECOND thing you read rather than the only thing, which is the
+   * entire effect lost to a mutter about the weather.
+   *
+   * ⚠️ NOT CLAMPED BY `HOLD`, because a reservation is not a message and has no
+   * priority of its own. Its length is entirely the caller's, which is exactly why this
+   * is not reachable from the ordinary send path - `VELDORA.im.show` calls `claim`, and
+   * only a caller staging two movements calls this.
+   */
+  function reserve(player, seconds) {
+    if (!GATE) return false
+    try {
+      var t = now(player), k = keyOf(player)
+      if (t === null || !k) return false
+      var s = Number(seconds)
+      if (!isFinite(s) || s <= 0) return false
+      var d = drain[k]
+      drain[k] = Math.max(t, (typeof d === 'number' ? d : t)) + Math.round(s * 20)
+      return true
+    } catch (e) { return false }
+  }
+
   VELDORA.screen = {
     P: P,
     HOLD: HOLD,
     _audit: auditOrder,
     claim: claim,
+    reserve: reserve,
     backlog: backlog,
     clear: clear,
     gap: function () { return GAP },

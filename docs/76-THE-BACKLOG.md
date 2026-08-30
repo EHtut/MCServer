@@ -143,7 +143,7 @@ never what it says.
 | ~~**C2a**~~ | ✅ **DONE** — `screen.js`. Not a simultaneous budget: the client shows ONE message at a time, FIFO, no clear and no reorder, so the risk is BACKLOG. The lower the priority, the emptier the queue must be |
 | **C2b** | The whispers | ✅ unblocked — **next** |
 | **C2c** | The crashout (a god announcing its own tide) | ✅ unblocked — every god but Salvage is styled |
-| **C2d** | Wall's two-movement panic → flat line | C2b, C2c. ⚠️ *slow* typed text is **not reachable** from the command route (B2) |
+| ~~**C2d**~~ | ✅ **DONE 2026-08-30** — Wall's two-movement panic → flat line. `voice.crashoutFor` picks the staging from **what is written**: a god with a `crashout_flat` pool comes apart in two movements, everyone else gets one. Nothing branches on her name. The silence between the movements is **reserved** on the screen model (`screen.reserve`), not merely waited out — otherwise the panic drains, the model reads empty, and the first whisper speaks into the pause. 9/9 harness, all 6 mutations caught. 🔴 **Slow is still not delivered** — see B2; the flat line types at normal rate and is *held* |
 | **C2e** | Tide announcer — your god if pathed, Caebrim if not | ✅ unblocked (E2b ruled); wants C2a |
 
 🔑 **C2a comes first and is not optional.** Whispers, a crashout and a tide announcement
@@ -205,6 +205,15 @@ from the command route**.
 ⚠️ `75` asks for Wall's flat line to be *"slow ... typed"*. Slow is not available. That
 needs the Java API, and reflection into this mod is **dead** (D-123) — so it is a real
 piece of work, not a parameter.
+
+🔴 **This is now a debt with a named creditor.** C2d shipped 2026-08-30 and Wall's flat
+line is the one place it costs something visible: it types at the normal rate and is then
+**held** for six seconds. That buys the *stillness* the movement needs and **not the
+slowness Ethan asked for**, and holding it longer is a different effect, not a substitute.
+Everything else about the two movements is delivered.
+
+⭐ The remaining route is a client-side mixin or a fork of the mod's command to expose the
+`typewriter(speed, centered)` arguments it already accepts internally. Neither is small.
 
 ## B3 · Defect IDs are racing between channels
 
