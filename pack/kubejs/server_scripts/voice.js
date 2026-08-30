@@ -130,7 +130,31 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { }
   }
 
+  // ⭐⭐ THE NIGHT GATE. `night.js` decides whether this god may reach this player right
+  // now; after the Speaker's arrival, blade and salvage cannot, between dusk and dawn.
+  //
+  // 🔑 SAME CHOKEPOINT, SAME REASON AS THE CHIME. Every patron utterance funnels
+  // through say/sayAbout, so one check here silences a god everywhere instead of at the
+  // ~100 places that speak - and none of them can be forgotten.
+  //
+  // ⚠️ IT RETURNS FALSE, WHICH IS THE HONEST ANSWER. say() means "did the god speak",
+  // and a silenced god did not. Callers that branch on it behave correctly by
+  // construction: warn.js, for instance, falls back to its SOUND when the voice returns
+  // false - so a silenced night still warns you, it just does not talk to you. That is
+  // exactly the intended shape.
+  //
+  // 🚨 LATE-BOUND AND FAILS OPEN. If night.js is missing or throws, everyone speaks.
+  // A gate that fails closed would mute the pantheon on any glitch, and silence is the
+  // one symptom nobody reports because it looks like nothing happening.
+  function silenced(player, god) {
+    try {
+      if (!VELDORA.night || typeof VELDORA.night.silencedNow !== 'function') return false
+      return !!VELDORA.night.silencedNow(player.server, player, god)
+    } catch (e) { return false }
+  }
+
   function say(player, god, tag) {
+    if (silenced(player, god)) return false
     var s = line(god, tag, player)
     if (!s) return false
     try { player.tell(Text.of((COLOUR[god] || DEFAULT_COLOUR) + s)) } catch (e) { return false }
@@ -140,6 +164,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   // Substitution for lines that name somebody - the Mark uses {target}.
   function sayAbout(player, god, tag, subs) {
+    if (silenced(player, god)) return false
     var s = line(god, tag, player)
     if (!s) return false
     if (subs) for (var k in subs) {

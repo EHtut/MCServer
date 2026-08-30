@@ -535,3 +535,53 @@ Drop the jar into `instance/mods` **manually, as an unmanaged mod** — exactly 
 be rebuilt from the manifest on any machine with a Python install"*. Every unmanaged jar
 is a thing that will not come back on a rebuild, and there are already four. **Ethan's
 call — the mod works, the pipeline just cannot carry it.**
+
+
+---
+
+# ✅ D1 DONE — the night gate is live
+
+`night.js` (new) + a hook in `voice.js`. **55/55 scripts, 0 errors**, `[night]` banners.
+
+| | |
+|---|---|
+| **the rule** | after **30 PLAYED nights** the Speaker arrives; from then on **blade and salvage cannot speak** between 13000 and 23000. wall, forge and art keep their voices |
+| **the chokepoint** | `voice.js` `say`/`sayAbout` — one check silences a god everywhere, and no call site can be forgotten |
+| **harness** | `tools/night_harness.js`, **34 assertions** |
+
+### Three decisions worth keeping
+
+⭐ **The counter is EDGE-TRIGGERED.** The sweep runs every 5s and a night is ~8 minutes,
+so a sampled counter would add ~100 nights per night and the Speaker would arrive on day
+two. The harness sweeps **fifty times inside one night** and asserts the count is 1 —
+which is the bug that cannot be play-tested, because nobody watches thirty nights to
+check it counted thirty.
+
+⭐ **The list names who LOSES their voice, not who keeps it.** A god added later keeps
+theirs by default. Failing open is right: a new god unexpectedly silent is a bug nobody
+would trace for weeks, while one speaking when it should not is obvious the first night.
+
+⭐ **The whole gate FAILS OPEN.** An unreadable clock, a null player, an unknown god —
+every failure path lets gods speak. A gate that failed closed would mute the pantheon on
+any glitch, and **silence is the one symptom nobody reports, because it looks like
+nothing happening.**
+
+⚠️ **`say()` returning false is the honest answer**, and callers already behave correctly
+because of it: `warn.js` falls back to its **sound** when the voice returns false, so a
+silenced night still warns you — it just does not talk to you. That is the intended
+shape, not a workaround.
+
+### Negative-controlled before shipping, not after
+
+Each mechanism was broken in turn and the harness caught exactly the right assertions:
+
+| broken | caught |
+|---|---|
+| edge trigger removed | the counter tests **and** the before-arrival tests |
+| silencing disabled | both "CANNOT SPEAK" assertions |
+| fail-open removed | the unreadable-clock assertion |
+
+**461 assertions across 14 harnesses, all green.**
+
+⚠️ **Scope: speech only.** "or act" — blade's and salvage's *events* firing at night — is
+**not** in this chunk. That is D1b, and it wants the same treatment.
