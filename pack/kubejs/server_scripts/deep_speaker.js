@@ -722,16 +722,39 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   // Say something as whoever is down there. Handles the one-time introduction
   // itself, because the first thing a speaker ever says is not a random line.
+  // ⭐⭐ D2 - THE INTRODUCTION, EXTRACTED SO TWO ROUTES SHARE ONE IMPLEMENTATION.
+  //
+  // She can now be met two ways: **in the depths**, as always, or **on the 30th
+  // night**, per Ethan's 2026-08-29 ruling (`docs/70`). Both are the same event and
+  // both must set the same `met` flag, or a player could be introduced twice - and the
+  // first thing a speaker ever says is precisely the line that must not repeat.
+  //
+  // 🔑 EXTRACTED RATHER THAN DUPLICATED. A second copy of "set met, log, say intro"
+  // in night.js would be one edit away from drifting, and the drift would be invisible:
+  // two introductions look like one introduction plus a bug nobody can reproduce.
+  //
+  // ⚠️ NO DEPTH CHECK HERE, DELIBERATELY. The caller decides WHY she is introducing
+  // herself; this function only knows that she is. `say()` keeps its own depth gating.
+  //
+  // Returns true only if an introduction actually happened.
+  function introduce(p, why) {
+    var s = speakerFor(p)
+    if (!s || !VELDORA.voice) return false
+    var met = false
+    try { met = !!p.persistentData.getBoolean(metKey(s)) } catch (e) { }
+    if (met) return false
+    try { p.persistentData.putBoolean(metKey(s), true) } catch (e) { }
+    console.info(TAG + p.username + ' has met ' + s.name +
+      (why ? ' (' + why + ')' : ''))
+    return VELDORA.voice.say(p, s.id, 'intro')
+  }
+
   function say(p, tag) {
     var s = speakerFor(p)
     if (!s || !VELDORA.voice) return false
     var met = false
     try { met = !!p.persistentData.getBoolean(metKey(s)) } catch (e) { }
-    if (!met) {
-      try { p.persistentData.putBoolean(metKey(s), true) } catch (e) { }
-      console.info(TAG + p.username + ' has met ' + s.name)
-      return VELDORA.voice.say(p, s.id, 'intro')
-    }
+    if (!met) return introduce(p, 'the depths')
     // ⭐⭐ `abandoned` FINALLY HAS A CONSUMER (2026-08-23). Five speakers have written
     // this pool since 2026-08-15 and NOTHING had ever spoken it - a pool with no
     // consumer is the same defect as a gate with no consumer, and it had been flagged
@@ -878,6 +901,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     active: speakerActive,
     forPath: speakerFor,
     say: say,
+    introduce: introduce,
     confess: confess,
     confessed: function (p) { return finished(p, speakerFor(p)) },
     stage: function (p) { return stageOf(p, speakerFor(p)) },

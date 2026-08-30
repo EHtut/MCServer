@@ -84,6 +84,16 @@ function liveNights(p, n) {
   }
 }
 
+// advance from night `from` to night `to`, exclusive of what was already lived
+function liveNights2(p, from, to) {
+  for (let i = from; i < to; i++) {
+    DAYTIME = DAY + i * 24000
+    for (let k = 0; k < 3; k++) N._advance(server, p)
+    DAYTIME = NIGHT + i * 24000
+    for (let k = 0; k < 3; k++) N._advance(server, p)
+  }
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 grp('⭐ THE CLOCK')
 {
@@ -213,6 +223,59 @@ grp('\u2728 D1b - GODEVENTS CONSULTS IT TOO (action, not just speech)')
   const elig = src.slice(src.indexOf('function eligible('), src.indexOf('function attempt('))
   ok('eligible() is untouched, so /events still reports the real roster',
     elig.indexOf('VELDORA.night') === -1, true)
+}
+
+grp('D2 - THE INTRODUCTION FIRES ON THE 30th NIGHT')
+{
+  // The night sweep calls VELDORA.speaker.introduce() on the crossing. Stub it and
+  // count, so the assertion is about WHEN she is introduced rather than what she says.
+  let introduced = []
+  global.VELDORA.speaker = {
+    introduce: (p, why) => { introduced.push([p.username, why]); return true },
+  }
+
+  const p = mkPlayer('Newcomer')
+  liveNights(p, N.speakerNight - 1)
+  ok('nothing on night ' + (N.speakerNight - 1), introduced.length, 0)
+
+  liveNights2(p, N.speakerNight - 1, N.speakerNight)
+  ok('she introduces herself on night ' + N.speakerNight, introduced.length, 1)
+  ok('...to the right player', introduced[0][0], 'Newcomer')
+  ok('...and the reason names the night', /30th night/.test(introduced[0][1]), true)
+
+  // Keep living. She must not re-introduce herself every night thereafter.
+  liveNights2(p, N.speakerNight, N.speakerNight + 5)
+  ok('five more nights introduce her ZERO more times', introduced.length, 1)
+
+  delete global.VELDORA.speaker
+}
+
+grp('D2 - A FAILING INTRODUCTION DOES NOT BREAK THE SILENCE')
+{
+  // If deep_speaker throws, the night still becomes hers. The greeting is cosmetic;
+  // the silencing is the mechanic, and they must not share a failure.
+  global.VELDORA.speaker = { introduce: () => { throw new Error('speaker exploded') } }
+  const p = mkPlayer('Unlucky')
+  hush()
+  liveNights(p, N.speakerNight)
+  speak()
+  ok('the counter still reached ' + N.speakerNight, N.nightsFor(p), N.speakerNight)
+  DAYTIME = NIGHT
+  ok('and blade is STILL silenced despite the throw', N.maySpeak(server, p, 'blade'), false)
+  delete global.VELDORA.speaker
+}
+
+grp('D2 - ONE IMPLEMENTATION, NOT TWO')
+{
+  const src = fs.readFileSync(path.join(SS, 'deep_speaker.js'), 'utf8')
+  ok('deep_speaker exports introduce()', /introduce: introduce/.test(src), true)
+  // say() must DELEGATE rather than keep its own copy - two copies of "set met, log,
+  // say intro" would drift, and the drift is invisible: two introductions look like one
+  // introduction plus an unreproducible bug.
+  ok('say() delegates to it instead of duplicating',
+    /if \(!met\) return introduce\(p, 'the depths'\)/.test(src), true)
+  const nsrc = fs.readFileSync(path.join(SS, 'night.js'), 'utf8')
+  ok('night.js calls the shared one', nsrc.indexOf('VELDORA.speaker.introduce') !== -1, true)
 }
 
 console.log('\n' + (fail === 0

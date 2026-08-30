@@ -102,6 +102,27 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       console.info(TAG + p.username + ' has witnessed ' + n + ' nights - THE SPEAKER ' +
         'ARRIVES. From now on ' + Object.keys(SILENCED).join(' and ') +
         ' cannot reach them after dark.')
+
+      // ⭐⭐ D2 - SHE INTRODUCES HERSELF. Reuses `deep_speaker.introduce()`, which owns
+      // the `met` flag and the authored `intro` pool, so the night route and the depths
+      // route are literally the same event with two doors.
+      //
+      // ⚠️ IF THEY ALREADY MET HER UNDERGROUND, NOTHING IS SAID - introduce() returns
+      // false and that is correct. Meeting her and her TAKING THE NIGHT are different
+      // things: the silencing above keys on the count, not on the greeting, so a player
+      // who found her on night five is still un-silenced until thirty.
+      //
+      // 🚨 AND A PATHLESS PLAYER HEARS NOBODY. speakerFor() returns null without a path
+      // (`docs/67` records this as the gap Art's entry condition will have to fill).
+      // Silent by construction, not by accident.
+      try {
+        if (VELDORA.speaker && typeof VELDORA.speaker.introduce === 'function') {
+          VELDORA.speaker.introduce(p, 'the ' + SPEAKER_NIGHT + 'th night')
+        }
+      } catch (e) {
+        console.warn(TAG + 'the introduction threw for ' + p.username +
+          ' - the silence still begins, she just did not say so :: ' + e)
+      }
     }
   }
 
