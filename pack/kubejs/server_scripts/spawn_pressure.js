@@ -124,6 +124,57 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // proved it fires and can be cancelled. So the position is read defensively and
   // the shape is LOGGED ONCE, because J6's lesson is that an unverified accessor
   // silently returning undefined is indistinguishable from a quiet subsystem.
+  // ════════════════════════════════════════════════════════════════════════
+  // 🔴🔴 THE SPAWN TYPE, AND THE BUG IT FIXES (2026-08-29).
+  //
+  // Ethan: *"spawned the devil from the devil mod and it spawned 4 of them."*
+  //
+  // 🚨 THIS FILE'S OWN HEADER SAYS "A COEFFICIENT MULTIPLIES NATURAL SPAWNS" AND
+  // NOTHING EVER CHECKED THAT. checkSpawn fires for every spawn there is, so the
+  // density branch below was multiplying:
+  //
+  //     SPAWN_EGG    an egg placed by hand
+  //     COMMAND      /summon - including spawner.js, which is how the TIDE spawns
+  //     SPAWNER      mob spawner blocks
+  //     STRUCTURE    structure-placed mobs
+  //
+  // At blade's 3.0 that is +2 guaranteed, and deep it hits MAX_DUP_PER_EVENT. One
+  // devil became four. ⚠️ The tide was bounded by DUP_COOLDOWN to +4 per wave rather
+  // than 4x, which is why this was survivable rather than obvious.
+  //
+  // ⭐ THE ACCESSOR WAS READ OUT OF THE JAR, NOT GUESSED. From
+  // dev/latvian/mods/kubejs/entity/CheckLivingEntitySpawnKubeEvent:
+  //
+  //     public final transient MobSpawnType type;
+  //     public MobSpawnType getType();
+  //
+  // ⚠️ AND IT FAILS CLOSED. An unreadable type does NOT fall through to the old
+  // behaviour - falling back to "apply to everything" is the exact bug being fixed.
+  // It returns and it SHOUTS, because "blade got quieter" and "the accessor broke"
+  // must never look the same.
+  var TYPES_SEEN = {}
+  var TYPE_WARNED = false
+
+  function spawnTypeOf(event) {
+    var t = null
+    try { t = event.type } catch (e) { }
+    if (t === null || t === undefined) { try { t = event.getType() } catch (e) { } }
+    if (t === null || t === undefined) return null
+    try {
+      var s2 = String(t)
+      return s2 ? s2.toUpperCase() : null
+    } catch (e) { return null }
+  }
+
+  // ⚠️ SUBSTRING, not equality. A Java enum stringifies to its name here, but a
+  // wrapper or a remap could hand back "MobSpawnType.NATURAL" instead of "NATURAL" -
+  // and an equality test would then silently disable density everywhere, which is a
+  // difficulty regression nobody would trace. CHUNK_GENERATION does not contain the
+  // word, so it is excluded on purpose until the log says it should not be.
+  function isNaturalSpawn(kind) {
+    return !!kind && kind.indexOf('NATURAL') !== -1
+  }
+
   var SHAPE_LOGGED = false
   function posOfSpawn(event) {
     var x = null, y = null, z = null
@@ -206,6 +257,31 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   if (GATE) {
     EntityEvents.checkSpawn(function (event) {
       if (!anyNonNeutral) return              // the common case, costs nothing
+
+      // 🚨 NATURAL ONLY. See the block above spawnTypeOf. This gate covers BOTH
+      // regimes - the density branch below and the (currently unreachable) suppression
+      // branch - because if suppression is ever revived it has exactly the same bug.
+      var kind = spawnTypeOf(event)
+      if (kind === null) {
+        if (!TYPE_WARNED) {
+          TYPE_WARNED = true
+          console.warn(TAG + '!! CANNOT READ THE SPAWN TYPE. Density is now DISABLED ' +
+            'rather than applied to every spawn - failing the other way is the bug ' +
+            'this check exists to fix. This is a FAILURE, not a quiet coefficient.')
+        }
+        return
+      }
+      // Log each distinct type once. ⭐ The point is to find out what actually reaches
+      // this hook on a 300-mod server instead of deciding it from memory - if
+      // CHUNK_GENERATION turns up often, that is a conversation, not a guess.
+      if (!TYPES_SEEN[kind]) {
+        TYPES_SEEN[kind] = true
+        console.info(TAG + 'spawn type seen for the first time: ' + kind + ' - ' +
+          (isNaturalSpawn(kind) ? 'COUNTS toward the coefficient'
+            : 'IGNORED, not a natural spawn'))
+      }
+      if (!isNaturalSpawn(kind)) return
+
       var pos = posOfSpawn(event)
       if (!pos) return
       var w = nearestWalker(pos.x, pos.y, pos.z)
@@ -390,6 +466,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     coeffOf: function (uuid) { return cache[uuid] ? cache[uuid].coeff : 1.0 },
     // Blade's events call this with their OWN roster and count; it is a thin,
     // honest pass-through to the spawner rather than a second mechanism.
+    // Exposed for tools/pressure_harness.js. The spawn-type gate is the difference
+    // between multiplying what the WORLD chose and multiplying what a PLAYER chose,
+    // and that distinction is invisible in play until somebody summons one mob and
+    // gets four.
+    _spawnTypeOf: spawnTypeOf,
+    _isNatural: isNaturalSpawn,
     send: function (player, ids, count) {
       if (!VELDORA.spawner) return { asked: 0, placed: null, valid: [] }
       return VELDORA.spawner.wave(player, { ids: ids, count: count })
@@ -408,9 +490,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     console.info(TAG + 'spawns axis LIVE - suppression via checkSpawn (<1) is ON. ' +
       'Ambient pressure (>1) is OFF by design: waves are EVENT-driven now, through ' +
       'VELDORA.pressure.send(). Set AMBIENT=true to restore the trickle.')
+    // ⚠️ "what the world already chose" was the claim, and until 2026-08-29 it was
+    // not true - the hook never checked the spawn type, so it also multiplied spawn
+    // eggs, /summon, spawner blocks and structures. The banner now says the thing the
+    // code actually does.
     console.info(TAG + 'DENSITY ' + (DENSITY ? 'ON' : 'off') + ' - checkSpawn ' +
-      'multiplies what the world already chose: below 1 cancels a share, above 1 ' +
-      'duplicates a share. Monsters only, ' + DUP_COOLDOWN + 't between duplicates.')
+      'multiplies NATURAL spawns ONLY: below 1 cancels a share, above 1 duplicates ' +
+      'a share. Spawn eggs, /summon, spawner blocks and structures are NOT touched ' +
+      '(fixed 2026-08-29 - one summoned mob was becoming four). Monsters only, ' +
+      DUP_COOLDOWN + 't between duplicates.')
     console.info(TAG + 'rosters: ' + Object.keys(ROSTER).filter(function (k) {
       return ROSTER[k].length
     }).join(', ') + ' - the rest are empty and send nothing')
