@@ -345,6 +345,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     }
     if (!VELDORA.spawner) { console.error(TAG + 'no spawner'); return false }
 
+    // ⭐ G1 - announced to `target`, NOT to `me`. `me` is her champion, who ordered
+    // this; `target` is the player about to be covered in spiders. Backwards, this
+    // would warn the attacker and ambush the victim - the exact inverse of intent.
+    try {
+      if (VELDORA.announce) VELDORA.announce.say(server, target, 'wall_attack')
+    } catch (e) { }
+
     // ⚠️ BUFFED BY MOOD, NOT BY TIER. The tier is what she SAYS; the slider is what
     // she IS. Keying the buff to the voice tier would have meant a champion at rage
     // 41 (just into 'high') sending the same wave as one at rage 89, which is

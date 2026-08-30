@@ -104,12 +104,23 @@
     console.info('[death] ' + p.username + ' lost ' + take + ' levels (' +
       before + ' -> ' + (actual === null ? '?' : actual) + ')')
 
-    // ANNOUNCE IT. The legibility law: every cost is named as it is paid. A player
-    // who quietly loses levels and never learns why is being punished by a bug as
-    // far as they can tell.
-    try {
-      p.tell(Text.of('§cYou lost §f' + take + '§c levels. §8(' + before + ' -> ' + after + ')'))
-    } catch (e) { }
+    // ⛔ THE CHAT LINE IS GONE. Ethan, 2026-08-29: *"the death cost 'you lost 5
+    // levels' that doesn't need to be a line."*
+    //
+    // ⚠️ THIS REVERSES A STATED PRINCIPLE, so it is recorded rather than deleted.
+    // What stood here was "the legibility law: every cost is named as it is paid",
+    // on the reasoning that a player who quietly loses levels and never learns why is
+    // being punished by a bug as far as they can tell.
+    //
+    // 🔑 The counter-argument, and it is the stronger one: MINECRAFT ALREADY SAYS
+    // THIS. The XP bar empties in front of you on the respawn screen - the cost is the
+    // most legible thing on the display. The line was narrating a number the player
+    // can already see, and a system message in her colour palette every single death
+    // makes an ordinary cost feel like a penalty being announced at you.
+    //
+    // ⭐ The cost itself is UNCHANGED, and the server-side log above still records
+    // every charge - so "did it fire" remains answerable without the player-facing
+    // line. Legibility is kept where it was actually needed.
   })
 
   ServerEvents.loaded(function () {

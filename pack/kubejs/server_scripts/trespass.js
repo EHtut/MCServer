@@ -142,88 +142,26 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return null
   }
 
-  // ── the bar ──────────────────────────────────────────────────────────────────
-  // ⚠️ NO REGEX ANYWHERE IN THIS FILE. Escaping a JS regex through a shell heredoc has
-  // mangled three files in this repo already; split/join cannot be mangled.
-  function esc(s) {
-    var t = String(s)
-    t = t.split('\\').join('\\\\')
-    t = t.split('"').join('\\"')
-    return t
-  }
-
-  function nameJson(s) {
-    return '{"text":"' + esc(s) + '","color":"white","italic":true}'
-  }
-
-  // A few pixels of horizontal tremor. Bar text is centred, so uneven padding moves it.
-  function jitter(s) {
-    if (!SHAKE) return s
-    var n = Math.floor(Math.random() * 4)
-    if (n === 0) return s
-    if (n === 1) return ' ' + s
-    if (n === 2) return s + ' '
-    return '  ' + s
-  }
-
-  function barId(p) {
-    var u = ''
-    try { u = String(p.uuid).toLowerCase() } catch (e) { u = 'unknown' }
-    return 'veldora:trespass_' + u
-  }
-
-  // ⭐ runCommand, NOT runCommandSilent, for setup. Finding K8 (_probe_patron.js):
-  // "unlike runCommandSilent we can actually tell whether it worked". The high-cadence
-  // tremor uses the silent form because checking it 30 times a second buys nothing.
-  function run(server, cmd) {
-    try {
-      var r = server.runCommand(cmd)
-      return (typeof r === 'number') ? r : 1
-    } catch (e) {
-      if (!cmdWarned) {
-        cmdWarned = true
-        console.warn(TAG + 'a bossbar command threw - the layer may be silent :: ' + e)
-      }
-      return 0
-    }
-  }
-
-  function quiet(server, cmd) {
-    try { server.runCommandSilent(cmd) } catch (e) { }
-  }
-
-  function step(server, p, id, text, left, epoch) {
-    var st = state[String(p.uuid)]
-    if (!st || st.epoch !== epoch) return          // a newer line superseded this one
-    if (left <= 0) { quiet(server, 'bossbar remove ' + id); return }
-    quiet(server, 'bossbar set ' + id + ' value ' + left)
-    if (SHAKE) quiet(server, 'bossbar set ' + id + ' name ' + nameJson(jitter(text)))
-    try {
-      server.scheduleInTicks(SHAKE_TICKS, function () {
-        step(server, p, id, text, left - SHAKE_TICKS, epoch)
-      })
-    } catch (e) { quiet(server, 'bossbar remove ' + id) }
-  }
-
+  // ── the bar ────────────────────────────────────────────────
+  // ⭐ MOVED TO announce.js, 2026-08-29 (G1). This file wrote the bar first; the
+  // announcement layer needs the identical mechanism, and two copies of a tremor loop
+  // would have drifted the first time one was tuned.
+  //
+  // 🔑 AMBIENT PRIORITY, NOT ANNOUNCEMENT PRIORITY. A trespass line is atmosphere;
+  // a tide warning is a promise about the next ten seconds. If both are due, the
+  // warning must win, and this call is what makes that true rather than a race.
   function show(server, p, text) {
-    var id = barId(p)
-    var st = state[String(p.uuid)]
-    if (!st) { st = state[String(p.uuid)] = { last: 0, lastLine: -1, epoch: 0 } }
-    st.epoch = st.epoch + 1
-
-    quiet(server, 'bossbar remove ' + id)          // clear any line still on screen
-    var made = run(server, 'bossbar add ' + id + ' ' + nameJson(text))
-    if (!made) {
-      console.warn(TAG + 'could not create a bar for ' + p.username + ' - the line is LOST')
+    try {
+      if (!VELDORA.announce || typeof VELDORA.announce.text !== 'function') {
+        console.warn(TAG + 'announce.js is missing - the trespass layer is INERT. ' +
+          'This is a FAILURE, not a quiet Nether.')
+        return false
+      }
+      return VELDORA.announce.text(server, p, text, VELDORA.announce.P_AMBIENT)
+    } catch (e) {
+      console.warn(TAG + 'the bar threw :: ' + e)
       return false
     }
-    quiet(server, 'bossbar set ' + id + ' color white')
-    quiet(server, 'bossbar set ' + id + ' style progress')
-    quiet(server, 'bossbar set ' + id + ' max ' + SHOW_TICKS)
-    quiet(server, 'bossbar set ' + id + ' value ' + SHOW_TICKS)
-    run(server, 'bossbar set ' + id + ' players ' + p.username)
-    step(server, p, id, text, SHOW_TICKS, st.epoch)
-    return true
   }
 
   // ── the roll ─────────────────────────────────────────────────────────────────
@@ -282,8 +220,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     lines: function (where) { return poolFor(where) },
     enabled: function () { return GATE },
     _pick: pick,
-    _jitter: jitter,
-    _nameJson: nameJson,
     _consider: consider,
   }
 
@@ -292,7 +228,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     console.info(TAG + 'THE TRESPASS LAYER live - ' + NETHER.length + ' Nether lines, ' +
       END.length + ' End lines, NO SPEAKER, ' + Math.round(CHANCE * 100) + '% per ' +
       Math.round(SWEEP / 20) + 's with a ' + Math.round(FLOOR_MS / 60000) + ' min floor. ' +
-      'Delivered on a BOSS BAR' + (SHAKE ? ' with a ' + SHAKE_TICKS + '-tick tremor' : '') + '.')
+      'Delivered on the announce.js bar at AMBIENT priority - a tide warning ' +
+      'outranks it.')
   })
 
   ServerEvents.commandRegistry(function (event) {

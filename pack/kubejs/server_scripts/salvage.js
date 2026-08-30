@@ -350,6 +350,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   function open(p, why) {
     if (!GATE) return false
     if (!p) return false
+
+    // ⭐ G1 - what it actually feels like when she turns up. She reads as a friendly
+    // shopkeeper, and this is the tell that she is not one.
+    try {
+      if (VELDORA.announce && p.server) VELDORA.announce.say(p.server, p, 'trade')
+    } catch (e) { }
     if (!VELDORA.ritual || typeof VELDORA.ritual.begin !== 'function') {
       console.error(TAG + 'ritual missing - Salvage cannot open')
       return false

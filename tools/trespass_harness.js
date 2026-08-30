@@ -78,10 +78,16 @@ const ri = console.info, rw = console.warn
 let warns = []
 console.warn = (m) => { warns.push(String(m)) }
 console.info = () => { }
+// ⚠️ ORDER MATTERS AND IT MATCHES THE SERVER. trespass.js no longer owns a bar; it
+// calls announce.js. Loading only trespass would test a version that does not exist.
+try { (0, eval)(fs.readFileSync(path.join(SS, 'announce.js'), 'utf8')) }
+catch (e) { console.info = ri; console.warn = rw; console.error('FAIL: announce.js threw on load :: ' + e); process.exit(1) }
 try { (0, eval)(fs.readFileSync(path.join(SS, 'trespass.js'), 'utf8')) }
 catch (e) { console.info = ri; console.warn = rw; console.error('FAIL: trespass.js threw on load :: ' + e); process.exit(1) }
 console.info = ri; console.warn = rw
 const T = global.VELDORA.trespass
+const A = global.VELDORA.announce
+if (!A) { console.error('FAIL: announce.js published nothing'); process.exit(1) }
 if (!T) { console.error('FAIL: trespass.js published nothing'); process.exit(1) }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -100,7 +106,7 @@ grp('🚨 THE ABSENCE — no speaker, no colour, no path')
   const anyGodColour = ['§4', '§5', '§6', '§2', '§b', '§e'].some(c =>
     T.lines('nether').concat(T.lines('end')).some(l => l.indexOf(c) !== -1))
   ok('🚨 no line carries a god colour code', anyGodColour, false)
-  ok('the bar name is explicitly white', T._nameJson('x').indexOf('"color":"white"') !== -1, true)
+  ok('the bar name is explicitly white', A._nameJson('x').indexOf('"color":"white"') !== -1, true)
 
   // ⚠️ Comments stripped, or the header's own promise about paths matches.
   ok('🚨 it never consults a path', src.indexOf('path') === -1, true)
@@ -131,7 +137,7 @@ grp('⭐ THE LINES — Ethan\'s, touched up, not rewritten')
   ok('every line ends in real punctuation',
     N.concat(E).every(l => '.?!'.indexOf(l[l.length - 1]) !== -1), true)
   ok('no line names a god',
-    N.concat(E).every(l => !/blade|wall|salvage|forge|art|crown/i.test(l)), true)
+    N.concat(E).every(l => !/\b(blade|wall|salvage|forge|art|crown)\b/i.test(l)), true)
 }
 
 grp('🔑 THE DIMENSION READ — and the failure that must not look like silence')
@@ -176,7 +182,7 @@ grp('⚠️ THE BAR — what actually reaches the screen')
   ok('it reports success honestly', fired, true)
 
   const all = sent.join('\n')
-  ok('a bar is created', all.indexOf('bossbar add veldora:trespass_') !== -1, true)
+  ok('a bar is created', all.indexOf('bossbar add veldora:announce_') !== -1, true)
   ok('⭐ the bar is WHITE - the unowned colour', all.indexOf('color white') !== -1, true)
   ok('it is shown to that player only', all.indexOf('players Ethan') !== -1, true)
   ok('a real line went into the name',
@@ -193,7 +199,7 @@ grp('⚠️ THE BAR — what actually reaches the screen')
 grp('⭐ THE TREMOR IS COSMETIC — it may move text, never change it')
 {
   for (let i = 0; i < 200; i++) {
-    const j = T._jitter('You are afraid.')
+    const j = A._jitter('You are afraid.')
     if (j.trim() !== 'You are afraid.') {
       ok('🚨 jitter altered the TEXT, not just its position', j, 'padding only')
       break
@@ -201,17 +207,17 @@ grp('⭐ THE TREMOR IS COSMETIC — it may move text, never change it')
   }
   ok('200 jitters never changed a character', true, true)
   ok('jitter only ever pads with spaces',
-    T._jitter('x').replace(/ /g, ''), 'x')
+    A._jitter('x').replace(/ /g, ''), 'x')
 }
 
 grp('⚠️ ESCAPING — a quote in a line must not break the JSON')
 {
   ok('a double quote is escaped',
-    T._nameJson('say "no"').indexOf('\\"no\\"') !== -1, true)
+    A._nameJson('say "no"').indexOf('\\"no\\"') !== -1, true)
   ok('a backslash is escaped',
-    T._nameJson('a\\b').indexOf('a\\\\b') !== -1, true)
+    A._nameJson('a\\b').indexOf('a\\\\b') !== -1, true)
   ok('the result is parseable JSON', (() => {
-    try { JSON.parse(T._nameJson('a "b" c\\d')); return true } catch (e) { return false }
+    try { JSON.parse(A._nameJson('a "b" c\\d')); return true } catch (e) { return false }
   })(), true)
 }
 

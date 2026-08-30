@@ -9,7 +9,7 @@ Regenerate after any change: restart, then re-run the generator.
 > Read with `docs/23` §VI.0 (the taxonomy) and each god's own doc - `40` Blade,
 > `43` Wall, `44` Salvage.
 
-**36 events across 3 gods.** Boot of 2026-08-16 16:18.
+**45 events across 5 gods.** Boot of 2026-08-29 20:35.
 
 ---
 
@@ -50,8 +50,8 @@ and its own `guard`. Failing any of those removes it from the draw entirely.
 | event | when it can fire | what it does |
 |---|---|---|
 | `tithe` | hostile, cd 4d, w1, medium/high | takes extra durability from the held item each second, CAPPED so it never breaks it |
-| `harden` **HELD** | safe, cd 2d, w4, low/medium/high | BUFF (forced) - resistance II AND weakness together, 3 min. He makes you hard to kill and slow to kill, so the fight lasts. ARMS the release window. HELD until the `harden` pool is written |
-| `burden` **HELD** | safe, cd 3d, w3, medium/high | BUFF (forced) - slowness II for 90s, a handicap not a gift. Does NOT arm the release window: punishing a death under a penalty he imposed would be a trap. HELD until the `burden` pool is written |
+| `harden` | safe, cd 2d, w4, low/medium/high | BUFF (forced) - resistance II AND weakness together, 3 min. He makes you hard to kill and slow to kill, so the fight lasts. ARMS the release window. |
+| `burden` | safe, cd 3d, w3, medium/high | BUFF (forced) - slowness II for 90s, a handicap not a gift. Does NOT arm the release window: punishing a death under a penalty he imposed would be a trap. |
 
 ### Challenge
 
@@ -70,13 +70,13 @@ and its own `guard`. Failing any of those removes it from the draw entirely.
 
 | event | when it can fire | what it does |
 |---|---|---|
-| `contract` **HELD** | SCENE, safe, cd 4d, w3, medium/high | CONTRACT (choice) - a kill order he ASKS for, on the same machinery as the Mark, and it pays on success. HELD until `contract_offer` is written |
+| `contract` | SCENE, safe, cd 4d, w3, medium/high | CONTRACT (choice) - a kill order he ASKS for, on the same machinery as the Mark, and it pays on success. |
 
 ### Duel
 
 | event | when it can fire | what it does |
 |---|---|---|
-| `wager` **HELD** | SCENE, hostile, cd 3d, w3, low/medium/high | DUEL (choice) - he OFFERS one strong opponent. Say yes and it arrives tagged; kill it and it pays iron/steel/diamond by tier. A choice always pays. HELD until the `wager_offer` pool is written |
+| `wager` | SCENE, hostile, cd 3d, w3, low/medium/high | DUEL (choice) - he OFFERS one strong opponent. Say yes and it arrives tagged; kill it and it pays iron/steel/diamond by tier. A choice always pays. |
 
 ---
 
@@ -100,7 +100,7 @@ buff (4 ev) · attack (1 ev) · invade (4 ev) · contract (1 ev)
 | `boon` | safe, cd 1d, wCURVE, low/medium/high | BOON - regeneration + absorption on her own champion. Weight falls as rage rises |
 | `feast` | safe, cd 1d, wCURVE, low/medium/high | BOON - saturation + regeneration. She feeds you before anything else |
 | `carry` | safe, cd 2d, wCURVE, low/medium/high | BOON - speed, jump and slow-fall for 90s. The web carries you |
-| `brood` | safe, cd 3d, wCURVE, low/medium/high | BOON - gives you 2 goety spider servants. NOTE: they count as raised minions, so this gift RAISES her rage and slides her toward attacking |
+| `brood` | safe, cd 3d, wCURVE, low/medium/high | BOON - gives you 2 goety spider servants. (Since 2026-08-16 they no longer feed her rage: rage watches the player, not the minion count.) |
 
 ### Contract
 
@@ -123,14 +123,13 @@ buff (4 ev) · attack (1 ev) · invade (4 ev) · contract (1 ev)
 
 *gold* - **11 events**
 
-**Roll share by kind:** boon 29% (4 ev) · misc 7% (3 ev) · duel 14% (1 ev) · attack 21% (1 ev) · support 7% (1 ev) · contract 21% (1 ev)
-
-> WARNING - **untagged, so they fall into `misc` at the lowest band:** collect, sample, tipoff
+**Roll share by kind:** boon 31% (6 ev) · attack 23% (2 ev) · duel 15% (1 ev) · support 8% (1 ev) · contract 23% (1 ev)
 
 ### Attack
 
 | event | when it can fire | what it does |
 |---|---|---|
+| `collect` | safe, cd 1d, wCURVE, low/medium/high | COLLECTS an outstanding debt - takes up to 4 levels. Only fires if you owe |
 | `sabotage` | SCENE, safe, cd 3d, wCURVE, low/medium/high | ATTACK (choice) - slowness + mining fatigue on the nearest other player, and it costs YOU 4 hunger. She will not do it unasked |
 
 ### Boon
@@ -139,7 +138,9 @@ buff (4 ev) · attack (1 ev) · invade (4 ev) · contract (1 ev)
 |---|---|---|
 | `deal` | SCENE, safe, cd 1d, wCURVE, low/medium/high | TRADE - opens her counter (salvage.js): hunger, levels or sight. Terms scale with harness |
 | `credit` | SCENE, safe, cd 2d, wCURVE, low/medium/high | TRADE - strength now, a real debt written. One tab at a time |
+| `sample` | safe, cd 2d, wCURVE, low/medium/high | FREE - speed + night vision, no cost. The first one always is. Heaviest at low harness |
 | `markup` | SCENE, safe, cd 2d, wCURVE, low/medium/high | TRADE - resistance for 3 levels, openly a bad rate. Low harness only. She is not cheating; that IS the stranger price |
+| `tipoff` | safe, cd 2d, wCURVE, low/medium/high | FREE - a guidance line at no cost. Good customers only, which makes it the most suspicious thing she does |
 | `insurance` | SCENE, safe, cd 4d, wCURVE, low/medium/high | TRADE - 6 hunger now, and your NEXT death pays out resistance III + regeneration. She always keeps her word |
 
 ### Contract
@@ -160,25 +161,8 @@ buff (4 ev) · attack (1 ev) · invade (4 ev) · contract (1 ev)
 |---|---|---|
 | `favour` | SCENE, safe, cd 4d, wCURVE, low/medium/high | ⭐ SUPPORT (choice) - regeneration + absorption on ANOTHER player, paid for with 3 of YOUR levels. The only event in the game that helps somebody who is not the caster |
 
-### -
-
-| event | when it can fire | what it does |
-|---|---|---|
-| `collect` | safe, cd 1d, wCURVE, low/medium/high | COLLECTS an outstanding debt - takes up to 4 levels. Only fires if you owe |
-| `sample` | safe, cd 2d, wCURVE, low/medium/high | FREE - speed + night vision, no cost. The first one always is. Heaviest at low harness |
-| `tipoff` | safe, cd 2d, wCURVE, low/medium/high | FREE - a guidance line at no cost. Good customers only, which makes it the most suspicious thing she does |
-
 ---
 
 ## Held, and why
 
-These are **built and registered but refuse to fire** - their line pools are
-empty and `voice.js`'s rule is that a caller must never substitute its own text.
-An event that runs mute is worse than one that waits.
-
-* `blade/harden`
-* `blade/burden`
-* `blade/wager`
-* `blade/contract`
-
-Sheets for the missing lines: **`docs/45` §12**.
+Nothing is currently held.

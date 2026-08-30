@@ -377,6 +377,7 @@ it can be done tonight.
 | **C1** | `tectonic.json` `min_y` back to **−64** |
 | **C2** | **Generate.** ⚠️ Everything in B must be settled first |
 | **C3** | Free with the reset: Crown → Wall · The Arrival · `/path forcereset` |
+| **C4** | ⛔ **REMOVE `the-knocker`** — Ethan, 2026-08-29. *"An unpredictable human-like stalker that follows and visits."* ⚠️ Staged for the reset, not done now: pulling a mod whose entities are already in a live world leaves them as unknown-entity stubs. 🔑 Change `index.toml`, `pack.toml`'s index hash and `resolved.json` **together** — a `.pw.toml` deleted alone is invisible to the installer, and a stale index hash makes every client refuse the pack |
 
 ### D — the night (`70`) · *the big new system*
 
@@ -791,3 +792,76 @@ the start of a comment; the four given proper `god/tag` specs.
 lists all of it. Nothing blocks it.
 
 **578 passed / 0 failed across 16 harnesses. Live 56/56, 0 errors.**
+
+---
+
+# ✅ G1 DONE — the bar is for what is ABOUT to happen
+
+Ethan, 2026-08-29: *"The shaking text above with the boss bar genuinly looks good, but
+I am not sure if it works well for god dialogue. Instead we can add it as Announcements
+of something going to happen."*
+
+⛔ **God dialogue stays in chat** — a god says load-bearing things and a bar is gone in
+four seconds. ⭐ **An announcement is the opposite kind of text**: it is about the next
+ten seconds, it is nobody's speech, and it is worthless later. The bar's weaknesses are
+exactly its strengths here.
+
+## What landed
+
+**`announce.js`** owns the bar now. `trespass.js` wrote it first and **consumes it** —
+one tremor loop, not two that drift. Five pools, **fifteen lines, all Ethan's**, wired to
+four real consumers:
+
+| pool | fires when | audience |
+|---|---|---|
+| `tide` / `tide_boss` | a wave is composed, register chosen by the wave's own `boss` flag | the player it lands on |
+| `boon` | any `boon`/`buff` event, at the one chokepoint all 45 pass through | the receiver |
+| `wall_attack` | Wall's spiders are sent | 🚨 **the VICTIM, not her champion** |
+| `trade` | Salvage opens a deal | the trader |
+
+## 🚨 The audience bug that was one line away
+
+`godevents.js` is a single chokepoint for all 45 events — the obvious place to announce
+everything. ⚠️ **But an `invade` picks its victim INSIDE its run function**, so `p` there
+is Wall's *champion*, not the player about to be covered in spiders. Announcing
+`wall_attack` from the chokepoint would have **warned the attacker and ambushed the
+target** — and it would have looked correct to whoever tested it, because they would be
+the champion and they would see a line. Wall announces from `sendSpiders`, where the
+target is actually known.
+
+## 🔑 Priority: one bar, so something loses
+
+Announcements outrank ambience; a lower-priority line is **DROPPED, not queued**.
+⭐ Queuing would be wrong: an announcement is a promise about the next few seconds, so
+showing *"something is watching you"* after the wave already landed is not a delayed
+warning, it is a false one.
+
+## ⛔ The level-loss line is gone, and the cost is not
+
+Ethan: *"the death cost 'you lost 5 levels' that doesn't need to be a line."*
+⚠️ **This reverses a stated principle** — *"the legibility law: every cost is named as it
+is paid"* — so it is recorded in the file rather than deleted. 🔑 The counter-argument is
+stronger: **Minecraft already says this.** The XP bar empties on the respawn screen. The
+line narrated a number the player can already see. The **cost is unchanged** and the
+server still logs every charge.
+
+## 🔴 Three of my own instruments were broken, one destructively
+
+1. **A dead assertion.** A heredoc ate a backslash level and wrote a real **0x08
+   BACKSPACE** where `\b` was meant. The regex became `/<BS>(blade|wall|…)<BS>/` — it
+   searched for a backspace byte, matched nothing ever, and **passed vacuously**. It
+   would no longer have caught the thing it was written to catch. 🚨 **A green assertion
+   that cannot fail is worse than a missing one.** Found only because a *different*
+   assertion's result contradicted a direct test of the same regex.
+2. **`art` matched inside "heart".** *"You feel terror grip your heart"* tripped a
+   god-name check. Word boundaries, then a planted `Blade` to prove it goes red.
+3. **🔴 I truncated this file to 0 bytes.** `io.open(path, 'w')` truncates *at open*;
+   my write then raised `UnicodeEncodeError` on a surrogate escape and never wrote.
+   ⚠️ **Assert-before-write does not protect against this** — the damage happens before
+   the write. Recovered from git. **Edit the file directly, or write-temp-then-rename.**
+
+⭐ `rhino_lint.py` now catches **any** control character, in `tools/` as well as
+`server_scripts/` — the backspace landed in a harness, which it was not scanning.
+Verified against a planted byte.
+
+**617 passed / 0 failed across 17 harnesses. Live 57/57, 0 errors.**

@@ -670,6 +670,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
     busy = true
     var ok = false
+
+    // ⭐ G1 - a gift is about to land. This is the single chokepoint all 45 events
+    // pass through, so boon/buff are announced here rather than in five god files.
+    //
+    // 🚨 ONLY boon AND buff. An `invade` passes through here too, but its victim is
+    // chosen INSIDE the run function - `p` here is the CHAMPION, not the player the
+    // spiders are sent to. Announcing wall_attack from this line would tell the wrong
+    // person entirely. wall_events.js does it where the target is actually known.
+    try {
+      if (VELDORA.announce && (ev.kind === 'boon' || ev.kind === 'buff')) {
+        VELDORA.announce.say(server, p, 'boon')
+      }
+    } catch (e2) { }
+
     try { ok = ev.run(server, p, e.tier) } catch (err) {
       console.error(TAG + god + '/' + ev.id + ' threw :: ' + err)
     }

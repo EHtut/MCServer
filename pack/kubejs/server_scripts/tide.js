@@ -521,6 +521,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   // ── the wave ───────────────────────────────────────────────────────────────
+  // ⭐ G1 - THE ANNOUNCEMENT. Fired here, where the wave's own composition is
+  // known, so `boss` picks the register rather than a caller guessing.
+  //
+  // ⚠️ THIS DOES NOT REPLACE `warn_wave`. That is your PATRON reacting, in chat, in
+  // their colour; this is the world, on the bar, from nobody. Different speakers
+  // saying different things - collapsing them would lose the second.
+  function announceWave(p, mod) {
+    try {
+      if (!VELDORA.announce || typeof VELDORA.announce.say !== 'function') return
+      var srv = p.server
+      if (!srv) return
+      VELDORA.announce.say(srv, p, (mod && mod.boss) ? 'tide_boss' : 'tide')
+    } catch (e) { }
+  }
+
   function sendWave(p, st, forcedMod) {
     var y = depthOf(p)
     if (y === null) return
@@ -536,6 +551,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var tier = tierFor(srv, p)
     var ids = comp.ids
     st.waves++
+
+    // ⭐ G1 - ANNOUNCE IT, here, after the modifier is resolved and before the mobs
+    // are placed. `MODS[modName].boss` is the same flag the composer used, so the
+    // register cannot disagree with the wave the player is about to meet.
+    announceWave(p, MODS[modName])
 
     // ⭐⭐ ESCALATION IS LIFETIME NOW, AND IT HAD TO BE. The ramp was written when
     // waves came every 5-10 minutes and one descent saw four of them. At 1-2 hour

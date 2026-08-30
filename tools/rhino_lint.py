@@ -82,6 +82,31 @@ def strip(src):
     return ''.join(out)
 
 
+# ── control characters ────────────────────────────────────────────────────────
+# Started as a NUL check: one stray NUL in nemesis_tally.js made the whole file read
+# as BINARY to grep, hiding it from a tree-wide sweep.
+#
+# 🔴 Widened 2026-08-29 after a worse one. A shell heredoc ate a backslash level and
+# wrote a real 0x08 BACKSPACE into a harness where `\b` was meant. The regex became
+# `/<BS>(blade|wall|...)<BS>/`, which searches for a backspace byte, matches nothing
+# ever, and made the assertion pass VACUOUSLY - it would no longer catch the thing it
+# was written to catch. Nothing about the file looked wrong, grep showed nothing, and
+# the suite was green.
+#
+# ⚠️ A GREEN ASSERTION THAT CANNOT FAIL IS WORSE THAN A MISSING ONE.
+_ALLOWED = set(['\t', '\n', '\r'])
+
+
+def ctrl_chars(raw):
+    seen = {}
+    for ch in raw:
+        if ord(ch) < 32 and ch not in _ALLOWED:
+            seen[ord(ch)] = seen.get(ord(ch), 0) + 1
+    if not seen:
+        return None
+    return ', '.join('0x%02x x%d' % (k, v) for k, v in sorted(seen.items()))
+
+
 def line_of(src, idx):
     return src.count('\n', 0, idx) + 1
 
@@ -144,20 +169,34 @@ def main():
 
     for f in files:
         raw, found = globals_in(os.path.join(SS, f))
-        if '\x00' in raw:
-            nul.append((f, raw.count('\x00')))
+        bad = ctrl_chars(raw)
+        if bad:
+            nul.append((f, bad))
         for name, ln in found:
             if name in SHARED:
                 continue
             owners[name].append((f, ln))
 
+    # The harnesses too. The worst control character this repo has seen landed in a
+    # HARNESS, not a script, and this tool was not looking there.
+    TOOLS = os.path.join(ROOT, 'tools')
+    for f in sorted(os.listdir(TOOLS)):
+        if not f.endswith('.js'):
+            continue
+        try:
+            bad = ctrl_chars(io.open(os.path.join(TOOLS, f), encoding='utf-8').read())
+        except Exception:
+            continue
+        if bad:
+            nul.append(('tools/' + f, bad))
+
     problems = 0
 
     if nul:
-        print('\nNUL BYTES - these files read as BINARY to grep, and a tree-wide')
-        print('sweep will silently skip them:')
+        print('\nCONTROL CHARACTERS - invisible in every editor, and they do not')
+        print('always announce themselves by breaking something:')
         for f, c in nul:
-            print('  %-28s %d byte(s)' % (f, c))
+            print('  %-30s %s' % (f, c))
         problems += len(nul)
 
     collisions = dict((k, v) for k, v in owners.items() if len(v) > 1)
