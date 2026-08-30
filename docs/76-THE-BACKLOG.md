@@ -94,6 +94,61 @@ the `met`/stage state per player. Collapsing two entries into one is a DATA MIGR
 someone who has met the Speaker must not meet Caebrim again as a stranger, because *"the
 first thing a speaker ever says is precisely the line that must not repeat."*
 
+## E7 · ⭐ THE FULL DIALOGUE REFRESH — and it is bigger than the five documents
+
+> Ethan, 2026-08-30: *"add all dialogue onto my backlog for a refresh."*
+
+**The five god documents are not "all dialogue". They are about 60% of it.**
+
+### What you already have a document for
+
+| god | whole lines | tags | fragment tags | combined | systems |
+|---|---|---|---|---|---|
+| **blade** | 239 | 47 | 7 | 616 | 8 |
+| **salvage** | 192 | 52 | 8 | 560 | 12 |
+| **wall** | 187 | 38 | 7 | 624 | 11 |
+| **forge** | 156 | 43 | 0 | — | 10 |
+| **art** | 107 | 23 | 0 | — | 6 |
+| | **881** | 203 | 22 | **1800** | |
+
+### 🔴 What has NO document, and cannot get one today — 591 lines across 27 files
+
+`dialogue_doc.py` maps each god to **exactly one file** (`<god>_voice.js`) and loads only
+that. Anything written anywhere else is invisible to it — not filtered out, never read.
+
+| file | lines | what it is |
+|---|---|---|
+| `deep_speaker.js` | **177** | 🔑 **Caebrim, both of her.** The single biggest block of unreviewed dialogue in the game, and the subject of **E6** |
+| `introductions.js` | **98** | ⭐ **First contact with each god** — literally the first thing a player ever hears one say |
+| `pathless.js` | 60 | the gods overheard by someone with no path |
+| `regard.js` | 37 | how a god speaks about *you* |
+| `whispers.js` · `stalker.js` | 24 · 23 | your god muttering · the thing following you |
+| `blade_events.js` · `salvage_events.js` · `wall_events.js` · `art_events.js` · `forge_events.js` | 23 · 18 · 14 · 14 · 4 | **per-god event lines that never went through the pools** |
+| `salvage_deals.js` · `art_deal.js` | 17 · 5 | the deals |
+| `tidewhispers.js` | 12 | the dead during a tide (all `[CLAUDE-DRAFT]`) |
+| `paths.js` · `salvage.js` · `waves.js` · `forge_talk.js` · `trespass.js` · `fall.js` · `ritual.js` + 6 more | 12 · 11 · 9 · 8 · 7 · 5 · 4 · … | scattered |
+
+⚠️ **The per-god `*_events.js` lines are the trap.** A writer reading `blade.md` reasonably
+believes they have seen everything Blade says. They have not seen 23 of his lines, and
+nothing in the document says so.
+
+### 🖊️ 113 `[CLAUDE-DRAFT]` lines, not 86
+
+The figure in **E4** was stale — it has grown as new systems landed. Current:
+
+```
+forge_voice 22 · salvage_voice 17 · blade_voice 17 · tidewhispers 14 · deep_speaker 12
+wall_voice 11 · art_voice 10 · introductions 4 · salvage_deals 2 · forge_talk 2
+art_events 1 · art_deal 1
+```
+
+### What I owe you before this is actually one job — **C6**
+
+The refresh is not blocked on me for the five gods; those documents are live and
+`blade.md` is already in your hands. It **is** blocked for the other 591 lines.
+
+---
+
 ## E3 · Forge's writing overhaul
 
 *"shorter, with more periods, and more akin to rambling."* Her pools are written as
@@ -151,6 +206,34 @@ are three claimants on one screen. `announce.js` already solved exactly this for
 *one surface, so something has to lose, and a warning behind an ambience line is a warning
 that never came*. Building any of the three before the referee means retrofitting it into
 all three.
+
+## C6 · Make the extractor see all the dialogue — **blocks E7**
+
+`dialogue_doc.py` has `FILES = {blade: blade_voice.js, ...}` — one god, one file, and it
+loads nothing else. So **591 lines across 27 files** cannot be put in front of Ethan at
+all (E7 has the table).
+
+Three things, in order:
+
+1. **Multi-file gods.** A god's document should cover every file that speaks as them —
+   `blade_voice.js` *and* `blade_events.js`, and so on. The extractor already runs the
+   script rather than parsing it, so this is a list change plus a merge, not a rewrite.
+2. **Non-god speakers.** `deep_speaker.js` (177 lines — Caebrim) and `tidewhispers.js`
+   (the dead) have no entry at all. 🔴 And `tidewhispers.js` **documents a command that
+   does not work** — its header tells you to run `dialogue_doc.py extract undead`, which
+   answers *"unknown god 'undead'"*. I wrote that line; it is a lying banner and it is
+   fixed in the same commit as this finding.
+3. **Off-pool dialogue.** Much of the 591 is not in `registerLines` at all — it is object
+   literals (`introductions.js`) and keyed fields (`salvage_deals.js`: `pitch`/`yes`/
+   `after`). ⚠️ **Do not "fix" that by moving it into the pools.** Those shapes exist
+   because a deal needs three linked strings and an intro needs a named sequence; the
+   pool API is a flat bag of interchangeable lines and would destroy the structure. The
+   extractor learns to read them; the scripts do not change to suit the extractor.
+
+⚠️ **A count is not coverage.** The 591 above comes from a regex over string literals, so
+treat it as a floor and let the real extractor produce the true number — the first pass
+already undercounted by 176 because it only matched bare array entries and missed every
+`pitch: "..."` field.
 
 ## C3 · Player action pass
 

@@ -60,9 +60,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   // ══════════════════════════════════════════════════════════════════════════
   // 🖊️ ETHAN'S, NOT MINE. These are [CLAUDE-DRAFT] placeholders so the system can be
-  // built and seen; the dead are his to write. They are registered through the normal
-  // voice pools, so `python tools/dialogue_doc.py extract undead` pulls them into a
-  // document exactly like a god's.
+  // built and seen; the dead are his to write.
+  //
+  // 🔴 THIS COMMENT USED TO CLAIM `dialogue_doc.py extract undead` produced a document
+  // for them. IT DOES NOT - the tool answers "unknown god 'undead'", because its FILES
+  // map holds five gods and one file each. Registering through the normal voice pools
+  // is necessary and not sufficient; the extractor also has to have been told the
+  // speaker exists. The claim was never true and was never run.
+  //
+  // ⚠️ So these lines are currently unreachable by the writing pass - C6/E7 in
+  // docs/76, along with 591 others.
   //
   // 🔑 THE REGISTER THEY HAVE TO HOLD: these are not sentences. They are the pieces of
   // one that never finished — no capital, no full stop, no speaker. A whisper that
