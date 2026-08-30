@@ -253,6 +253,24 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // one, and neither is right.
   function actionbar(server, p, text) {
     if (!GATE || !p || !text) return false
+
+    // ⭐ PREFERRED: a real anchored message just above the hotbar. `/title actionbar`
+    // was the closest vanilla could get and it is kept below as the fallback.
+    //
+    // ⚠️ NO SHAKE HERE, deliberately. This is the aftermath sting - something that
+    // ALREADY happened. Shaking it would make it read as a warning, which is the one
+    // thing it is not.
+    try {
+      if (VELDORA.im && typeof VELDORA.im.show === 'function') {
+        if (VELDORA.im.show(p, text, {
+          seconds: 3,
+          anchor: 'BOTTOM_CENTER',
+          y: 40,
+          fade: true,
+        })) return true
+      }
+    } catch (e) { }
+
     try {
       run(server, 'title ' + p.username + ' actionbar ' + nameJson(text))
       return true

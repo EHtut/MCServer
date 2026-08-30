@@ -69,6 +69,28 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   function keyOf(p) { try { return String(p.uuid) } catch (e) { return null } }
   function tell(p, s) { try { p.tell(Text.of(s)) } catch (e) { } }
 
+  // ⭐ The scene's speech, on screen. CENTER_CENTER because a ritual has already taken
+  // the world away - there is nothing else on the screen to avoid, and centre is where
+  // somebody in the dark is looking.
+  //
+  // ⚠️ Fails soft and silently: a scene that half-renders is worse than one that
+  // renders plainly, and the chat copy has already gone out by the time this runs.
+  function ritualOverlay(p, text, colour) {
+    try {
+      if (!VELDORA.im || typeof VELDORA.im.show !== 'function') return false
+      var t = String(text)
+      if (t.charAt(0) === '*') t = t.substring(1)      // narration marker, not speech
+      if (!t) return false
+      return VELDORA.im.show(p, VELDORA.garble ? VELDORA.garble.strip(t) : t, {
+        seconds: 4,
+        anchor: 'CENTER_CENTER',
+        typewriter: 1.0,
+        fade: true,
+        wrap: 260,
+      })
+    } catch (e) { return false }
+  }
+
   // ── ⭐ SCENES ARE PATRON SPEECH, SO THEY ARE PATRON-COLOURED ────────────────
   // Measured live 2026-08-15 (Ethan): the Sharpen bargain rendered in plain WHITE,
   // and so did the Harvest cutscene and Salvage's trade. Every caller was passing
@@ -260,13 +282,30 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       })(s)
     }
 
-    // The lines.
+    // ════════════════════════════════════════════════════════════════════════
+    // ⭐ THE TEXT MOVES; NOTHING ELSE DOES. Ethan, 2026-08-29:
+    //
+    //     "for ritual, no week keep all the affects, we're just moving where the text
+    //      goes."
+    //
+    // 🔑 SO THE BLINDNESS, THE HOLD, THE PACING AND THE DETARGET ALL STAY. A ritual is
+    // supposed to stop the world - that IS what a ritual is here, and replacing it with
+    // an overlay would have changed the thing rather than where it renders. The only
+    // change is that the SPEECH is drawn on screen instead of in the chat log.
+    //
+    // ⚠️ THE OPTIONS DO NOT MOVE, AND THEY CANNOT. They are clickable chat components
+    // (`clickRunCommand`), and an ImmersiveMessage overlay is drawn, not clicked. Moving
+    // them would leave a scene nobody can answer. Speech on screen, choices in chat.
+    //
+    // ⚠️ AND CHAT STILL GETS THE SPEECH TOO. Same reasoning as voice.js: an overlay is
+    // gone in seconds and a ritual line is often the only place a thing is ever said.
     for (var i = 0; i < lines.length; i++) {
       (function (idx, text) {
         server.scheduleInTicks(LEAD + (idx * gap), function () {
           try {
             if (!STATE[k]) return                 // cancelled or logged out
             tell(p, paint(text, colour))
+            ritualOverlay(p, text, colour)
           } catch (e) { }
         })
       })(i, lines[i])

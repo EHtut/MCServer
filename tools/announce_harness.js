@@ -325,5 +325,44 @@ grp('⭐ THE GODS ON SCREEN — and chat keeps the record')
   ok('🚨 chat still gets the hand-woven version', vo.indexOf('function paint(') !== -1, true)
 }
 
+grp('⭐ THE RITUAL — the text moves, nothing else does')
+{
+  const ri = code('ritual.js')
+
+  // 🚨 Ethan: "keep all the affects, we're just moving where the text goes." A
+  // ritual is SUPPOSED to stop the world - that is what a ritual is here.
+  // ⚠️ MY FIRST VERSION GUESSED THE STRING ('effect give ') and went red against
+  // CORRECT code - ritual.js applies its effects from an EFFECTS table, not an inline
+  // command. Assert the table, which is the thing that actually decides.
+  ok('🚨 the blindness table is intact',
+    ri.indexOf("['minecraft:blindness', 0]") !== -1, true)
+  ok('🚨 the hold still runs', ri.indexOf('holdAfterChoice') !== -1, true)
+  ok('⭐ ...and the speech now also goes on screen',
+    ri.indexOf('ritualOverlay(p, text, colour)') !== -1, true)
+  ok('🚨 while chat still gets it', ri.indexOf('tell(p, paint(text, colour))') !== -1, true)
+
+  // ⚠️ THE OPTIONS CANNOT MOVE. They are clickable chat components; an overlay is
+  // drawn, not clicked. Moving them leaves a scene nobody can answer.
+  ok('🚨 the options stay clickable in CHAT',
+    ri.indexOf("clickRunCommand('/ritual pick ") !== -1, true)
+  const ov = ri.indexOf('function ritualOverlay')
+  const ovEnd = ri.indexOf('function ', ov + 10)
+  const ovBody = ov !== -1 ? ri.slice(ov, ovEnd) : ''
+  ok('🚨 ...and the overlay never renders an option',
+    ovBody.indexOf('options') === -1 && ovBody.indexOf('label') === -1, true)
+
+  ok('⭐ a ritual centres, because the world is already gone',
+    ri.indexOf("anchor: 'CENTER_CENTER'") !== -1, true)
+
+  const an = code('announce.js')
+  // ⚠️ The aftermath sting must NOT shake - shaking makes it read as a warning.
+  const ab = an.indexOf('function actionbar')
+  const abEnd = an.indexOf('function pick', ab)
+  const abBody = ab !== -1 ? an.slice(ab, abEnd) : ''
+  ok('🚨 the aftermath sting does not shake', abBody.indexOf('shake') === -1, true)
+  ok('⚠️ ...and still falls back to /title actionbar',
+    abBody.indexOf("' actionbar '") !== -1, true)
+}
+
 console.log('\n' + B + (fail ? R + fail + ' FAILED, ' : G) + pass + ' passed' + X)
 process.exit(fail ? 1 : 0)
