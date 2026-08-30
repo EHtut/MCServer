@@ -398,8 +398,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // exactly that - it needs the Java API, not this command.
         typewriter: TYPEWRITER,
         seconds: o.seconds,
-        shake: !!(o.shake || st.shake),
-        italic: !!(o.italic || st.italic),
+        // 🔑 A GOD'S STYLE OVERRIDES ITS TONE, INCLUDING TO SWITCH SOMETHING OFF.
+        // This was `o.shake || st.shake`, which could only ever ADD - so the `weight`
+        // tone forced a shake onto Art, who is characterised by NOT moving. Shaking
+        // reads as panic; she plants herself in the middle and does not flinch.
+        //
+        // ⚠️ `hasOwnProperty`, not truthiness: a style that says `shake: false` is
+        // stating something, and `||` cannot tell that apart from saying nothing.
+        shake: !!(st.hasOwnProperty('shake') ? st.shake : o.shake),
+        italic: !!(st.hasOwnProperty('italic') ? st.italic : o.italic),
+        wave: !!st.wave,
+        bold: !!st.bold,
         background: !!o.background,
         size: (typeof st.size === 'number') ? st.size : o.size,
         font: st.font,

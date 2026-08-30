@@ -365,6 +365,42 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   ServerEvents.loaded(function (event) {
     if (!VELDORA.voice) { console.error(TAG + 'voice.js missing'); return }
     VELDORA.voice.setColour(GOD, COLOUR)
+
+    // ⭐⭐ SHE STANDS IN THE MIDDLE AND BLOCKS YOUR VIEW. Ethan, 2026-08-30:
+    // *"Art - Straight in the middle of the screen. She demands to be heard."*
+    //
+    // 🔑 THE OPPOSITE OF BLADE, ON PURPOSE. He sits at the top and talks DOWN at you;
+    // she plants herself dead centre where you cannot look past her. Same mechanism,
+    // opposite meaning - the position IS the characterisation, so neither number should
+    // ever be "tidied" to match the other.
+    //
+    // ⚠️ CENTER_CENTER with NO y. Every other god needs an offset to clear something;
+    // she is the one who should be in the way.
+    if (typeof VELDORA.voice.setStyle === 'function') {
+      VELDORA.voice.setStyle(GOD, {
+        anchor: 'CENTER_CENTER',
+
+        // ⭐ THE DANCING IS THE WAVE, NOT THE FONT. Ethan asked for *"Elegant, almost
+        // dancing across your screen"*, and those are two different jobs: Cormorant
+        // Garamond is a high-contrast old-style face that is elegant and STILL, and the
+        // mod's `wave` flag moves it. A font that danced by itself would fight the
+        // animation instead of carrying it, and would stop being elegant at rest.
+        wave: true,
+
+        // Her dark blue, ruled 2026-08-29, now on the screen as a real colour rather
+        // than a section code the overlay never saw (that was the D-123 side-finding).
+        font: 'veldora:art',
+
+        // She is the loudest presence of the five without shaking - shaking reads as
+        // panic, and she is not panicking. She is simply not moving.
+        //
+        // ⚠️ EXPLICITLY FALSE, not merely unset. The `weight` tone turns shake ON for
+        // threats and demands, which is most of what she says; a style that only added
+        // to its tone could never take that back. She does not flinch.
+        shake: false,
+        size: 1.25,
+      })
+    }
     var n = 0, tags = 0
     for (var k in LINES) {
       if (!LINES.hasOwnProperty(k)) continue

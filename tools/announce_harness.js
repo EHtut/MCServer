@@ -542,4 +542,42 @@ grp('* PER-GOD SPEAKING STYLE - 2026-08-30')
     /VELDORA\.im\.hexFor\(colourOf\(god\)\)/.test(vo3), true)
 }
 
+
+// -------------------------------------------------------------------------
+grp('* ART - dead centre, and she does not flinch')
+{
+  const vo4 = code('voice.js')
+  const ar = code('art_voice.js')
+
+  // Ethan: "Art - Straight in the middle of the screen. She demands to be heard."
+  ok('art is styled in her own file', /setStyle\(GOD, \{/.test(ar), true)
+  ok('...dead centre', /anchor: 'CENTER_CENTER'/.test(ar), true)
+  // Every other god needs an offset to clear something. She is the one who should be
+  // in the way, so she takes none.
+  ok('...with no y offset at all', /anchor: 'CENTER_CENTER',\s*\n\s*\n?\s*\/\//.test(ar) || !/y: -?\d+/.test(ar), true)
+
+  // "Elegant, almost dancing across your screen" is TWO jobs. The face is elegant and
+  // still; the mod's wave flag does the dancing.
+  ok('...she waves', /wave: true/.test(ar), true)
+  // 🔴 DECLARING IT IS NOT EMITTING IT. Removing `wave: !!st.wave` from overlay() left
+  // this group green, because every wave assertion looked at art_voice.js - the
+  // DECLARATION - and nothing looked at the wiring. A style key nothing reads is a
+  // comment.
+  ok('...and the overlay actually EMITS wave', /wave: !!st\.wave/.test(vo4), true)
+  ok('...in Cormorant Garamond', /font: 'veldora:art'/.test(ar), true)
+
+  // 🔴 THE SUPPRESSION RULE. This was `o.shake || st.shake`, which could only ADD - so
+  // the `weight` tone forced a shake onto Art, who is characterised by NOT moving.
+  // Shaking reads as panic; she plants herself and does not flinch.
+  ok('🔴 she does NOT shake, explicitly', /shake: false/.test(ar), true)
+  ok('...and a style can SUPPRESS its tone, not only add to it',
+    /st\.hasOwnProperty\('shake'\) \? st\.shake : o\.shake/.test(vo4), true)
+  ok('...by hasOwnProperty, since || cannot tell false from unset',
+    /st\.hasOwnProperty\('italic'\) \? st\.italic : o\.italic/.test(vo4), true)
+
+  ok('...and her font exists in the resource pack',
+    fs.existsSync(path.join(__dirname, '..', 'pack', 'resourcepacks', 'veldora',
+      'assets', 'veldora', 'font', 'art.ttf')), true)
+}
+
 process.exit(fail ? 1 : 0)
