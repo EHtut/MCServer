@@ -398,10 +398,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     //
     // Every subcommand drives the REAL overlay() with a real tag, so what you see is
     // what a god would actually produce - not a mock that can drift away from it.
+    // ⭐ TEST DURATIONS ARE LONG ON PURPOSE. Ethan, 2026-08-30: "for the command
+    // messages they should last alot longer for testing purposes."
+    //
+    // ⚠️ This overrides ONLY the duration, and only for /gd. The tone table keeps its
+    // real gameplay values (6s weight, 8s bargain, 5s quiet) - a test that changed the
+    // thing being tested would be measuring itself.
+    var TEST_SECONDS = 45
     function shot(label, god, tag, text) {
       return Commands.literal(label).executes(function (ctx) {
         var p = ctx.source.player
-        var okd = overlay(p, god, text, tag)
+        var okd = overlay(p, god, text, tag, { seconds: TEST_SECONDS })
         p.tell(Text.of('§8' + label + ' §7tag=§f' + tag +
           ' §8-> §f' + (okd ? 'sent' : 'FAILED')))
         return 1
@@ -420,7 +427,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // the interior surface - no god, no colour, no chime
       .then(Commands.literal('aside').executes(function (ctx) {
         var p = ctx.source.player
-        var okd = aside(p, 'You have been holding your breath again.')
+        var okd = aside(p, 'You have been holding your breath again.',
+          { seconds: TEST_SECONDS })
         p.tell(Text.of('§8aside -> §f' + (okd ? 'sent' : 'FAILED')))
         return 1
       }))
@@ -436,13 +444,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           '§8   other: §f' + (other || 'none registered')))
         if (mine) {
           overlay(p, mine, 'This one is yours and should read clean.', 'about_' + mine,
-            alignedTo(p, mine) ? null : { obfuscate: 'RANDOM' })
+            alignedTo(p, mine) ? { seconds: TEST_SECONDS }
+                               : { seconds: TEST_SECONDS, obfuscate: 'RANDOM' })
         }
         if (other) {
           var delay = mine ? 40 : 0
           p.server.scheduleInTicks(delay, function () {
             overlay(p, other, 'This one is not yours and should be garbled.',
-              'about_' + other, alignedTo(p, other) ? null : { obfuscate: 'RANDOM' })
+              'about_' + other, alignedTo(p, other)
+                ? { seconds: TEST_SECONDS }
+                : { seconds: TEST_SECONDS, obfuscate: 'RANDOM' })
           })
         }
         if (!mine) p.tell(Text.of('§8pathless, so EVERY god garbles - that is correct'))
@@ -482,12 +493,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       .then(Commands.literal('place').executes(function (ctx) {
         var p = ctx.source.player
         VELDORA.im.show(p, 'CONTROL - no y at all, top of screen',
-          { anchor: 'TOP_CENTER', seconds: 12 })
+          { anchor: 'TOP_CENTER', seconds: TEST_SECONDS })
         var YS = [-80, -60, -40, -20, 0, 20, 40]
         for (var i = 0; i < YS.length; i++) {
           (function (yv) {
             VELDORA.im.show(p, 'y = ' + yv,
-              { anchor: 'BOTTOM_CENTER', y: yv, seconds: 12, typewriter: false })
+              { anchor: 'BOTTOM_CENTER', y: yv, seconds: TEST_SECONDS, typewriter: false })
           })(YS[i])
         }
         p.tell(Text.of('§8Look at the screen. Whichever §fy = N§8 sits just above'))
@@ -498,7 +509,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       .executes(function (ctx) {
         var p = ctx.source.player
         p.tell(Text.of('§8/gd §fweight bargain quiet plain aside bicker place type'))
-        p.tell(Text.of('§8tones are matched on the TAG; lift=§f' + HOTBAR_LIFT))
+        p.tell(Text.of('§8tones are matched on the TAG; lift=§f' + HOTBAR_LIFT +
+          '§8  test duration=§f' + TEST_SECONDS + 's'))
         return 1
       }))
 

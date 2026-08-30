@@ -462,7 +462,14 @@ grp('* THE GOD DIALOGUE PASS - 2026-08-30')
     ['weight','bargain','quiet','plain','aside','bicker','place']
       .every(n => vo2.indexOf("'" + n + "'") !== -1), true)
   ok('...and it drives the REAL overlay, not a mock',
-    /var okd = overlay\(p, god, text, tag\)/.test(vo2), true)
+    /var okd = overlay\(p, god, text, tag, \{ seconds: TEST_SECONDS \}\)/.test(vo2), true)
+  // Ethan: "for the command messages they should last alot longer for testing purposes."
+  // The override is duration ONLY, and only for /gd - a test that changed the thing
+  // being tested would be measuring itself.
+  ok('test lines last much longer than gameplay ones',
+    /var TEST_SECONDS = (\d+)/.test(vo2) && Number(RegExp.$1) >= 30, true)
+  ok('...and the tone table keeps its real durations',
+    /\{ shake: true, size: 1\.15, seconds: 6 \}/.test(vo2), true)
 }
 
 console.log('\n' + B + (fail ? R + fail + ' FAILED, ' : G) + pass + ' passed' + X)
