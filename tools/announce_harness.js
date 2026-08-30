@@ -392,7 +392,7 @@ grp('* THE GOD DIALOGUE PASS - 2026-08-30')
   // Ethan: "lets move the location of the text to above the hotbar."
   ok('it is lifted clear of the hotbar', /y: HOTBAR_LIFT/.test(ov), true)
   ok('...by exactly one tunable number',
-    (vo2.match(/HOTBAR_LIFT = \d+/g) || []).length, 1)
+    (vo2.match(/HOTBAR_LIFT = -?\d+/g) || []).length, 1)
   ok('...still anchored at the bottom', /anchor: 'BOTTOM_CENTER'/.test(ov), true)
 
   // Ethan: "we can assign a type of dialogue per what the dialogue is."
@@ -441,9 +441,9 @@ grp('* THE GOD DIALOGUE PASS - 2026-08-30')
   // Gods overheard arguing ARE god dialogue, and this audience is pathless by
   // definition - so both speakers garble.
   ok('gods overheard arguing reach the overlay',
-    /\n\s*overheard\(p, a, opener\)/.test(pl), true)
+    /\n\s*overheardOverlay\(p, a, opener\)/.test(pl), true)
   ok('...both halves of the exchange, not just the opener',
-    /\n\s*overheard\(p, b, reply\)/.test(pl), true)
+    /\n\s*overheardOverlay\(p, b, reply\)/.test(pl), true)
   ok('...garbled unless that god is yours',
     /mine \? null : \{ obfuscate: 'RANDOM' \}/.test(pl), true)
 

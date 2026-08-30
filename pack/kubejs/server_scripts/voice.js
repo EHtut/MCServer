@@ -204,7 +204,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // above the hotbar."* BOTTOM_CENTER sits ON the hotbar, so it is lifted clear.
   // ⚠️ ONE NUMBER, ON PURPOSE — this is the value to change if it sits wrong on screen,
   // and there is exactly one of it.
-  var HOTBAR_LIFT = 40
+  // ⚠️ NEGATIVE. y grows DOWNWARD in GUI space, so from a BOTTOM anchor a
+  // POSITIVE y pushes the line off the bottom of the screen. It was +40 on the first
+  // build and every god line rendered somewhere nobody could see. `/gd place` sweeps
+  // the candidates on screen so this is read off rather than guessed.
+  var HOTBAR_LIFT = -40
 
   // ⭐ A DIALOGUE TYPE PER WHAT THE DIALOGUE IS. Ethan, 2026-08-30: *"we can assign a
   // type of dialogue per what the dialogue is. Tone, emotion, context, impact, etc."*
@@ -416,11 +420,30 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         return 1
       }))
       // position check - the reason this needs eyes on it at all
+      // 🔴 A SWEEP, NOT A SINGLE SHOT. Every /gd rendered NOTHING on the first
+      // test while /im worked, and the only difference was that /gd sets `y`. In
+      // Minecraft's GUI space y grows DOWNWARD, so a positive y from a BOTTOM anchor
+      // pushes the line below the screen edge - it renders perfectly and nobody can
+      // see it. Guessing the sign would have been another round trip, so this fires
+      // one line at each candidate and lets the screen answer.
+      //
+      // ⚠️ THE CONTROL MATTERS MOST. The first line uses NO y at all. If that one
+      // is also invisible then y is not the problem and the fault is elsewhere -
+      // without it, "nothing showed" cannot tell those two apart.
       .then(Commands.literal('place').executes(function (ctx) {
         var p = ctx.source.player
-        overlay(p, 'blade', 'This line should sit ABOVE the hotbar, clear of it.', 'plain')
-        p.tell(Text.of('§8hotbar lift = §f' + HOTBAR_LIFT +
-          ' §8(one number in voice.js if it sits wrong)'))
+        VELDORA.im.show(p, 'CONTROL - no y at all, top of screen',
+          { anchor: 'TOP_CENTER', seconds: 12 })
+        var YS = [-80, -60, -40, -20, 0, 20, 40]
+        for (var i = 0; i < YS.length; i++) {
+          (function (yv) {
+            VELDORA.im.show(p, 'y = ' + yv,
+              { anchor: 'BOTTOM_CENTER', y: yv, seconds: 12, typewriter: false })
+          })(YS[i])
+        }
+        p.tell(Text.of('§8Look at the screen. Whichever §fy = N§8 sits just above'))
+        p.tell(Text.of('§8the hotbar is the value. Current §fHOTBAR_LIFT = ' + HOTBAR_LIFT))
+        p.tell(Text.of('§8If even CONTROL is invisible, y is NOT the problem.'))
         return 1
       }))
       .executes(function (ctx) {
