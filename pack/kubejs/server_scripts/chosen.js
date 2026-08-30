@@ -50,7 +50,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
 ;(function () {
   var TAG = '[chosen] '
+  // 🚨 THE GOD ROSTER, EXPLICITLY. `TRIGGERS` was doing double duty as this and
+  // it never was one - it is the list of gods unlocked BY CARRYING, which used to be
+  // four of five and is now three. Every place that treated it as "all the gods"
+  // silently lost Blade and Salvage the moment E1 and E2 moved them off items.
+  var ALL = ['blade', 'salvage', 'wall', 'forge', 'art']
+
   var bladeWarned = false
+  var dealsWarned = false
 
   // 🚨 THE DISPLAY WAS A TWO-WAY BRANCH, and it had to stop being one. It read
   // `TRIGGERS[k] ? 'carry X' : 'be killed while pathless'` - so the moment Blade left
@@ -65,6 +72,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         if (VELDORA.slain) return 'slay ' + VELDORA.slain.count(p) + '/' + VELDORA.slain.threshold
       } catch (e) { }
       return 'slay - UNAVAILABLE, slain.js is missing'
+    }
+    if (k === 'salvage') {
+      try {
+        if (VELDORA.deals) return 'take her deals ' + VELDORA.deals.taken(p) + '/' + VELDORA.deals.threshold
+      } catch (e) { }
+      return 'her deals - UNAVAILABLE, salvage_deals.js is missing'
     }
     return 'unknown - nobody has written this condition'
   }
@@ -96,8 +109,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // deserve it. An item id is not a safe thing to key a condition on in this pack.
   //
   // His route now lives below, next to Wall's, because neither is a carry.
+  // ⛔ SALVAGE IS NO LONGER AN ITEM EITHER. `docs/67`: *"She randomly offers
+  // godless players deals. All of them suck. Accept 5."* That IS her condition, and a
+  // crossbow is a ten-minute shortcut straight past it - the same objection that took
+  // Blade off the iron sword.
   var TRIGGERS = {
-    salvage: ['minecraft:crossbow'],
     forge: ['create:wrench'],
     art: ['minecraft:lapis_lazuli'],
   }
@@ -310,10 +326,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     unlock: unlock,
     triggers: TRIGGERS,
     // Every path this player has met, for the /path listing.
+    // 🚨 ITERATES `ALL`, NOT `TRIGGERS`. This read the carry table and bolted
+    // `wall` on by hand, which worked only while carrying was the rule for everyone
+    // else. The moment Blade and Salvage left it, an unlocked Blade stopped appearing
+    // in the player's own list - they would have unlocked him, seen nothing, and had
+    // no way to tell a bug from a condition not met.
     unlockedList: function (p) {
       var out = []
-      for (var k in TRIGGERS) if (TRIGGERS.hasOwnProperty(k) && isUnlocked(p, k)) out.push(k)
-      if (isUnlocked(p, 'wall')) out.push('wall')
+      for (var i = 0; i < ALL.length; i++) if (isUnlocked(p, ALL[i])) out.push(ALL[i])
       return out
     },
   }
@@ -386,6 +406,27 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         newly = newly || 'blade'
         console.info(TAG + p.username + ' unlocked blade - ' +
           VELDORA.slain.count(p) + ' slain, lifetime')
+      }
+    }
+
+    // ⭐ E2 - SALVAGE HAS YOU WHEN YOU HAVE SAID YES FIVE TIMES. Same shape as
+    // Blade's, same reasons: its own never-reset key, and it FAILS CLOSED because an
+    // unlock is spent forever.
+    if (!isUnlocked(p, 'salvage')) {
+      var dealsOk = false
+      try {
+        if (VELDORA.deals && typeof VELDORA.deals.qualifies === 'function') {
+          dealsOk = VELDORA.deals.qualifies(p) === true
+        } else if (!dealsWarned) {
+          dealsWarned = true
+          console.warn(TAG + 'salvage_deals.js is MISSING - Salvage can never be ' +
+            'unlocked. This is a FAILURE, not a player who kept saying no.')
+        }
+      } catch (e) { dealsOk = false }
+      if (dealsOk && unlock(p, 'salvage')) {
+        newly = newly || 'salvage'
+        console.info(TAG + p.username + ' unlocked salvage - took ' +
+          VELDORA.deals.taken(p) + ' bad deals')
       }
     }
 
@@ -544,18 +585,27 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   ServerEvents.loaded(function (event) {
     if (!GATE) { console.info(TAG + 'GATED OFF - players choose freely with /path'); return }
     schedule(event.server)
+    // ⚠️ THIS BANNER LISTED `TRIGGERS` AND CALLED IT THE ROSTER, then said
+    // "carrying it UNLOCKS the path forever" - false for two of five gods as of E1
+    // and E2. It now names all three kinds of condition, and reads them from ALL.
     var t = []
-    for (var k in TRIGGERS) if (TRIGGERS.hasOwnProperty(k)) t.push(k + ':' + TRIGGERS[k][0])
-    console.info(TAG + 'YOU ARE CHOSEN - ' + t.join(', ') + '. WALL has no item and ' +
-      'no timer: somebody kills you while you walk no path, and she makes her offer ' +
-      'ON YOUR RESPAWN (' + RESPAWN_DELAY + 't later). The killer is not checked.')
+    for (var k = 0; k < ALL.length; k++) {
+      var g = ALL[k]
+      t.push(g + ':' + (TRIGGERS[g] ? TRIGGERS[g][0].split(':')[1] : 'no item'))
+    }
+    console.info(TAG + 'YOU ARE CHOSEN - ' + t.join(', ') + '.')
+    console.info(TAG + 'THREE KINDS OF CONDITION: CARRY (forge, art) - BLADE takes ' +
+      (VELDORA.slain ? VELDORA.slain.threshold : '?') + ' slain, lifetime, never reset. ' +
+      'SALVAGE takes ' + (VELDORA.deals ? VELDORA.deals.threshold : '?') + ' bad deals ' +
+      'accepted. WALL has no item and no timer: somebody kills you while you walk no ' +
+      'path, and she offers ON YOUR RESPAWN (' + RESPAWN_DELAY + 't later).')
     var shut = []
-    for (var ck in TRIGGERS) if (TRIGGERS.hasOwnProperty(ck) && isClosed(ck)) shut.push(ck)
+    for (var ci = 0; ci < ALL.length; ci++) if (isClosed(ALL[ci])) shut.push(ALL[ci])
     if (shut.length) {
       console.info(TAG + 'CLOSED, and therefore excluded from the one-time offer: ' +
         shut.join(', ') + ' - they can no longer spend a player\'s only offer.')
     }
-    console.info(TAG + 'carrying it UNLOCKS the path forever; the offer fires ONCE, ' +
+    console.info(TAG + 'meeting the condition UNLOCKS the path forever; the offer fires ONCE, ' +
       'out of combat only (' + COMBAT_WINDOW + 't since damage). After that /path ' +
       'takes you back - and /path only lists what you have unlocked.')
   })

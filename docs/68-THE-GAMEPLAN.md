@@ -865,3 +865,45 @@ server still logs every charge.
 Verified against a planted byte.
 
 **617 passed / 0 failed across 17 harnesses. Live 57/57, 0 errors.**
+
+---
+
+# 📋 STAGED — the refining pass (Ethan, 2026-08-29). NOT NOW.
+
+> *"the trials from blade? those need to be refined after we are done with the gameplan.
+> First the spawning needs to be tweaked and based off the tide spawning system, but also
+> we give mobs a faction."*
+
+**Two pieces, both after the gameplan is finished.**
+
+### R1 — Blade's Trials move onto the tide's spawner
+
+His Trials predate `tide.js` and spawn their own way. The tide's system has since grown
+tiers, wave modifiers, ranged composition, a bench, and a placement path that actually
+reports whether it placed anything. ⭐ **Trials should ride it rather than keep a second,
+weaker implementation.**
+
+### R2 — 🔑 MOBS GET A FACTION
+
+| god | faction |
+|---|---|
+| **Blade** | Zombies |
+| **Salvage** | Dire wolves |
+| **Wall** | Spiders |
+| **Forge** | — *(none, and that is correct: she is the only one who sends nothing)* |
+| **Art** | Spirits |
+| **the Goddess of Death** | **Skeletons** — ⚠️ *these are for the tides* |
+
+⭐ **This is bigger than a reskin.** Right now a wave is a list of ids picked for
+mechanics; a faction makes the mobs themselves say who sent them, so a player reads the
+attacker before anyone speaks. ⚠️ And it retroactively explains the tide: **the tide is
+skeletons because the tide is HERS.** Nobody has to be told.
+
+⚠️ **Wall already matches** (`SPIDERS` in `wall_events.js`) — so one faction is evidence
+this works rather than a guess. **Salvage's dire wolves are the interesting one:** her
+patron sound became a wolf growl the same day, from a separate ruling. Those agreed by
+accident, which is usually a sign the character is real.
+
+🔴 **Open for the pass, not now:** the tide's roster is currently mixed
+(`born_in_chaos_*`, strays, bogged, drowned). If the tide is hers and hers is skeletons,
+**that roster is wrong** and narrowing it is a balance change, not a rename.

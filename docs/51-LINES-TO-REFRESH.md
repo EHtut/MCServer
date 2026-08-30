@@ -150,10 +150,13 @@ in this repo has died before.
 | `intro_accept` | ? | — | [`introductions.js:130`](../pack/kubejs/server_scripts/introductions.js) |
 | `intro_refuse` | ? | — | [`introductions.js:130`](../pack/kubejs/server_scripts/introductions.js) |
 
-## salvage — 19 pool(s)
+## salvage — 22 pool(s)
 
 | tag | to rewrite | ⭐ yours, keep | file |
 |---|---:|---:|---|
+| `deal_pitch` | ? | — | [`salvage_deals.js:58`](../pack/kubejs/server_scripts/salvage_deals.js) |
+| `deal_taken` | ? | — | [`salvage_deals.js:58`](../pack/kubejs/server_scripts/salvage_deals.js) |
+| `deal_refused` | ? | — | [`salvage_deals.js:58`](../pack/kubejs/server_scripts/salvage_deals.js) |
 | `bounty_offer` | 5 | — | [`salvage_voice.js:89`](../pack/kubejs/server_scripts/salvage_voice.js) |
 | `bounty_paid` | 4 | — | [`salvage_voice.js:89`](../pack/kubejs/server_scripts/salvage_voice.js) |
 | `sabotage_offer` | 4 | — | [`salvage_voice.js:90`](../pack/kubejs/server_scripts/salvage_voice.js) |
@@ -202,7 +205,7 @@ in this repo has died before.
 
 ---
 
-**458 drafted lines across 132 pools.**
+**458 drafted lines across 135 pools.**
 
 Ethan's own writing is NOT listed here — his lines carry no marker, which is
 the whole point of the convention. Where a pool is mixed (his first line, drafts

@@ -186,6 +186,29 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return true
   }
 
+  // ── ⭐ THE ACTION BAR - a DIFFERENT surface, on purpose ──────────────────────
+  // Ethan, 2026-08-29, on Salvage's deals: *"You hear the laughter of a distant god
+  // (this is played in the action bar)."*
+  //
+  // 🔑 THE BOSS BAR AND THE ACTION BAR SAY DIFFERENT KINDS OF THING, and keeping them
+  // apart is what stops either becoming noise:
+  //
+  //   BOSS BAR    something is ABOUT to happen. Top of screen, 4.5s, a tremor.
+  //   ACTION BAR  something JUST happened, and it is too late. Above the hotbar, a
+  //               single quiet line, no bar, no drain, gone in about three seconds.
+  //
+  // ⚠️ It deliberately IGNORES the priority slot. An aftermath sting is not competing
+  // with a warning - they are different places on the screen and can coexist. Routing
+  // it through show() would have made the laughter cancel a tide warning, or lose to
+  // one, and neither is right.
+  function actionbar(server, p, text) {
+    if (!GATE || !p || !text) return false
+    try {
+      run(server, 'title ' + p.username + ' actionbar ' + nameJson(text))
+      return true
+    } catch (e) { return false }
+  }
+
   function pick(pool, lastIdx) {
     if (!pool || !pool.length) return -1
     if (pool.length <= 1) return 0
@@ -218,6 +241,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     say: function (server, p, key) { return say(server, p, key, P_ANNOUNCE) },
     ambient: function (server, p, key) { return say(server, p, key, P_AMBIENT) },
     text: function (server, p, s, prio) { return show(server, p, s, prio) },
+    // ⭐ A different surface, not a different priority. See actionbar() above.
+    actionbar: actionbar,
     pools: POOLS,
     keys: function () {
       var out = []

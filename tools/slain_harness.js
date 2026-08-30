@@ -170,8 +170,13 @@ grp('⛔ BLADE IS NO LONGER AN ITEM')
     /blade:\s*\[/.test(ch), false)
   ok('...and iron_sword is gone entirely',
     ch.indexOf('minecraft:iron_sword') === -1, true)
-  ok('salvage still carries a crossbow',
-    ch.indexOf("salvage: ['minecraft:crossbow']") !== -1, true)
+  // ⚠️ WAS "salvage still carries a crossbow", written at E1 to prove only Blade
+  // had been removed. E2 took her off items too - by design, `docs/67` says her
+  // condition IS the five deals - so this now checks that the carry table still has
+  // the gods that genuinely carry, rather than being deleted for being inconvenient.
+  ok('the carry table still holds forge and art',
+    ch.indexOf("forge: ['create:wrench']") !== -1 &&
+    ch.indexOf("art: ['minecraft:lapis_lazuli']") !== -1, true)
 
   // ⚠️ FAILS CLOSED. An unlock is spent forever, so a missing slain.js must NOT
   // unlock him - the opposite of night.js, which must fail open.
