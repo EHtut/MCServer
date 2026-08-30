@@ -511,6 +511,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     VELDORA.pantheon.define(GOD, {
       colour: COLOUR,
       label: 'The Goat',
+      // ⭐ The thresholds, declared once so pantheon.tierOf can read them. art and forge
+      // published no tier function at all before this, which silently made every
+      // bickering scene gated on them unreachable.
+      tiers: { medium: MEDIUM_AT, high: HIGH_AT },
       lines: LINES,
       context: CONTEXT,
       note: 'Accent written. Trust at ' + MEDIUM_AT + '/' + HIGH_AT + ' things built. ' +

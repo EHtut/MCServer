@@ -1,0 +1,116 @@
+Bickering Doc Blade+Art
+
+Dialogue is alternating between gaps. Chunked dialogued is only separated by a single new line. Ask me if you need help with working with this. Champion - agnostic: Can play if only one of the champions is a god of either. Champion - Champion: Requires a champion of blade or wall on the other end. Dialogue is separated by ---
+Low Trust (God Agnostic)
+
+I approve of your work, Warrior.
+
+Thank you, my Matriarch
+
+---
+
+There is room for improvement.
+Yes.
+However, your work serves are cause well.
+
+Thank you, Matriarch
+
+---
+
+
+Low Trust (God Blade)
+
+Your champion impresses me.
+
+Thank you, Matriarch
+
+---
+
+Your champion has room to grow.
+As do you.
+Redouble your efforts
+
+As your will.
+My matriarch.
+
+Low Trust (God Art)
+
+I do wish you and your champion work alongside mine.
+Our cause is one that is too great to risk uncooperation
+Agreed?
+
+Agreed.
+Thank you, Matriarch
+
+---
+
+Work harder my champion, for it is us who keeps the undead at bay.
+Is that not right for you aswell?
+Warrior.
+
+My blade is yours.
+
+Good.
+
+---
+
+
+Med Trust (God Agnostic)
+
+You tremble when you speak to me.
+Why?
+
+I am in awe.
+
+You are in fear. 
+I can sense it.
+
+My apologies.
+
+You'd do better to serve, than apologize.
+
+As your word.
+My Matriarch.
+
+---
+
+The way you fear me sheds the hope your champion has in you.
+You must redouble your efforts.
+Warrior.
+I do not accept failure.
+You know this well.
+
+At your word.
+Matriarch.
+
+There is malice in that.
+i can feel it.
+
+I...
+
+Know that I can see through you.
+Warrior.
+
+High Trust (God Agnostic)
+
+You have betrayed me once.
+You have betrayed our people once.
+You have betrayed our cause once.
+You will not betray again.
+Is that not right? 
+Warrior?
+
+Never. 
+I will never—
+
+I want to hear you say in full.
+
+I will never betray us again.
+
+Good.
+I will hold you to that.
+Gregor.
+
+---
+
+

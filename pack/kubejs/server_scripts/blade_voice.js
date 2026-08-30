@@ -764,6 +764,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // stays literally true here.
     VELDORA.pantheon.define(GOD, {
       label: 'The Warrior',
+      // ⭐ The thresholds, declared once so pantheon.tierOf can read them. art and forge
+      // published no tier function at all before this, which silently made every
+      // bickering scene gated on them unreachable.
+      tiers: { medium: MEDIUM_AT, high: HIGH_AT },
       lines: LINES,
       frags: FRAGS,
       context: CONTEXT,

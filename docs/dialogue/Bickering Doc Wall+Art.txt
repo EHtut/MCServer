@@ -1,0 +1,206 @@
+Bickering Doc Wall+Art
+
+Dialogue is alternating between gaps. Chunked dialogued is only separated by a single new line. Ask me if you need help with working with this. Champion - agnostic: Can play if only one of the champions is a god of either. Champion - Champion: Requires a champion of blade or wall on the other end. Dialogue is separated by --- 
+
+Low Trust (God Agnostic)
+
+Spider, I need you focus on the task at hand (Art)
+
+How can I focus? (wall)
+How can I focus when I feel nothing but longing.
+
+Focus regardless
+
+---
+
+I am sad. (wall)
+I am broken. 
+Begotten by a people who will never speak my name.
+Never see my face.
+A monster.
+A tragedy.
+
+An annoyance. (Art)
+Spider, stop rambing.
+
+---
+
+I am being watched (wall)
+Watched by a being who would never dare to learn my name
+Watched by a being who has never known me.
+Who has never seen me.
+
+You talk. (Art)
+Alot.
+
+I AM FORLORN!
+
+Gods above.
+
+---
+
+Stop staring at me, Spider. (Art)
+
+Do you see me? (wall)
+
+unfortunately, yes.
+
+Can I touch you?
+
+No.
+
+Can i see you?
+
+No.
+
+May I hold you?
+
+No.
+
+Must you be so cold?
+
+Must you be so annoying? 
+Leave.
+---
+
+Low Trust (God Wall)
+
+Your champion is covered in... (Art)
+marks.
+Explain?
+
+They are loved. (wall)
+
+Love them less. 
+They have work to do.
+
+---
+
+You would do well to focus less on your champion. (Art)
+They must learn to fight on their own.
+When darkness breaks, you will not be there to save them.
+
+I will always be there to save them. (wall)
+Always.
+Always.
+Always.
+
+
+Low Trust (God Art)
+
+Matriarch, your champion looks so alone. (wall)
+I can give them—
+
+Do not touch them. (Art)
+
+---
+
+Matriarch, I can assist your champion. (wall)
+I can help.
+just let me...
+
+No. (Art)
+
+---
+
+Med Trust (God Agnostic)
+
+Spider, You must focus less on the past. (Art)
+Focus on the future.
+
+I don't have a future.  (wall)
+Not here.
+Not up here.
+
+Where do you belong then?
+
+Below.
+With the dark.
+Where I belong.
+
+...
+Must you fight me so.
+
+what?
+
+Nothing. 
+Carry on, Spider.
+
+---
+
+You stare at the darkness below. (Art)
+Why?
+
+I feel a pull. (wall)
+
+A pull?
+
+Like those below know me, greater than i know myself.
+
+Whispers?
+
+Yes. 
+I hear them
+...
+Why do I hear them?
+
+They are...
+They are closer to us than i would admit.
+
+Gods?
+
+No.
+No, not gods.
+
+Family?
+
+I expect performance from you.
+Not idle chatter.
+
+Understood, My Matriarch.
+
+---
+High Trust(God Agnostic)
+
+WHY DO I HEAR THEM? (wall)
+THEIR SCREAMS?
+THEIR SORROWS?
+THEIR WORDS?
+Their sweet supple words.
+The fill my hear with hope.
+With belonging.
+
+Because you looked too close. (Art)
+
+Why?
+Why do they sound like me?!
+
+...
+Mera, You are not meant to know.
+
+When will I?
+
+I am not sure.
+
+---
+
+The voices. (wall)
+They scream
+They pull
+They want me down there
+The goddess.
+She years.
+She reaches
+She wants.
+
+Enough. (Art)
+Stop reaching
+
+Why? 
+They need me?
+They need me below.
+They need—
+
+Please.
+Enough.
+

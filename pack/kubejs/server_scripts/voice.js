@@ -530,6 +530,57 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { return false }
   }
 
+  // ⭐⭐ THE SAME THING, BUT THE BEATS ARE GIVEN RATHER THAN FOUND.
+  //
+  // Ethan, 2026-08-30, on the bickering documents:
+  //     "When the lines are like this — line1 / line 2 — this is a single speaker, they
+  //      will be typed out. Depending on the god speaking, it will use the same system
+  //      the gods use normally to speak and their font. Blade: his words will be in his
+  //      standard area. Wall: her responses will be scattered as standard."
+  //
+  // 🔑 SO A CHUNKED TURN IS NOT A NEW PRESENTATION - IT IS THE NORMAL ONE. Everything
+  // that makes a god recognisable (placement, font, scatter, shake, size, typing) already
+  // lives in `overlay`, and this reuses it wholesale. A bickering line and a line said
+  // straight to you should be indistinguishable in HOW they arrive; only who it is aimed
+  // at differs.
+  //
+  // ⛔ THE ONE DIFFERENCE FROM speak(): IT DOES NOT RE-SPLIT. `speak` runs `sentences()`
+  // because it is handed a paragraph and has to find the beats. Here Ethan ALREADY chose
+  // them - a single newline in his document is a beat, and that is authorship rather than
+  // formatting. Splitting "I am sad." / "I am broken." further, or merging them back
+  // together, would be overruling the writing.
+  function speakChunks(player, god, chunks, tag, opts) {
+    try {
+      if (!chunks || !chunks.length) return false
+      var st = styleOf(god)
+      var first = false
+      for (var i = 0; i < chunks.length; i++) {
+        var secs = Math.max(0.6, beatFor(chunks[i], st) / 20)
+        var o = {}
+        if (opts) for (var k in opts) if (opts.hasOwnProperty(k)) o[k] = opts[k]
+        o.seconds = secs
+        // ⭐ Only the first beat asks for the screen; the rest are the same utterance
+        // continuing and are never refused. A god cut off three chunks into a seven-chunk
+        // lament reads as a bug - and Wall's laments run seven chunks.
+        o.continuation = (i > 0)
+        var okd = overlay(player, god, chunks[i], tag, o)
+        if (i === 0) first = okd
+      }
+      return first
+    } catch (e) { return false }
+  }
+
+  /** How long a chunked turn will hold the screen, in TICKS - so a scene can pace the
+   *  next speaker instead of talking over the previous one. */
+  function chunksTicks(god, chunks) {
+    try {
+      var st = styleOf(god)
+      var t = 0
+      for (var i = 0; i < (chunks || []).length; i++) t += Math.max(12, beatFor(chunks[i], st))
+      return t
+    } catch (e) { return 20 * ((chunks && chunks.length) || 1) }
+  }
+
   // ════════════════════════════════════════════════════════════════════════
   // ⭐⭐ THE CRASHOUT — a god going off at somebody, in their own face.
   //
@@ -815,6 +866,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // second copy of this that drifts. The overlay is the god dialogue system now.
     overlay: overlay,
     speak: speak,
+    speakChunks: speakChunks,
+    chunksTicks: chunksTicks,
     crashout: crashout,
     crashoutTwo: crashoutTwo,
     crashoutFor: crashoutFor,

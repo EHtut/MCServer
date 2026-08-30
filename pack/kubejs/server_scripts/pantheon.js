@@ -188,8 +188,44 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return st
   }
 
+  // ══════════════════════════════════════════════════════════════════════════
+  // ⭐⭐ ONE tierOf, AT LAST.
+  //
+  // 🔴 IT WAS DEFERRED ON PURPOSE AND THEN BECAME BLOCKING, which is the only good
+  // reason to un-defer something. The refactor above left tierOf alone because the
+  // registration snapshot cannot see it, so folding it in would have meant half a
+  // verified change. Then the bickering scenes arrived and needed a trust tier per
+  // player — and `art` and `forge` publish NO tier function at all, while four of the
+  // five bickering documents involve one of them. Their scenes could never have been
+  // gated. The block is real and demonstrable, so the work happens now.
+  //
+  // Before this there were SEVEN implementations: blade/wall/salvage each carry a local
+  // one (published as `VELDORA.<god>.tier`), art_events.js and forge_events.js carry
+  // their own, whispers.js has a fourth shape, and godevents.js already had a GENERIC
+  // one that never spread.
+  //
+  // 🚨 UNREADABLE IS NOT 'low'. docs/41 invariant #4, and the most expensive one on the
+  // list: a god who cannot read his own counter must say NOTHING. Defaulting to the low
+  // tier turns every storage hiccup into contempt.
+  //
+  // ⚠️ THE EXISTING LOCAL COPIES ARE LEFT ALONE. `VELDORA.blade.tier` and friends are
+  // read by other files; retiring them is a separate sweep with its own grep. This adds
+  // the missing coverage rather than racing to delete the duplicates - a half-finished
+  // consolidation is worse than an unstarted one.
+  function tierOf(god, player) {
+    var spec = SPECS[god]
+    if (!spec || !spec.tiers) return null
+    var n = null
+    try { if (VELDORA.counter) n = VELDORA.counter.get(player, god) } catch (e) { }
+    if (n === null || n === undefined) return null
+    if (n >= spec.tiers.high) return 'high'
+    if (n >= spec.tiers.medium) return 'medium'
+    return 'low'
+  }
+
   VELDORA.pantheon = {
     define: define,
+    tierOf: tierOf,
     // ⭐ THE REGISTRY OTHER TOOLS CAN ASK. dialogue_doc.py currently keeps its own
     // hardcoded {god: file} map and therefore cannot see any speaker that is not one of
     // five - which is half of C6/D-128. This is what it should read instead.

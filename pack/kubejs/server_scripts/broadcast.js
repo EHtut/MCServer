@@ -190,6 +190,100 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return 'sent'
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐⭐ A SCENE — an AUTHORED exchange, in turns, where a turn may be many beats.
+  //
+  // `exchange` above composes from POOLS: one random line per god, assembled at runtime.
+  // That is right for the Grudge, where the argument is generated.
+  //
+  // 🔑 THE BICKERING DOCUMENTS ARE NOT THAT. They are written scenes with a shape — a
+  // turn is one speaker, and a turn may run seven beats before the other god answers.
+  // Flattening them into `exchange`'s uniform list would put 2.5s between every beat of
+  // Wall's lament, turning a seven-line collapse into a seventeen-second monologue.
+  //
+  // Ethan, 2026-08-30: *"When the lines are like this — line1 / line 2 — this is a single
+  // speaker, they will be typed out. Depending on the god speaking, it will use the same
+  // system the gods use normally to speak and their font."*
+  //
+  // ⭐ SO THE OVERLAY GOES THROUGH `voice.speakChunks`, which IS the god's ordinary
+  // presentation — his placement, her scatter, their font, typed. A bickering line and a
+  // line said straight to you arrive identically; only who it is aimed at differs.
+  //
+  // ⚠️ CHAT STAYS ONE LINE PER BEAT. Chat is the scrolling record, and the record should
+  // read the way he wrote it.
+  //
+  //   turns  [{god, chunks:[…]}] in speaking order
+  //   opts   { minPlayers, why, tag, onDone }
+  function scene(server, turns, opts) {
+    opts = opts || {}
+    if (!server || !turns || !turns.length) return 'bad-args'
+    if (busy) {
+      console.info(TAG + 'an exchange is already running - scene "' +
+        (opts.why || '?') + '" dropped')
+      return 'busy'
+    }
+    var who = audience(server)
+    var need = (typeof opts.minPlayers === 'number') ? opts.minPlayers : 2
+    if (who.length < need) return 'too-few'
+    if (!VELDORA.voice || typeof VELDORA.voice.speakChunks !== 'function') {
+      console.warn(TAG + 'voice.speakChunks missing - a scene cannot be presented')
+      return 'no-voice'
+    }
+
+    busy = true
+    var delivered = 0
+    var at = LEAD
+    try {
+      for (var i = 0; i < turns.length; i++) {
+        (function (turn, delay) {
+          server.scheduleInTicks(delay, function () {
+            try {
+              var ps = audience(server)
+              for (var k = 0; k < ps.length; k++) {
+                for (var c = 0; c < turn.chunks.length; c++) {
+                  try { ps[k].tell(Text.of(colourOf(turn.god) + turn.chunks[c])) } catch (e) { }
+                }
+                try {
+                  // ⭐ Same garbling rule as `exchange`: readable to that god's own
+                  // champion, broken to everyone else. An argument between two gods is
+                  // half-legible to each of their followers, which is the point of it
+                  // being an argument you are only half inside.
+                  var mine = (typeof VELDORA.voice.alignedTo === 'function')
+                    ? VELDORA.voice.alignedTo(ps[k], turn.god) : true
+                  VELDORA.voice.speakChunks(ps[k], turn.god, turn.chunks, opts.tag || null,
+                    mine ? null : { obfuscate: 'RANDOM' })
+                } catch (e) { }
+              }
+              delivered++
+            } catch (e) { console.warn(TAG + 'turn threw :: ' + e) }
+          })
+        })(turns[i], at)
+        // ⚠️ THE NEXT SPEAKER WAITS FOR THIS ONE TO STOP TALKING, not for a fixed beat.
+        // A seven-chunk turn holds the screen far longer than a one-chunk reply, and a
+        // uniform gap would land the answer on top of the question.
+        var hold = 40
+        try { hold = VELDORA.voice.chunksTicks(turns[i].god, turns[i].chunks) } catch (e) { }
+        at += hold + GAP
+      }
+    } catch (e) {
+      busy = false
+      console.error(TAG + 'could not schedule scene "' + (opts.why || '?') + '" :: ' + e)
+      return 'threw'
+    }
+
+    // Same rule as `exchange`: release on a timer, never in the last callback.
+    var total = turns.length
+    server.scheduleInTicks(at + GAP, function () {
+      busy = false
+      console.info(TAG + 'scene "' + (opts.why || '?') + '" delivered ' + delivered +
+        '/' + total + ' turn(s) to ' + who.length + ' player(s)')
+      if (typeof opts.onDone === 'function') {
+        try { opts.onDone() } catch (e) { console.warn(TAG + 'onDone threw :: ' + e) }
+      }
+    })
+    return 'sent'
+  }
+
   // Does this god have anything to say under this tag? Callers use it to decide
   // whether an exchange is even possible before composing one.
   //
@@ -209,6 +303,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   VELDORA.broadcast = {
     exchange: exchange,
+    scene: scene,
     hasVoice: hasVoice,
     running: function () { return busy },
     gap: GAP,

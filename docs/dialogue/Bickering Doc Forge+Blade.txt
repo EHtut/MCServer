@@ -1,0 +1,225 @@
+Bickering Doc Forge+Blade
+
+Dialogue is alternating between gaps. Chunked dialogued is only separated by a single new line. Ask me if you need help with working with this. Champion - agnostic: Can play if only one of the champions is a god of either. Champion - Champion: Requires a champion of blade or wall on the other end. Dialogue is separated by --- 
+
+Low Trust
+
+So... Watcha doing? (Forge)
+
+Go away, goat. (Blade)
+
+RUDE!
+
+---
+
+So I've been thinking.  (Forge)
+
+Oh gods (Blade)
+
+I know, im real good at that.
+
+Im sure.
+
+Thinkin' 
+it's like my speciality
+You could even say
+My job.
+or...
+my...
+um...
+talent?
+
+Sure.
+
+---
+
+So... (Forge)
+You and the spider.
+What's up with that.
+Like you two.
+Close as...
+uh...
+Clams!
+but like ya hate each other.
+So like clams that hate each other.
+Hateful clams.
+
+Nothing you should know. (Blade)
+Goat.
+
+---
+
+GUNS! (Forge)
+
+Ugh (Blade)
+
+Low Trust (Champion - Forge)
+
+The Matriarch informed me that we are to work together (blade)
+
+Ya! I build the things. (Forge)
+or my champion builds the things.
+And then you use the things.
+
+Indeed. (blade)
+However cluttered your reasoning may be.
+
+Ya
+
+---
+
+Forge. (blade)
+Are you capable of performing the work the Matriarch has given you.
+
+No idea. (forge)
+
+Wonderful.
+
+Low Trust (Champion - Blade)
+
+So your champion. (Forge)
+he real like likes guns
+Y'know i had a gun once
+A bigun
+like.
+BLAM!
+Many bullets.
+Lots a' people dead.
+
+You have never killed anymone, Goat. (blade)
+
+Not yet.
+
+---
+
+SHOOT THAT ONE! (Forge)
+AND THAT ONE! 
+AND THAT ONE!
+AND...
+
+Goat. (Blade)
+Shut.
+Up.
+
+Im trying to help.
+
+It is not necessary.
+
+---
+
+Med Trust (Champion - Agnostic)
+
+So.. (Forge)
+Warrior, question for ya!
+
+No. (Blade)
+
+Nah, this one is important!
+
+No.
+
+The goddess of death! Did ya know her!
+
+...
+Goat. 
+Shut up.
+
+Im tryna make conversation 'ere.
+Spice of life ya know?
+
+No.
+
+
+Med Trust (Champion - Forge)
+
+I need more output from your champion, goat. (Blade)
+
+Look man, we're doin all we can. (Forge)
+
+We need more, the goddess rumbles below and—
+
+Hungry goddess.
+
+I have no idea what that means.
+
+She hungry.
+I can make chocolate.
+Like a bunch of it.
+Infinites even.
+
+Forget i spoke to you.
+
+---
+
+Audible Sigh. (Forge)
+
+WHAT DO YOU WANT GOAT!? (Blade)
+
+Louder audible sigh.
+
+(sigh)
+
+See! ya, like that.
+Good. 
+Louder please.
+
+(Louder sigh)
+
+A hundred points!
+
+---
+
+Med Trust (Champion - Blade)
+
+BE HARD! (Forge)
+
+What are you doing, goat. (Forge)
+
+Helpin'
+
+Helping?
+
+Don't cha say this to your guy all the time.
+OI CHAMPION! GET HARD!
+
+I don't say it like that. 
+
+Warrior.
+My guy.
+My thick man.
+You do.
+
+Ugh.
+
+---
+ 
+You are in my space again. (Blade)
+Goat.
+What do you want.
+
+Watchin. (Forge)
+
+Watching what.
+
+Your partner.
+They're pretty good at killing stuff.
+
+They are my champion.
+
+Tell them to get hard again
+
+ugh.
+
+High Trust (Champion - Agnostic)
+
+You are staring at me like you want something. (Blade)
+
+This is the part where you tell me something about yourself! (Forge)
+
+No.
+
+---
+
+Stop looking at me like you want something. (Blade)
+
+:( (Forge)
