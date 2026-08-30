@@ -190,7 +190,41 @@ def main():
         if bad:
             nul.append(('tools/' + f, bad))
 
+    # -------------------------------------------------------------------
+    # 🔴 WITHIN-FILE FUNCTION REDECLARATION. Rhino REFUSES it outright:
+    #
+    #     TypeError: redeclaration of function overheard. (pathless.js#164)
+    #
+    # and the WHOLE FILE fails to load - the 2026-08-30 01:27 boot came up 65/66
+    # because a new helper was given a name the file already used twelve lines away.
+    #
+    # ⚠️ NOTHING ELSE CATCHES THIS. Node accepts redeclaration silently, so
+    # `node --check` passes; this linter only compared names ACROSS files, so a
+    # collision inside one file was invisible to it. Both instruments said fine.
+    dupes = []
+    for f in files:
+        try:
+            src = strip(io.open(os.path.join(SS, f), encoding='utf-8').read())
+        except Exception:
+            continue
+        seen = {}
+        for m in re.finditer(r'function\s+([A-Za-z_$][\w$]*)\s*\(', src):
+            name = m.group(1)
+            ln = line_of(src, m.start())
+            if name in seen:
+                dupes.append((f, name, seen[name], ln))
+            else:
+                seen[name] = ln
+
     problems = 0
+
+    if dupes:
+        print('')
+        print('FUNCTION REDECLARED IN ONE FILE - Rhino refuses the whole file:')
+        for f, name, first, second in dupes:
+            print('  %-24s %s()  lines %d and %d' % (f, name, first, second))
+        print('  Node accepts this silently. Rhino does not. Rename one.')
+        problems += len(dupes)
 
     if nul:
         print('\nCONTROL CHARACTERS - invisible in every editor, and they do not')

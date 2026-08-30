@@ -149,7 +149,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // One god's line of an overheard argument, on the overlay, garbled unless that
   // god is yours. Goes through voice.overlay so it shares the hotbar lift and the
   // tone table rather than being a second implementation that drifts.
-  function overheard(p, god, s) {
+  // ⚠️ NAMED `overheardOverlay`, NOT `overheard` - this file already has a
+  // `function overheard(server, p)` twelve lines below. Rhino REJECTS the
+  // redeclaration outright ("TypeError: redeclaration of function overheard") and
+  // the whole file fails to load; Node accepts it silently, and rhino_lint only
+  // checked cross-FILE collisions. The 01:27 boot loaded 65/66 because of this.
+  function overheadOverlay(p, god, s) {
     try {
       if (!VELDORA.voice || typeof VELDORA.voice.overlay !== 'function') return false
       var mine = (typeof VELDORA.voice.alignedTo === 'function')
@@ -191,11 +196,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // still asked rather than assumed: if this ever fires for somebody with a path,
     // the god who is theirs comes through clean, which is the rule working, not an
     // exception to it.
-    overheard(p, a, opener)
+    overheadOverlay(p, a, opener)
     if (reply) {
       server.scheduleInTicks(PAIR_GAP, function () {
         tell(p, colourOf(b) + reply)
-        overheard(p, b, reply)
+        overheadOverlay(p, b, reply)
       })
     }
     console.info(TAG + p.username + ' overheard ' + a + ' -> ' + b)
