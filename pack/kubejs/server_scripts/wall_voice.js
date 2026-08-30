@@ -687,6 +687,52 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   ServerEvents.loaded(function (event) {
     if (!VELDORA.voice) { console.error(TAG + 'voice.js missing'); return }
     VELDORA.voice.setColour(GOD, COLOUR)
+
+    // ⭐⭐ SHE IS NOT ON THE SCREEN, SHE IS INSIDE YOUR HEAD. Ethan, 2026-08-30:
+    // *"Wall - Randomized across the screen like she's whispering into your skull."*
+    //
+    // 🔑 SCATTER IS THE CHARACTERISATION, and it is the opposite problem to the other
+    // two. Blade OWNS the top of the screen and Art OWNS the middle - you learn where
+    // they live. Wall owns nowhere. Every line she says arrives somewhere you were not
+    // looking, so you can never settle into reading her, and that is the point.
+    //
+    // ⚠️ CENTER_CENTER IS THE ORIGIN, NOT THE PLACEMENT. `scatter` offsets from it
+    // every single line, so anchoring her centrally means she can land anywhere in a
+    // box around the middle rather than clinging to one edge.
+    if (typeof VELDORA.voice.setStyle === 'function') {
+      VELDORA.voice.setStyle(GOD, {
+        anchor: 'CENTER_CENTER',
+
+        // ⚠️ THE NUMBERS ARE A BOX, AND THEY ARE DELIBERATELY NOT SQUARE. Wider than
+        // tall, because a line thrown to the vertical extremes lands under the hotbar
+        // or off the top, where the whole point - that you catch it in the corner of
+        // your eye - is lost to a HUD element instead.
+        //
+        // 🔑 y grows DOWNWARD (D-123). Both signs are used here on purpose: she goes
+        // above AND below the middle, which is what "randomized across the screen"
+        // means and what a single-signed offset could never do.
+        scatter: { x: 150, y: 70 },
+
+        // Metamorphous - gnarled, rough-edged. Ethan: *"Scratched, harsh."*
+        font: 'veldora:wall',
+
+        // 🔴 SHE DOES NOT SHAKE, AND THIS IS A REAL DECISION rather than a default.
+        // Shaking plus scattering is noise: two independent motions on one line read
+        // as a rendering fault, not as menace. Her unsettling quality is that the text
+        // is STILL and in the wrong place - she is composed, and she is somewhere she
+        // should not be.
+        //
+        // ⭐ Her panic gets shake, and it earns it BY CONTRAST - docs/75 §2 gives her
+        // the two-movement crashout where she comes apart and then goes flat. If she
+        // trembled all the time, the moment she actually loses it would look identical
+        // to every other thing she has ever said.
+        shake: false,
+
+        // Smaller than Art and Blade. A whisper is not a proclamation, and she is the
+        // only one of the three not trying to be looked at.
+        size: 0.95,
+      })
+    }
     var n = 0, tags = 0
     for (var k in LINES) {
       if (!LINES.hasOwnProperty(k)) continue
