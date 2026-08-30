@@ -767,7 +767,7 @@ metafile = true
 
 [[files]]
 file = "mods/immersive-snow.pw.toml"
-hash = "759ebd337fa67f558a204baef57041ca0392fd206c786a3e7643a5c6b27f4cee"
+hash = "c8f17b808582f80a8afe90f44844ae83965afe6372c572ac5a27d595ad8c59b0"
 metafile = true
 
 [[files]]
@@ -1132,7 +1132,7 @@ metafile = true
 
 [[files]]
 file = "mods/realm-rpg-treasure-balloons.pw.toml"
-hash = "65b08ef670a2838ca8a97b7acb100de8d2cf21bf8ebdfd14d78b725fd7a6df7e"
+hash = "b5e457b39566ffac9c828262b0d9c397877db828a6308ee9e67ccc9780021c69"
 metafile = true
 
 [[files]]
