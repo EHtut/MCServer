@@ -75,12 +75,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     blade: {
       presence: ['minecraft:item.armor.equip_iron', 0.35, 0.7],
       moment: ['minecraft:block.anvil.land', 0.55, 0.9],
+      // ENRAGED - the same anvil, lower and harder. He does not find a new noise when
+      // he loses his temper; the one he already had gets heavier.
+      enraged: ['minecraft:block.anvil.destroy', 0.7, 0.7],
     },
     // The Mother. Something with too many legs is nearby and has been for a while.
     // Her presence is a STEP, so she reads as approaching rather than announcing.
     wall: {
       presence: ['minecraft:entity.spider.step', 0.4, 0.6],
       moment: ['minecraft:entity.spider.ambient', 0.55, 0.5],
+      // ENRAGED - not a bigger spider. MANY. Her fury is always numbers.
+      enraged: ['minecraft:entity.spider.hurt', 0.75, 0.6],
     },
     // ⭐ RE-AUTHORED 2026-08-29. Ethan: "salvage's lines should be a wolf growling,
     // trinkets, etc." She was a shopkeeper - chain and a villager trade note - and a
@@ -93,6 +98,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     salvage: {
       presence: ['minecraft:entity.wolf.growl', 0.4, 0.85],
       moment: ['minecraft:block.amethyst_block.chime', 0.55, 1.1],
+      // ENRAGED - the growl stops being ambient and commits.
+      enraged: ['minecraft:entity.wolf.hurt', 0.75, 0.8],
     },
     // The Goat. Warm, busy, makes things. Her moment is literally a goat, which is
     // the least frightening sound in the pantheon and entirely correct for her -
@@ -100,6 +107,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     forge: {
       presence: ['minecraft:block.wood.place', 0.4, 1.2],
       moment: ['minecraft:entity.goat.ambient', 0.55, 0.9],
+      // ENRAGED - a goat SCREAM. ⭐ The funniest and most upsetting sound available,
+      // which is exactly right for the one god who is never cruel losing her temper.
+      enraged: ['minecraft:entity.goat.screaming.ambient', 0.7, 1.0],
     },
     // ⭐ RE-AUTHORED 2026-08-29. Ethan: "Art is horror cave sounds btw." She had
     // amethyst and a beacon - cold and tuned, which read as CELESTIAL. She is not
@@ -114,6 +124,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     art: {
       presence: ['minecraft:ambient.cave', 0.4, 0.7],
       moment: ['minecraft:block.sculk_shrieker.shriek', 0.45, 0.85],
+      // ENRAGED - she does not raise her voice, so it CANNOT be loud. The cave gets
+      // deeper and closer instead. Her anger is a change in pressure.
+      enraged: ['minecraft:ambient.cave', 0.8, 0.4],
     },
     // Retired into Wall at the world reset (`34` §0c). Kept so anyone still holding
     // the key sounds like something rather than nothing.
@@ -184,11 +197,40 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // The one entry point. Returns true only if a sound was actually issued, so a
   // caller can tell "played" from "suppressed" - "I failed" and "I found nothing"
   // must never share a return value.
+  // ⭐⭐ THREE REGISTERS. Ethan, 2026-08-30: *"Normal, Heightened, Enraged."*
+  //
+  // The file already had two - PRESENCE (ordinary talk) and MOMENT (the beats where the
+  // world changed). Those are his first two under different names, so this adds the
+  // third rather than rebuilding the ladder.
+  //
+  //     NORMAL      presence   idle lines, whispers. Rate-limited: a chime on every
+  //                            line means "text appeared", which you can already see.
+  //     HEIGHTENED  moment     an offer, a gift, a Trial, a warning, an arrival.
+  //     ENRAGED     enraged    a crashout, a reprisal, an argument. Never rate-limited.
+  //
+  // ⚠️ THE MOD'S OWN `sound` FLAG IS NOT USED and cannot be: the command maps it to a
+  // single fixed SoundEffect.LOWSHORT with no choice, so three registers are impossible
+  // through it. These are our own /playsound calls, which is better anyway - the sound
+  // can be per god AND per register.
+  var ENRAGED_STEMS = ['crashout', 'reprisal', 'argue', 'lash', 'strike', 'fury']
+
+  function isEnraged(tag) {
+    if (!tag) return false
+    var t = String(tag)
+    for (var i = 0; i < ENRAGED_STEMS.length; i++) {
+      if (t.indexOf(ENRAGED_STEMS[i]) !== -1) return true
+    }
+    return false
+  }
+
   function play(player, god, tag) {
     if (!ENABLED) return false
     var s = SOUNDS[god]
     if (!s) return false
 
+    // 🚨 ENRAGED FIRST. `crashout` would also match a MOMENT stem if one were added
+    // later, and the loudest register must never be quietly downgraded by ordering.
+    if (isEnraged(tag) && s.enraged) return fire(player, s.enraged)
     if (isMoment(tag)) return fire(player, s.moment)
 
     var key = null
@@ -203,6 +245,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   VELDORA.patronSound = {
     play: play,
     isMoment: isMoment,
+    isEnraged: isEnraged,
     sounds: SOUNDS,
     enabled: function () { return ENABLED },
   }

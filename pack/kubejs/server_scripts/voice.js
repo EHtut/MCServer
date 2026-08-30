@@ -271,10 +271,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // reading over an argument.
   var TYPE_CHARS_PER_SEC = 15
 
-  // ⭐ THE MINIMUM ANY LINE STAYS ON SCREEN, in ticks. Ethan asked for 10-15s so an
-  // animation has room to finish; this is the bottom of that range and beatFor grows
-  // past it for anything long.
-  var MIN_ON_SCREEN = 200
+  // ⭐ THE MINIMUM ANY LINE STAYS ON SCREEN, in ticks. Ethan, after seeing 10s:
+  // *"7 seconds is probably the sweet spot."* Ten was long enough to read twice.
+  //
+  // ⚠️ SCALED BY beatScale PER GOD - see beatFor. That is what makes Forge quick without
+  // making anyone else quick, and without touching the typing rate, which is fixed.
+  var MIN_ON_SCREEN = 140
 
   // 🔴 NEGATIVE, AND THE SIGN IS THE WHOLE BUG. y grows DOWNWARD in GUI space, so from a
   // BOTTOM anchor a POSITIVE y pushes the line off the bottom edge of the screen. It
@@ -568,9 +570,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // minimum time on screen rather than a bigger multiplier.
     //
     // ⚠️ It is a MAX against the computed value, so long lines are untouched: a
-    // 123-character sentence still gets its 14s and does not get clipped down to the
-    // floor.
-    return Math.max(MIN_ON_SCREEN, typing + Math.max(15, Math.round(read * k)))
+    // 123-character sentence still gets its full time and is not clipped to the floor.
+    //
+    // ⭐⭐ AND THE FLOOR IS SCALED PER GOD. Ethan: *"forge needs to talk faster like an
+    // excited child, her lines type incredibly fast."*
+    //
+    // 🔑 THE TYPING RATE CANNOT BE CHANGED - it is fixed in the mod and unreachable
+    // (D-123, confirmed twice). So "faster" cannot mean faster characters; it has to
+    // mean LESS TIME SITTING THERE once the words have arrived. Scaling her floor is
+    // what does that: at 0.45 her beats clear in about three seconds while everyone
+    // else holds seven, so she tumbles and they do not.
+    //
+    // 🚨 THE FLOOR IS SCALED, THE TYPING IS NOT. A pace dial that ate into typing time
+    // would cut her off mid-word - which is exactly what the old formula did to her.
+    var floor = Math.round(MIN_ON_SCREEN * k)
+    return Math.max(floor, typing + Math.max(15, Math.round(read * k)))
   }
 
   function overlay(player, god, s, tag, opts) {
@@ -936,6 +950,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
    */
   function crashoutFor(player, god, opts) {
     try {
+      // ⭐ THE ENRAGED SOUND FIRES HERE, and it has to, because the crashout path does
+      // NOT go through say() and therefore never reaches chime(). Registering a third
+      // sound register with nothing calling it would be a gate with no live consumer -
+      // the failure this project keeps paying for, shipped as a feature.
+      //
+      // ⚠️ Fired ONCE for the whole crashout, not per beat. Five lines is five sounds and
+      // that is a malfunction, not a mood.
+      try {
+        if (VELDORA.patronSound && typeof VELDORA.patronSound.play === 'function') {
+          VELDORA.patronSound.play(player, god, 'crashout')
+        }
+      } catch (e) { }
       var flat = line(god, 'crashout_flat', player)
       if (!flat) {
         var one = line(god, 'crashout', player)

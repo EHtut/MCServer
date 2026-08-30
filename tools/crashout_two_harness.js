@@ -278,7 +278,11 @@ t('🔴 every line stays long enough for an ANIMATION to finish', () => {
   load(env, 'screen.js')
   load(env, 'voice.js')
   const floor = env.ctx.VELDORA.voice.MIN_ON_SCREEN
-  assert(floor >= 180, 'the floor must be around ten seconds, got ' + floor + ' ticks')
+  // ⚠️ 140 ticks = 7s. Ethan settled on that after seeing 10s: "7 seconds is probably
+  // the sweet spot." The assertion is a RANGE rather than a number, so retuning inside
+  // the readable band does not break the test while removing the floor still does.
+  assert(floor >= 100 && floor <= 240,
+    'the floor must be a readable 5-12s, got ' + (floor / 20) + 's')
   for (const n of [1, 7, 23, 47, 72]) {
     assert(beatOf('x'.repeat(n)) >= floor,
       'a ' + n + '-char line got ' + beatOf('x'.repeat(n)) + ' ticks, under the floor')
@@ -286,6 +290,35 @@ t('🔴 every line stays long enough for an ANIMATION to finish', () => {
   // ⚠️ THE CONTROL: a floor must not become a CEILING. A long line still gets more.
   assert(beatOf('x'.repeat(140)) > floor,
     'a long line must exceed the floor, not be clipped to it')
+})
+
+t('⭐ a fast god is genuinely faster, and still finishes typing', () => {
+  // Ethan: "forge needs to talk faster like an excited child."
+  //
+  // 🔑 THE TYPING RATE IS FIXED AND UNREACHABLE, so "faster" can only mean less time
+  // sitting there once the words have arrived - which is the FLOOR being scaled per god,
+  // not the typing. A mutation that stopped scaling the floor made every god identical
+  // and no test noticed, so this is that test.
+  const quick = { anchor: 'CENTER_CENTER', beatScale: 0.45 }
+  const normal = { anchor: 'CENTER_CENTER' }
+  for (const n of [7, 23, 47]) {
+    const text = 'x'.repeat(n)
+    assert(beatOf(text, quick) < beatOf(text, normal) * 0.8,
+      'a ' + n + '-char line: fast god got ' + beatOf(text, quick) +
+      ' vs normal ' + beatOf(text, normal) + ' - not meaningfully quicker')
+  }
+  // 🚨 AND THE CONTROL: quick must never mean truncated. A pace dial that ate into
+  // typing time would cut her off mid-word, which is what the old formula did to her.
+  const env = build()
+  load(env, 'screen.js')
+  load(env, 'voice.js')
+  const cps = env.ctx.VELDORA.voice.TYPE_CHARS_PER_SEC
+  for (const n of [23, 72, 123]) {
+    const typingTicks = Math.round(n * 20 / cps)
+    assert(beatOf('x'.repeat(n), quick) > typingTicks,
+      'a fast god must still outlast her own typing: ' + n + ' chars needs ' +
+      typingTicks + ' ticks, got ' + beatOf('x'.repeat(n), quick))
+  }
 })
 
 t('the referee allows what is actually sent', () => {
@@ -373,6 +406,23 @@ t('the chat copy is off', () => {
   load(env, 'voice.js')
   assert(env.ctx.VELDORA.voice.CHAT_COPY === false,
     'Ethan: "We still have text in the chat bar. That should be gone by now."')
+})
+
+t('⭐ the ENRAGED sound has a live consumer', () => {
+  // 🚨 A sound register that nothing calls is a gate with no consumer. The crashout path
+  // does not go through say(), so it never reaches chime() - the enraged register would
+  // have shipped silent and looked configured.
+  const env = build()
+  load(env, 'screen.js')
+  spyReserve(env)
+  load(env, 'voice.js')
+  const heard = []
+  env.ctx.VELDORA.patronSound = { play: (p, god, tag) => { heard.push({ god, tag }); return true } }
+  setupGod(env, true)
+  env.ctx.VELDORA.voice.crashoutFor(env.player, 'wall')
+  assert(heard.length === 1, 'expected exactly one sound for the whole crashout, got ' +
+    heard.length + ' - five beats must not be five sounds')
+  assert(heard[0].tag === 'crashout', 'and it must be the enraged tag, got ' + heard[0].tag)
 })
 
 t('the silence is RESERVED, not merely waited out', () => {

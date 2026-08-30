@@ -563,7 +563,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         //
         // ⚠️ TUNE THIS AFTER HIS WRITING PASS, not before. Pace and sentence length are
         // one effect: shorter lines at the same scale read as clipped, not as a tumble.
-        beatScale: 0.6,
+        // 🔴 0.6 -> 0.45 (2026-08-30). Ethan: "forge needs to talk faster like an
+        // excited child, her lines type incredibly fast."
+        //
+        // ⚠️ THIS IS NOT THE TYPING RATE. That is fixed in the mod and unreachable, so
+        // her speed is entirely how long a beat SITS once it has finished appearing.
+        // At 0.45 her floor is ~3.1s against everyone else's 7s, so she is visibly the
+        // fastest voice in the pantheon without a single character being typed quicker.
+        beatScale: 0.45,
 
         // Smallest of the five. She is chattering, not proclaiming - Art demands to be
         // heard and Blade speaks down at you; Forge is just talking.
