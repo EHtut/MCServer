@@ -84,6 +84,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var sent = 0
   var failed = 0
   var rcWarned = false
+  var fadeWarned = false
 
   function probe() {
     if (available !== null) return available
@@ -177,9 +178,37 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (typeof o.x === 'number') { var xx = nbtF(o.x); if (xx) t.push('x:' + xx) }
     if (typeof o.y === 'number') { var yy = nbtF(o.y); if (yy) t.push('y:' + yy) }
 
-    if (o.fade) { t.push('fadein:' + nbtF(0.5)); t.push('fadeout:' + nbtF(0.5)) }
-    if (typeof o.fadein === 'number') { var fi = nbtF(o.fadein); if (fi) t.push('fadein:' + fi) }
-    if (typeof o.fadeout === 'number') { var fo = nbtF(o.fadeout); if (fo) t.push('fadeout:' + fo) }
+    // 🔴 `fadein` AND `fadeout` ARE MUTUALLY EXCLUSIVE IN THE MOD. The command handler
+    // is an if / else-if / else, not two independent ifs:
+    //
+    //     if contains("fadein")       -> fadeIn(x);  GOTO END   <- skips fadeout entirely
+    //     else if contains("fadeout") -> fadeOut(x); GOTO END
+    //     else                        -> fadeIn(); fadeOut()    <- both, properly paired
+    //
+    // ⚠️ So sending BOTH silently drops the second one, and the message ends up with a
+    // fade-in and NO fade-out configured at all. That is what made every /gd line type
+    // itself out and then vanish after about a second while every line that passed
+    // NEITHER key stayed up for its full duration - the working ones were landing in
+    // the `else` and getting the mod's properly paired defaults.
+    //
+    // 🔑 SO THE DEFAULT IS TO SEND NEITHER. `fade: true` used to push both; it now
+    // means "leave the mod's defaults alone", which is what it should always have done.
+    // A caller may still set ONE explicitly, and asking for both is refused loudly
+    // rather than half-honoured.
+    var wantsIn = (typeof o.fadein === 'number')
+    var wantsOut = (typeof o.fadeout === 'number')
+    if (wantsIn && wantsOut) {
+      if (!fadeWarned) {
+        fadeWarned = true
+        console.warn(TAG + 'fadein AND fadeout were both requested. The mod applies only ' +
+          'the FIRST - its handler is an else-if chain - so the other would be silently ' +
+          'dropped. Sending NEITHER, which gives the mod its paired defaults.')
+      }
+    } else if (wantsIn) {
+      var fi = nbtF(o.fadein); if (fi) t.push('fadein:' + fi)
+    } else if (wantsOut) {
+      var fo = nbtF(o.fadeout); if (fo) t.push('fadeout:' + fo)
+    }
 
     // ⚠️ Presence-only below. The value is never read — the key existing IS the switch, so
     // these are pushed only when truthy and are never emitted as `false`.

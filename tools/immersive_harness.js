@@ -240,5 +240,44 @@ grp('⛔ THE DEAD REFLECTIVE ROUTE MUST NOT COME BACK')
     raw.indexOf('DO NOT re-attempt reflection') !== -1, true)
 }
 
+
+// -------------------------------------------------------------------------
+grp('* FADEIN AND FADEOUT ARE MUTUALLY EXCLUSIVE IN THE MOD')
+{
+  // The command handler is an if / else-if / else, NOT two independent ifs:
+  //
+  //   if contains("fadein")       -> fadeIn(x);  GOTO END   <- skips fadeout
+  //   else if contains("fadeout") -> fadeOut(x); GOTO END
+  //   else                        -> fadeIn(); fadeOut()    <- both, paired
+  //
+  // Sending BOTH silently drops the second, leaving a message with a fade-in and NO
+  // fade-out configured. Every /gd line typed itself out and vanished after about a
+  // second because of it, while every line that sent NEITHER key stayed up for its
+  // full duration - those were landing in the `else` and getting paired defaults.
+  const s = sandbox()
+
+  ok('sending BOTH emits NEITHER, rather than half-honouring it',
+    /fade/.test(s.im._buildTag({ fadein: 0.5, fadeout: 0.5 }, null)), false)
+  ok('...and it says so, once, loudly',
+    (function () {
+      const t = sandbox()
+      t.im._buildTag({ fadein: 0.5, fadeout: 0.5 }, null)
+      return t.warns.some(w => w.indexOf('else-if chain') !== -1)
+    })(), true)
+
+  ok('fadein ALONE is still honoured',
+    /fadein:0\.5f/.test(s.im._buildTag({ fadein: 0.5 }, null)), true)
+  ok('fadeout ALONE is still honoured',
+    /fadeout:2\.0f/.test(s.im._buildTag({ fadeout: 2 }, null)), true)
+
+  // The default path is what every WORKING line used.
+  ok('the default sends no fade key at all, so the mod pairs its own',
+    /fade/.test(s.im._buildTag({ anchor: 'BOTTOM_CENTER' }, null)), false)
+
+  // And the god overlay must sit on that default.
+  const vo = fs.readFileSync(path.join(SS, 'voice.js'), 'utf8')
+  ok('the god overlay no longer forces a fade', /fade: true/.test(vo), false)
+}
+
 console.log('\n' + B + (fail ? R + fail + ' FAILED, ' : G) + pass + ' passed' + X)
 process.exit(fail ? 1 : 0)

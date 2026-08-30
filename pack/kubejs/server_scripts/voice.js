@@ -275,7 +275,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         anchor: 'BOTTOM_CENTER',
         y: HOTBAR_LIFT,
         typewriter: true,          // ⭐ god text ALWAYS types. Ethan, 2026-08-30.
-        fade: true,
         seconds: o.seconds,
         shake: !!o.shake,
         italic: !!o.italic,
@@ -341,7 +340,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         y: HOTBAR_LIFT,
         typewriter: true,
         italic: true,
-        fade: true,
         seconds: 5,
         color: '#AAAAAA',
       }
