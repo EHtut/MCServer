@@ -59,8 +59,40 @@ are all real combinations.
 | # | decision | blocks |
 |---|---|---|
 | **E2a** | 🔴 **Where does Salvage speak?** *"the chat bar or maybe top right like a quest log?"* | her placement (held to last by his instruction anyway) |
-| **E2b** | 🔴 **Caebrim or your own god announces a tide?** They must never both announce the same wave | the whole announcer system in `75` §3 |
+| ~~**E2b**~~ | ✅ **RULED 2026-08-30 — SPLIT BY AUDIENCE.** Pathed hear **their own god**; pathless hear **Caebrim**. Not a compromise: your god warning you is the relationship working, and Caebrim reaching the pathless is already her job. ⭐ It also buys a real beat free — the first tide after taking a path, the announcement **changes voice**, and the reverse when a path is lost. Drama still scales with wave difficulty, independent of who speaks | — |
 | **E2c** | ⚠️ Should chat go white for Blade too, or stay `§4§l`? Chat is a scrolling record where colour separates speakers | cosmetic, not blocking |
+
+## E6 · The Caebrim pass — she is already two people
+
+> Ethan, 2026-08-30: *"caebrim would be a better deep speaker since she's going to become
+> god agnostic."*
+
+⚠️ **She is not a new character to write — she is an existing one to CONSOLIDATE.** She
+already speaks as two separate deep-speaker entries:
+
+| id | as | for |
+|---|---|---|
+| `death_speaker` | *the Speaker* (grey) | Blade's champion |
+| `death_shadow` | *the Shadow* (dark grey) | Forge's champion |
+
+And the standing ruling (2026-08-23) is already that shape: *"no speaker for everyone
+except mera and kayer should be caebrim. (except salvage). kayer speaks for herself and
+alice speaks to mera."*
+
+⭐ So "god agnostic" is the ruling finished rather than a new direction — **one Caebrim**
+instead of one per god. What is yours to decide:
+
+* Does she keep a **different name per god** (the Speaker / the Shadow), or become one
+  named presence everyone meets?
+* Does her voice **change** depending on whose champion she is meeting, or is the point
+  that it does not?
+* She now also announces the tide **to the pathless** (E2b). Is that the same Caebrim
+  they meet in the dark, or does she read differently above ground?
+
+⛔ **A structural caveat, mine not yours, but it constrains the answer:** those ids key
+the `met`/stage state per player. Collapsing two entries into one is a DATA MIGRATION —
+someone who has met the Speaker must not meet Caebrim again as a stranger, because *"the
+first thing a speaker ever says is precisely the line that must not repeat."*
 
 ## E3 · Forge's writing overhaul
 
@@ -112,7 +144,7 @@ never what it says.
 | **C2b** | The whispers | C2a |
 | **C2c** | The crashout (a god announcing its own tide) | C2a, and each god's style |
 | **C2d** | Wall's two-movement panic → flat line | C2b, C2c |
-| **C2e** | Tide announcer | ⛔ **E2b** |
+| **C2e** | Tide announcer — your god if pathed, Caebrim if not | ✅ unblocked (E2b ruled); wants C2a |
 
 🔑 **C2a comes first and is not optional.** Whispers, a crashout and a tide announcement
 are three claimants on one screen. `announce.js` already solved exactly this for the bar —
