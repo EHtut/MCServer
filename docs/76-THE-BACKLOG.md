@@ -128,9 +128,9 @@ am not in it.
 | god | placement | font | state |
 |---|---|---|---|
 | **Blade** | TOP_CENTER, y +40 | `veldora:blade` (Cinzel) | ✅ **done** |
-| **Art** | dead centre, `wave` | `veldora:art` (Cormorant Garamond) | next |
-| **Wall** | scattered | `veldora:wall` (Metamorphous) | after Art |
-| **Forge** | scattered + shake | `veldora:forge` (Rye) | after Wall |
+| **Art** | dead centre, `wave`, never shakes | `veldora:art` (Cormorant Garamond) | ✅ **done** |
+| **Wall** | scattered, **still** | `veldora:wall` (Metamorphous) | ✅ **done** |
+| **Forge** | scattered + shake, fast beat | `veldora:forge` (Rye) | ✅ **done** |
 | **Salvage** | ⛔ blocked on **E2a** | `veldora:salvage` (Special Elite) | ⛔ **held last** — Ethan: *"creatively she's in the worst state"* |
 
 ⚠️ **Placement is structure; the words are his.** I set where and how a god speaks and
@@ -140,10 +140,10 @@ never what it says.
 
 | # | thing | waiting on |
 |---|---|---|
-| **C2a** | 🔑 **A priority model for the screen** | nothing — and it blocks the rest |
-| **C2b** | The whispers | C2a |
-| **C2c** | The crashout (a god announcing its own tide) | C2a, and each god's style |
-| **C2d** | Wall's two-movement panic → flat line | C2b, C2c |
+| ~~**C2a**~~ | ✅ **DONE** — `screen.js`. Not a simultaneous budget: the client shows ONE message at a time, FIFO, no clear and no reorder, so the risk is BACKLOG. The lower the priority, the emptier the queue must be |
+| **C2b** | The whispers | ✅ unblocked — **next** |
+| **C2c** | The crashout (a god announcing its own tide) | ✅ unblocked — every god but Salvage is styled |
+| **C2d** | Wall's two-movement panic → flat line | C2b, C2c. ⚠️ *slow* typed text is **not reachable** from the command route (B2) |
 | **C2e** | Tide announcer — your god if pathed, Caebrim if not | ✅ unblocked (E2b ruled); wants C2a |
 
 🔑 **C2a comes first and is not optional.** Whispers, a crashout and a tide announcement
