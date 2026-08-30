@@ -50,6 +50,24 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
 ;(function () {
   var TAG = '[chosen] '
+  var bladeWarned = false
+
+  // 🚨 THE DISPLAY WAS A TWO-WAY BRANCH, and it had to stop being one. It read
+  // `TRIGGERS[k] ? 'carry X' : 'be killed while pathless'` - so the moment Blade left
+  // the carry table it would have told the player, confidently and in his own row, to
+  // go get killed while pathless to reach HIM. There are three kinds of condition now
+  // and the display has to know it, or it lies to the only person who reads it.
+  function howTo(p, k) {
+    if (TRIGGERS[k]) return 'carry ' + TRIGGERS[k][0].split(':')[1]
+    if (k === 'wall') return 'be killed while pathless'
+    if (k === 'blade') {
+      try {
+        if (VELDORA.slain) return 'slay ' + VELDORA.slain.count(p) + '/' + VELDORA.slain.threshold
+      } catch (e) { }
+      return 'slay - UNAVAILABLE, slain.js is missing'
+    }
+    return 'unknown - nobody has written this condition'
+  }
   var GATE = true
 
   var SWEEP = 100                  // 5s. Fast enough to feel like being noticed.
@@ -67,8 +85,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ⚠️ Art and Forge are CLOSED in paths.js. Their triggers stay listed so this
   // table is the design rather than the leftovers - and the claim refuses them on
   // its own, so nothing here needs to know which gods are open.
+  // ⛔ BLADE IS NO LONGER AN ITEM. Ethan, 2026-08-29: *"for chosen, i want to make
+  // that honestly harder to accomplish we can probably change it to mobs slain because
+  // tetra is too good to pass up."*
+  //
+  // 🔑 Two reasons, and the second is the load-bearing one. Carrying an iron sword is
+  // a thing you do in your first ten minutes, which is not "he takes the proven". And
+  // tetra makes a tool's IDENTITY unstable - a tetra sword is not minecraft:iron_sword,
+  // so the trigger would silently stop firing for exactly the players most likely to
+  // deserve it. An item id is not a safe thing to key a condition on in this pack.
+  //
+  // His route now lives below, next to Wall's, because neither is a carry.
   var TRIGGERS = {
-    blade: ['minecraft:iron_sword'],
     salvage: ['minecraft:crossbow'],
     forge: ['create:wrench'],
     art: ['minecraft:lapis_lazuli'],
@@ -337,6 +365,30 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (!carries(p, TRIGGERS[key])) continue
       if (unlock(p, key)) newly = newly || key
     }
+    // ⭐ E1 - BLADE NOTICES THE PROVEN. 500 mobs, lifetime, and the tally is
+    // slain.js's own key rather than his trust counter - which resets.
+    //
+    // ⚠️ FAILS CLOSED, unlike the night gate. If slain.js is missing this must NOT
+    // unlock him: an unlock is spent FOREVER and cannot be taken back, so the safe
+    // direction here is the opposite of the safe direction there. And it says so.
+    if (!isUnlocked(p, 'blade')) {
+      var slainOk = false
+      try {
+        if (VELDORA.slain && typeof VELDORA.slain.qualifies === 'function') {
+          slainOk = VELDORA.slain.qualifies(p) === true
+        } else if (!bladeWarned) {
+          bladeWarned = true
+          console.warn(TAG + 'slain.js is MISSING - Blade can never be unlocked. This ' +
+            'is a FAILURE, not a player who has not killed enough.')
+        }
+      } catch (e) { slainOk = false }
+      if (slainOk && unlock(p, 'blade')) {
+        newly = newly || 'blade'
+        console.info(TAG + p.username + ' unlocked blade - ' +
+          VELDORA.slain.count(p) + ' slain, lifetime')
+      }
+    }
+
     // Wall unlocks by being KILLED while pathless, never by carrying. The offer is
     // made on respawn; this is only the catch-up for a player who was struck while
     // the respawn hook could not reach them (mid-scene, on a fall cooldown, or the
@@ -460,7 +512,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         p.tell(Text.of((shut ? '§8  CLOSED   ' : u ? '§a  unlocked ' : '§8  locked   ') +
           '§f' + k + (shut ? ' §8(not built - makes no offers)'
             : u ? (o ? ' §8(offer made - use /path ' + k + ')' : ' §e(offer pending)')
-              : ' §8(' + (TRIGGERS[k] ? 'carry ' + TRIGGERS[k][0].split(':')[1] : 'be killed while pathless') + ')')))
+              : ' §8(' + howTo(p, k) + ')')))
       }
       p.tell(Text.of('§8the Spider: killed while pathless §f' +
         (wasStruck(p) ? 'YES - she is coming' : 'no') +

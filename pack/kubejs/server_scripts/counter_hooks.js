@@ -72,6 +72,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       try { monster = victim.isMonster() } catch (e) { return }
       if (!monster) return              // farming cows is not answering a test
       bump(killer, 'blade', 1, 'slain')
+
+      // ⭐ E1 - THE LIFETIME TALLY, counted HERE and nowhere else. The trust bump
+      // above can be reset, decayed or zeroed by `/counters clear`; this one never is
+      // (slain.js). They are deliberately different numbers with different lifetimes,
+      // and they must agree about what a monster is - which is why this rides the same
+      // handler rather than a second EntityEvents.death of its own.
+      try { if (VELDORA.slain) VELDORA.slain.add(killer, 1) } catch (e2) { }
     } catch (e) { console.warn(TAG + 'blade hook threw :: ' + e) }
   })
 

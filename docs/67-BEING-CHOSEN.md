@@ -274,3 +274,63 @@ the five by some distance — worth watching in play rather than assuming.
 * Wall's offer lands **on your respawn**, 100t later
 
 Those are mechanics, not conditions. Only the trigger changes.
+
+---
+
+# ✅ E1 BUILT — 2026-08-29. Blade takes the proven.
+
+**`minecraft:iron_sword` is gone.** Blade is unlocked by **500 mobs slain, lifetime**.
+
+## 🔑 Two reasons, and the second is load-bearing
+
+1. Carrying an iron sword is something you do in your first ten minutes. That is not
+   *"he takes the proven"* — Ethan: *"i want to make that honestly harder to accomplish."*
+2. ⚠️ **Tetra makes a tool's identity unstable.** A tetra sword is not
+   `minecraft:iron_sword`, so the trigger would have silently stopped firing for exactly
+   the players most likely to deserve it. **An item id is not a safe thing to key a
+   condition on in this pack.**
+
+## ⛔ Its own counter, and nothing resets it
+
+`docs/67` flagged the trap and it is **real, not hypothetical**: `counters.js:219` zeroes
+every patron counter on `/counters clear`, and `setTo` can put any of them anywhere.
+Borrowing it would have made a 500-kill condition **unreachable with no error at all** —
+the player grinds, an admin zeroes a counter for an unrelated reason, and the door moves
+further away.
+
+⭐ `slain.js` owns `veldora_lifetime_slain`. **There is no clear, no decay, no per-Trial
+scope, and no admin zero.** The harness asserts that `counters.js` cannot even name the
+key, and that 300 kills survive a simulated counters wipe.
+
+## 🔑 It rides the EXISTING death handler
+
+Counted next to the trust bump in `counter_hooks.js`, **not in a second
+`EntityEvents.death`**. Two handlers would each have their own idea of what a monster is
+and would drift the first time either definition was touched. ⭐ One handler, two
+counters, two lifetimes.
+
+## ⚠️ This gate FAILS CLOSED — the opposite of the night gate
+
+`night.js` must fail **open**, because a god going unexpectedly silent is a bug nobody
+traces for weeks. This one is the reverse: **an unlock is spent forever and cannot be
+taken back.** If `slain.js` is missing, Blade is *not* unlocked, and it says so loudly
+rather than looking like a player who has not killed enough.
+
+## 🚨 And the display was one edit from lying
+
+`/path` rendered the condition as a **two-way branch** —
+`TRIGGERS[k] ? 'carry X' : 'be killed while pathless'`. The moment Blade left the carry
+table, that would have told the player, confidently and in Blade's own row, **to go get
+killed while pathless to reach him.** There are three kinds of condition now and the
+display knows it: Blade shows live progress (`slay 143/500`), and a condition nobody has
+written says exactly that instead of guessing.
+
+## ⚠️ Everyone starts at zero, deliberately
+
+The tally is **not** seeded from the trust counter. That counter may have been reset,
+decayed or scoped, so importing it would invent a lifetime figure that was never true.
+⭐ The world reset (`68` §C) makes this moot shortly, and a player who already unlocked
+Blade **stays unlocked** — the unlock check runs first.
+
+**39 assertions, 3 negative controls all confirmed red. 656 passed / 0 failed across 18
+harnesses. Live 58/58, 0 errors.**
