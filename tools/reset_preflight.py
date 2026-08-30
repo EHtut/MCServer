@@ -306,8 +306,13 @@ def check_modlist_parity():
     contradiction = sb & excluded_slugs(a)
 
     if contradiction:
-        check("modlist exclusions", WARN,
-              "%d mod(s) are RESOLVED but listed as unavailable/cut_for_budget: %s"
+        # ⛔ THIS IS BOOKKEEPING, NOT A PROPOSAL. Ethan read the first wording as a
+        # suggestion to remove simple-hats — *"I don't want simple-hats removed."*
+        # Nothing here removes anything; the LIST ENTRY is stale, not the mod.
+        check("modlist bookkeeping", WARN,
+              "%d mod(s) are installed and working but ALSO still listed under "
+              "unavailable/cut_for_budget: %s. The stale entry is the list, not the mod "
+              "- NOTHING here removes anything."
               % (len(contradiction), ", ".join(sorted(contradiction)[:6])))
 
     if not missing:

@@ -83,6 +83,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var lastError = null
   var sent = 0
   var failed = 0
+  var rcWarned = false
 
   function probe() {
     if (available !== null) return available
@@ -107,14 +108,36 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return null
   }
 
-  // A float the SNBT parser will accept. `4` alone parses as an int tag, which getFloat
-  // still reads — but being explicit removes a whole class of "why is this zero".
-  function f(n) {
+  // 🔴 TWO DIFFERENT FLOATS, AND ONE HELPER USED TO SERVE BOTH. That was the bug that
+  // made every /im test fail on the 00:45 boot:
+  //
+  //     immersivemessages sendcustom Rehykt {...} 4.0f The tide is rising.
+  //                                                  ^ "Expected whitespace to end one
+  //                                                    argument, but found trailing data"
+  //
+  // ⚠️ `4.0f` is CORRECT inside the NBT — SNBT wants the suffix to make a float tag.
+  // It is WRONG as the duration, which is a Brigadier FloatArgumentType and rejects the
+  // suffix outright. They look like the same thing and are parsed by different parsers.
+  //
+  // 🚨 The harness asserted `/\} 4\.0f /` — it encoded the bug as the expectation and
+  // went green on it. A test written from the implementation tests the implementation.
+
+  /** SNBT float — for values INSIDE the tag. Keeps the `f` suffix. */
+  function nbtF(n) {
     var v = Number(n)
     if (!isFinite(v)) return null
     var s = String(v)
     if (s.indexOf('.') < 0) s = s + '.0'
     return s + 'f'
+  }
+
+  /** Brigadier float — for the duration argument. NO suffix, ever. */
+  function argF(n) {
+    var v = Number(n)
+    if (!isFinite(v) || v <= 0) return null
+    var s = String(v)
+    if (s.indexOf('.') < 0) s = s + '.0'
+    return s
   }
 
   // SNBT string: double quotes, backslash-escaped. Built by CODE POINT so that no editor,
@@ -150,13 +173,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (o.borderTop) t.push('borderTop:' + quote(o.borderTop))
     if (o.borderBottom) t.push('borderBottom:' + quote(o.borderBottom))
 
-    if (typeof o.size === 'number') { var sz = f(o.size); if (sz) t.push('size:' + sz) }
-    if (typeof o.x === 'number') { var xx = f(o.x); if (xx) t.push('x:' + xx) }
-    if (typeof o.y === 'number') { var yy = f(o.y); if (yy) t.push('y:' + yy) }
+    if (typeof o.size === 'number') { var sz = nbtF(o.size); if (sz) t.push('size:' + sz) }
+    if (typeof o.x === 'number') { var xx = nbtF(o.x); if (xx) t.push('x:' + xx) }
+    if (typeof o.y === 'number') { var yy = nbtF(o.y); if (yy) t.push('y:' + yy) }
 
-    if (o.fade) { t.push('fadein:' + f(0.5)); t.push('fadeout:' + f(0.5)) }
-    if (typeof o.fadein === 'number') { var fi = f(o.fadein); if (fi) t.push('fadein:' + fi) }
-    if (typeof o.fadeout === 'number') { var fo = f(o.fadeout); if (fo) t.push('fadeout:' + fo) }
+    if (o.fade) { t.push('fadein:' + nbtF(0.5)); t.push('fadeout:' + nbtF(0.5)) }
+    if (typeof o.fadein === 'number') { var fi = nbtF(o.fadein); if (fi) t.push('fadein:' + fi) }
+    if (typeof o.fadeout === 'number') { var fo = nbtF(o.fadeout); if (fo) t.push('fadeout:' + fo) }
 
     // ⚠️ Presence-only below. The value is never read — the key existing IS the switch, so
     // these are pushed only when truthy and are never emitted as `false`.
@@ -203,16 +226,40 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
       var secs = (typeof o.seconds === 'number') ? o.seconds : 4
       var cmd = MODID + ' sendcustom ' + who + ' ' + buildTag(o, colour) +
-                ' ' + f(secs) + ' ' + body
+                ' ' + argF(secs) + ' ' + body
 
-      // ⭐ The handler ends `iconst_1; ireturn` — it returns 1 on success, so 0 is a REAL
-      // failure and the caller must fall back. "I failed" and "I found nothing" do not
-      // share a return value here.
+      // 🔴 THE HANDLER RETURNS 1 (`iconst_1; ireturn`) BUT KUBEJS DOES NOT HAND IT BACK.
+      // On the 00:45 boot every send logged `sendcustom returned undefined`, so the
+      // Java return value never reaches Rhino on this build. That was TRUE reasoning
+      // about the wrong layer — I read the mod's bytecode and then assumed the bridge
+      // was transparent.
+      //
+      // ⚠️ So per-send failure detection is NOT AVAILABLE, and pretending otherwise is
+      // worse than admitting it: `undefined > 0` is false, so the old check reported
+      // every successful send as a failure and every caller double-rendered.
+      //
+      // 🔑 What actually guards the grammar is the HARNESS, which builds the command
+      // string and asserts its shape. That is the honest division: the harness catches
+      // malformed commands before they ship, and this catches only throws.
       var rc = server.runCommandSilent(cmd)
-      if (rc > 0) { sent++; return true }
-      failed++
-      if (failed <= 3) console.warn(TAG + 'sendcustom returned ' + rc + ' :: ' + cmd)
-      return false
+
+      if (typeof rc === 'number') {
+        if (rc > 0) { sent++; return true }
+        failed++
+        if (failed <= 3) console.warn(TAG + 'sendcustom returned ' + rc + ' :: ' + cmd)
+        return false
+      }
+
+      // Not a number on this build. Say so ONCE, loudly, then treat no-throw as sent.
+      if (!rcWarned) {
+        rcWarned = true
+        console.warn(TAG + 'runCommandSilent returned ' + (typeof rc) + ', not a number - ' +
+          'per-send failure detection is UNAVAILABLE on this build. A malformed command ' +
+          'will now look like a successful send, so the command SHAPE is the harness\'s ' +
+          'job (tools/immersive_harness.js), not this function\'s.')
+      }
+      sent++
+      return true
     } catch (e) {
       failed++
       lastError = String(e)

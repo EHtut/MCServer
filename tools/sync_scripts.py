@@ -35,7 +35,26 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument('--deploy', action='store_true',
                     help='copy the files (default is a dry run)')
+    # 🔴 SEVERAL CHATS BUILD IN THIS REPO AT ONCE, and a bare --deploy pushes EVERY
+    # differing script - including another channel's uncommitted, mid-edit work, which
+    # then loads on the next restart. That happened on 2026-08-30: a one-file immersive
+    # fix carried the tide channel's in-progress tide.js, waves.js and spawn_pressure.js
+    # onto the live server with it. Ethan, same day: *"You and the tide chat are both
+    # working in tandem, you just commit everything."*
+    #
+    # 🔑 Deploy what you changed, not what happens to differ.
+    ap.add_argument('--only', metavar='NAME', action='append', default=None,
+                    help='deploy ONLY these scripts (repeatable; matched by filename, '
+                         'with or without .js). Use this whenever another channel has '
+                         'work in flight.')
     args = ap.parse_args()
+
+    wanted = None
+    if args.only:
+        wanted = set()
+        for n in args.only:
+            n = n.strip().replace('\\', '/').split('/')[-1]
+            wanted.add(n if n.endswith('.js') else n + '.js')
 
     if not SRC.is_dir():
         print('no source at %s' % SRC)
@@ -44,10 +63,16 @@ def main() -> int:
         print('no instance at %s' % DST)
         return 1
 
-    new, changed, ahead = [], [], []
+    new, changed, ahead, skipped = [], [], [], []
     for s in sorted(SRC.rglob('*.js')):
         rel = s.relative_to(SRC)
         d = DST / rel
+        if wanted is not None and s.name not in wanted:
+            # Recorded, not silent: "I deployed one file" and "eleven others differ and
+            # I left them" are different facts and the caller needs both.
+            if not d.exists() or not filecmp.cmp(s, d, shallow=False):
+                skipped.append(rel)
+            continue
         if not d.exists():
             new.append(rel)
         elif not filecmp.cmp(s, d, shallow=False):
@@ -64,8 +89,16 @@ def main() -> int:
         print('  CHANGED  %s' % rel)
     for rel in ahead:
         print('  !! INSTANCE IS NEWER, NOT COPYING: %s' % rel)
+    if skipped:
+        print('  ---- %d file(s) DIFFER and were left alone by --only ----' % len(skipped))
+        for rel in skipped:
+            print('  skipped  %s' % rel)
 
     if not (new or changed or ahead):
+        if skipped:
+            print('\n  nothing to deploy from --only; %d other file(s) still differ'
+                  % len(skipped))
+            return 0
         print('  in sync - nothing to do')
         return 0
 

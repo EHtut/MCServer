@@ -35,7 +35,12 @@ function sandbox() {
   const src = fs.readFileSync(path.join(SS, 'immersive.js'), 'utf8')
   const cmds = []
   const warns = []
-  const server = { runCommandSilent: function (c) { cmds.push(String(c)); return 1 } }
+  // 🔴 THE LIVE BUILD RETURNS `undefined` FROM runCommandSilent, not the 1 the mod's
+  // handler ends with. The stub returned 1 and the harness therefore exercised a branch
+  // that never runs in production - the same "measure at the point of use" error, this
+  // time inside the instrument. The default now MATCHES LIVE; a numeric return is the
+  // special case and gets its own test.
+  const server = { runCommandSilent: function (c) { cmds.push(String(c)); return undefined } }
   const stub = {
     Platform: { isLoaded: function () { return true } },
     Utils: { server: server },
@@ -81,9 +86,21 @@ grp('🔴 THE TWO THINGS THAT WOULD HAVE FAILED SILENTLY')
   // because every other Minecraft command puts the value args before the tag. This one
   // does not: <player> <nbt> <duration> <text...>.
   ok('⭐ the NBT comes SECOND, before the duration',
-    /^immersivemessages sendcustom Lehykt \{[^}]*\} [0-9.]+f The tide is rising\.$/.test(c), true)
-  ok('...and the duration is a float the SNBT parser accepts',
-    /\} 4\.0f /.test(c), true)
+    /^immersivemessages sendcustom Lehykt \{[^}]*\} [0-9.]+ The tide is rising\.$/.test(c), true)
+
+  // 🔴 THE ASSERTION THAT WAS HERE REQUIRED `4.0f` AND WENT GREEN ON A BROKEN COMMAND.
+  // Every /im test failed live with "Expected whitespace to end one argument, but found
+  // trailing data" — the duration is a Brigadier FloatArgumentType, which rejects the
+  // suffix. `4.0f` is correct SNBT and wrong here; two parsers, one helper, one bug.
+  ok('🚨 the DURATION carries no `f` suffix - Brigadier rejects it',
+    /\} 4\.0 The/.test(c), true)
+  ok('⛔ ...and specifically is not 4.0f', c.indexOf('4.0f') === -1, true)
+
+  // ⭐ But the tag floats MUST keep it - inside the NBT the suffix is what makes a float.
+  const withFloats = s.im._buildTag({ size: 1.5, y: 40, fadein: 0.25 }, null)
+  ok('⭐ tag floats DO keep the suffix', /size:1\.5f/.test(withFloats), true)
+  ok('...y too', /y:40\.0f/.test(withFloats), true)
+  ok('...and fadein too', /fadein:0\.25f/.test(withFloats), true)
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -150,7 +167,7 @@ grp('🚨 THE TEXT ARGUMENT IS GREEDY TO END OF LINE')
   ok('🚨 a newline cannot truncate the message', /first second$/.test(last(s)), true)
 
   s.im.show(s.player, '   padded   ', {})
-  ok('...and the body is trimmed', /\} [0-9.]+f padded$/.test(last(s)), true)
+  ok('...and the body is trimmed', /\} [0-9.]+ padded$/.test(last(s)), true)
 
   ok('an empty body is refused rather than sent', s.im.show(s.player, '§c', {}), false)
 }
@@ -161,12 +178,29 @@ grp('🚨 THE FALLBACK CONTRACT — "I failed" and "I found nothing" are differe
   // The handler ends `iconst_1; ireturn`, so 0 is a REAL failure and the caller MUST
   // fall back to its bossbar. If this ever returned true on a 0, every god line would
   // silently stop appearing and nothing would say so.
+  // ⭐ THE LIVE CONTRACT. KubeJS hands back `undefined` on this build, so per-send
+  // failure detection is genuinely unavailable. Reporting false there made every
+  // SUCCESSFUL send look failed and every caller render twice.
+  const live = sandbox()
+  ok('⭐ an undefined return counts as sent, not failed',
+    live.im.show(live.player, 'x', {}), true)
+  ok('🚨 ...and the weakened contract is stated ONCE, loudly',
+    live.warns.filter(w => w.indexOf('per-send failure detection is UNAVAILABLE') !== -1).length, 1)
+  live.im.show(live.player, 'y', {})
+  ok('...and not repeated on every send',
+    live.warns.filter(w => w.indexOf('per-send failure detection is UNAVAILABLE') !== -1).length, 1)
+
+  // Where the build DOES return a number, 0 must still mean fall back.
   const dead = sandbox()
   dead.server.runCommandSilent = function () { return 0 }
-  ok('🚨 a send returning 0 reports FALSE so the caller falls back',
+  ok('🚨 a numeric 0 still reports FALSE so the caller falls back',
     dead.im.show(dead.player, 'x', {}), false)
   ok('⭐ ...and it is LOGGED, not swallowed',
     dead.warns.some(w => w.indexOf('sendcustom returned 0') !== -1), true)
+
+  const good = sandbox()
+  good.server.runCommandSilent = function () { return 1 }
+  ok('⭐ a numeric 1 reports TRUE', good.im.show(good.player, 'x', {}), true)
 
   const thrower = sandbox()
   thrower.server.runCommandSilent = function () { throw new Error('boom') }
