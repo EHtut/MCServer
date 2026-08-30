@@ -221,7 +221,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // value Ethan named and is the number to raise it to if a shaking or oversized line
   // ever clips the HUD — the `weight` tone uses both.
   // ⛔ ONE SWITCH. Flip to true the moment `/gd type` shows the speed is usable.
-  var TYPEWRITER = false
+  var TYPEWRITER = true
 
   // 🔴 NEGATIVE, AND THE SIGN IS THE WHOLE BUG. y grows DOWNWARD in GUI space, so from a
   // BOTTOM anchor a POSITIVE y pushes the line off the bottom edge of the screen. It
@@ -287,13 +287,96 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { return true }
   }
 
+  // ════════════════════════════════════════════════════════════════════════
+  // ⭐⭐ WHERE EACH GOD LIVES ON THE SCREEN. Ethan, 2026-08-30: *"each god have their
+  // own speaking style."*
+  //
+  // 🔑 THIS MAKES **WHO IS SPEAKING** THE PRIMARY KEY, and the TONE table below only
+  // modulates it. That is the right way round: a player learns where on the screen
+  // their god lives, and the position becomes characterisation rather than decoration.
+  // Blade looks DOWN at you from above; Art plants herself in the middle and blocks
+  // your view. Same mechanism, opposite meaning.
+  //
+  // ⚠️⚠️ THE `y` SIGN, WRITTEN DOWN SO NOBODY RE-DERIVES IT (D-123 cost a whole
+  // session to it). y grows DOWNWARD, as GUI space always does:
+  //
+  //     BOTTOM anchor -> y must be NEGATIVE to lift text UP into view
+  //     TOP anchor    -> y must be POSITIVE to bring text DOWN into view
+  //
+  // A positive y on a BOTTOM anchor renders perfectly, off the bottom edge, where
+  // nobody can see it. It does not error and it does not log.
+  var STYLE = {}
+
+  // Anything a god has not declared falls back to this - the pre-2026-08-30 behaviour,
+  // so a god with no registered style is plain rather than broken.
+  var DEFAULT_STYLE = { anchor: 'BOTTOM_CENTER', y: HOTBAR_LIFT }
+
+  function setStyle(god, style) { STYLE[god] = style || null }
+  function styleOf(god) { return STYLE[god] || DEFAULT_STYLE }
+
+  // A scattered god gets a fresh position per line. Wall is "whispering into your
+  // skull" and Forge rambles - neither should sit still.
+  function scatterOf(st) {
+    if (!st.scatter) return null
+    var sp = st.scatter
+    return {
+      x: Math.round((Math.random() * 2 - 1) * (sp.x || 0)),
+      y: Math.round((Math.random() * 2 - 1) * (sp.y || 0)),
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  // ⭐ SENTENCE BY SENTENCE. Ethan: *"All dialogue should be typed and cut into
+  // sentences that generate after each other."*
+  //
+  // 🔑 Split on the PUNCTUATION, keeping it - a sentence without its full stop reads
+  // as a fragment, and Forge's whole character is short bursts with hard stops.
+  //
+  // ⚠️ Abbreviations are not special-cased. The pools are hand-written dialogue with
+  // no "Mr." or "e.g." in them, and a regex that tried to be clever here would be a
+  // new class of bug for no gain. If one ever appears, it splits early and looks odd -
+  // it does not break.
+  function sentences(text) {
+    var t = String(text)
+    var out = []
+    var buf = ''
+    for (var i = 0; i < t.length; i++) {
+      var c = t.charAt(i)
+      buf += c
+      if (c === '.' || c === '!' || c === '?') {
+        // consume the run, so "..." and "?!" stay together
+        while (i + 1 < t.length && '.!?'.indexOf(t.charAt(i + 1)) !== -1) {
+          i++; buf += t.charAt(i)
+        }
+        if (i + 1 >= t.length || t.charAt(i + 1) === ' ') {
+          out.push(buf.replace(/^\s+/, ''))
+          buf = ''
+        }
+      }
+    }
+    var tail = buf.replace(/^\s+/, '').replace(/\s+$/, '')
+    if (tail) out.push(tail)
+    return out.length ? out : [String(text)]
+  }
+
+  // How long one sentence owns the screen before the next arrives. Scaled by length so
+  // a short burst does not linger and a long line is not cut off mid-read.
+  function beatFor(sentence) {
+    var n = String(sentence).length
+    return Math.max(30, Math.min(110, 25 + n * 2))   // ticks
+  }
+
   function overlay(player, god, s, tag, opts) {
     try {
       if (!VELDORA.im || typeof VELDORA.im.show !== 'function') return false
       var o = toneFor(tag)
+      // ⭐ THE GOD'S OWN STYLE FIRST, the tone only on top of it.
+      var st = styleOf(god)
+      var sc = scatterOf(st)
       var show = {
-        anchor: 'BOTTOM_CENTER',
-        y: HOTBAR_LIFT,
+        anchor: st.anchor || 'BOTTOM_CENTER',
+        y: (sc ? (st.y || 0) + sc.y : st.y),
+        x: (sc ? sc.x : st.x),
         // 🔴 TYPEWRITER IS OFF, AND IT IS NOT A CHOICE - IT IS THE MOD'S SPEED.
         // Ethan asked for typing on 2026-08-30 and this shipped with it on. Every god
         // line then rendered nothing at all, and the reason is in tickTypewriter:
@@ -312,10 +395,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // the command and that is a bigger piece of work.
         typewriter: TYPEWRITER,
         seconds: o.seconds,
-        shake: !!o.shake,
-        italic: !!o.italic,
+        shake: !!(o.shake || st.shake),
+        italic: !!(o.italic || st.italic),
         background: !!o.background,
-        size: o.size,
+        size: (typeof st.size === 'number') ? st.size : o.size,
+        font: st.font,
         // ⭐ The mod obfuscates properly, so a garbled speaker does not need §k woven in
         // by hand for THIS surface. garble.js still owns the chat copy.
         obfuscate: GARBLED[god] ? 'RANDOM' : null,
@@ -325,12 +409,43 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { return false }
   }
 
+  // ⭐ ONE LINE, DELIVERED AS SENTENCES. The chat copy stays whole - chat is the
+  // record - and only the SCREEN is cut up, because that is where the pacing lives.
+  //
+  // ⚠️ A single-sentence line takes the direct path with no scheduling at all. Most
+  // lines are one sentence, and routing them through a scheduler would add a frame of
+  // latency and a failure mode to the common case for nothing.
+  function speak(player, god, s, tag, opts) {
+    try {
+      var parts = sentences(s)
+      if (parts.length < 2) return overlay(player, god, s, tag, opts)
+
+      var server = null
+      try { server = player.server } catch (e) { }
+      if (!server) return overlay(player, god, s, tag, opts)
+
+      var first = overlay(player, god, parts[0], tag, opts)
+      var at = 0
+      for (var i = 1; i < parts.length; i++) {
+        at += beatFor(parts[i - 1])
+        ;(function (part, delay) {
+          try {
+            server.scheduleInTicks(delay, function () {
+              try { overlay(player, god, part, tag, opts) } catch (e) { }
+            })
+          } catch (e) { }
+        })(parts[i], at)
+      }
+      return first
+    } catch (e) { return false }
+  }
+
   function say(player, god, tag) {
     if (silenced(player, god)) return false
     var s = line(god, tag, player)
     if (!s) return false
     try { player.tell(Text.of(paint(player, god, s))) } catch (e) { return false }
-    overlay(player, god, s, tag)     // ⚠️ additive - a failure here costs nothing
+    speak(player, god, s, tag)       // ⚠️ additive - a failure here costs nothing
     chime(player, god, tag)
     return true
   }
@@ -350,7 +465,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // god line was on screen. Three of the most consequential lines in the game,
     // silently on the older surface, and nothing distinguished them from a god who
     // simply had nothing to say.
-    overlay(player, god, s, tag)     // ⚠️ additive - a failure here costs nothing
+    speak(player, god, s, tag)       // ⚠️ additive - a failure here costs nothing
     chime(player, god, tag)
     return true
   }
@@ -392,6 +507,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // the same tones and the same hotbar lift as every other god line - rather than a
     // second copy of this that drifts. The overlay is the god dialogue system now.
     overlay: overlay,
+    speak: speak,
+    setStyle: setStyle,
+    styleOf: styleOf,
+    sentences: sentences,
     alignedTo: alignedTo,
     toneFor: toneFor,
     hotbarLift: function () { return HOTBAR_LIFT },
@@ -442,6 +561,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       .then(shot('plain', 'forge', 'nothing_matching',
         'This one matches no tone and should render plain.'))
       // the interior surface - no god, no colour, no chime
+      // ⭐ ONE PER GOD, added as each is styled. Ethan wanted the pass done god by god
+      // so he can refine the writing alongside it, so each of these is a standalone
+      // check of ONE god's placement and manner.
+      .then(Commands.literal('blade').executes(function (ctx) {
+        var p = ctx.source.player
+        speak(p, 'blade',
+          'You are marked. Everything that follows is a consequence. I did warn you.',
+          'mark_declare', { seconds: TEST_SECONDS })
+        var st = styleOf('blade')
+        p.tell(Text.of('\u00a78blade \u00a77-> \u00a7f' + st.anchor + ' y=' + st.y +
+          '\u00a78, 3 sentences in sequence, typed'))
+        return 1
+      }))
       .then(Commands.literal('aside').executes(function (ctx) {
         var p = ctx.source.player
         var okd = aside(p, 'You have been holding your breath again.',
@@ -525,7 +657,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       }))
       .executes(function (ctx) {
         var p = ctx.source.player
-        p.tell(Text.of('§8/gd §fweight bargain quiet plain aside bicker place type'))
+        p.tell(Text.of('§8/gd §fweight bargain quiet plain aside bicker place type§8 | gods: §fblade'))
         p.tell(Text.of('§8tones are matched on the TAG; lift=§f' + HOTBAR_LIFT +
           '§8  test duration=§f' + TEST_SECONDS + 's'))
         return 1

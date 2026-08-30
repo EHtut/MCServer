@@ -771,6 +771,26 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (!CONTEXT.hasOwnProperty(c)) continue
       if (VELDORA.voice.registerLines(GOD, c, CONTEXT[c])) { ctxn += CONTEXT[c].length; tags++ }
     }
+    // ⭐⭐ WHERE HE STANDS. Ethan, 2026-08-30: *"Blade - Upper middle of screen - He
+    // talks down to you."*
+    //
+    // 🔑 THE POSITION IS THE CHARACTERISATION. He is not merely placed at the top; he
+    // is placed ABOVE YOU, and every line he says arrives from over your head. Art sits
+    // dead centre and blocks your view instead. Same mechanism, opposite meaning - so
+    // this number is not a layout preference and should not be "tidied" to match anyone
+    // else.
+    //
+    // ⚠️ y is POSITIVE here because the anchor is TOP. y grows downward: a TOP anchor
+    // needs a positive y to come DOWN into view, a BOTTOM anchor needs a negative one
+    // to lift UP into view. Getting that backwards renders the line perfectly, just
+    // off the edge of the screen, with nothing in the log (D-123).
+    if (typeof VELDORA.voice.setStyle === 'function') {
+      VELDORA.voice.setStyle(GOD, {
+        anchor: 'TOP_CENTER',
+        y: 40,
+      })
+    }
+
     console.info(TAG + 'The Warrior speaks - ' + n + ' fixed + ' + ctxn +
       ' contextual + ' + combo + ' combinatorial, across ' + tags +
       ' tags. Tiers at ' + MEDIUM_AT + '/' + HIGH_AT + ' slain.')

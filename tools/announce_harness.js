@@ -303,18 +303,23 @@ grp('⭐ THE GODS ON SCREEN — and chat keeps the record')
     sayBody.indexOf('player.tell(') !== -1, true)
   // ⭐ THE TRANSFER, 2026-08-30. The tag now rides along so the overlay can pick a
   // tone for the line - `overlay(player, god, s, tag)`.
-  ok('⭐ ...and the overlay is sent as well',
-    sayBody.indexOf('overlay(player, god, s, tag)') !== -1, true)
+  // ⚠️ The path gained a hop on 2026-08-30: say() -> speak() -> overlay(), so that
+  // one line can be cut into sentences. The GUARANTEE is unchanged - the screen still
+  // gets it - so the assertion follows the call rather than being deleted.
+  ok('⭐ ...and the screen is sent to as well',
+    sayBody.indexOf('speak(player, god, s, tag)') !== -1, true)
 
   // 🔴 sayAbout() HAD NO OVERLAY AT ALL until 08-30, so the Mark, the contract offer
   // and the incoming warning were chat-only while every other god line was on screen.
   // Counting BOTH is the assertion; matching once anywhere in the file is how the
   // original version of this test stayed green with the call site deleted.
-  ok('🔴 BOTH say() and sayAbout() send the overlay',
-    (vo.match(/overlay\(player, god, s, tag\)/g) || []).length, 2)
+  ok('🔴 BOTH say() and sayAbout() reach the screen',
+    (vo.match(/speak\(player, god, s, tag\)/g) || []).length, 2)
+  ok('...and speak() is what routes to the overlay',
+    /function speak\(player, god, s, tag, opts\)/.test(vo), true)
 
   // ⚠️ A failed overlay must cost nothing - say() returns true either way.
-  const i = vo.indexOf('overlay(player, god, s, tag)')
+  const i = vo.indexOf('speak(player, god, s, tag)')
   const j = vo.indexOf('return true', i)
   ok('⚠️ a failed overlay does not fail the line', i !== -1 && j !== -1 && j > i, true)
   ok('...and overlay() returns false rather than throwing',
@@ -473,4 +478,37 @@ grp('* THE GOD DIALOGUE PASS - 2026-08-30')
 }
 
 console.log('\n' + B + (fail ? R + fail + ' FAILED, ' : G) + pass + ' passed' + X)
+
+// -------------------------------------------------------------------------
+grp('* PER-GOD SPEAKING STYLE - 2026-08-30')
+{
+  const vo3 = code('voice.js')
+  const bl = code('blade_voice.js')
+
+  // WHO IS SPEAKING is the primary key now; the tone only modulates it.
+  ok('there is a style registry', /var STYLE = \{\}/.test(vo3), true)
+  ok('...read before the tone is applied',
+    vo3.indexOf('var st = styleOf(god)') < vo3.indexOf('anchor: st.anchor'), true)
+  ok('...and an unstyled god still falls back to the old placement',
+    /DEFAULT_STYLE = \{ anchor: 'BOTTOM_CENTER', y: HOTBAR_LIFT \}/.test(vo3), true)
+
+  // Ethan: "Blade - Upper middle of screen - He talks down to you."
+  ok('blade is styled in HIS OWN file, beside his colour and pools',
+    /setStyle\(GOD, \{/.test(bl), true)
+  ok('...at the top of the screen', /anchor: 'TOP_CENTER'/.test(bl), true)
+  // y grows DOWNWARD: a TOP anchor needs a POSITIVE y to come down into view, a BOTTOM
+  // anchor needs a NEGATIVE one to lift up into view. D-123 cost a session to this.
+  ok('...with a POSITIVE y, because the anchor is TOP', /\n\s*y: 40,/.test(bl), true)
+
+  // Ethan: "cut into sentences that generate after each other."
+  ok('lines are cut into sentences', /function sentences\(text\)/.test(vo3), true)
+  ok('...and say() delivers them in sequence',
+    (vo3.match(/speak\(player, god, s, tag\)/g) || []).length, 2)
+  ok('...while CHAT still gets the whole line',
+    (vo3.match(/Text\.of\(paint\(player, god, s\)\)/g) || []).length, 2)
+
+  // Ethan: "All dialogue should be typed."
+  ok('typing is ON now that the speed was measured', /var TYPEWRITER = true/.test(vo3), true)
+}
+
 process.exit(fail ? 1 : 0)
