@@ -166,6 +166,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         ' · §f/dtest whispers')
     } else tell(p, '§7the dead §8- §cnot loaded')
 
+    // ⭐ WHO WOULD ANNOUNCE A TIDE FOR YOU RIGHT NOW. A tide arrived with no words on
+    // 2026-08-30 because a pathless player above ground matched no herald branch, and
+    // tide.js's own banner claimed full coverage. This makes the answer readable without
+    // waiting an hour for a tide.
+    var herald = 'CAEBRIM (E2b - you have no god)'
+    try {
+      var hg = godOf(p)
+      var deep = !!(VELDORA.speaker && VELDORA.speaker.active(p))
+      if (deep) herald = 'the Speaker (you are below the cutoff)'
+      else if (hg && VELDORA.voice.line(hg, 'warn_wave', null)) herald = hg + ' (your god)'
+      else if (hg) herald = 'CAEBRIM - §c' + hg + ' has no warn_wave pool§8'
+    } catch (e) { herald = '§cunreadable' }
+    tell(p, '§7tide herald §8- §f' + herald)
+
     tell(p, '§7crashout §8- Wall, two movements · §f/dtest crash')
     tell(p, '§7interior §8- the player as a person · §f/dtest interior')
     tell(p, '§7screen §8- the referee · §f/dtest screen')

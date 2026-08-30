@@ -779,6 +779,29 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         if (god && VELDORA.voice) spoke = !!VELDORA.voice.say(p, god, 'warn_wave')
       } catch (e) { }
     }
+
+    // ⭐⭐ AND CAEBRIM ANNOUNCES IT FOR EVERYONE ELSE. E2b, ruled 2026-08-30: pathed hear
+    // their own god, PATHLESS HEAR HER.
+    //
+    // 🔴 THIS WAS THE HOLE. Ethan, from play: *"we had a tide without an announcement."*
+    // A pathless player above y0 matched neither branch above - no deep speaker, no god -
+    // so a tide arrived with a sound and no words at all. And the boot banner for this
+    // file said "a wave is never unannounced", which made the gap invisible to anyone
+    // reading the code rather than playing it.
+    //
+    // ⚠️ SHE IS NOT A GOD, so this does not violate "the pathless hear no gods". That is
+    // the entire reason E2b gave the job to her: she is what speaks when no god will.
+    //
+    // 🔑 AND IT COVERS A SECOND CASE THE OLD CODE MISSED - a PATHED player whose god has
+    // no `warn_wave` pool written. `say` returns false there, and before this that also
+    // fell through to silence.
+    if (!spoke) {
+      try {
+        if (VELDORA.caebrim && typeof VELDORA.caebrim.tide === 'function') {
+          spoke = !!VELDORA.caebrim.tide(p, 'start')
+        }
+      } catch (e) { }
+    }
     // ⚠️ THE SOUND IS NOT A FALLBACK, IT IS THE TELL. A pathless player, or one whose
     // god has no line written, must still get the warning - otherwise the wave is the
     // effect-from-nowhere this whole design exists to avoid. Words are the flavour;
@@ -1752,8 +1775,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         'difficulty Malice upward.')
       console.info(TAG + 'a GOD miniboss wave is led by that god\'s own boss; hers ' +
         'still comes from her list. That reverses an older note - see D-108.')
-      console.info(TAG + 'herald: your god above y0, the Speaker below it, and a ' +
-        'sound ALWAYS - so a wave is never unannounced even with no lines written.')
+      console.info(TAG + 'herald: the Speaker below y0, your god above it, CAEBRIM if ' +
+        'you have neither (E2b), and a sound ALWAYS.')
+      // 🔴 THIS BANNER USED TO END "so a wave is never unannounced even with no lines
+      // written" - FALSE for a pathless player above ground, who matched neither branch
+      // and got a sound with no words. Ethan found it in play: "we had a tide without an
+      // announcement."
+      //
+      // ⚠️ The claim is what made the gap invisible. Reading this file, the case looked
+      // covered; only playing it showed otherwise. A banner is a claim, not evidence.
+      console.info(TAG + '⚠️ the Caebrim leg was MISSING until 2026-08-30 while this ' +
+        'banner claimed full coverage. It also catches a PATHED player whose god has no ' +
+        'warn_wave pool - that fell through to silence too.')
     })
   })
 })();

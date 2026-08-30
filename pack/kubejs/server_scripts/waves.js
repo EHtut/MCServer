@@ -81,12 +81,25 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // 🔑 SO FODDER IS A MEASURED PROPERTY, NOT A VIBE, and the whole table was re-derived
   // against the live numbers rather than edited by hand:
   //
-  //     armor <= 2   AND   hp <= 30   AND   dmg <= 5   AND not a baby
+  //     armor <= 2  AND  hp <= 30  AND  dmg <= 5  AND not a baby
+  //                  AND applies NO STATUS EFFECT on hit
   //
   // ⚠️ THE DAMAGE CLAUSE IS AN INFERENCE FROM HIS WORDS, not a number he gave. "Drag you
   // down" is what fodder does; `goety:reaper` is 24 hp with NO armour and would pass an
   // armour-only test, but it hits for 8 and is a threat rather than a drag. It is a
   // specialist. Flagged because it is the one line here he did not dictate.
+  //
+  // 🔴🔴 THE FOURTH CLAUSE WAS ADDED BY PLAY, NOT BY THE PROBE - and it is the one the
+  // whole measured table is blind to. Ethan: *"wither skeletons are reported as 'too
+  // excessive' they should be specialists."* A wither skeleton measures 20 hp / 0 armour
+  // / 2 damage, which is LIGHTER than the Decrepit Skeleton that is the bulk. It passes
+  // every other clause and it is not fodder, because it applies WITHER on hit.
+  //
+  // 🔑 `attribute ... generic.attack_damage` reads a number and cannot see a debuff.
+  // Damage over time, stacking across a crowd, health bar blacked out while it runs -
+  // none of it is in the stats this project measured everything else with. A low-damage
+  // mob that applies an effect is exactly the thing that is unfair IN NUMBERS, which is
+  // the one place fodder is used.
   //
   // 🔴 TWO MOBS LEFT FODDER ON HIS ARMOUR RULE ALONE: `bone_imp` (armor 3.5) and
   // `baby_skeleton` (a baby). Both had been in the bulk of every Normal wave.
@@ -98,7 +111,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var BONE_FODDER = [
     'born_in_chaos_v1:decrepit_skeleton',   // 15 hp /  0 arm / 3 dmg — his bulk
     'cataclysm:koboleton',                  // 25 hp /  0 arm / 3 dmg
-    'minecraft:wither_skeleton',            // 20 hp /  0 arm / 2 dmg
     'minecraft:stray',                      // 20 hp /  0 arm / 2 dmg
     'minecraft:bogged',                     // 16 hp /  0 arm / 2 dmg
     'born_in_chaos_v1:siamese_skeletons',   // 20 hp /  2 arm / 3 dmg — was "light"
@@ -186,7 +198,29 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     'born_in_chaos_v1:bone_imp',            // 20 hp / 3.5 arm — armour rule, was fodder
     'born_in_chaos_v1:baby_skeleton',       // 10 hp / 1 arm  — BABY rule, was fodder
     'cataclysm:draugr',                     // 28 hp / 3 arm / 4 dmg
+    'minecraft:wither_skeleton',            // 20 hp / 0 arm / 2 dmg — see below
   ]
+  // 🔴🔴 `minecraft:wither_skeleton` MOVED HERE FROM FODDER, 2026-08-30. Ethan, from
+  // play: *"wither skeletons are reported as 'too excessive' they should be
+  // specialists."*
+  //
+  // ⭐⭐ AND IT PASSES THE FODDER RULE ON EVERY MEASURED NUMBER. 20 hp, 0 armour,
+  // 2 damage - lighter than the Decrepit Skeleton that IS the bulk. By the rule three
+  // screens up it is textbook fodder, and in play it is not.
+  //
+  // 🔑 WHAT THE MEASUREMENT MISSES IS THE WITHER EFFECT. A wither skeleton applies
+  // Wither on hit: damage over time, stacking across a crowd, and it blacks out the
+  // health bar while it runs. `attribute ... generic.attack_damage` reads 2 and cannot
+  // see any of it - so the whole live-stats table is blind to STATUS EFFECTS, which
+  // are exactly what makes a low-damage mob unfair in numbers.
+  //
+  // ⚠️ THIS IS A HOLE IN THE FODDER RULE, NOT AN EXCEPTION TO IT. The rule reads
+  // armour, hp and damage; a fourth clause belongs there - *does it apply an effect on
+  // hit* - and it cannot be measured by the probe that produced everything else.
+  // The rest of her fodder was swept for it: nothing else applies one.
+  // ⭐ `iceandfire:ghost` came up referencing WITHER and POISON and was CHECKED rather
+  // than cut - `canBeAffected` with no `addEffect` is immunity handling, not an attack.
+  // It stays in fodder. Undead are immune to both, which is why the reference exists.
   // ⚠️ ONE ENTRY, DELIBERATELY, AND IT TOOK TWO REJECTED CANDIDATES TO GET HERE.
   // The ghost family is short of mobs that are specialists WITHOUT being zombies:
   //   ⛔ `iceandfire:dread_beast` — 30 hp / 1 arm / 4 dmg is FODDER by the rule three
