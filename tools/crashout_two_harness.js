@@ -268,13 +268,37 @@ t('🔴 a line is ALWAYS given at least its typing time (when typing is on)', ()
   }
 })
 
-t('a line is never given less than a readable floor', () => {
-  // 🔑 The floor is what stops a one-word line vanishing, and it holds whether or not
-  // typing is on.
-  for (const n of [1, 5, 12]) {
-    assert(beatOf('x'.repeat(n)) >= 30,
-      'a ' + n + '-char line got ' + beatOf('x'.repeat(n)) + ' ticks')
+t('🔴 every line stays long enough for an ANIMATION to finish', () => {
+  // Ethan, from play: "text stays for like 1-2 seconds. For text with animation that
+  // means it either fails to decode itself or it shows up and vanishes instantly."
+  //
+  // 🔑 The cost of an animation has nothing to do with line length, so this is a FLOOR
+  // rather than a scale. "Sister." is 7 characters and used to get ~2.2s.
+  const env = build()
+  load(env, 'screen.js')
+  load(env, 'voice.js')
+  const floor = env.ctx.VELDORA.voice.MIN_ON_SCREEN
+  assert(floor >= 180, 'the floor must be around ten seconds, got ' + floor + ' ticks')
+  for (const n of [1, 7, 23, 47, 72]) {
+    assert(beatOf('x'.repeat(n)) >= floor,
+      'a ' + n + '-char line got ' + beatOf('x'.repeat(n)) + ' ticks, under the floor')
   }
+  // ⚠️ THE CONTROL: a floor must not become a CEILING. A long line still gets more.
+  assert(beatOf('x'.repeat(140)) > floor,
+    'a long line must exceed the floor, not be clipped to it')
+})
+
+t('the referee allows what is actually sent', () => {
+  // 🚨 A HOLD cap BELOW the real duration makes the model under-estimate, which grants
+  // the screen to something that then queues behind a line still being typed.
+  const env = build()
+  load(env, 'screen.js')
+  load(env, 'voice.js')
+  const S = env.ctx.VELDORA.screen
+  const longest = beatOf('x'.repeat(123)) / 20
+  assert(S.HOLD.GOD >= longest - 0.5,
+    'HOLD.GOD is ' + S.HOLD.GOD + 's but a real line runs ' + longest.toFixed(1) + 's')
+  assert(S._audit().length === 0, 'and the ordering must still hold')
 })
 
 t('🚨 beatScale can never truncate a line', () => {

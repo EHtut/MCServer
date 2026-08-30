@@ -56,8 +56,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var P = {
     WHISPER: 0.0,    // the dead muttering - only into a genuinely empty screen
     AMBIENT: 0.0,    // the place talking - same
-    ASIDE: 4.5,      // your own head; may follow closely behind one thing
-    GOD: 5.0,        // a god addressing you
+    ASIDE: 10.0,     // your own head; may follow closely behind one thing
+    GOD: 10.0,       // a god addressing you
     ANNOUNCE: 15.0,  // something is ABOUT to happen - a warning is worth a wait
     CRASHOUT: 999,   // a god announcing their own tide. Always.
   }
@@ -110,9 +110,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // and tidewhispers.js now scales each fragment by its length and clamps to this
     // ceiling. ⚠️ Lower it and the whispers follow silently - the referee wins, which is
     // the correct direction for a cap.
-    WHISPER: 4.0,
+    // 🔴 ALL THREE RAISED 2026-08-30 when a 10s FLOOR landed in voice.beatFor. Ethan:
+    // "text stays for like 1-2 seconds... for text with animation that means it either
+    // fails to decode itself or it shows up and vanishes instantly."
+    //
+    // ⚠️ An animation has a fixed cost that has nothing to do with line length, so every
+    // surface now sits on the screen for at least ten seconds - and a cap BELOW what is
+    // actually sent makes the model under-estimate, which is the unsafe direction.
+    WHISPER: 9.5,
     AMBIENT: 1.5,
-    ASIDE: 2.5,
+    ASIDE: 10.5,
     GOD: 14.5,
     ANNOUNCE: 8.0,
     CRASHOUT: 12.0,

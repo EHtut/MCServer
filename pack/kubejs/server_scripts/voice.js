@@ -271,6 +271,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // reading over an argument.
   var TYPE_CHARS_PER_SEC = 15
 
+  // ⭐ THE MINIMUM ANY LINE STAYS ON SCREEN, in ticks. Ethan asked for 10-15s so an
+  // animation has room to finish; this is the bottom of that range and beatFor grows
+  // past it for anything long.
+  var MIN_ON_SCREEN = 200
+
   // 🔴 NEGATIVE, AND THE SIGN IS THE WHOLE BUG. y grows DOWNWARD in GUI space, so from a
   // BOTTOM anchor a POSITIVE y pushes the line off the bottom edge of the screen. It
   // renders perfectly and nobody can see it.
@@ -551,7 +556,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var typing = TYPEWRITER ? Math.round(n * 20 / TYPE_CHARS_PER_SEC) : 0
     var read = 30 + Math.min(90, Math.round(n * 0.9))
     var k = (st && typeof st.beatScale === 'number') ? st.beatScale : 1
-    return typing + Math.max(15, Math.round(read * k))
+    // ⭐⭐ A FLOOR, NOT A SCALE. Ethan, 2026-08-30: *"right now text stays for like 1-2
+    // seconds. For text with animation that means it either fails to decode itself or it
+    // shows up and vanishes instantly... 10-15 seconds is probably a good test part."*
+    //
+    // 🔑 SHORT LINES WERE THE PROBLEM, and scaling could never have fixed them. "Sister."
+    // is seven characters: typing plus reading came to ~2.2s, which is correct as
+    // arithmetic and useless as a duration, because an ANIMATION has a cost that has
+    // nothing to do with how long the text is. A typewriter needs time to run and the
+    // mod's obfuscate needs time to DECODE - both are fixed overheads, so the answer is a
+    // minimum time on screen rather than a bigger multiplier.
+    //
+    // ⚠️ It is a MAX against the computed value, so long lines are untouched: a
+    // 123-character sentence still gets its 14s and does not get clipped down to the
+    // floor.
+    return Math.max(MIN_ON_SCREEN, typing + Math.max(15, Math.round(read * k)))
   }
 
   function overlay(player, god, s, tag, opts) {
@@ -1007,7 +1026,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         y: HOTBAR_LIFT,
         typewriter: TYPEWRITER,
         italic: true,
-        seconds: 5,
+        // ⚠️ Was a flat 5s, which predates typing. An aside types too, so it needs the
+        // same room to finish as anything else.
+        seconds: MIN_ON_SCREEN / 20,
         color: '#AAAAAA',
         // Your own head, not a speaker. It may follow closely behind one thing, but it
         // never talks over a god and never delays a warning.
@@ -1042,6 +1063,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     beatFor: beatFor,
     CHAT_COPY: CHAT_COPY,
     TYPE_CHARS_PER_SEC: TYPE_CHARS_PER_SEC,
+    MIN_ON_SCREEN: MIN_ON_SCREEN,
     dodgeCrosshair: dodgeCrosshair,
     CROSSHAIR_BAND: CROSSHAIR_BAND,
     sized: sized,

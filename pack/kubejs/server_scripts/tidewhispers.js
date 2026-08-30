@@ -141,8 +141,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ⚠️ CAPPED at HOLD.WHISPER in screen.js (4.0s). The dead may be readable; they may
   // not own the screen. If that cap is lowered, this silently follows it, which is the
   // right direction - the referee wins.
-  var WHISPER_FLOOR = 2.6
-  var WHISPER_CEIL = 4.0
+  // 🔴 RAISED 2026-08-30. These predate the typewriter being on. A fragment now has to
+  // TYPE before it can be read, and at ~15 chars/sec a 40-character fragment spends 2.7s
+  // just appearing - which left almost nothing to read it in at the old 4.0s ceiling.
+  var WHISPER_FLOOR = 6.0
+  var WHISPER_CEIL = 9.0
   var CHARS_PER_SEC = 13
 
   function whisperSeconds(text, band) {
