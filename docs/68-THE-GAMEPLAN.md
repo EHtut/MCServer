@@ -585,3 +585,64 @@ Each mechanism was broken in turn and the harness caught exactly the right asser
 
 ⚠️ **Scope: speech only.** "or act" — blade's and salvage's *events* firing at night — is
 **not** in this chunk. That is D1b, and it wants the same treatment.
+
+---
+
+# ✅ D3 DONE — stepped tide tiers, driven by trust
+
+| trust | may send | size |
+|---|---|---|
+| 0–1 | pure horde | ×1.00 |
+| 2 | + general | ×1.15 |
+| 3 | + specialist | ×1.30 |
+| 4 | + miniboss | ×1.50 |
+| 5 | all four | ×1.75 |
+
+⭐ Ethan's rationale is the design, not a justification bolted on: trust *"indicates how
+dangerous you are to the goddess of death."* Notoriety is a clock; trust is what your god
+has **decided** about you.
+
+⚠️ Two ramps that multiply: `lifetime` (tides survived) × `tier.mult` (standing). Every
+multiplier is **≥ 1** — trust never makes a night safer.
+
+**Benches:** `/tide_wave <horde|general|specialist|miniboss>` forces one, **without
+needing a run** — a bench that only works underground at night after an hour is not a
+bench. `/tide_tier` shows your tier and the ranged pool at your depth.
+
+## 🔴 Three ids Ethan named do not exist — found by probing, not by reading
+
+| named | reality |
+|---|---|
+| `missionary` | ❌ → **`missionary_raider`** |
+| `supreme_bonecaller` | ❌ → **`supreme_bonescaller`** (an S) |
+| `bonecaller` | ❌ → `bonescaller` |
+
+A **known-fake control** was probed alongside to prove the method could tell them apart.
+`fallen_chaos_knight` is deliberately absent — it is Blade's. The Taker
+(`lifestealer`) is **not in the rotation**; it appears at 6% *inside* a miniboss wave,
+because it is a clue about Art and a clue that turns up every fourth tide is set dressing.
+
+## 🔴 AND `node --check` PASSED A FILE RHINO REFUSED
+
+`var srv` was declared twice in `sendWave` — **legal JavaScript, a hard error under
+Rhino.** `node --check` passed, the harness passed, and the live boot came back
+**54/55 with `tide.js` DOWN**. The whole file, over a duplicate `var`.
+
+⭐ Only the live boot caught it. The lesson this repo already had — *never ship code you
+have not run* — with a new face: the harness runs on **Node**, and Node is not the engine.
+
+## ⚠️ A real gap, encoded rather than papered over
+
+**The DEEPER roster (below y−40) has no ranged mobs at all**, so a specialist wave down
+there silently degrades into an ordinary horde — and the deep is where the tide happens.
+`skeleton_thrasher` and `banshee` are plausible archers but **nothing has probed how they
+fight**; the registry confirms an id exists, not how it attacks. The harness asserts the
+gap so it is visible and **turns red the moment somebody fixes it**.
+
+## Spawn test — all 28 ids, live
+
+Every roster entry and every miniboss summoned successfully on the running server:
+**SHALLOW+DEEP 14/14, DEEPER+bosses 14/14, 0 failures.** That is the end-to-end check a
+registry probe cannot give — resolving is not spawning.
+
+**520 assertions across 15 harnesses. Live: 55/55 scripts, 0 errors.**

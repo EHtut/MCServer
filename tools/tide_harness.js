@@ -451,6 +451,107 @@ grp('⭐ THE CLOCK RUNS WHEREVER YOU ARE')
   ok('🚨 going under while DUE brings it immediately', WAVES.length > 0, true)
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// D3 - STEPPED TIERS. Trust decides which waves you can get and how big they are.
+// None of this is checkable in play: counting a 40% ranged mix by eye across a
+// 30-second wave is not something a person can do.
+let TRUST = 0
+global.VELDORA.trust = () => TRUST
+const tp = { username: 'Tiered', uuid: 'u-tier', server: {} }
+
+grp('D3 - THE TIER LADDER')
+{
+  const at = (t) => { TRUST = t; return T._tierFor({}, tp) }
+  ok('trust 0 is tier 0', at(0).at, 0)
+  ok('trust 1 is still tier 0', at(1).at, 0)
+  ok('trust 2 steps up', at(2).at, 2)
+  ok('trust 3 steps up', at(3).at, 3)
+  ok('trust 4 steps up', at(4).at, 4)
+  ok('trust 5 is the top', at(5).at, 5)
+  ok('trust above the table clamps to the top', at(99).at, 5)
+
+  // Ethan's standing rule: a coefficient is always an increase, never a reduction.
+  ok('EVERY tier multiplier is >= 1', T.tiers.every(x => x.mult >= 1), true)
+  ok('...and they only ever climb',
+    T.tiers.every((x, i) => i === 0 || x.mult >= T.tiers[i - 1].mult), true)
+}
+
+grp('D3 - WHAT EACH TIER MAY SEND')
+{
+  const modsAt = (t) => { TRUST = t; return T._tierFor({}, tp).mods }
+  ok('tier 0 sends ONLY a pure horde', modsAt(0), ['horde'])
+  ok('specialists do not appear before trust 3', modsAt(2).indexOf('specialist'), -1)
+  ok('...and do at 3', modsAt(3).indexOf('specialist') >= 0, true)
+  ok('minibosses do not appear before trust 4', modsAt(3).indexOf('miniboss'), -1)
+  ok('...and do at 4', modsAt(4).indexOf('miniboss') >= 0, true)
+}
+
+grp('D3 - COMPOSITION')
+{
+  TRUST = 5
+  // ⚠️ y -20, NOT -60. rosterFor() returns DEEP above -40 and DEEPER below it, and my
+  // first attempt used -60 - which lands in DEEPER, where there are no ranged entries
+  // at all, so a "specialist wave" was correctly 0% ranged and the test was wrong.
+  const deep = -20
+  const frac = (mod) => {
+    const c = T._composeFor({}, tp, deep, mod)
+    const r = c.ids.filter(id => T.ranged[id]).length
+    return { r: r / c.ids.length, boss: c.boss, n: c.ids.length }
+  }
+  ok('a pure horde has NO ranged at all', frac('horde').r, 0)
+  const sp = frac('specialist')
+  ok('a specialist wave is ~40% ranged', Math.abs(sp.r - 0.40) < 0.06, true)
+  const gen = frac('general')
+  ok('a general wave is lighter than a specialist one', gen.r < sp.r, true)
+  ok('...but not zero', gen.r > 0, true)
+
+  ok('only the miniboss modifier brings a boss', frac('horde').boss, null)
+  ok('...and miniboss does', typeof frac('miniboss').boss, 'string')
+}
+
+grp('D3 - THE FALLBACK, AND WHO IS NOT IN THE ROSTER')
+{
+  // The SHALLOW roster at y>=0 - if it had no ranged entries the wave must still be a
+  // wave. Spawning nothing reads exactly like the tide being broken.
+  TRUST = 5
+  for (const y of [10, -20, -60, -200]) {
+    const c = T._composeFor({}, tp, y, 'specialist')
+    ok('a specialist wave at y' + y + ' is never empty', c.ids.length > 0, true)
+  }
+
+  // 🔴 A REAL GAP, ENCODED SO IT IS VISIBLE AND WILL FAIL LOUDLY WHEN FIXED.
+  // The DEEPER roster (below y-40) contains NO entry in RANGED, so a specialist wave
+  // down there silently degrades into an ordinary horde - and the deep is exactly where
+  // the tide actually happens.
+  //
+  // ⚠️ Not guessed at: `skeleton_thrasher` and `banshee` are plausible archers but
+  // nothing has probed how they FIGHT, and the registry can only confirm that an id
+  // exists. Mislabelling melee as ranged makes a wave less special; the reverse makes
+  // it a wall of arrows. This assertion documents the current state rather than
+  // pretending it is fine, and it turns red the moment somebody adds one.
+  {
+    const deeperRanged = T.rosters.deeper.filter(id => T.ranged[id])
+    ok('DEEPER has no ranged entries yet - a known gap, not a silent one',
+      deeperRanged.length, 0)
+  }
+
+  // Blade's stalker avatar must never turn up in a generic tide wave.
+  ok('fallen_chaos_knight is NOT a tide boss - it is Blade\'s',
+    T.bosses.indexOf('born_in_chaos_v1:fallen_chaos_knight'), -1)
+  // The Taker is a CLUE about Art, so it is not in the ordinary rotation.
+  ok('The Taker is not in the ordinary boss list', T.bosses.indexOf(T.taker), -1)
+  ok('...and it is the lifestealer', T.taker, 'born_in_chaos_v1:lifestealer')
+}
+
+grp('D3 - A PATHLESS PLAYER IS TIER 0')
+{
+  const noTrust = global.VELDORA.trust
+  global.VELDORA.trust = () => { throw new Error('no path') }
+  ok('an unreadable trust reads as 0, not as a crash', T._trustOf({}, tp), 0)
+  ok('...so they get tier 0', T._tierFor({}, tp).at, 0)
+  global.VELDORA.trust = noTrust
+}
+
 console.log('\n' + (fail === 0
   ? '\x1b[32m' + pass + '/' + (pass + fail) + ' passed\x1b[0m'
   : '\x1b[31m' + fail + ' FAILED\x1b[0m, ' + pass + ' passed'))

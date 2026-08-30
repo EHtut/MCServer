@@ -153,6 +153,83 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // drifts would either strangle the tide or fail to stop it, and neither failure
   // announces itself. Tagged mobs, measured at the point of use.
   var TIDE_TAG = 'veldora_tide'
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐⭐ D3 - STEPPED TIERS, DRIVEN BY TRUST. Ethan, 2026-08-29:
+  //
+  //     "We should have stepped tiers to the tides system... scaled by the god's trust
+  //      since that indicates how dangerous you are to the goddess of death."
+  //
+  // 🔑 THAT RATIONALE IS THE DESIGN, not a justification bolted to it. Notoriety is
+  // a clock; trust is what your god has DECIDED about you. The goddess of death sends
+  // what your standing deserves, so the same night is a different night depending on
+  // whose champion you are.
+  //
+  // ⚠️ WALL AND FORGE START AT MAX TRUST AND DECAY, so their champions meet the worst
+  // of this immediately. That is Ethan's ruling working - *"wall and forge get to
+  // struggle, im the one playing those classes anyways"* - not an oversight.
+  //
+  // 🚨 EVERY MULTIPLIER IS >= 1. Standing rule: *"we should never have a coeffecient go
+  // under 1 it should always be an increase."* Trust never makes a night SAFER than the
+  // baseline; it only ever makes it worse.
+  var TIERS = [
+    { at: 0, mods: ['horde'],                                      mult: 1.00 },
+    { at: 2, mods: ['horde', 'general'],                           mult: 1.15 },
+    { at: 3, mods: ['horde', 'general', 'specialist'],             mult: 1.30 },
+    { at: 4, mods: ['horde', 'general', 'specialist', 'miniboss'], mult: 1.50 },
+    { at: 5, mods: ['horde', 'general', 'specialist', 'miniboss'], mult: 1.75 },
+  ]
+
+  // ⚠️ "higher (NOT high)" is Ethan's phrasing for the specialist wave and it is doing
+  // real work: ranged enemies stack in a way melee does not, because they all reach you
+  // at once from cover. 0.40 is "you are being shot at"; 0.75 would be unplayable.
+  var MODS = {
+    horde:      { ranged: 0.00, boss: false, label: 'a pure horde' },
+    general:    { ranged: 0.15, boss: false, label: 'a general wave' },
+    specialist: { ranged: 0.40, boss: false, label: 'a specialist wave' },
+    miniboss:   { ranged: 0.10, boss: true,  label: 'a miniboss and a horde' },
+  }
+
+  // ── the ranged pool ────────────────────────────────────────────────────────
+  // 🚨 ONLY `minecraft:skeleton` IS CERTAIN. The others are named for skeletons and
+  // are very probably archers, but nothing here has been PROBED for attack type - the
+  // registry can confirm an id exists, not how it fights.
+  //
+  // ⚠️ SO THIS LIST WANTS A PASS, and it is deliberately small rather than optimistic:
+  // a melee mob mislabelled ranged just makes a specialist wave less special, while the
+  // reverse would make it a wall of arrows nobody survives.
+  var RANGED = {
+    'minecraft:skeleton': true,
+    'born_in_chaos_v1:decrepit_skeleton': true,
+    'rottencreatures:skeleton_lackey': true,
+  }
+
+  // ── the minibosses ─────────────────────────────────────────────────────────
+  // 🔴 EVERY ID HERE WAS REGISTRY-PROBED ON THE LIVE SERVER, and three of Ethan's
+  // four names were wrong in a way a lang file would not have revealed:
+  //
+  //     missionary          -> DOES NOT EXIST. It is `missionary_raider`.
+  //     supreme_bonecaller  -> DOES NOT EXIST. It is `supreme_bonescaller` (an S).
+  //     bonecaller          -> DOES NOT EXIST either, for the same reason.
+  //
+  // The probe: `data get entity @e[type=<id>,limit=1]` answers "No entity was found"
+  // for a real id and a parse caret for a fake one, and a known-fake control was run
+  // alongside to prove the method could tell them apart.
+  //
+  // ⛔ `fallen_chaos_knight` IS DELIBERATELY ABSENT. It is Blade's stalker avatar, "The
+  // Challenger", and Ethan ruled it stays his.
+  var BOSSES = [
+    'born_in_chaos_v1:supreme_bonescaller',
+    'born_in_chaos_v1:missionary_raider',
+    'born_in_chaos_v1:missioner',
+  ]
+
+  // ⭐ THE TAKER IS A TELL, NOT A SPAWN. Ethan: *"Art is just kayer and she is already
+  // secretly aligned with the goddess of death."* The tide IS the goddess of death's
+  // army, so The Taker marching in it is EVIDENCE of that alliance - which means it has
+  // to be RARE. A clue that turns up every fourth tide is set dressing, not a clue.
+  var TAKER = 'born_in_chaos_v1:lifestealer'
+  var TAKER_CHANCE = 0.06
   var MAX_ALIVE_NEAR = 45         // per player, within CENSUS_RANGE
   var CENSUS_RANGE = 48
 
@@ -245,6 +322,64 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return null
   }
 
+  // Highest trust across the paths this player holds. ⚠️ Reads through VELDORA.trust,
+  // which is per-path; a pathless player is 0 and therefore always tier 0.
+  function trustOf(server, p) {
+    try {
+      if (typeof VELDORA.trust !== 'function') return 0
+      var t = VELDORA.trust(server, p)
+      return (typeof t === 'number' && isFinite(t) && t > 0) ? t : 0
+    } catch (e) { return 0 }
+  }
+
+  function tierFor(server, p) {
+    var t = trustOf(server, p)
+    var out = TIERS[0]
+    for (var i = 0; i < TIERS.length; i++) if (t >= TIERS[i].at) out = TIERS[i]
+    return out
+  }
+
+  function pickMod(server, p, forced) {
+    if (forced && MODS[forced]) return forced
+    var tier = tierFor(server, p)
+    return tier.mods[Math.floor(Math.random() * tier.mods.length)]
+  }
+
+  // Compose the id list for one pulse. Returns { ids, boss } where `boss` is a single
+  // extra id to place once, or null.
+  //
+  // ⚠️ FALLS BACK TO MELEE IF THE RANGED POOL IS EMPTY AT THIS DEPTH. A specialist wave
+  // that found no archers must still be a wave - spawning nothing would read exactly
+  // like the tide being broken, which is the failure this project keeps paying for.
+  function composeFor(server, p, y, modName) {
+    var pool = rosterFor(y)
+    var mod = MODS[modName] || MODS.horde
+    var melee = [], ranged = []
+    for (var i = 0; i < pool.length; i++) {
+      if (RANGED[pool[i]]) ranged.push(pool[i]); else melee.push(pool[i])
+    }
+    if (!melee.length) melee = pool.slice()
+
+    var ids = []
+    if (mod.ranged > 0 && ranged.length) {
+      // Weight the list rather than the roll: `spawner.wave` picks uniformly from
+      // `ids`, so repeating an entry is how a proportion is expressed.
+      var slots = 20
+      var nR = Math.max(1, Math.round(slots * mod.ranged))
+      for (var r = 0; r < nR; r++) ids.push(ranged[r % ranged.length])
+      for (var m = 0; m < slots - nR; m++) ids.push(melee[m % melee.length])
+    } else {
+      ids = melee.slice()
+    }
+
+    var boss = null
+    if (mod.boss && BOSSES.length) {
+      boss = BOSSES[Math.floor(Math.random() * BOSSES.length)]
+      if (Math.random() < TAKER_CHANCE) boss = TAKER
+    }
+    return { ids: ids, boss: boss, mod: modName, rangedAvailable: ranged.length }
+  }
+
   function rosterFor(y) {
     if (y >= 0) return SHALLOW
     if (y > -40) return DEEP
@@ -335,10 +470,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   // ── the wave ───────────────────────────────────────────────────────────────
-  function sendWave(p, st) {
+  function sendWave(p, st, forcedMod) {
     var y = depthOf(p)
     if (y === null) return
-    var ids = rosterFor(y)
+    var srv = null
+    try { srv = p.server } catch (e) { }
+
+    // ⭐ D3 - which KIND of wave, and how big, both come from trust.
+    var modName = pickMod(srv, p, forcedMod)
+    var comp = composeFor(srv, p, y, modName)
+    var tier = tierFor(srv, p)
+    var ids = comp.ids
     st.waves++
 
     // ⭐⭐ ESCALATION IS LIFETIME NOW, AND IT HAD TO BE. The ramp was written when
@@ -352,8 +494,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     try { lifetime = p.persistentData.getInt(K_LIFETIME) || 0 } catch (e) { }
     try { p.persistentData.putInt(K_LIFETIME, lifetime + 1) } catch (e) { }
 
+    // ⚠️ TWO INDEPENDENT RAMPS, AND THEY MULTIPLY. `lifetime` is how many tides you
+    // have SURVIVED; `tier.mult` is how much your god has decided you are worth. They
+    // measure different things and both should count.
+    //
+    // 🚨 The tier multiplier is never below 1, so trust cannot make a night easier than
+    // the baseline - only worse.
     var per = Math.min(MAX_PER_BATCH,
-      Math.max(1, Math.round(BASE_PER_BATCH + GROWTH * lifetime)))
+      Math.max(1, Math.round((BASE_PER_BATCH + GROWTH * lifetime) * tier.mult)))
+
+    console.info(TAG + p.username + ' wave: ' + (MODS[modName] || {}).label +
+      ' (trust tier ' + tier.at + ', x' + tier.mult + ') - ' + per + ' per pulse' +
+      (comp.boss ? ', BOSS ' + comp.boss : '') +
+      (modName === 'specialist' && !comp.rangedAvailable
+        ? ' [no ranged available at this depth - fell back to melee]' : ''))
 
     // 🔑 STAMP THE WINDOW BEFORE ANY PULSE FIRES. This is what the leave-check
     // reads, so it has to be true from the instant the herald sounds - otherwise
@@ -367,7 +521,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       ', ' + per + ' per pulse x ' + SPAWN_BATCHES + ' over ' +
       Math.round(SPAWN_WINDOW / 20) + 's (up to ' + (per * SPAWN_BATCHES) + ' total)')
 
-    var srv = null
+    // ⚠️ ASSIGNED, NOT DECLARED. `srv` is already declared at the top of this
+    // function for the D3 tier lookup, and a second `var srv` in the same scope is
+    // legal JavaScript but a HARD ERROR under Rhino - "redeclaration of var srv" -
+    // which takes the WHOLE FILE down. `node --check` passes it; the server does not.
     try { srv = p.server } catch (e) { return }
     if (!srv) return
 
@@ -452,6 +609,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
                 behind: true, reachable: true,
                 nbt: '{Tags:["' + TIDE_TAG + '"]}',
               })
+
+              // ⭐ THE BOSS ARRIVES ONCE, WITH THE FIRST PULSE, and slightly further
+              // out so it walks in behind its own horde rather than materialising in
+              // the middle of it.
+              //
+              // ⚠️ Tagged like everything else so the census counts it and the
+              // leave-check can clean it up - an untagged boss would outlive the tide.
+              if (first && comp.boss) {
+                VELDORA.spawner.wave(p, {
+                  ids: [comp.boss], count: 1, minDist: 9, maxDist: 14,
+                  behind: true, reachable: true,
+                  nbt: '{Tags:["' + TIDE_TAG + '"]}',
+                })
+              }
             }
           } catch (e) { console.warn(TAG + 'pulse threw :: ' + e) }
         })
@@ -598,6 +769,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     },
     enclosed: enclosed,
     rosters: { shallow: SHALLOW, deep: DEEP, deeper: DEEPER, allowlist: UNTAGGED_UNDEAD },
+    // ⭐ D3, exposed for tools/tide_harness.js. The tier ladder and the composition are
+    // pure functions of trust and depth, which makes them exactly the part worth
+    // testing without a server - and the part nobody can verify in play, because
+    // checking a 40% ranged mix by eye across a 30-second wave is not possible.
+    tiers: TIERS,
+    mods: MODS,
+    bosses: BOSSES,
+    ranged: RANGED,
+    taker: TAKER,
+    _tierFor: tierFor,
+    _composeFor: composeFor,
+    _trustOf: trustOf,
     force: function (p) {
       var st = runs[String(p.uuid)]
       if (!st || !st.active) return false
@@ -628,6 +811,54 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       }
       return 1
     }))
+    // ⭐ THE BENCH. Ethan asked for a way to test the horde itself, and the tide's
+    // natural cadence is 1-2 hours of played time - which is not a test loop.
+    //
+    // 🚨 `/tide_wave <mod>` DOES NOT REQUIRE A RUN. Every other tide entry point checks
+    // enclosure and run state first; a bench that only works underground at night after
+    // an hour of waiting is not a bench. It builds a throwaway run state so the pulse
+    // machinery is the REAL one - this tests the shipping path, not a parallel copy.
+    event.register(Commands.literal('tide_wave').requires(function (s) {
+      try { return s.hasPermission(2) } catch (e) { return false }
+    }).then(Commands.argument('mod', event.arguments.STRING.create(event))
+      .executes(function (ctx) {
+        var p = ctx.source.player
+        if (!p) return 0
+        var mod = ''
+        try { mod = String(ctx.getArgument('mod', Java.loadClass('java.lang.String'))) } catch (e) { }
+        if (!MODS[mod]) {
+          p.tell(Text.of('§cunknown wave type. one of: ' + Object.keys(MODS).join(', ')))
+          return 0
+        }
+        var st = runs[String(p.uuid)]
+        if (!st) { st = { active: true, waves: 0, next: 0, in: 0 }; runs[String(p.uuid)] = st }
+        p.tell(Text.of('§7forcing §f' + (MODS[mod].label) + '§7...'))
+        sendWave(p, st, mod)
+        return 1
+      })))
+
+    // What the tide would send you right now, and why. Read-only.
+    event.register(Commands.literal('tide_tier').requires(function (s) {
+      try { return s.hasPermission(2) } catch (e) { return false }
+    }).executes(function (ctx) {
+      var p = ctx.source.player
+      if (!p) return 0
+      var srv = ctx.source.server
+      var tier = tierFor(srv, p)
+      var y = depthOf(p)
+      p.tell(Text.of('§8§m                                        '))
+      p.tell(Text.of('§6TIDE TIER'))
+      p.tell(Text.of('§8trust §f' + trustOf(srv, p) + '§8 -> tier §f' + tier.at +
+        '§8, size §fx' + tier.mult))
+      p.tell(Text.of('§8can send: §f' + tier.mods.join(', ')))
+      if (y !== null) {
+        var c = composeFor(srv, p, y, 'specialist')
+        p.tell(Text.of('§8at y' + Math.round(y) + ' the ranged pool has §f' +
+          c.rangedAvailable + '§8 entr' + (c.rangedAvailable === 1 ? 'y' : 'ies')))
+      }
+      return 1
+    }))
+
     event.register(Commands.literal('tide_now').requires(function (s) {
       try { return s.hasPermission(2) } catch (e) { return false }
     }).executes(function (ctx) {
