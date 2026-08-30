@@ -124,6 +124,10 @@ for (const f of ['difficulty.js', 'waves.js', 'tide.js']) {
 }
 
 const T = global.VELDORA.tide
+// CAPTURED AT LOAD, before any group can flip it. The gate group runs late and
+// the composition blocks turn god waves on and off around themselves, so reading
+// the LIVE value there would report false whatever the shipped default was.
+const GOD_WAVES_AT_LOAD = T.godWavesOn()
 if (!T) { speak(); console.error('FAIL: VELDORA.tide not published'); process.exit(1) }
 const W = global.VELDORA.waves
 if (!W) { speak(); console.error('FAIL: VELDORA.waves not published'); process.exit(1) }
@@ -847,7 +851,12 @@ grp('D4 - THE TWO MODES ARE MIRROR IMAGES')
   ok('the night door tests enc === false, never !enc',
     src.indexOf('enc === false && due <= 0 && isNightNow(server)') !== -1, true)
 
-  ok('dawn ends a night run', src.indexOf('dawn. The night tide ends after') !== -1, true)
+  // 🔴 WAS grepping the log line 'dawn. The night tide ends after'. Every run-end path
+  // was routed through `endRun()` on 2026-08-30 so the despawn could not be forgotten
+  // in one of them, and the four bespoke log lines went with it. Same rule, one exit.
+  ok('dawn ends a night run', src.indexOf("endRun(p, uuid, 'dawn', false)") !== -1, true)
+  ok('⚠️ ...and dawn does NOT despawn - the ones chasing you do not evaporate',
+    src.indexOf("endRun(p, uuid, 'dawn', false)") !== -1, true)
   ok('surfacing still ends a DEEP run - the original ruling survives',
     src.indexOf('surfaced - tide ends after') !== -1, true)
 
@@ -865,20 +874,129 @@ grp('D3 - A PATHLESS PLAYER IS TIER 0')
   global.VELDORA.trust = noTrust
 }
 
+grp('🧹 THE DESPAWN — "server cleanliness and lag", his ask 2026-08-30')
+{
+  // > "if all players die or if no mobs slain in 5(?) minutes the tide despawns"
+  //
+  // 🔴 BEFORE THIS, A RUN ENDED AND THE MOBS STAYED. Death, dawn and surfacing all
+  // reset the run state and left twenty-odd undead standing in a cave forever - the
+  // only ceiling was MAX_ALIVE_NEAR, which stops more ARRIVING and never clears what
+  // is already there.
+  const d = fs.readFileSync(path.join(SS, 'tide.js'), 'utf8')
+
+  ok('there is a despawn at all', d.indexOf('function despawnTide') !== -1, true)
+  ok('🚨 it DISCARDS rather than /kill - no loot, no xp, no death handlers',
+    d.indexOf('.discard()') !== -1 && d.indexOf("run kill @e[tag=") === -1, true)
+
+  // ⭐ EVERY exit routes through one function, so a new exit cannot forget to clean up.
+  ok('every run-end goes through endRun', d.indexOf('function endRun') !== -1, true)
+  for (const why of ['the player died', "'dawn'", "'surfaced'"]) {
+    ok('   ...including ' + why, d.indexOf(why) !== -1, true)
+  }
+  // 🚨 THE OLD INLINE RESETS MUST BE GONE, or an exit still leaks mobs.
+  // ⚠️ TWO USES ARE LEGITIMATE and this counts around them rather than banning the
+  // pattern: the new-player INITIALISER (`if (!st) { st = runs[uuid] = ...`) is not a
+  // run ending, and endRun's own line is the one every exit is supposed to reach.
+  // A blunter count flagged both and would have been "fixed" by loosening it.
+  {
+    // ⚠️ String.fromCharCode(10), not a '\n' literal. Writing this line through a
+    // shell heredoc ate the backslash and left a raw newline inside the string, which
+    // is a syntax error - the fourth time that has happened in this repo today.
+    const resets = d.split(String.fromCharCode(10)).filter(l =>
+      l.indexOf('runs[uuid] = { active: false') !== -1 && l.indexOf('if (!st)') === -1)
+    ok('🚨 exactly ONE place resets a run - inside endRun', resets.length, 1)
+  }
+
+  // ⭐ HIS TWO TRIGGERS, both present and distinguishable.
+  ok('⭐ death despawns immediately',
+    d.indexOf("endRun(p, uuid, 'the player died', true)") !== -1, true)
+  ok('⭐ the idle rule is keyed to KILLS, not to elapsed time',
+    d.indexOf('st.lastKill') !== -1 && d.indexOf('DESPAWN_IDLE') !== -1, true)
+  ok('   ...5 minutes, read from the constant',
+    /var DESPAWN_IDLE = 6000/.test(d), true)
+  ok('🚨 ...and it cannot fire before the first wave lands',
+    d.indexOf('st.waves > 0 && (st.age - (st.lastKill || 0)) >= DESPAWN_IDLE') !== -1, true)
+
+  // ⭐ THE ORPHAN CASE - the common one, since most tides end by surfacing.
+  ok('⭐ orphaned mobs are swept when no run is active',
+    d.indexOf('orphaned - the run ended and nobody came back') !== -1, true)
+  ok('   ...on a slow cadence, because getEntitiesWithin is not free',
+    d.indexOf('ORPHAN_EVERY') !== -1, true)
+  ok('🚨 ...and an UNREADABLE count never arms it - -1 is not zero',
+    d.indexOf('} else if (left === 0) {') !== -1, true)
+
+  ok('⭐ logging out mid-tide despawns while the handle is still usable',
+    d.indexOf('the player logged out mid-tide') !== -1, true)
+  ok('🔧 /tide_clear exists so it can be tested without waiting 5 minutes',
+    d.indexOf("literal('tide_clear')") !== -1, true)
+  ok('   ...and it calls the SAME despawn the real paths do',
+    d.indexOf("despawnTide(p, 'cleared by command')") !== -1, true)
+}
+
+grp('🔧 THE BENCHES — Ethan: "build test commands so we can bug test as we move"')
+{
+  // ⚠️ THE BENCHES ARE TESTED BECAUSE A BENCH THAT LIES IS WORSE THAN NO BENCH.
+  // `/tide_tier` spent a day reporting the FALLBACK's pool as the ranged wave's,
+  // because it asked composeFor for `'specialist'` after that name was retired. It
+  // read like a working readout the entire time.
+  const bsrc = fs.readFileSync(path.join(SS, 'tide.js'), 'utf8')
+  for (const c of ['tide', 'tide_wave', 'tide_tier', 'tide_now',
+                   'tide_ratio', 'tide_god', 'tide_roster']) {
+    ok('/' + c + ' is registered', bsrc.indexOf("literal('" + c + "')") !== -1, true)
+  }
+  ok('⛔ no bench still asks for the retired `specialist` modifier',
+    bsrc.indexOf("composeFor(srv, p, y, 'specialist')") !== -1, false)
+
+  // ⭐ /tide_god forces a named god past the difficulty gate. At difficulty 0 nobody is
+  // available, so this proves the OVERRIDE works rather than the gate.
+  {
+    const realDiff = VELDORA.difficulty.index
+    VELDORA.difficulty.index = () => 0
+    try {
+      const c = T._composeFor({}, tp, -20, 'general', 'wall')
+      ok('⭐ /tide_god reaches a god the difficulty would NOT admit', c.varied, 'wall')
+      ok('   ...and the theme says BENCH, so it is never read as a live wave',
+        String(c.theme).indexOf('[BENCH]') === 0, true)
+      // 🔴 WAS "draws from that god ONLY" - which encoded the REPLACE model Ethan
+      // corrected. Augmented means added to: the wave is HER cast plus his.
+      ok('   ...and it ADDS his mobs to hers rather than replacing them',
+        c.ids.some(id => W.gods.wall.fodder.concat(W.gods.wall.spec).indexOf(id) !== -1) &&
+        c.ids.some(id => W.gods.wall.fodder.concat(W.gods.wall.spec).indexOf(id) === -1),
+        true)
+      // ⚠️ CONTROL: without the override the same call at difficulty 0 gets nobody.
+      let any = 0
+      for (let i = 0; i < 400; i++) if (T._composeFor({}, tp, -20, 'general').varied) any++
+      ok('   (control: no override, difficulty 0 -> no god at all)', any, 0)
+      // An unknown god must fall through to HER wave, not to nothing.
+      const bad = T._composeFor({}, tp, -20, 'general', 'nobody')
+      ok('🚨 an unknown god name still produces HER wave, not silence',
+        bad.varied === null && bad.ids.length > 0, true)
+    } finally { VELDORA.difficulty.index = realDiff }
+  }
+
+  // ⭐ Every god /tide_god can name must be reachable AND complete, or the bench shows
+  // a half-wave and the tester reports a bug that is really a roster gap.
+  for (const g of Object.keys(W.gods)) {
+    const gd = W.gods[g]
+    ok('⭐ ' + g + ' has fodder and a boss - /tide_god ' + g + ' shows something',
+      gd.fodder.length > 0 && !!gd.boss, true)
+  }
+}
+
 grp('⭐ THE VARIATION — rare, and rarer if you have a god')
 {
   const tp = { username: 'V', uuid: 'v1' }
   const realPathOf = VELDORA.paths.pathOf
   const realRandom = Math.random
 
-  // 🔴 `_variedRoster` BECAME `_godChanceFor` ON 2026-08-30. waves.js chooses WHICH
+  // 🔴 `_variedRoster` BECAME `_godRateFor` ON 2026-08-30. waves.js chooses WHICH
   // god reaches in; tide.js keeps only the RATE, because the pathed/pathless split is
   // this file's design and waves.js cannot see a player's path.
   //
   // ⭐ AND THE RATE IS NOW TESTED DIRECTLY RATHER THAN SAMPLED. The old version rolled
   // 8000 times and compared frequencies - which is slow, and which passes or fails on
   // the RNG. Reading the number is exact.
-  function rateFor(p) { VELDORA.paths.pathOf = () => p; return T._godChanceFor(tp) }
+  function rateFor(p) { VELDORA.paths.pathOf = () => p; return T._godRateFor(tp) }
 
   ok('⭐ a pathed player rarely sees one', rateFor('wall'), T.varyChance.pathed)
   ok('🚨 a GODLESS player sees them far more often - his weighting',
@@ -891,18 +1009,22 @@ grp('⭐ THE VARIATION — rare, and rarer if you have a god')
     rateFor(undefined), T.varyChance.pathed)
   ok('   ...and so is a thrown one', (() => {
     VELDORA.paths.pathOf = () => { throw new Error('boom') }
-    return T._godChanceFor(tp)
+    return T._godRateFor(tp)
   })(), T.varyChance.pathed)
 
   // 🔴 THE END-TO-END RATE, WHICH IS WHAT ACTUALLY REGRESSED. The first pass of the
   // rewiring passed waves.js a FLAT 0.15 and this whole distinction stopped reaching
-  // the game - `_godChanceFor` would still have returned the right numbers while
+  // the game - `_godRateFor` would still have returned the right numbers while
   // nothing consumed them. So sample the COMPOSED wave, not the helper.
   //
   // ⚠️ Difficulty 3 (Damnation), because at Uprising no god is available at all and
   // both rates would correctly measure zero - a green result meaning nothing.
   const realDiff = VELDORA.difficulty.index
   VELDORA.difficulty.index = () => 3
+  // ⚠️ God waves are GATED OFF (2026-08-30). This block samples a real composed wave,
+  // so it is turned on for the measurement and off again after - the composition logic
+  // is still correct and worth testing while the feature waits for act 2.
+  T._setGodWaves(true)
   const seenRate = (p) => {
     VELDORA.paths.pathOf = () => p
     let hits = 0
@@ -914,6 +1036,7 @@ grp('⭐ THE VARIATION — rare, and rarer if you have a god')
     ePathless > ePathed * 2, true)
   ok('   ...and the pathed rate matches the constant, not a flat 0.15',
     Math.abs(ePathed - T.varyChance.pathed) < 0.03, true)
+  T._setGodWaves(false)
   VELDORA.difficulty.index = realDiff
 
   Math.random = realRandom
@@ -927,6 +1050,8 @@ grp('🚨 A VARIED WAVE IS ONE GOD, AND THE BOSS STAYS HERS')
   const realDiff = VELDORA.difficulty.index
   VELDORA.paths.pathOf = () => ''             // godless: the common case
   VELDORA.difficulty.index = () => 3          // Damnation: all three unlocked
+  // ⚠️ Gated off 2026-08-30; on for this measurement only. See the block above.
+  T._setGodWaves(true)
 
   let sawGod = {}
   let mixed = 0
@@ -934,9 +1059,19 @@ grp('🚨 A VARIED WAVE IS ONE GOD, AND THE BOSS STAYS HERS')
     const c = T._composeFor({}, tp, -20, 'general')
     if (!c.varied) continue
     sawGod[c.varied] = true
-    // Every id must belong to that ONE god - a wave that mixes two gods reads as a bug.
-    const own = W.gods[c.varied].fodder.concat(W.gods[c.varied].spec)
-    if (!c.ids.every(id => own.indexOf(id) !== -1)) mixed++
+    // 🔴 REWRITTEN FOR THE AUGMENT MODEL. This required every id to belong to that
+    // one god, which was the REPLACE model - correct then, wrong now, and it would
+    // have failed forever against the behaviour he actually asked for.
+    //
+    // ⭐ THE INVARIANT SURVIVES INTACT, and it is the one that matters: a wave may
+    // carry HER cast plus AT MOST ONE god's. Two gods in one wave still reads as a bug.
+    const others = Object.keys(W.gods).filter(g => g !== c.varied)
+    const foreign = new Set()
+    others.forEach(g => W.gods[g].fodder.concat(W.gods[g].spec)
+      .forEach(id => foreign.add(id)))
+    // ⚠️ A mob two gods share is not evidence of mixing - subtract the named god's own.
+    W.gods[c.varied].fodder.concat(W.gods[c.varied].spec).forEach(id => foreign.delete(id))
+    if (c.ids.some(id => foreign.has(id))) mixed++
   }
   ok('🚨 a varied wave never mixes two gods', mixed, 0)
 
@@ -977,7 +1112,7 @@ grp('🚨 A VARIED WAVE IS ONE GOD, AND THE BOSS STAYS HERS')
   // visible, and it is raised with him rather than settled here. DEFECTS.md D-108.
   //
   // ⭐ AND THERE IS NOW A THIRD CASE: a god whose declared boss DOES NOT SPAWN falls
-  // back to hers. Art is that case (D-112). So the rule is three-way, not two-way:
+  // back to hers. Art is that case (D-117). So the rule is three-way, not two-way:
   //     god declares a working boss  -> that god's boss
   //     god declares none            -> HERS, and no lore has to be invented
   //     her own wave                 -> hers
@@ -1007,8 +1142,11 @@ grp('🚨 A VARIED WAVE IS ONE GOD, AND THE BOSS STAYS HERS')
     const godsSeen = Object.keys(bosses).sort()
     ok('⭐ a god miniboss wave is led by THAT GOD\'s boss (reversal, D-108)',
       strays.slice(0, 3), [])
-    ok('⭐ ...and a god with NO working boss is led by HERS, never by none (D-112)',
-      Object.keys(fellBack).sort(), ['art'])
+    // ✅ D-117 RULED: Art is the Lifestealer, so NO god falls back any more. The
+    // fallback path stays in tide.js as a safety net and is asserted UNUSED here -
+    // a net that is silently load-bearing is not a net.
+    ok('⭐ ...and no god needs the fallback now that Art is ruled (D-117)',
+      Object.keys(fellBack).sort(), [])
     // ⚠️ NEGATIVE CONTROL: an empty loop would make the lines above vacuously true.
     ok('   (control: god minibosses were actually observed)', godsSeen.length >= 2, true)
     ok('   (control: a miniboss wave NEVER arrives bossless)', (() => {
@@ -1035,6 +1173,7 @@ grp('🚨 A VARIED WAVE IS ONE GOD, AND THE BOSS STAYS HERS')
   }
 
   VELDORA.paths.pathOf = realPathOf
+  T._setGodWaves(false)      // back off - the gate is the shipped state
   VELDORA.difficulty.index = realDiff
 }
 
@@ -1060,10 +1199,10 @@ grp('⭐ THE GOD ROSTERS ARE THE SAME LIST IN BOTH FILES')
   // 🔴 WAS `art has her three`. It has ONE, and that is a defect being contained
   // rather than a roster being trimmed: `restless_spirit` and `dark_vortex` do not
   // survive being summoned - 0/3 each against a control that passed 3/3 - so two
-  // thirds of Art's own attacks were placing nothing at all. See D-112.
+  // thirds of Art's own attacks were placing nothing at all. See D-117.
   // ⚠️ Asserted at ONE so it fails the moment somebody adds a replacement without
   // running tools/spawn_persist_check.py on it, and again when Ethan rules.
-  ok('⚠️ art is down to ONE mob until he rules on replacements (D-112)',
+  ok('⚠️ art is down to ONE mob until he rules on replacements (D-117)',
     T.rosters.gods.art, ['born_in_chaos_v1:scarlet_persecutor'])
   // ⚠️ MATCH THE FULLY-QUALIFIED QUOTED ID, NOT THE BARE NAME. Both ids are discussed
   // in the comments that explain the removal AND named in a boot warning - a substring
@@ -1086,6 +1225,23 @@ grp('⭐ THE GOD ROSTERS ARE THE SAME LIST IN BOTH FILES')
   const allGodMobs = gods.reduce((a, g) => a.concat(T.rosters.gods[g]), [])
   ok('🚨 no god borrows her bulk',
     allGodMobs.indexOf('born_in_chaos_v1:decrepit_skeleton'), -1)
+}
+
+
+// -------------------------------------------------------------------------
+grp('* GOD-VARIED WAVES ARE GATED OFF - 2026-08-30')
+{
+  // Ethan: "god based waves should be gated off for now" - the idea for them is an ACT
+  // 2 idea, and shipping a weaker version now would spend the surprise.
+  //
+  // The RATE logic is still tested above, against _godRateFor. This tests the GATE.
+  // Folding the two together would have meant deleting seven real tests to turn a
+  // feature off for a while.
+  ok('the gate is OFF as shipped', GOD_WAVES_AT_LOAD, false)
+  ok('...and is off again after the blocks that borrow it', T.godWavesOn(), false)
+  ok('...so the live chance is zero for a pathed player', T._godChanceFor({ username: 'GP', uuid: 'gp' }), 0)
+  ok('...while the underlying RATE is untouched, ready to flip back',
+    T._godRateFor({ username: 'GP', uuid: 'gp' }) > 0, true)
 }
 
 console.log('\n' + (fail === 0

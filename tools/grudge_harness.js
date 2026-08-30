@@ -338,6 +338,74 @@ grp('NON-EVENTS — the hook must ignore what is not a grudge')
 }
 
 speak()
+
+// -------------------------------------------------------------------------
+grp('* THE CRASHOUT - the moment an argument becomes a strike')
+{
+  // Ethan, 2026-08-30: "the crashout can be used when gods attack each other." It was
+  // designed for a god-augmented tide; that is gated off, and this is the better home.
+  // Rare (a champion must have been killed), personal (it goes to the killer alone),
+  // and the argument has already played out in front of everyone - so the escalation is
+  // something the player WATCHED build.
+  // ⚠️ Comments stripped: grudge.js explains the crashout in prose directly above
+  // the call, and an unanchored match would find the explanation instead of the code.
+  const raw = fs.readFileSync(path.join(SS, 'grudge.js'), 'utf8')
+  const gr = raw.split(/\r?\n/).filter(l => !l.trim().startsWith('//')).join(' ')
+
+  // A substring match survives the call being disabled - `if (false) crashout(...)`
+  // still contains the text. The GUARD is matched with it, so a disabled call fails.
+  ok('the reprisal announces itself',
+    /if \(line\) VELDORA\.voice\.crashout\(killer, god, line\)/.test(gr), true)
+  // It goes to the KILLER, never the room. A god screaming into everyone's face about
+  // somebody else's business would cheapen the one message allowed to interrupt.
+  ok('...to the killer alone, not broadcast', /crashout\(killer,/.test(gr), true)
+  // Said FIRST, then done: a debuff landing before the god explains it is a status
+  // effect; landing after, it is a consequence. The order is the meaning.
+  ok('...BEFORE the effect lands',
+    gr.indexOf('VELDORA.voice.crashout') < gr.indexOf("'effect give '"), true)
+  // A god with nothing written strikes in silence rather than saying something generic.
+  ok('...and a missing pool is silence, logged, not a placeholder line',
+    /has no crashout pool - striking in silence/.test(gr), true)
+
+  // 🔴 GREPPING FOR registerLines WAS VACUOUS TOO: `if(false) registerLines(...)` still
+  // matches. So each god's file is RUN with a recording stub and asked what it actually
+  // registered - the point of use, not the mention.
+  const registered = (f) => {
+    const src = fs.readFileSync(path.join(SS, f), 'utf8')
+    const tags = {}
+    const stub = {
+      Platform: { isLoaded: () => true },
+      Utils: { server: null },
+      ServerEvents: { loaded: fn => { try { fn({ server: { players: [] } }) } catch (e) { } },
+                      commandRegistry() { }, tick() { } },
+      PlayerEvents: { loggedIn() { }, loggedOut() { }, tick() { } },
+      EntityEvents: { death() { }, checkSpawn() { }, hurt() { } },
+      BlockEvents: { placed() { }, broken() { } },
+      ItemEvents: { rightClicked() { }, entityInteracted() { } },
+      Text: { of: x => x },
+      console: { info() { }, log() { }, warn() { }, error() { } },
+    }
+    const V = { voice: {
+      registerLines: (g, t, l) => { tags[t] = l.length; return true },
+      register: () => true, setColour() { }, setStyle() { }, setGarbled() { },
+      line: () => null,
+    } }
+    const keys = Object.keys(stub)
+    try {
+      new Function(...keys, 'VELDORA_IN',
+        'var VELDORA=VELDORA_IN;' + src.replace(/^var VELDORA = .*$/m, '') + ';'
+      )(...keys.map(k => stub[k]), V)
+    } catch (e) { return null }
+    return tags.crashout || 0
+  }
+
+  ok('blade REGISTERS a crashout pool', registered('blade_voice.js') > 0, true)
+  ok('wall does', registered('wall_voice.js') > 0, true)
+  ok('salvage does', registered('salvage_voice.js') > 0, true)
+  ok('forge does NOT - she never retaliates at all', registered('forge_voice.js'), 0)
+  ok('art does NOT either', registered('art_voice.js'), 0)
+}
+
 console.log('\n' + (fail === 0
   ? '\x1b[32m' + pass + '/' + (pass + fail) + ' passed\x1b[0m'
   : '\x1b[31m' + fail + ' FAILED\x1b[0m, ' + pass + ' passed'))

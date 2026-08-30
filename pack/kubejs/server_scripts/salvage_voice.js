@@ -726,6 +726,25 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   ServerEvents.loaded(function (event) {
     if (!VELDORA.voice) { console.error(TAG + 'voice.js missing'); return }
     VELDORA.voice.setColour(GOD, COLOUR)
+
+    // ⭐⭐ THE CRASHOUT POOL. Fired by grudge.js when this god stops arguing and
+    // actually STRIKES - the reprisal after a champion of theirs was killed. It is
+    // the one message screen.js never refuses, so it had better be worth it.
+    //
+    // 🗊️ [CLAUDE-DRAFT] - PLACEHOLDER, Ethan's to write. The register: this is not
+    // a threat made calmly, it is a god who has lost their composure in front of
+    // somebody. Short. Present tense. Addressed to ONE person, because only the
+    // killer ever sees it.
+    //
+    // ⚠️ Only the three gods who RETALIATE have one. Forge and Art never reach
+    // this line at all, and their silence is a posture rather than a missing pool.
+    if (typeof VELDORA.voice.registerLines === 'function') {
+      VELDORA.voice.registerLines(GOD, 'crashout', [
+        '[CLAUDE-DRAFT] Oh. Oh, that was a mistake.',
+        '[CLAUDE-DRAFT] I was going to be kind to you. I have changed my mind.',
+        '[CLAUDE-DRAFT] Everything has a price. You have not paid this one.',
+      ])
+    }
     var n = 0, tags = 0
     for (var k in LINES) {
       if (!LINES.hasOwnProperty(k)) continue

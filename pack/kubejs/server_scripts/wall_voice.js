@@ -688,6 +688,25 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (!VELDORA.voice) { console.error(TAG + 'voice.js missing'); return }
     VELDORA.voice.setColour(GOD, COLOUR)
 
+    // ⭐⭐ THE CRASHOUT POOL. Fired by grudge.js when this god stops arguing and
+    // actually STRIKES - the reprisal after a champion of theirs was killed. It is
+    // the one message screen.js never refuses, so it had better be worth it.
+    //
+    // 🗊️ [CLAUDE-DRAFT] - PLACEHOLDER, Ethan's to write. The register: this is not
+    // a threat made calmly, it is a god who has lost their composure in front of
+    // somebody. Short. Present tense. Addressed to ONE person, because only the
+    // killer ever sees it.
+    //
+    // ⚠️ Only the three gods who RETALIATE have one. Forge and Art never reach
+    // this line at all, and their silence is a posture rather than a missing pool.
+    if (typeof VELDORA.voice.registerLines === 'function') {
+      VELDORA.voice.registerLines(GOD, 'crashout', [
+        '[CLAUDE-DRAFT] They were mine. Every one of them was mine.',
+        '[CLAUDE-DRAFT] You do not get to walk away from that.',
+        '[CLAUDE-DRAFT] I am sending them now. All of them.',
+      ])
+    }
+
     // ⭐⭐ SHE IS NOT ON THE SCREEN, SHE IS INSIDE YOUR HEAD. Ethan, 2026-08-30:
     // *"Wall - Randomized across the screen like she's whispering into your skull."*
     //

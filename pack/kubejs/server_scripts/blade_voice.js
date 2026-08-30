@@ -784,6 +784,25 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // needs a positive y to come DOWN into view, a BOTTOM anchor needs a negative one
     // to lift UP into view. Getting that backwards renders the line perfectly, just
     // off the edge of the screen, with nothing in the log (D-123).
+    // ⭐⭐ THE CRASHOUT POOL. Fired by grudge.js when this god stops arguing and
+    // actually STRIKES - the reprisal after a champion of theirs was killed. It is
+    // the one message screen.js never refuses, so it had better be worth it.
+    //
+    // 🗊️ [CLAUDE-DRAFT] - PLACEHOLDER, Ethan's to write. The register: not a
+    // threat made calmly, but a god who has lost their composure in front of
+    // somebody. Short. Present tense. Addressed to ONE person, because only the
+    // killer ever sees it.
+    //
+    // ⚠️ Only the three gods who RETALIATE have one. Forge and Art never reach this
+    // line at all, and their silence is a posture rather than a missing pool.
+    if (typeof VELDORA.voice.registerLines === 'function') {
+      VELDORA.voice.registerLines(GOD, 'crashout', [
+        '[CLAUDE-DRAFT] You killed one of mine. Now you find out what that costs.',
+        '[CLAUDE-DRAFT] I gave you a blade. I did not give you permission.',
+        '[CLAUDE-DRAFT] Look at me. I want you to know it was me.',
+      ])
+    }
+
     if (typeof VELDORA.voice.setStyle === 'function') {
       VELDORA.voice.setStyle(GOD, {
         anchor: 'TOP_CENTER',

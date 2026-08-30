@@ -297,6 +297,28 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var CENSUS_RANGE = 48
 
   // ═══════════════════════════════════════════════════════════════════════════
+  // ⭐⭐ THE TIDE CLEANS UP AFTER ITSELF. Ethan, 2026-08-30:
+  //
+  //     "we will need to build a natural despawn system in case the player dies. We
+  //      can do it so if all players die or if no mobs slain in 5(?) minutes the tide
+  //      despawns. this is for server cleanliness and lag."
+  //
+  // 🔴 UNTIL NOW A RUN ENDED AND THE MOBS STAYED. Death, dawn and surfacing all reset
+  // `runs[uuid]` and left twenty-odd undead standing in a cave forever. Nothing ever
+  // removed them - the only ceiling was MAX_ALIVE_NEAR, which STOPS more from arriving
+  // and never clears what is already there. Every tide anyone had ever run was still
+  // loaded somewhere.
+  //
+  // 🔑 IDLE IS MEASURED BY KILLS, NOT BY TIME ALONE. "No mobs slain in 5 minutes" is
+  // his rule and it is the right signal: a player who is fighting is killing, so the
+  // clock only runs out when the fight has actually stopped. A pure timer would
+  // despawn a wave someone was still working through.
+  var DESPAWN_IDLE = 6000         // 5 min of no tide kill -> the wave gives up
+  var DESPAWN_RANGE = 128         // how far out to sweep, well past CENSUS_RANGE
+  var ORPHAN_EVERY = 1200         // 1 min between orphan scans - getEntitiesWithin
+  //                                 is not free and idle players are the common case
+
+  // ═══════════════════════════════════════════════════════════════════════════
   // ⭐ THE TIDE IS THE GODDESS OF DEATH'S ARMY. UNDEAD ONLY.
   //
   // Ethan, 2026-08-22: "i want only undead mobs to be apart of the tide. Creepers
@@ -399,8 +421,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // 🔴 ART IS DOWN TO ONE MOB AND IT IS NOT A BALANCE CHOICE. `restless_spirit` and
     // `dark_vortex` were measured 0/3 each against a control that passed 3/3: both
     // answer `summon` and are gone before the next command. They are removed from every
-    // roster in the pack rather than left to spawn nothing. See D-112; he needs to rule
-    // on replacements, and tools/spawn_persist_check.py will vet them.
+    // roster in the pack rather than left to spawn nothing. D-117.
+    // ✅ RULED: Art's BOSS is the Lifestealer (see waves.js). It is NOT added here -
+    // this list is what Art sends on his own behalf via spawn_pressure, and the
+    // Lifestealer is a miniboss, not ambient pressure.
     art: ['born_in_chaos_v1:scarlet_persecutor'],
   }
   // ⛔ `GOD_KEYS` (all five) was deleted 2026-08-30 with `poolFor`. waves.js picks the
@@ -500,13 +524,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ⚠️ FALLS BACK TO MELEE IF THE RANGED POOL IS EMPTY AT THIS DEPTH. A specialist wave
   // that found no archers must still be a wave - spawning nothing would read exactly
   // like the tide being broken, which is the failure this project keeps paying for.
-  function composeFor(server, p, y, modName) {
+  function composeFor(server, p, y, modName, forceGod) {
     // ⭐ waves.js owns composition now. This function's job shrank to: ask for a wave,
     // weight the id list, and decide whether a boss is allowed.
     var spec = null
     try {
       if (VELDORA.waves && typeof VELDORA.waves.pick === 'function') {
-        spec = VELDORA.waves.pick(modName, diffIndex(p), godChanceFor(p))
+        spec = VELDORA.waves.pick(modName, diffIndex(p), godChanceFor(p), forceGod)
       }
     } catch (e) { spec = null }
 
@@ -556,14 +580,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // several. The cap lives on the RUN, and composeFor only proposes - sendWave is
     // what spends it, because a proposal that is never placed must not consume the cap.
     var boss = spec.boss || null
-    // ⭐ A GOD WITH NO WORKING BOSS FALLS BACK TO HERS. Art's dark_vortex does not
-    // survive being summoned (D-112), so his miniboss wave would otherwise arrive with
-    // no miniboss in it. Hers needs no lore invented for it.
+    // ⭐ A GOD WITH NO BOSS FALLS BACK TO HERS. ⚠️ NO GOD IS IN THAT STATE ANY MORE -
+    // Art was ruled the Lifestealer on 2026-08-30 (D-117) - so this is a SAFETY NET,
+    // not a live path. It stays because the alternative to an unexpected null here is a
+    // miniboss wave with no miniboss, which reads as the tide being broken.
     if (!boss && modName === 'miniboss' && BOSSES.length) {
       boss = BOSSES[Math.floor(Math.random() * BOSSES.length)]
       if (spec.god) {
         console.info(TAG + p.username + ' - ' + spec.god + ' has no boss that spawns; ' +
-          'HER miniboss leads this one (D-112)')
+          'HER miniboss leads this one (D-117)')
       }
     }
     if (boss && Math.random() < TAKER_CHANCE) boss = TAKER
@@ -645,7 +670,26 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   //
   // ⚠️ Unreadable -> treat as PATHED, i.e. the rarer branch. A read failure must not
   // quietly make every tide somebody else's.
-  function godChanceFor(p) {
+  // ⛔ GOD-VARIED WAVES ARE OFF. Ethan, 2026-08-30: *"god based waves should be gated
+  // off for now"* - the idea he had for them is an ACT 2 idea, and shipping a weaker
+  // version of it now would spend the surprise.
+  //
+  // 🔑 A NAMED FLAG, NOT A ZEROED NUMBER. VARY_PATHED and VARY_PATHLESS are tuned
+  // values with a reason behind each (a godless player sees more variation); zeroing
+  // them would destroy that tuning and read, in three weeks, as though the rates had
+  // always been zero. This says WHY, and flipping it back is one word.
+  //
+  // ⚠️ It gates the RANDOM chance only. `forceGod` still works, because a forced god
+  // wave is a deliberate test and a gate that also blocked testing would just get
+  // commented out.
+  var GOD_WAVES = false
+
+  // 🔑 THE RATE AND THE GATE ARE SEPARATE FUNCTIONS, because they are separate facts.
+  // The rate logic - pathed vs pathless, a Java String read correctly, a throw treated
+  // as pathed - is hard-won and still true; the gate is a scheduling decision that will
+  // be reversed. Folding them together would have meant deleting seven real tests to
+  // turn a feature off for a while.
+  function godRateFor(p) {
     var pathless = null
     try {
       if (VELDORA.paths && typeof VELDORA.paths.pathOf === 'function') {
@@ -658,6 +702,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       }
     } catch (e) { }
     return (pathless === true) ? VARY_PATHLESS : VARY_PATHED
+  }
+
+  function godChanceFor(p) {
+    return GOD_WAVES ? godRateFor(p) : 0
   }
 
   // ⭐⭐ THE MATRIARCH'S CHAMPION DRAWS THE TIDE. Ethan, 2026-08-24:
@@ -759,7 +807,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { }
   }
 
-  function sendWave(p, st, forcedMod) {
+  function sendWave(p, st, forcedMod, forceGod) {
     var y = depthOf(p)
     if (y === null) return
     // ⭐ A forced modifier is the signal that this came from /tide_wave rather than the
@@ -770,7 +818,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
     // ⭐ D3 - which KIND of wave, and how big, both come from trust.
     var modName = pickMod(srv, p, forcedMod)
-    var comp = composeFor(srv, p, y, modName)
+    var comp = composeFor(srv, p, y, modName, forceGod)
     var tier = tierFor(srv, p)
     // ⛔ `var ids = comp.ids` stood here and became dead the moment placement split into
     // a fodder call and a specialist call. Removed rather than left: a live-looking
@@ -1067,6 +1115,40 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           st.out = 0
           st.in = enc ? st.in + SWEEP : 0
 
+          // ⭐⭐ THE ORPHAN SWEEP - the half of his rule the active check cannot reach.
+          //
+          // 🔑 Dawn and surfacing END A RUN WITHOUT DESPAWNING, deliberately: no more
+          // come, but the ones already chasing you do not evaporate. That leaves mobs
+          // with NO active run to sweep them - which is exactly the "server cleanliness
+          // and lag" case he asked about, and the COMMON one, since most tides end by
+          // surfacing rather than by dying.
+          //
+          // ⚠️ SLOW CADENCE. `getEntitiesWithin` is not free and this would otherwise
+          // run for every idle player forever, so it is checked every ORPHAN_EVERY
+          // rather than every sweep. Being a minute late here costs nothing.
+          st.orphan = (st.orphan || 0) + SWEEP
+          if (st.orphan >= ORPHAN_EVERY) {
+            st.orphan = 0
+            var left = -1
+            try {
+              left = p.level.getEntitiesWithin(p.boundingBox.inflate(DESPAWN_RANGE))
+                .filter(function (e) {
+                  try { return e.tags.contains(TIDE_TAG) } catch (x) { return false }
+                }).length
+            } catch (e) { left = -1 }
+            // ⚠️ -1 is "could not read", NOT "none there". Only a real count arms it,
+            // and only a real zero clears it.
+            if (left > 0) {
+              st.orphanIdle = (st.orphanIdle || 0) + ORPHAN_EVERY
+              if (st.orphanIdle >= DESPAWN_IDLE) {
+                despawnTide(p, 'orphaned - the run ended and nobody came back')
+                st.orphanIdle = 0
+              }
+            } else if (left === 0) {
+              st.orphanIdle = 0
+            }
+          }
+
           // ⭐ D4 - THE NIGHT DOOR. Open sky, after dark, and a tide already due. No
           // ENTER_TICKS dwell: being outside at night IS the condition, and asking
           // somebody to stand still in it first would only teach them to go indoors.
@@ -1080,6 +1162,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
             st.age = 0
             st.waves = 0
             st.bosses = 0
+            st.lastKill = 0
             st.next = GRACE
             console.info(TAG + p.username + ' is OUT AFTER DARK and a tide is due - ' +
               'the night tide begins')
@@ -1092,6 +1175,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
             st.age = 0
             st.waves = 0
             st.bosses = 0
+            st.lastKill = 0
             // GRACE is the in-run FLOOR only. What actually schedules a tide is the
             // persistent countdown above.
             st.next = GRACE
@@ -1104,6 +1188,22 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // active
         st.in = 0
         st.age += SWEEP
+
+        // ⭐⭐ THE IDLE RULE. Ethan: *"if no mobs slain in 5(?) minutes the tide
+        // despawns. this is for server cleanliness and lag."*
+        //
+        // ⚠️ MEASURED FROM THE LAST KILL, NOT FROM THE START. `lastKill` is stamped by
+        // the death handler every time a tide mob dies anywhere, so this only fires
+        // when the FIGHTING has stopped - not when the wave has merely been going a
+        // while. A player twenty minutes into a hard tide keeps resetting it.
+        //
+        // ⚠️ AND ONLY ONCE THE FIRST WAVE HAS LANDED. Before that there is nothing to
+        // kill and nothing to despawn, and the check would end the run during GRACE.
+        if (st.waves > 0 && (st.age - (st.lastKill || 0)) >= DESPAWN_IDLE) {
+          endRun(p, uuid, 'nothing slain in ' + Math.round(DESPAWN_IDLE / 1200) +
+            ' min - the wave gives up', true)
+          continue
+        }
 
         // ⭐⭐ ESCAPING TO THE SURFACE ENDS IT. Ethan, 2026-08-24 — and this REVERSES
         // his own ruling of 2026-08-23, deliberately.
@@ -1134,16 +1234,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // other.
         if (st.mode === 'night') {
           if (!isNightNow(server)) {
-            console.info(TAG + p.username + ' - dawn. The night tide ends after ' +
-              st.waves + ' wave(s), ' + Math.round(st.age / 1200) + ' min')
-            runs[uuid] = { active: false, in: 0, out: 0, waves: 0, bosses: 0, next: 0, age: 0, waveEnds: 0, toldEscape: false }
+            // ⚠️ DAWN DOES NOT DESPAWN. Sunrise is the mercy, and a player walking home
+            // in daylight with three skeletons behind them is the tide keeping its
+            // word - they will burn or be killed. The idle rule below sweeps them if
+            // the player simply leaves.
+            endRun(p, uuid, 'dawn', false)
           }
         } else if (!enc) {
           st.out += SWEEP
           if (st.out >= LEAVE_TICKS) {
-            console.info(TAG + p.username + ' surfaced - tide ends after ' +
-              st.waves + ' wave(s), ' + Math.round(st.age / 1200) + ' min')
-            runs[uuid] = { active: false, in: 0, out: 0, waves: 0, bosses: 0, next: 0, age: 0, waveEnds: 0, toldEscape: false }
+            // ⚠️ SURFACING DOES NOT DESPAWN EITHER, and that is this file's oldest
+            // ruling: *"the surface is the escape"* means no MORE come, not that the
+            // ones chasing you evaporate as you climb out. The idle rule collects them.
+            endRun(p, uuid, 'surfaced', false)
           }
           continue
         }
@@ -1174,19 +1277,56 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // next descent starts at wave six - which reads as the game being broken rather
   // than as a roguelike.
   EntityEvents.death(function (event) {
+    // ⭐⭐ A TIDE MOB DYING IS THE HEARTBEAT THE IDLE RULE LISTENS FOR.
+    // His condition is *"no mobs slain in 5 minutes"*, not "five minutes elapsed" - so
+    // the clock is reset by KILLS. A player still grinding through a wave produces them
+    // constantly; a player who walked away produces none, and that is exactly the
+    // difference the rule exists to tell apart. A pure timer would despawn a wave
+    // somebody was still fighting.
+    //
+    // ⚠️ This fires on EVERY entity death on the server, so it does the cheapest thing
+    // possible and leaves.
+    try {
+      var d = event.entity
+      if (d && !d.player) {
+        var tagged = false
+        try { tagged = d.tags.contains(TIDE_TAG) } catch (x) { tagged = false }
+        if (tagged) {
+          // ⚠️ Credited to every LIVE run, not to "the killer". A tide mob that burns,
+          // falls or is shot by another mob still proves that wave is being fought.
+          // Attributing to a killer would miss all three and start despawning waves
+          // mid-fight.
+          for (var k in runs) {
+            if (!runs.hasOwnProperty(k)) continue
+            var rst = runs[k]
+            if (rst && rst.active) rst.lastKill = rst.age || 0
+          }
+        }
+      }
+    } catch (e) { }
+
     try {
       var p = event.entity
       if (!p || !p.player) return
       var uuid = String(p.uuid)
-      var st = runs[uuid]
-      if (st && st.active) {
-        console.info(TAG + p.username + ' died - tide ends after ' + st.waves + ' wave(s)')
-      }
-      runs[uuid] = { active: false, in: 0, out: 0, waves: 0, bosses: 0, next: 0, age: 0 }
+      // 🔑 DEATH DESPAWNS IMMEDIATELY - his first case. Nobody is coming back for that
+      // wave: the player is at spawn and the mobs are standing over a grave in a chunk
+      // that stays loaded as long as anything else is near it.
+      endRun(p, uuid, 'the player died', true)
     } catch (e) { }
   })
 
   PlayerEvents.loggedOut(function (event) {
+    // 🔑 DESPAWN BEFORE THE PLAYER GOES. This is his "all players die" case in its
+    // other form - somebody logs out mid-tide and the wave stands in an empty world.
+    // ⚠️ It has to happen HERE, while `event.player` is still a usable handle; after
+    // this returns there is no way to find where they were.
+    try {
+      var lp = event.player
+      var lst = runs[String(lp.uuid)]
+      if (lst && lst.active) despawnTide(lp, 'the player logged out mid-tide')
+      else despawnTide(lp, 'logged out - clearing any tide left near them')
+    } catch (e) { }
     try { delete runs[String(event.player.uuid)] } catch (e) { }
   })
 
@@ -1201,6 +1341,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     rosters: { bulk: BULK, archers: ARCHERS, specialists: SPECIALISTS, bosses: BOSSES,
       gods: GOD_ROSTERS, allowlist: UNTAGGED_UNDEAD },
     _godChanceFor: godChanceFor,
+    // ⭐ The UNGATED rate, so the tuning stays under test while the feature is off.
+    _godRateFor: godRateFor,
+    godWavesOn: function () { return GOD_WAVES },
+    // ⚠️ TEST-ONLY. The composition tests sample a real composed wave, so they cannot
+    // run at all while the gate is shut - and deleting them to turn a feature off for a
+    // while would lose coverage of logic that is still correct. The harness flips this
+    // around those blocks and flips it back. Production never calls it; the DEFAULT
+    // being off is itself asserted.
+    _setGodWaves: function (v) { GOD_WAVES = !!v },
     varyChance: { pathed: VARY_PATHED, pathless: VARY_PATHLESS },
     // ⭐ D3, exposed for tools/tide_harness.js. The tier ladder and the composition are
     // pure functions of trust and depth, which makes them exactly the part worth
@@ -1222,6 +1371,140 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (!st || !st.active) return false
       sendWave(p, st); st.next = nextGap(p); return true
     },
+  }
+
+  // ── the despawn ────────────────────────────────────────────────────────────
+  // Remove every tide mob near a player. Returns how many went, or -1 if the world
+  // could not be read.
+  //
+  // ⚠️ `discard()` AND NOT `/kill`. A killed mob drops loot, grants XP and fires every
+  // death handler in the pack - so a cleanup would hand out rewards nobody earned and
+  // could feed the very counters (slain, notoriety) the tide reads back. A despawn is
+  // the mob ceasing to be there, which is what this is.
+  function despawnTide(p, why) {
+    var gone = 0
+    try {
+      var near = p.level.getEntitiesWithin(p.boundingBox.inflate(DESPAWN_RANGE))
+        .filter(function (e) {
+          try { return e.tags.contains(TIDE_TAG) } catch (x) { return false }
+        })
+      for (var i = 0; i < near.length; i++) {
+        try { near[i].discard(); gone++ } catch (e) { }
+      }
+    } catch (e) {
+      // 🚨 "I could not read the world" and "there was nothing to remove" must not
+      // share a return value - the caller logs them differently.
+      console.warn(TAG + 'despawn could not read the world :: ' + e)
+      return -1
+    }
+    if (gone > 0) {
+      console.info(TAG + p.username + ' - despawned ' + gone + ' tide mob(s): ' + why)
+    }
+    return gone
+  }
+
+  // ⭐ EVERY PATH OUT OF A RUN GOES THROUGH HERE. Before this existed the run state was
+  // reset in four different places and the mobs were left standing in all four.
+  function endRun(p, uuid, why, despawn) {
+    var st = runs[uuid]
+    if (st && st.active) {
+      console.info(TAG + p.username + ' - tide ends after ' + st.waves +
+        ' wave(s), ' + Math.round((st.age || 0) / 1200) + ' min: ' + why)
+    }
+    if (despawn) despawnTide(p, why)
+    runs[uuid] = { active: false, in: 0, out: 0, waves: 0, bosses: 0, next: 0,
+      age: 0, waveEnds: 0, toldEscape: false, lastKill: 0 }
+  }
+
+  // ── bench helpers ──────────────────────────────────────────────────────────
+  // ⚠️ Ethan, 2026-08-30: *"ensure you're building test commands so we can bug test as
+  // we move."* These exist because two of this file's worst bugs were INVISIBLE from
+  // play - a wave that composed correctly and placed nothing, and a ratio that was
+  // three times what it claimed. Neither is findable by fighting the wave.
+
+  // Ids without their namespace, for a chat line that has to fit.
+  function shortIds(list) {
+    var out = []
+    for (var i = 0; i < list.length; i++) {
+      var s = String(list[i])
+      out.push(s.indexOf(':') >= 0 ? s.split(':')[1] : s)
+    }
+    return out.join(', ')
+  }
+
+  // Compose n waves of every type and report the measured fodder/specialist split.
+  // ⚠️ SPAWNS NOTHING. It is safe to run mid-tide and mid-soak.
+  function ratioReport(ctx, n) {
+    var p = ctx.source.player
+    if (!p) return 0
+    var srv = ctx.source.server
+    var y = depthOf(p)
+    if (y === null) y = -20
+    var W = VELDORA.waves
+    if (!W) { p.tell(Text.of('§c!! waves.js is not loaded - nothing to measure.')); return 0 }
+
+    p.tell(Text.of('§8§m                                        '))
+    p.tell(Text.of('§6TIDE RATIOS §8· ' + n + ' composed waves, §onothing spawned§8'))
+
+    var types = W.types
+    for (var t = 0; t < types.length; t++) {
+      var mod = types[t]
+      var target = W.specFrac[mod]
+      var spec = 0, total = 0, bossCount = 0, godCount = 0, variants = {}
+      for (var i = 0; i < n; i++) {
+        var c = composeFor(srv, p, y, mod)
+        // The REAL pulse size, so the rounding under test is the shipping rounding.
+        var per = MAX_PER_BATCH
+        var s = specCount(per, c.specFrac)
+        spec += s; total += per
+        if (c.boss) bossCount++
+        if (c.varied) godCount++
+        variants[c.variant] = (variants[c.variant] || 0) + 1
+      }
+      var got = total ? (spec / total) : 0
+      var drift = Math.abs(got - target)
+      // ⭐ A colour that means something: green inside 2 points, red outside.
+      var col = (drift < 0.02) ? '§a' : '§c'
+      p.tell(Text.of('§f' + mod + '§8 target §f' + Math.round((1 - target) * 100) + '/' +
+        Math.round(target * 100) + '§8 measured ' + col +
+        Math.round((1 - got) * 100) + '/' + Math.round(got * 100) +
+        '§8 · boss ' + Math.round(bossCount * 100 / n) + '% · god ' +
+        Math.round(godCount * 100 / n) + '%'))
+    }
+    p.tell(Text.of('§8sampled at §f' + MAX_PER_BATCH + '§8 mobs per pulse - the rounding ' +
+      'is what breaks first, so it is sampled at the real size'))
+    return 1
+  }
+
+  // Force a god-augmented wave. ⚠️ Bypasses the difficulty gate - says so.
+  function godWave(ctx, mod) {
+    var p = ctx.source.player
+    if (!p) return 0
+    var god = ''
+    try { god = String(ctx.getArgument('god', Java.loadClass('java.lang.String'))) } catch (e) { }
+    var W = VELDORA.waves
+    if (!W) { p.tell(Text.of('§c!! waves.js is not loaded.')); return 0 }
+    if (!W.gods[god]) {
+      var ks = []
+      for (var k in W.gods) if (W.gods.hasOwnProperty(k)) ks.push(k)
+      p.tell(Text.of('§cno god wave for "' + god + '". one of: ' + ks.sort().join(', ')))
+      p.tell(Text.of('§8forge and salvage have none - his ruling, not a gap'))
+      return 0
+    }
+    if (!MODS[mod]) {
+      p.tell(Text.of('§cunknown wave type. one of: ' + Object.keys(MODS).join(', ')))
+      return 0
+    }
+    var st = runs[String(p.uuid)]
+    if (!st) { st = { active: true, waves: 0, bosses: 0, next: 0, in: 0 }; runs[String(p.uuid)] = st }
+    // ⚠️ The boss cap is per RUN. A bench that spends it would make the next real tide
+    // bossless, so it is refunded here rather than silently consumed.
+    var hadBosses = st.bosses
+    p.tell(Text.of('§7forcing a §d' + god + '§7 ' + MODS[mod].label +
+      ' §8(BENCH - difficulty gate bypassed)'))
+    sendWave(p, st, mod, god)
+    st.bosses = hadBosses
+    return 1
   }
 
   ServerEvents.commandRegistry(function (event) {
@@ -1287,10 +1570,112 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       p.tell(Text.of('§8trust §f' + trustOf(srv, p) + '§8 -> tier §f' + tier.at +
         '§8, size §fx' + tier.mult))
       p.tell(Text.of('§8can send: §f' + tier.mods.join(', ')))
+      // 🔴 THIS ASKED FOR `'specialist'` - THE MODIFIER RETIRED ON 2026-08-30 - so
+      // waves.js returned null, composeFor took its FALLBACK, and this bench reported
+      // the fallback's pool as if it were the ranged wave's. A bench that lies is worse
+      // than no bench: it is the instrument you check the game against.
       if (y !== null) {
-        var c = composeFor(srv, p, y, 'specialist')
-        p.tell(Text.of('§8at y' + Math.round(y) + ' the ranged pool has §f' +
-          c.rangedAvailable + '§8 entr' + (c.rangedAvailable === 1 ? 'y' : 'ies')))
+        var c = composeFor(srv, p, y, 'ranged')
+        p.tell(Text.of('§8a ranged wave here: §f' + c.fodder.length + '§8 fodder ids, §f' +
+          c.specs.length + '§8 archer ids, §f' + Math.round(c.specFrac * 100) +
+          '%§8 specialist'))
+        p.tell(Text.of('§8difficulty §f' + diffIndex(p) + '§8 · another god reaches in §f' +
+          Math.round(godChanceFor(p) * 100) + '%§8 of waves'))
+      }
+      return 1
+    }))
+
+    // ⭐⭐ /tide_ratio [n] - THE ONE THAT ANSWERS "ARE HIS NUMBERS ACTUALLY LANDING?"
+    //
+    // He tuned 90/10, 95/5, 80/20 and 95/5 by PLAYING, which means checking them by
+    // playing would mean counting mobs in a wave that is actively killing him. This
+    // composes n waves of every type WITHOUT SPAWNING ANYTHING and prints the measured
+    // split against the target.
+    //
+    // ⚠️ It samples at the REAL pulse size, because ROUNDING is where this silently
+    // breaks: a 5% wave of 6 floors to zero under Math.round, and that failure looks
+    // exactly like "the wave has no specialists in it".
+    event.register(Commands.literal('tide_ratio').requires(function (s) {
+      try { return s.hasPermission(2) } catch (e) { return false }
+    }).executes(function (ctx) { return ratioReport(ctx, 2000) })
+      .then(Commands.argument('n', event.arguments.INTEGER.create(event))
+        .executes(function (ctx) {
+          var n = 2000
+          try { n = ctx.getArgument('n', Java.loadClass('java.lang.Integer')) } catch (e) { }
+          if (n < 50) n = 50
+          if (n > 20000) n = 20000
+          return ratioReport(ctx, n)
+        })))
+
+    // ⭐ /tide_god <god> [type] - force a god-augmented wave.
+    // A god wave is 8-25% of waves AND difficulty-gated on top, so Wall's spiders and
+    // Art's Lifestealer were effectively untestable in play. ⚠️ This bypasses the
+    // difficulty gate and SAYS SO, so a bench result is never read as a live one.
+    event.register(Commands.literal('tide_god').requires(function (s) {
+      try { return s.hasPermission(2) } catch (e) { return false }
+    }).then(Commands.argument('god', event.arguments.STRING.create(event))
+      .executes(function (ctx) { return godWave(ctx, 'general') })
+      .then(Commands.argument('mod', event.arguments.STRING.create(event))
+        .executes(function (ctx) {
+          var m = 'general'
+          try { m = String(ctx.getArgument('mod', Java.loadClass('java.lang.String'))) } catch (e) { }
+          return godWave(ctx, m)
+        }))))
+
+    // ⭐ /tide_clear - despawn the tide near you, now.
+    // ⚠️ The idle rule takes 5 minutes by design, which is right in play and useless at
+    // a bench. This calls the SAME `despawnTide` the real paths call, so testing it
+    // tests the shipping code rather than a parallel copy of it.
+    event.register(Commands.literal('tide_clear').requires(function (s) {
+      try { return s.hasPermission(2) } catch (e) { return false }
+    }).executes(function (ctx) {
+      var p = ctx.source.player
+      if (!p) return 0
+      var n = despawnTide(p, 'cleared by command')
+      if (n < 0) {
+        p.tell(Text.of('§c!! could not read the world - nothing was cleared'))
+        return 0
+      }
+      p.tell(Text.of('§7despawned §f' + n + '§7 tide mob(s) within ' +
+        DESPAWN_RANGE + ' blocks'))
+      var cst = runs[String(p.uuid)]
+      if (cst && cst.active) {
+        p.tell(Text.of('§8your run is still ACTIVE - more will come. /tide_now ends it.'))
+      }
+      return 1
+    }))
+
+    // ⭐ /tide_roster - what is ACTUALLY loaded, not what a doc claims is loaded.
+    // Every roster in this project has been wrong at least once while reading perfectly
+    // correctly in the file, so this prints the live arrays out of waves.js.
+    event.register(Commands.literal('tide_roster').requires(function (s) {
+      try { return s.hasPermission(2) } catch (e) { return false }
+    }).executes(function (ctx) {
+      var p = ctx.source.player
+      if (!p) return 0
+      var W = VELDORA.waves
+      if (!W) {
+        p.tell(Text.of('§c!! waves.js IS NOT LOADED. Every wave is a fallback horde.'))
+        return 0
+      }
+      p.tell(Text.of('§8§m                                        '))
+      p.tell(Text.of('§6TIDE ROSTERS §8(live, read out of waves.js)'))
+      var pools = [['bone fodder', W.fodderPools.bone], ['ghost fodder', W.fodderPools.ghost],
+        ['bone light', W.specPools.boneLight], ['ghost light', W.specPools.ghostLight],
+        ['bone tank', W.specPools.boneTank], ['ghost tank', W.specPools.ghostTank],
+        ['archers', W.specPools.ranged], ['her minibosses', BOSSES]]
+      for (var i = 0; i < pools.length; i++) {
+        p.tell(Text.of('§8' + pools[i][0] + ' §7(' + pools[i][1].length + ')§8: §f' +
+          shortIds(pools[i][1])))
+      }
+      var gk = []
+      for (var g in W.gods) if (W.gods.hasOwnProperty(g)) gk.push(g)
+      gk.sort()
+      for (var j = 0; j < gk.length; j++) {
+        var gd = W.gods[gk[j]]
+        p.tell(Text.of('§d' + gk[j] + ' §7(' + gd.tier + ')§8: §f' + shortIds(gd.fodder) +
+          '§8 + §f' + (gd.spec.length ? shortIds(gd.spec) : 'no specialists') +
+          '§8 · boss §f' + (gd.boss ? String(gd.boss).split(':')[1] : '§cNONE')))
       }
       return 1
     }))

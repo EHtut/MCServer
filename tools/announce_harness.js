@@ -397,8 +397,10 @@ grp('* THE GOD DIALOGUE PASS - 2026-08-30')
   // line needs 15 units and the message expires first - every god line rendered nothing.
   // The assertion is now that it is ONE switch, not that it is on, so flipping it back
   // after `/gd type` measures the unit is a single edit.
+  // overlay(), aside(), and crashout() - three surfaces, ONE switch. The count is
+  // asserted rather than ">= 1" so a fourth surface has to come here and say so.
   ok('typing is one named switch, not scattered literals',
-    (vo2.match(/typewriter: TYPEWRITER/g) || []).length, 2)
+    (vo2.match(/typewriter: TYPEWRITER/g) || []).length, 3)
   ok('...declared exactly once', (vo2.match(/var TYPEWRITER = /g) || []).length, 1)
   ok('...and /gd type exists to measure the speed',
     /Commands\.literal\('type'\)/.test(vo2), true)

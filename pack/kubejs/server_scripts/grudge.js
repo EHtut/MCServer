@@ -201,10 +201,34 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         try { if (String(ps[i].username) === name) { killer = ps[i]; here = true; break } } catch (e) { }
       }
     } catch (e) { }
+    // ⭐⭐ THE CRASHOUT. Ethan, 2026-08-30: *"the crashout can be used when gods attack
+    // each other."* This is that moment - the argument has already played out in front
+    // of everyone, and now one of them actually strikes.
+    //
+    // 🔑 IT GOES TO THE KILLER ALONE. The exchange was public because an argument is;
+    // the reprisal is personal, and a god screaming into everyone's face about somebody
+    // else's business would cheapen the one message allowed to interrupt anything.
+    //
+    // ⚠️ BEFORE the logged-out check on purpose. If the target has gone there is nobody
+    // to shout at, and shouting at an empty seat is what the check below prevents.
     if (!here) {
       console.info(TAG + name + ' logged out before ' + god + ' could answer - reprisal dropped')
       return 'gone'
     }
+
+    // ⭐ SAID FIRST, THEN DONE. A debuff that lands before the god explains it is a
+    // status effect; one that lands after is a consequence. The order is the meaning.
+    //
+    // ⚠️ Only if she has something written. A god with no crashout pool strikes in
+    // silence, which is a posture too - and Forge, who never retaliates at all, never
+    // reaches this line.
+    try {
+      if (VELDORA.voice && typeof VELDORA.voice.crashout === 'function') {
+        var line = VELDORA.voice.line(god, 'crashout', killer)
+        if (line) VELDORA.voice.crashout(killer, god, line)
+        else console.info(TAG + god + ' has no crashout pool - striking in silence')
+      }
+    } catch (e) { console.warn(TAG + 'crashout threw :: ' + e) }
 
     if (spec.spiders) {
       // She sends something rather than taking something - the only physical answer

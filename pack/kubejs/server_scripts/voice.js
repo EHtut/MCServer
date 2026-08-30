@@ -499,6 +499,56 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { return false }
   }
 
+  // ════════════════════════════════════════════════════════════════════════
+  // ⭐⭐ THE CRASHOUT — a god going off at somebody, in their own face.
+  //
+  // Ethan, 2026-08-30: *"god based waves should be gated off for now ... the crashout
+  // can be used when gods attack each other."*
+  //
+  // 🔑 SO IT MOVED, AND THE NEW HOME IS BETTER. It was designed for a god-augmented
+  // tide; it now fires on the grudge REPRISAL - the moment two gods stop arguing and
+  // one of them actually strikes. That earns the volume in a way a scheduled tide never
+  // did: it is rare (a champion has to have killed another god's champion), it is
+  // personal (the target is the killer, not the room), and the argument has already
+  // happened in front of you, so the escalation is something you WATCHED build.
+  //
+  // ⚠️ EVERYTHING IS BIGGER, NOTHING IS NEW. Same style registry, same font, same
+  // colour - dialled up. A crashout that looked like a different system would read as a
+  // different character.
+  //
+  // 🚨 CRASHOUT PRIORITY, which screen.js never refuses. This is the one message that
+  // is allowed to be rude, and it is rude on purpose.
+  function crashout(player, god, text, opts) {
+    try {
+      if (!VELDORA.im || typeof VELDORA.im.show !== 'function') return false
+      var st = styleOf(god)
+      var parts = sentences(String(text))
+      var first = false
+      for (var i = 0; i < parts.length; i++) {
+        var show = {
+          // ⚠️ DEAD CENTRE regardless of where this god usually lives. Blade normally
+          // talks down from the top and Wall is never in one place - but a god losing
+          // their temper does not keep to their corner, and the break from their usual
+          // position is itself the signal that something is wrong.
+          anchor: 'CENTER_CENTER',
+          size: (typeof st.size === 'number' ? st.size : 1) + 0.55,
+          shake: true,
+          font: st.font,
+          color: st.color || hexOfGod(god),
+          typewriter: TYPEWRITER,
+          seconds: Math.max(1.6, beatFor(parts[i], st) / 20),
+          priority: 'CRASHOUT',
+          continuation: (i > 0),
+        }
+        if (opts) for (var k in opts) if (opts.hasOwnProperty(k)) show[k] = opts[k]
+        if (i > 0) show.continuation = true
+        var okd = VELDORA.im.show(player, VELDORA.garble ? VELDORA.garble.strip(parts[i]) : parts[i], show)
+        if (i === 0) first = okd
+      }
+      return first
+    } catch (e) { return false }
+  }
+
   function say(player, god, tag) {
     if (silenced(player, god)) return false
     var s = line(god, tag, player)
@@ -570,6 +620,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // second copy of this that drifts. The overlay is the god dialogue system now.
     overlay: overlay,
     speak: speak,
+    crashout: crashout,
     setStyle: setStyle,
     styleOf: styleOf,
     sentences: sentences,
