@@ -530,9 +530,26 @@ grp('D3 - THE FALLBACK, AND WHO IS NOT IN THE ROSTER')
   // it a wall of arrows. This assertion documents the current state rather than
   // pretending it is fine, and it turns red the moment somebody adds one.
   {
+    // 🔴 THIS ASSERTION USED TO ENCODE THE GAP AS `=== 0`. Ethan asked the obvious
+    // question - "Why are ranged enemies not spawning?" - and the answer was that at
+    // tide depth there were none: rosterFor returns DEEPER below y-40, DEEPER held no
+    // archer, and the composer correctly fell back to melee. The mechanism was right
+    // and the roster was empty. Now it asserts the FIX instead.
     const deeperRanged = T.rosters.deeper.filter(id => T.ranged[id])
-    ok('DEEPER has no ranged entries yet - a known gap, not a silent one',
-      deeperRanged.length, 0)
+    ok('🚨 DEEPER now HAS archers - the deep is where the tide happens',
+      deeperRanged.length >= 3, true)
+
+    // ⚠️ Ethan ruled banshee and skeleton_thrasher are MELEE despite the names. They
+    // belong in the roster and must stay OUT of the ranged pool.
+    ok('banshee is not treated as ranged', !!T.ranged['grim_and_bleak:banshee'], false)
+    ok('skeleton_thrasher is not either - a name is not an attack type',
+      !!T.ranged['born_in_chaos_v1:skeleton_thrasher'], false)
+
+    // And the thing that actually failed in play: a specialist wave IN THE DEEP.
+    const deepSpec = T._composeFor({}, tp, -200, 'specialist')
+    const dr = deepSpec.ids.filter(id => T.ranged[id]).length / deepSpec.ids.length
+    ok('🚨 a specialist wave at y-200 is genuinely ranged now',
+      Math.abs(dr - 0.40) < 0.06, true)
   }
 
   // Blade's stalker avatar must never turn up in a generic tide wave.

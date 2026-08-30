@@ -198,9 +198,25 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ⚠️ SO THIS LIST WANTS A PASS, and it is deliberately small rather than optimistic:
   // a melee mob mislabelled ranged just makes a specialist wave less special, while the
   // reverse would make it a wall of arrows nobody survives.
+  // ⭐ CORRECTED 2026-08-29 after Ethan asked the obvious question - *"Why are ranged
+  // enemies not spawning?"* - and the answer was that at tide depth there were none.
+  // `rosterFor` returns DEEPER below y-40, DEEPER held no archer, and the composer
+  // correctly fell back to melee. The mechanism worked; the roster was empty.
+  //
+  // ⚠️ AND ETHAN RULED ON THE TWO I HAD REFUSED TO GUESS: *"banshee and thrasher can be
+  // added to the horde regardless but they both are melee."* They stay in the rosters
+  // and stay OUT of this list.
+  //
+  // 🚨 VANILLA ARCHERS CARRY THE DEEP, on purpose. stray and bogged are unambiguously
+  // ranged undead - no guessing about attack type, which is the thing the registry
+  // cannot answer. A less exotic archer that definitely shoots beats a characterful one
+  // that might not.
   var RANGED = {
     'minecraft:skeleton': true,
+    'minecraft:stray': true,
+    'minecraft:bogged': true,
     'born_in_chaos_v1:decrepit_skeleton': true,
+    'born_in_chaos_v1:skeleton_demoman': true,
     'rottencreatures:skeleton_lackey': true,
   }
 
@@ -279,6 +295,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     'born_in_chaos_v1:zombie_bruiser', 'goety:haunt', 'goety:wight',
     'iceandfire:dread_thrall', 'iceandfire:dread_ghoul',
     'rottencreatures:burned', 'rottencreatures:immortal',
+    // ⭐ THE DEEP HAD NO ARCHERS AT ALL until 2026-08-29, which is why specialist
+    // waves silently degraded into hordes below y-40 - and below y-40 is where the
+    // tide actually happens. Ethan: *"Why are ranged enemies not spawning?"*
+    //
+    // 🚨 Vanilla archers, deliberately. stray and bogged are unambiguously ranged
+    // undead; nothing here depends on guessing how a modded mob fights.
+    'minecraft:stray',
+    'minecraft:bogged',
+    'born_in_chaos_v1:skeleton_demoman',
   ]
 
   // Named here so the harness can assert the exception is exactly this and has not
