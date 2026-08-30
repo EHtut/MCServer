@@ -123,7 +123,15 @@ grp('THE KILL — who counts')
   const me = mkPlayer('Rehykt', '', 'u1')
   const rando = mkPlayer('Nobody', '', 'u3')
   kill(me, rando)
-  ok('killed by a PATHLESS player -> struck (the killer is not checked)', struck(me), 1)
+  // ⚠️ WAS "the killer is not checked" and E3 REVERSED IT. docs/67 restores the
+  // champion requirement, which is only reachable because Wall gained a second route
+  // (thirty played days) that opens with nobody else involved.
+  //
+  // 🚨 AND THE STAMP MUST NOT BE SPENT. The check sits ABOVE the stamp on purpose:
+  // marking the victim struck and then declining to count it would burn their one
+  // stamp forever, silently, on a death that never qualified.
+  ok('🚨 killed by a PATHLESS player -> NOT struck, and the stamp is unspent',
+    struck(me), 0)
 }
 {
   const me = mkPlayer('Pathed', 'salvage', 'u1')
@@ -239,10 +247,69 @@ grp('THE LISTING')
 
 // ═══════════════════════════════════════════════════════════════════════════
 grp('WIRING — the dead machinery is really gone')
+// ═══════════════════════════════════════════════════════════════════════════
+grp('⭐ E3 — THIRTY DAYS OF PLAYED TIME')
+// 🚨 NOBODY CAN SIT THROUGH THIS TO CHECK IT. Thirty played days is ten hours at
+// the keyboard, so the counter's behaviour is only ever provable here.
+{
+  const me = mkPlayer('Drifter', '', 'd1')
+  ok('starts at zero days', C.driftDays(me), 0)
+
+  // One sweep is 100 ticks. A day is 24000. Drive it by hand.
+  const perDay = 240
+  for (let d = 0; d < 29; d++) for (let i = 0; i < perDay; i++) C._driftTick(me, false)
+  ok('29 days of play is 29 days', C.driftDays(me), 29)
+  hush(); C._scan(server, me); speak()
+  ok('🚨 29 does NOT unlock her', C.unlocked(me, 'wall'), false)
+
+  for (let i = 0; i < perDay; i++) C._driftTick(me, false)
+  ok('30 days', C.driftDays(me), 30)
+  hush(); C._scan(server, me); speak()
+  ok('🚨 30 DOES unlock her', C.unlocked(me, 'wall'), true)
+}
+
+{
+  // ⭐ TAKING A PATH RESETS IT. Otherwise a player who held a god for a year and was
+  // released would be handed Wall the moment they walked away.
+  const me = mkPlayer('Rejoiner', '', 'd2')
+  for (let i = 0; i < 240 * 10; i++) C._driftTick(me, false)
+  ok('ten days banked', C.driftDays(me), 10)
+  C._driftTick(me, true)                       // took a path
+  ok('🚨 taking a path wipes the clock', C.driftDays(me), 0)
+  C._driftTick(me, true); C._driftTick(me, true)
+  ok('...and it stays wiped while pathed', C.driftDays(me), 0)
+  C._driftTick(me, false)
+  ok('losing it starts a FRESH thirty, not a resumed one', C.driftDays(me), 0)
+}
+
+{
+  // ⚠️ OFFLINE TIME MUST NOT COUNT - the whole point of the ruling. There is no
+  // clock here at all: the sweep only ever iterates server.players, so a logged-out
+  // player is simply never ticked. Proven by NOT ticking.
+  const me = mkPlayer('LoggedOff', '', 'd3')
+  for (let i = 0; i < 240 * 5; i++) C._driftTick(me, false)
+  const banked = C.driftTicks(me)
+  // ...time passes in the real world. No sweeps happen for them.
+  ok('🚨 a player nobody sweeps gains nothing', C.driftTicks(me), banked)
+  ok('⭐ thirty days is thirty MC day-cycles of play, not thirty real days',
+    C.driftNeeded * 24000, 720000)
+}
+
 const src = fs.readFileSync(FILE, 'utf8')
 const code = src.split('\n').filter((l) => !l.trim().startsWith('//')).join('\n')
 const has = (s) => code.indexOf(s) >= 0
-ok('driftDays() is gone', has('function driftDays'), false)
+// ⚠️ WAS "driftDays() is gone" - it guarded against the DEAD day-route machinery
+// creeping back. E3 brings a drift clock back deliberately, so the guard has to become
+// sharper rather than disappear: it may exist, but only with a live consumer and only
+// on its own key.
+ok('⭐ driftDays() is back, ON PURPOSE', has('function driftDays'), true)
+ok('🚨 ...and it has a LIVE CONSUMER, not just a definition',
+  has('pathlessTicks(p) >= DRIFT_TICKS'), true)
+ok('🚨 ...on its OWN key, never the vestigial timestamp one',
+  has("var K_PATHLESS = 'veldora_pathless_ticks'") && !has('getInt(K_DRIFT) >='), true)
+ok('⚠️ it counts PLAYED time - the sweep only ever sees online players',
+  has('driftTick(p, !!cur)'), true)
+ok('...and taking a path resets it', has('if (pathlessTicks(p) > 0) p.persistentData.putInt(K_PATHLESS, 0)'), true)
 ok('hasRefused() is gone', has('function hasRefused'), false)
 ok('WALL_DAYS / WALL_LONG are gone', has('WALL_DAYS') || has('WALL_LONG'), false)
 ok('nothing reads veldora_refused_ any more', has('veldora_refused_'), false)

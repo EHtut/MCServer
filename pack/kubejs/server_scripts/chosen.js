@@ -56,6 +56,53 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // silently lost Blade and Salvage the moment E1 and E2 moved them off items.
   var ALL = ['blade', 'salvage', 'wall', 'forge', 'art']
 
+  // ════════════════════════════════════════════════════════════════════════
+  // ⭐ E3 - WALL'S SECOND ROUTE: THIRTY DAYS WITH NOBODY, IN PLAYED TIME.
+  //
+  // Ethan, 2026-08-29, ruling the open question: *"played time."*
+  //
+  // 🔑 WHY IT HAD TO BE. fall.js counted WORLD days, which pass while you are logged
+  // out - so a player could earn Wall's attention by not playing. Played time is the
+  // only measure that means *you spent thirty days with nobody* rather than *your
+  // server was up for thirty days*. Same reasoning ranks.js records for Forge's
+  // boredom and tide.js for its clock: logging off never brings a god closer.
+  //
+  // ⚠️ "THIRTY DAYS" IS THIRTY MINECRAFT DAY-CYCLES OF PLAY - 30 x 24000 ticks = ten
+  // hours at the keyboard. Thirty REAL days of playtime would be 720 hours and nobody
+  // would ever see it; thirty world days would be the thing the ruling just rejected.
+  var DRIFT_DAYS = 30
+  var DRIFT_TICKS = DRIFT_DAYS * 24000
+
+  // 🚨 ITS OWN KEY, and NOT `veldora_pathless_since`. That one is vestigial - the
+  // sweep still clears it, nothing reads it - and its name says "since", i.e. a
+  // timestamp. Reusing a timestamp key as an accumulator is EXACTLY the bug this file's
+  // own header spends a paragraph on: `veldora_refused_<key>` was a tick deadline read
+  // as a boolean, and it silently broke Wall's unlock with no error anywhere.
+  var K_PATHLESS = 'veldora_pathless_ticks'
+
+  function pathlessTicks(p) {
+    try {
+      var v = p.persistentData.getInt(K_PATHLESS)
+      return (typeof v === 'number' && isFinite(v) && v > 0) ? v : 0
+    } catch (e) { return 0 }
+  }
+
+  // Called once per sweep, per ONLINE player. A player who is not online does not get
+  // swept, which is the whole mechanism - there is nothing else to enforce it.
+  function driftTick(p, pathed) {
+    try {
+      if (pathed) {
+        if (pathlessTicks(p) > 0) p.persistentData.putInt(K_PATHLESS, 0)
+        return 0
+      }
+      var n = pathlessTicks(p) + SWEEP
+      p.persistentData.putInt(K_PATHLESS, n)
+      return n
+    } catch (e) { return 0 }
+  }
+
+  function driftDays(p) { return Math.floor(pathlessTicks(p) / 24000) }
+
   var bladeWarned = false
   var dealsWarned = false
 
@@ -66,7 +113,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // and the display has to know it, or it lies to the only person who reads it.
   function howTo(p, k) {
     if (TRIGGERS[k]) return 'carry ' + TRIGGERS[k][0].split(':')[1]
-    if (k === 'wall') return 'be killed while pathless'
+    if (k === 'wall') {
+      return 'be killed by a champion while pathless, or drift ' +
+        driftDays(p) + '/' + DRIFT_DAYS + ' played days'
+    }
     if (k === 'blade') {
       try {
         if (VELDORA.slain) return 'slay ' + VELDORA.slain.count(p) + '/' + VELDORA.slain.threshold
@@ -189,15 +239,39 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (!killer) return
       try { if (String(killer.uuid) === String(victim.uuid)) return } catch (e) { return }
 
+      // ⭐⭐ E3 ROUTE 1 - THE KILLER MUST HOLD A PATH. Restored 2026-08-29.
+      //
+      // 🚨 THE READ MOVED ABOVE THE STAMP, and that ordering is the whole fix. The
+      // stamp used to happen first and the killer's path was read afterwards purely to
+      // decorate the log line - so adding the check below it would have marked the
+      // victim struck and THEN decided not to count it, burning their one stamp on a
+      // death that does not qualify. Silently, and once per player forever.
+      //
+      // ⚠️ THIS REVERSES THE 08-16 RULING ABOVE, and that note is right about its own
+      // moment: alone, the champion requirement was unsatisfiable, because paths are
+      // exclusive and one player held the only one. *"A rule nobody can satisfy is not
+      // a stricter rule, it is a dead one."*
+      //
+      // 🔑 WHAT CHANGED IS NOT THE ARGUMENT, IT IS THE SHAPE. `docs/67` pairs this
+      // with a SECOND door - thirty played days with nobody - which opens on its own
+      // with no other player involved at all. The strict version is no longer the only
+      // way in, so it is no longer dead. Both routes exist or neither should.
+      var kPath = ''
+      try { if (VELDORA.paths) kPath = VELDORA.paths.pathOf(killer) || '' } catch (e) { }
+      if (!kPath) {
+        console.info(TAG + victim.username + ' was killed by ' + killer.username +
+          ', who walks no path either - a scuffle, not a story. Nothing stamped. ' +
+          '(The drift route is still open: ' + driftDays(victim) + '/' + DRIFT_DAYS + ')')
+        return
+      }
+
       try {
         if ((victim.persistentData.getInt(K_STRUCK) || 0) > 0) return
         victim.persistentData.putInt(K_STRUCK, 1)
       } catch (e) { return }
-      var kPath = ''
-      try { if (VELDORA.paths) kPath = VELDORA.paths.pathOf(killer) || '' } catch (e) { }
       console.info(TAG + '!! ' + victim.username + ' was killed by ' + killer.username +
-        (kPath ? ' (champion of ' + kPath + ')' : ' (who walks no path either)') +
-        ' while walking no path - the Spider noticed. She arrives ON RESPAWN.')
+        ' (champion of ' + kPath + ') while walking no path - the Spider noticed. ' +
+        'She arrives ON RESPAWN.')
     } catch (err) { console.warn(TAG + 'struck hook threw :: ' + err) }
   })
 
@@ -336,6 +410,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       for (var i = 0; i < ALL.length; i++) if (isUnlocked(p, ALL[i])) out.push(ALL[i])
       return out
     },
+    // E3, exposed so the drift clock can be driven in a harness. Nobody can sit
+    // through thirty days of played time to confirm it counted thirty.
+    driftDays: driftDays,
+    driftTicks: pathlessTicks,
+    driftNeeded: DRIFT_DAYS,
+    _driftTick: driftTick,
+    _scan: scanUnlocks,
   }
 
   function carries(p, ids) {
@@ -434,6 +515,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // made on respawn; this is only the catch-up for a player who was struck while
     // the respawn hook could not reach them (mid-scene, on a fall cooldown, or the
     // server went down between the death and the respawn).
+    // ⭐ E3 ROUTE 2 - nobody wanted you for thirty days of play.
+    //
+    // ⚠️ This route is why ROUTE 1 can be strict again. The 08-16 note below dropped
+    // the champion requirement because "a rule nobody can satisfy is not a stricter
+    // rule, it is a dead one" - and it was right, ALONE. Paired with a second door
+    // that opens on its own, the strict version is reachable rather than dead.
+    if (!isUnlocked(p, 'wall') && pathlessTicks(p) >= DRIFT_TICKS) {
+      if (unlock(p, 'wall')) {
+        newly = newly || 'wall'
+        console.info(TAG + p.username + ' unlocked wall - ' + driftDays(p) +
+          ' days of PLAYED time with no god. Nobody else wanted them.')
+      }
+    }
+
     if (!isUnlocked(p, 'wall') && wasStruck(p)) {
       if (unlock(p, 'wall')) {
         newly = newly || 'wall'
@@ -517,6 +612,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         try {
           var cur = VELDORA.paths ? (VELDORA.paths.pathOf(p) || '') : ''
           if (cur && p.persistentData.getInt(K_DRIFT)) p.persistentData.putInt(K_DRIFT, 0)
+
+          // ⭐ E3 - and the PLAYED-TIME clock advances here, where "online" is
+          // already true by construction: this loop only ever sees server.players.
+          driftTick(p, !!cur)
         } catch (e) { }
 
         scanUnlocks(server, p)                          // always
@@ -597,8 +696,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     console.info(TAG + 'THREE KINDS OF CONDITION: CARRY (forge, art) - BLADE takes ' +
       (VELDORA.slain ? VELDORA.slain.threshold : '?') + ' slain, lifetime, never reset. ' +
       'SALVAGE takes ' + (VELDORA.deals ? VELDORA.deals.threshold : '?') + ' bad deals ' +
-      'accepted. WALL has no item and no timer: somebody kills you while you walk no ' +
-      'path, and she offers ON YOUR RESPAWN (' + RESPAWN_DELAY + 't later).')
+      'accepted. WALL has TWO routes and no item: a CHAMPION kills you while you walk ' +
+      'no path (she offers ON YOUR RESPAWN, ' + RESPAWN_DELAY + 't later), OR you ' +
+      'drift ' + DRIFT_DAYS + ' days of PLAYED time with nobody.')
     var shut = []
     for (var ci = 0; ci < ALL.length; ci++) if (isClosed(ALL[ci])) shut.push(ALL[ci])
     if (shut.length) {

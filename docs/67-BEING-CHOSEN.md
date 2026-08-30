@@ -6,7 +6,7 @@
 > |---|---|
 > | ✅ **E1 Blade** | 500 slain, lifetime — `slain.js`. He is off `minecraft:iron_sword` |
 > | ✅ **E2 Salvage** | ten deals, accept five — `salvage_deals.js`. She is off the crossbow |
-> | ⏳ **E3 Wall** | killed while pathless, or **30 days godless in PLAYED TIME** (ruled 2026-08-29) |
+> | ✅ **E3 Wall** | a CHAMPION kills you while pathless, or **30 days godless in PLAYED TIME** |
 > | 🔴 **E4 Art** | needs new machinery: `speakerFor()` returns null for the pathless, so they hear nobody |
 > | ⏳ **E5 Forge** | the dialogue tree |
 >
@@ -345,3 +345,59 @@ Blade **stays unlocked** — the unlock check runs first.
 
 **39 assertions, 3 negative controls all confirmed red. 656 passed / 0 failed across 18
 harnesses. Live 58/58, 0 errors.**
+
+
+---
+
+# ✅ E3 BUILT — 2026-08-29. Both of Wall's routes, and one of them came back.
+
+**Route 1** — a **champion** (a pathed player) kills you while you walk no path. She
+offers on your respawn.
+**Route 2** — you drift **30 days of PLAYED time** with nobody.
+
+## 🔑 The ruling: played time
+
+Ethan: *"played time."* `fall.js` counted **world** days, which pass while you are
+logged out — so a player could earn Wall's attention **by not playing.** ⭐ Played time
+is the only measure that means *you spent thirty days with nobody* rather than *your
+server was up for thirty days.* Same reasoning `ranks.js` records for Forge's boredom
+and `tide.js` for its clock.
+
+⚠️ **"Thirty days" is thirty Minecraft day-cycles of play — ten hours at the keyboard.**
+Thirty *real* days of playtime would be 720 hours and nobody would ever see it; thirty
+*world* days is the thing the ruling just rejected.
+
+🔑 **There is no clock in the drift code at all.** The sweep only ever iterates
+`server.players`, so a logged-out player is simply never ticked. The mechanism *is* the
+enforcement — nothing has to check whether you are online.
+
+## ⚠️ Route 1 reverses a documented ruling, and here is why that is allowed
+
+`chosen.js` carried a 2026-08-16 note dropping the champion requirement:
+
+> *"paths are exclusive on a four-player server, so exactly one player held a path and
+> the only pathless player could not be killed by a champion he was not fighting. A rule
+> nobody can satisfy is not a stricter rule, it is a dead one."*
+
+⭐ **That note is right about its own moment, and what changed is not the argument — it
+is the shape.** `docs/67` pairs the strict rule with a **second door that opens on its
+own, with no other player involved at all.** The champion requirement is no longer the
+only way in, so it is no longer dead. **Both routes exist or neither should.**
+
+## 🚨 The ordering bug that would have burned a player's one stamp
+
+The `K_STRUCK` stamp used to be written **before** the killer's path was read — the read
+existed only to decorate the log line. Adding the check below it would have marked the
+victim struck and *then* declined to count it, **spending their one stamp forever, on a
+death that never qualified, silently.** The read moved above the stamp.
+
+## ⚠️ And a vestigial key I did NOT reuse
+
+`veldora_pathless_since` is still written and cleared, and **nothing reads it**. Its name
+says *"since"* — a timestamp. Reusing it as an accumulator is precisely the bug this
+file's own header spends a paragraph on: `veldora_refused_<key>` was a tick deadline read
+as a boolean, and it silently broke Wall's unlock with no error anywhere. **New key,
+honest name.**
+
+**42 chosen assertions, 3 negative controls all red. 717 passed / 0 failed across 19
+harnesses. Live 59/59, 0 errors.**
