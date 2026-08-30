@@ -120,3 +120,95 @@ that is its own piece of work that has to be scoped before any of this starts.
 and a warning that arrives behind an ambience line is a warning that never came. Whispers
 plus a crashout plus a tide announcement is that problem again with three claimants
 instead of two.
+
+---
+
+# ADDENDUM 2026-08-30 (later session) — speaking styles, and the introduction
+
+## ⭐ 4. EVERY GOD GETS A PLACE ON THE SCREEN
+
+> Ethan: *"each god have their own speaking style ... All dialogue should be typed and
+> cut into sentences that generate after each other."*
+
+🔑 **This is the thing that makes the TONE table obsolete as the primary key.** Right now
+presentation is chosen by TAG — what the line is *about*. This says presentation is chosen
+by WHO IS SPEAKING first, and the tag only modulates it. That is a better model and it
+matches how a reader actually experiences it: you learn where on the screen your god lives.
+
+| god | placement | manner |
+|---|---|---|
+| **Blade** | upper middle | he talks down to you — literally, from above |
+| **Salvage** | ⚠️ **UNDECIDED.** *"part of me wants to keep her in the chat bar or maybe top right like a quest log?"* | see below |
+| **Wall** | randomised across the screen | *"like she's whispering into your skull"* |
+| **Forge** | shaking, randomised | rambling — and her writing needs an overhaul to match |
+| **Art** | dead centre | *"She demands to be heard."* |
+
+⭐ **Blade above and Art centre is a real characterisation, not decoration.** He looks down
+at you; she blocks your view. The position IS the characterisation.
+
+### ⚠️ Salvage is the interesting problem
+
+She is the only one framed as a *transaction* rather than a pronouncement, and a deal has
+to be re-readable while you weigh it — which is exactly what an overlay is bad at and the
+chat bar is good at. A top-right quest-log position would keep her persistent and
+consultable without stealing the centre.
+
+🔑 **Not a coin flip: it follows from her role.** The others announce; she negotiates. Left
+open deliberately rather than guessed.
+
+### 🔴 Sentence-by-sentence delivery
+
+> *"cut into sentences that generate after each other"*
+
+Each line splits on sentence boundaries and the parts arrive in sequence rather than as one
+block. This is a genuine engine change to `overlay()` — a queue with a per-sentence delay,
+not a formatting tweak.
+
+⚠️ **It also collides with the tide.** A god delivering four sentences in sequence occupies
+the screen for several seconds while whispers and announcements may be trying to speak. The
+priority model owed to §1 has to cover this too.
+
+### ⚠️ Forge needs a WRITING pass, not a code pass
+
+> *"She will need an overhaul to make her sentences shorter, with more periods, and more
+> akin to rambling."*
+
+Her existing pools are written as measured lines. Rambling is short bursts with hard stops
+— and sentence-by-sentence delivery is what makes that legible on screen, so the writing
+and the delivery have to land together or neither reads.
+
+---
+
+## ⭐ 5. THE INTRODUCTION, OVERHAULED
+
+> *"now that we have the mca system plus this new text system, we can could overhaul the
+> introduction system. players spawn in the village with a random set of tools plus a
+> cutscene about a randomized backstory."*
+
+Three parts, and only the third is new capability:
+
+1. **Spawn in the village** — needs the world reset (C2/C3), which already stages
+   *The Arrival*.
+2. **A random set of tools** — a loot-table roll at first join; nothing exotic.
+3. **A cutscene about a randomised backstory** — ⭐ this is what the text system unlocked.
+   A sequence of centre-screen lines, timed, that tells you who you were before Veldora.
+
+🔑 **The backstory should be READ BY THE REST OF THE GAME, not just shown once.** A
+randomised origin that nothing ever references again is a loading screen. If it is stored,
+the gods can know it — and Salvage in particular should be able to use what you were
+against you.
+
+⚠️ **Depends on MCA** for the village population, so it is gated on the reset like
+everything else in C.
+
+---
+
+## Where this leaves the build order
+
+1. ⛔ **The overlay must render reliably.** Still the blocker for everything above.
+2. ⛔ **The typewriter question.** *"All dialogue should be typed"* — now stated for every
+   god, so it is no longer optional to answer.
+3. **Then** the per-god placement table, which is mostly a re-key of existing machinery.
+4. **Then** sentence-by-sentence, which is a real engine change plus a priority model.
+5. **Then** Forge's writing pass — Ethan's, not mine.
+6. **The introduction** rides with the world reset regardless.

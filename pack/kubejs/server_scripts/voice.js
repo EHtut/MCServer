@@ -223,7 +223,24 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ⛔ ONE SWITCH. Flip to true the moment `/gd type` shows the speed is usable.
   var TYPEWRITER = false
 
-  var HOTBAR_LIFT = 60
+  // 🔴 NEGATIVE, AND THE SIGN IS THE WHOLE BUG. y grows DOWNWARD in GUI space, so from a
+  // BOTTOM anchor a POSITIVE y pushes the line off the bottom edge of the screen. It
+  // renders perfectly and nobody can see it.
+  //
+  // ⚠️ I DIAGNOSED THIS CORRECTLY AND THEN TALKED MYSELF OUT OF IT. The `/gd place` sweep
+  // rendered `y = -60` in a screenshot; Ethan then recalled that negative and positive
+  // landed in the same place, and I took the recollection over the photograph and flipped
+  // it to +60. Every god line has been off-screen since. The commit history reads:
+  //
+  //     3d5b728  -40  -> "i saw something type out ... at my hotbar level"
+  //     e8eb228  +60  -> nothing, for the rest of the night
+  //
+  // 🔑 A SCREENSHOT OUTRANKS A RECOLLECTION. He was reporting seven stacked lines from
+  // memory; only one of them was in the picture, and that one was negative.
+  //
+  // -60 is what the sweep showed sitting clear above the armour bar; -80 was his other
+  // named value and is the number to raise it to if a shaking or oversized line clips.
+  var HOTBAR_LIFT = -60
 
   // ⭐ A DIALOGUE TYPE PER WHAT THE DIALOGUE IS. Ethan, 2026-08-30: *"we can assign a
   // type of dialogue per what the dialogue is. Tone, emotion, context, impact, etc."*
