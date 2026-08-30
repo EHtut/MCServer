@@ -938,3 +938,60 @@ accident, which is usually a sign the character is real.
 🔴 **Open for the pass, not now:** the tide's roster is currently mixed
 (`born_in_chaos_*`, strays, bogged, drowned). If the tide is hers and hers is skeletons,
 **that roster is wrong** and narrowing it is a balance change, not a rename.
+
+---
+
+# 📋 STAGED — 17 mods, 2026-08-29. Resolved and checked, NOT installed.
+
+## 🔑 The bucket line decides the order, not the list
+
+| | |
+|---|---|
+| 🔒 **BEFORE THE RESET** | `sparsestructures` (structure spacing) · `village-spawn-point` (world spawn) |
+| ⏳ **ANY TIME** | everything else |
+
+⭐ **Only two of the seventeen are worldgen.** The rest can land whenever, which means
+this batch does **not** move the reset deadline.
+
+## What resolved
+
+| verdict | count | |
+|---|---|---|
+| ✅ new, 1.21.1 + NeoForge | **14** | |
+| ⭐ **already installed** | **2** | `dripsounds` (his hunch was right) · `critters-and-companions` |
+| 🔴 **unavailable** | **1** | `personality` — **Fabric only, newest 1.19.2.** Not a version problem, a platform one |
+
+## ⚠️ Four things that would have bitten
+
+**1. `spawn-animations` has two variants and the resolver picked the wrong one.** The
+`+mod` build requires **7** deps including `fabric-api` and `qsl` — Fabric libraries. He
+linked the **datapack**, which has **two optional deps and nothing else**. ⭐ Use the
+datapack.
+
+**2. Three report `client_side: unsupported`** — `sparsestructures`,
+`village-spawn-point`, `companion`. 🚨 **Mark them `both` anyway.** Treasure Balloons
+reported the same thing, was marked `server`, and **registered a client-bound channel
+that broke every connection**. The metadata is not the jar.
+
+**3. Five new transitive dependencies**, none of them currently in the pack:
+`collective` · `kiwi` (×2 users) · `modernnetworking` · `pandalib` · `txnilib`.
+⚠️ Plus `kotlin-lang-forge` for `talk-balloons`, which is chunky. **Resolution is a
+fixpoint, not a lookup** — the first B1 boot died on five missing deps at once.
+
+**4. Two are `beta` builds** — `pandas-falling-trees` and `tough-as-nails`.
+
+## ⭐ Two that are more than a mod install
+
+**`immersive-messages-api`.** Ethan: *"we could use this and documentation to transfer all
+god dialogue making it more immersive instead of just creating workarounds."* 🔑 He is
+describing a replacement for the boss-bar and action-bar workarounds built this session.
+**That is a design chunk with its own gameplan, not a jar drop** — the announcement bar,
+the trespass layer and the garble all currently ride vanilla primitives chosen *because*
+nothing better existed.
+
+**`tough-as-nails`.** Thirst and temperature on a 400-mod pack. ⚠️ Real gameplay change,
+`beta`, and it needs a balance pass of its own. ⭐ But note the accident: **Salvage's
+deals already take hunger**, and her whole character is selling you something you need.
+Thirst gives her a second currency without anyone writing a line.
+
+**Nothing installed. Nothing restarted.**
