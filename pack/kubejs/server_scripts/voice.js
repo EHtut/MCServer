@@ -200,18 +200,77 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ⚠️ BOTTOM_CENTER, not TOP. announce.js owns the top of the screen for things that
   // are ABOUT to happen, and a god talking is not that. Two systems on one anchor would
   // fight over the same pixels the first time a tide landed mid-conversation.
-  function overlay(player, god, s) {
+  // ⭐ ABOVE THE HOTBAR. Ethan, 2026-08-30: *"lets move the location of the text to
+  // above the hotbar."* BOTTOM_CENTER sits ON the hotbar, so it is lifted clear.
+  // ⚠️ ONE NUMBER, ON PURPOSE — this is the value to change if it sits wrong on screen,
+  // and there is exactly one of it.
+  var HOTBAR_LIFT = 40
+
+  // ⭐ A DIALOGUE TYPE PER WHAT THE DIALOGUE IS. Ethan, 2026-08-30: *"we can assign a
+  // type of dialogue per what the dialogue is. Tone, emotion, context, impact, etc."*
+  //
+  // 🔑 MATCHED ON THE TAG, which the voice system already carries everywhere — so a new
+  // line gets its presentation for free by being named honestly, and nothing has to be
+  // registered twice. First match wins, so the list runs specific -> general.
+  //
+  // ⚠️ Deliberately FOUR. A bespoke presentation per god per tag is how this becomes
+  // unmaintainable; these are tones, not costumes.
+  var TONE = [
+    // A threat, a death, a demand. It should land like one.
+    [/threat|kill|death|died|demand|punish|betray|fail|warn|incoming|blood|mark_/,
+      { shake: true, size: 1.15, seconds: 6 }],
+    // A bargain being put to you. Longer, because you are meant to weigh it.
+    [/offer|deal|contract|wager|trade|bargain|gift|reward|paid/,
+      { background: true, seconds: 8 }],
+    // Something said quietly - guidance, an aside, an observation.
+    [/guidance|idle|ambient|muse|observe|greet|about_/,
+      { italic: true, seconds: 5 }],
+    // Everything else.
+    [/./, { seconds: 5 }],
+  ]
+
+  function toneFor(tag) {
+    var t = String(tag || '')
+    for (var i = 0; i < TONE.length; i++) if (TONE[i][0].test(t)) return TONE[i][1]
+    return { seconds: 5 }
+  }
+
+  // 🔑 ALIGNMENT IS PER PLAYER, NOT PER GOD. `GARBLED` is a registry of speakers who
+  // arrive broken for everyone (the Stranger); this is a different question — *is this
+  // god YOURS?* — and only broadcast.js asks it, for the reason given at its call site.
+  //
+  // ⚠️ FAILS OPEN. If the path system cannot answer, the text is READABLE. Unreadable
+  // dialogue caused by a missing lookup is indistinguishable from unreadable dialogue
+  // that was meant, and only one of those is a feature.
+  function alignedTo(player, god) {
+    try {
+      if (!VELDORA.paths || typeof VELDORA.paths.pathOf !== 'function') return true
+      var p = VELDORA.paths.pathOf(player)
+      if (p === null || p === undefined) return false
+      return String(p) === String(god)
+    } catch (e) { return true }
+  }
+
+  function overlay(player, god, s, tag, opts) {
     try {
       if (!VELDORA.im || typeof VELDORA.im.show !== 'function') return false
-      // ⭐ The mod obfuscates properly, so a garbled speaker does not need §k woven in
-      // by hand for THIS surface. garble.js still owns the chat copy.
-      return VELDORA.im.show(player, VELDORA.garble ? VELDORA.garble.strip(s) : s, {
-        seconds: 5,
+      var o = toneFor(tag)
+      var show = {
         anchor: 'BOTTOM_CENTER',
-        typewriter: 1.0,
-        obfuscate: GARBLED[god] ? 'RANDOM' : null,
+        y: HOTBAR_LIFT,
+        typewriter: true,          // ⭐ god text ALWAYS types. Ethan, 2026-08-30.
         fade: true,
-      })
+        seconds: o.seconds,
+        shake: !!o.shake,
+        italic: !!o.italic,
+        background: !!o.background,
+        size: o.size,
+        // ⭐ The mod obfuscates properly, so a garbled speaker does not need §k woven in
+        // by hand for THIS surface. garble.js still owns the chat copy.
+        obfuscate: GARBLED[god] ? 'RANDOM' : null,
+      }
+      if (opts) for (var k in opts) if (opts.hasOwnProperty(k)) show[k] = opts[k]
+      return VELDORA.im.show(player, VELDORA.garble ? VELDORA.garble.strip(s) : s, show)
     } catch (e) { return false }
   }
 
@@ -220,7 +279,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var s = line(god, tag, player)
     if (!s) return false
     try { player.tell(Text.of(paint(player, god, s))) } catch (e) { return false }
-    overlay(player, god, s)          // ⚠️ additive - a failure here costs nothing
+    overlay(player, god, s, tag)     // ⚠️ additive - a failure here costs nothing
     chime(player, god, tag)
     return true
   }
@@ -234,6 +293,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (subs.hasOwnProperty(k)) s = s.split('{' + k + '}').join(String(subs[k]))
     }
     try { player.tell(Text.of(paint(player, god, s))) } catch (e) { return false }
+    // 🔴 THIS LINE DID NOT EXIST, and that was the biggest hole in the transfer.
+    // `say()` has had an overlay since 08-29; `sayAbout()` never did — so the Mark,
+    // the contract offer and the incoming warning were chat-only while every other
+    // god line was on screen. Three of the most consequential lines in the game,
+    // silently on the older surface, and nothing distinguished them from a god who
+    // simply had nothing to say.
+    overlay(player, god, s, tag)     // ⚠️ additive - a failure here costs nothing
     chime(player, god, tag)
     return true
   }
@@ -241,6 +307,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   VELDORA.voice = {
     setGarbled: setGarbled,
     garbled: function (god) { return !!GARBLED[god] },
+    // ⭐ Published for broadcast.js so the bickering exchange gets the same surface,
+    // the same tones and the same hotbar lift as every other god line - rather than a
+    // second copy of this that drifts. The overlay is the god dialogue system now.
+    overlay: overlay,
+    alignedTo: alignedTo,
+    toneFor: toneFor,
+    hotbarLift: function () { return HOTBAR_LIFT },
     register: register,
     setColour: setColour,
     colourOf: colourOf,

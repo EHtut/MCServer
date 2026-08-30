@@ -301,14 +301,24 @@ grp('⭐ THE GODS ON SCREEN — and chat keeps the record')
   const sayBody = sayStart !== -1 ? vo.slice(sayStart, sayEnd) : ''
   ok('🚨 say() itself still tells the player',
     sayBody.indexOf('player.tell(') !== -1, true)
-  ok('⭐ ...and the overlay is sent as well', vo.indexOf('overlay(player, god, s)') !== -1, true)
+  // ⭐ THE TRANSFER, 2026-08-30. The tag now rides along so the overlay can pick a
+  // tone for the line - `overlay(player, god, s, tag)`.
+  ok('⭐ ...and the overlay is sent as well',
+    sayBody.indexOf('overlay(player, god, s, tag)') !== -1, true)
+
+  // 🔴 sayAbout() HAD NO OVERLAY AT ALL until 08-30, so the Mark, the contract offer
+  // and the incoming warning were chat-only while every other god line was on screen.
+  // Counting BOTH is the assertion; matching once anywhere in the file is how the
+  // original version of this test stayed green with the call site deleted.
+  ok('🔴 BOTH say() and sayAbout() send the overlay',
+    (vo.match(/overlay\(player, god, s, tag\)/g) || []).length, 2)
 
   // ⚠️ A failed overlay must cost nothing - say() returns true either way.
-  const i = vo.indexOf('overlay(player, god, s)')
+  const i = vo.indexOf('overlay(player, god, s, tag)')
   const j = vo.indexOf('return true', i)
   ok('⚠️ a failed overlay does not fail the line', i !== -1 && j !== -1 && j > i, true)
   ok('...and overlay() returns false rather than throwing',
-    vo.indexOf('function overlay(player, god, s)') !== -1 &&
+    vo.indexOf('function overlay(player, god, s, tag, opts)') !== -1 &&
     vo.indexOf('} catch (e) { return false }') !== -1, true)
 
   // 🚨 TWO SYSTEMS, TWO ANCHORS. announce.js owns TOP_CENTER for things about to
@@ -364,6 +374,44 @@ grp('⭐ THE RITUAL — the text moves, nothing else does')
   ok('🚨 the aftermath sting does not shake', abBody.indexOf('shake') === -1, true)
   ok('⚠️ ...and still falls back to /title actionbar',
     abBody.indexOf("' actionbar '") !== -1, true)
+}
+
+
+// -------------------------------------------------------------------------
+grp('* THE GOD DIALOGUE PASS - 2026-08-30')
+{
+  const vo2 = code('voice.js')
+  const bc = code('broadcast.js')
+
+  // Ethan: "it should type."  Not per-tone, not sometimes - always.
+  const ovStart = vo2.indexOf('function overlay(player, god, s, tag, opts)')
+  const ovEnd = vo2.indexOf('function say(', ovStart)
+  const ov = ovStart !== -1 ? vo2.slice(ovStart, ovEnd) : ''
+  ok('god text ALWAYS types', /typewriter: true/.test(ov), true)
+
+  // Ethan: "lets move the location of the text to above the hotbar."
+  ok('it is lifted clear of the hotbar', /y: HOTBAR_LIFT/.test(ov), true)
+  ok('...by exactly one tunable number',
+    (vo2.match(/HOTBAR_LIFT = \d+/g) || []).length, 1)
+  ok('...still anchored at the bottom', /anchor: 'BOTTOM_CENTER'/.test(ov), true)
+
+  // Ethan: "we can assign a type of dialogue per what the dialogue is."
+  ok('a tone is chosen from the TAG', /toneFor\(tag\)/.test(ov), true)
+  ok('...and the tone table has a catch-all so nothing renders untoned',
+    /\[\/\.\/,/.test(vo2), true)
+
+  // Ethan: "during god bickering, the gods you aren't aligned to should be garbled."
+  // A substring match proved only that the text EXISTS: prefixing the call with
+  // `void 0 &&` disabled it entirely and this assertion stayed green. Requiring the
+  // call to START a line makes it an executed statement, not a mention.
+  ok('bickering reaches the overlay at all',
+    /\n\s*VELDORA\.voice\.overlay\(ps\[k\]/.test(bc), true)
+  ok('...and garbles the gods you are NOT aligned to',
+    /mine \? null : \{ obfuscate: 'RANDOM' \}/.test(bc), true)
+  ok('...decided PER LISTENER, inside the player loop',
+    bc.indexOf('alignedTo(ps[k], row.god)') !== -1, true)
+  ok('...and the tag rides along so bickering gets a tone too',
+    bc.indexOf('tag: lines[i].tag') !== -1, true)
 }
 
 console.log('\n' + B + (fail ? R + fail + ' FAILED, ' : G) + pass + ' passed' + X)

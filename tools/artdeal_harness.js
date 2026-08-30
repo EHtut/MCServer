@@ -288,8 +288,21 @@ grp('\u2b50 PATHLESS DIALOGUE ARRIVES BROKEN \u2014 75 percent readable')
 
   // \U0001f6a8 SCOPE. A pathless player reads the path OFFER by definition; garbling that
   // would make the most load-bearing prompt in the game 75 percent legible.
-  ok('\U0001f6a8 it is a REGISTRY, not "garble everything a pathless player reads"',
-    vo.indexOf('GARBLED[god]') !== -1 && vo.indexOf('pathOf') === -1, true)
+  // \U0001f534 THIS GUARD FIRED CORRECTLY ON 2026-08-30 and is TIGHTENED, not removed.
+  // It banned `pathOf` outright to stop garbling ever becoming path-based. Ethan then
+  // asked for exactly one path-based case - "during god bickering, the gods you aren't
+  // aligned to should be garbled" - so the ban moves to where it matters: the DEFAULT
+  // obfuscation still keys off the REGISTRY, and pathOf may appear only inside
+  // alignedTo(), which nothing but broadcast.js calls.
+  ok('\U0001f6a8 the default obfuscation is still the REGISTRY, not the path',
+    vo.indexOf("obfuscate: GARBLED[god] ? 'RANDOM' : null") !== -1, true)
+  const alignStart = vo.indexOf('function alignedTo(')
+  const alignEnd = vo.indexOf('function overlay(', alignStart)
+  const alignBody = alignStart !== -1 ? vo.slice(alignStart, alignEnd) : ''
+  ok('\U0001f6a8 pathOf appears ONLY inside alignedTo()',
+    alignStart !== -1 && (vo.match(/pathOf/g) || []).length === (alignBody.match(/pathOf/g) || []).length, true)
+  ok('⚠️ ...and alignedTo fails OPEN, so a missing lookup never garbles',
+    /catch \(e\) \{ return true \}/.test(alignBody), true)
 
   const sd = code('salvage_deals.js')
   const ad = code('art_deal.js')

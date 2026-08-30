@@ -117,7 +117,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           ' has no line. Nothing was sent; half a conversation is worse than none.')
         return 'incomplete'
       }
-      out.push({ god: lines[i].god, text: s })
+      // The tag rides along so the overlay can pick a tone for it, exactly as say()
+      // does. Dropping it here would make every bickering line render as "everything
+      // else" while the same line said directly got its proper presentation.
+      out.push({ god: lines[i].god, text: s, tag: lines[i].tag })
     }
 
     busy = true
@@ -134,6 +137,29 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
               var ps = audience(server)
               for (var k = 0; k < ps.length; k++) {
                 try { ps[k].tell(Text.of(colourOf(row.god) + row.text)) } catch (e) { }
+                // ⭐ THE GODS ON SCREEN WHILE THEY BICKER. Ethan, 2026-08-30:
+                // *"during god bickering, the gods you aren't aligned to should be
+                // garbled."*
+                //
+                // 🔑 PER LISTENER, NOT PER LINE. The same exchange is readable to the
+                // player whose god is speaking and garbled to everyone else - so an
+                // argument between two gods is half-legible to each of their followers,
+                // which is the point of it being an argument you are only half inside.
+                //
+                // ⚠️ SCOPED TO BICKERING ON PURPOSE. voice.js's own header explains why
+                // this must not become the global rule: the path OFFER is read by a
+                // pathless player by definition, and garbling the one prompt that asks
+                // "will you walk my path?" would make the game's most load-bearing UI
+                // 75% legible. An exchange between gods is not that.
+                try {
+                  if (VELDORA.voice && typeof VELDORA.voice.overlay === 'function') {
+                    var mine = (typeof VELDORA.voice.alignedTo === 'function')
+                      ? VELDORA.voice.alignedTo(ps[k], row.god)
+                      : true
+                    VELDORA.voice.overlay(ps[k], row.god, row.text, row.tag,
+                      mine ? null : { obfuscate: 'RANDOM' })
+                  }
+                } catch (e) { }
               }
               sent++
             } catch (e) { console.warn(TAG + 'line threw :: ' + e) }
