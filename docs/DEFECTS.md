@@ -803,3 +803,92 @@ the harness now asserts on a name substring and that would otherwise look like a
 regression to a rule this project spent real time learning.
 
 Wall is now `spider`, `cave_spider`, `baby_spider` and `mother_spider`.
+
+---
+
+## 🔴 D-123 — three stacked bugs in the overlay, and the last one survived because I overrode evidence ✅ FIXED 2026-08-30
+
+**Cost**: a full session of Ethan's evening, five restarts, and three rounds of test
+messages fired at a screen he was tabbed away from.
+
+The god-dialogue overlay rendered nothing. It was not one defect but **three**, each
+masking the next, and each one produced a *plausible* wrong explanation:
+
+### 1. `4.0f` — two parsers, one helper
+
+The duration is a Brigadier `FloatArgumentType` and rejects the `f` suffix. Inside the NBT
+the suffix is **required** — SNBT needs it to make a float tag. One helper served both.
+
+```
+immersivemessages sendcustom Rehykt {...} 4.0f The tide is rising.
+                                         ^ Expected whitespace to end one argument
+```
+
+🚨 **The harness asserted `/\} 4\.0f /`** — it encoded the defect as the expectation and
+went green on it. A test written from the implementation tests the implementation.
+
+### 2. `fadein` + `fadeout` are mutually exclusive
+
+The command handler is an `if / else-if / else`, not two independent ifs:
+
+```
+if contains("fadein")       -> fadeIn(x);  GOTO END   <- skips fadeout entirely
+else if contains("fadeout") -> fadeOut(x); GOTO END
+else                        -> fadeIn(); fadeOut()    <- both, properly paired
+```
+
+Sending both silently dropped the second, leaving a fade-in and **no fade-out configured**.
+Lines typed themselves out and vanished after about a second. Every line that WORKED sent
+neither key and landed in the `else`, getting the mod's paired defaults.
+
+🔑 **A bug in the mod, not in the values.** The fix is to send neither and let it default.
+
+### 3. 🔴 The `y` sign — and this is the one worth remembering
+
+`y` grows **downward** in GUI space, so a positive `y` from a BOTTOM anchor pushes the line
+off the bottom edge. It renders perfectly and nobody can see it.
+
+**I diagnosed this correctly and then talked myself out of it.**
+
+```
+3d5b728  HOTBAR_LIFT = -40  ->  "i saw something type out ... at my hotbar level"
+e8eb228  HOTBAR_LIFT = +60  ->  nothing, for the rest of the night
+```
+
+A `/gd place` sweep rendered `y = -60` **in a screenshot**. Ethan then recalled that
+negative and positive had landed in the same place, and I took the recollection over the
+photograph. He was describing seven stacked lines from memory; only one was in the picture,
+and that one was negative.
+
+⭐ **A SCREENSHOT OUTRANKS A RECOLLECTION.** Not because the person is unreliable — because
+they were answering a different question than the one I needed answered, and I did not
+notice the difference.
+
+### What actually broke the deadlock
+
+**Logging the command verbatim.** Three rounds were spent reasoning about which tag key was
+at fault while the one fact that would have settled it — the exact string that reached the
+server — was never written down anywhere.
+
+```
+[immersive] SENT #10: immersivemessages sendcustom Rehykt {anchor:3,y:60.0f,italic:1b} 45.0 ...
+```
+
+One line of log, and the answer was visible immediately: that is the sweep line that
+rendered, plus one flag, with the sign flipped. `immersive.js` now logs its first 40 sends.
+
+🔑 **Instrument before the third round of reasoning, not after the fifth.**
+
+### The other lesson: test on a screen someone is looking at
+
+Three rounds of rcon test messages were fired while Ethan was tabbed out orchestrating, and
+"none" came back twice from a screen nobody was watching. ⚠️ **A test the user has to be
+present for must be a command THEY run**, not something fired on my schedule. `/gd` exists
+for that reason and should have been the first move, not the fourth.
+
+### Still open
+
+* ⚠️ **The typewriter.** `tickTypewriter` reveals one character per `1.0 / typewriterSpeed`
+  and `sendcustom` hardcodes `typewriter(1.0f, false)` — the speed is unreachable from this
+  route. `TYPEWRITER` is `false` behind one named switch until `/gd type` measures whether
+  a character costs a tick or a second. It gates every "typed" line in `docs/75`.

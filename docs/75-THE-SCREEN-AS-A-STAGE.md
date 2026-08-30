@@ -7,9 +7,10 @@
 > Ethan: *"this system is fascinating and it has completely expanded how much lore we can
 > build into this world now."*
 
-⚠️ **Blocked on the god-dialogue overlay actually rendering.** Everything below rides on
-`VELDORA.im.show`, which is mid-diagnosis (D-111 and the open one after it). Nothing here
-gets built until a god line reliably appears on screen.
+✅ **THE OVERLAY WORKS** (2026-08-30, Ethan: *"Everything is working amazing"*). Three
+stacked bugs, all fixed — see **D-123**. Everything below is now buildable **except** what
+is specified as *typed*, which still waits on the typewriter question at the bottom of this
+doc.
 
 ---
 
