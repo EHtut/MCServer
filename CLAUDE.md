@@ -5,6 +5,42 @@
 
 ---
 
+## ⛔ 0. STAGE AND DEPLOY ONLY YOUR OWN FILES. Several chats work here at once.
+
+> Ethan, 2026-08-30: *"You and the tide chat are both working in tandem, you just commit
+> everything."*
+
+**This happened three times in one evening**, in both directions. The immersive channel's
+in-progress `immersive.js` was swept into a tide commit before its tests existed; a
+one-file immersive deploy pushed the tide channel's uncommitted, mid-edit `tide.js`,
+`waves.js` and `spawn_pressure.js` onto the **live server**; and a config-centralisation
+commit landed inside a commit whose message is about fodder ratios. Nothing was lost, but
+no commit message now describes what its commit contains.
+
+⛔ **NEVER `git add -A`, `git add .`, or `git commit -a`.** Another channel's half-written
+file is almost always in the tree. Name your files:
+
+```bash
+git add tools/my_thing.py docs/MY_DOC.md && git commit -m "..."
+```
+
+⛔ **NEVER a bare `sync_scripts.py --deploy`** — it pushes *every* differing script,
+including someone else's unfinished work, which then loads on the next restart:
+
+```bash
+python tools/sync_scripts.py --only immersive --deploy
+```
+
+🔑 **Before you commit or deploy, run `git status --short` and look at whose files are
+dirty.** If a file you did not touch is modified, it belongs to another channel — leave
+it, and say so in your report rather than silently including it.
+
+⚠️ **And check the harness of anything you did not write before restarting.** A failing
+harness on a file you don't own means that channel is mid-edit; loading it on the live
+server is not yours to do.
+
+---
+
 ## ⛔ 1. DO NOT RESTART THE SERVER. Ask first, every time.
 
 > Ethan, 2026-08-29: *"You restart the server way too much over the smallest fixes...
