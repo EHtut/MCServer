@@ -436,6 +436,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // ⭐ The mod obfuscates properly, so a garbled speaker does not need §k woven in
         // by hand for THIS surface. garble.js still owns the chat copy.
         obfuscate: GARBLED[god] ? 'RANDOM' : null,
+        // A god addressing you. Outranks the dead and your own head; yields to a
+        // warning about what is coming.
+        priority: 'GOD',
       }
       if (opts) for (var k in opts) if (opts.hasOwnProperty(k)) show[k] = opts[k]
       return VELDORA.im.show(player, VELDORA.garble ? VELDORA.garble.strip(s) : s, show)
@@ -485,6 +488,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // ⚠️ AFTER the copy: a caller's `seconds` was written for a WHOLE line and
         // would put every sentence back to full length, which is the bug above.
         o.seconds = secs
+        // ⭐ Only the FIRST sentence asks for the screen. The rest are the same
+        // utterance continuing, so they are never refused - a god cut off three
+        // quarters of the way through a line reads as a bug, not as a pause.
+        o.continuation = (i > 0)
         var okd = overlay(player, god, parts[i], tag, o)
         if (i === 0) first = okd
       }
@@ -545,6 +552,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         italic: true,
         seconds: 5,
         color: '#AAAAAA',
+        // Your own head, not a speaker. It may follow closely behind one thing, but it
+        // never talks over a god and never delays a warning.
+        priority: 'ASIDE',
       }
       if (opts) for (var k in opts) if (opts.hasOwnProperty(k)) show[k] = opts[k]
       return VELDORA.im.show(player, VELDORA.garble ? VELDORA.garble.strip(s) : s, show)

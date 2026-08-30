@@ -36,7 +36,10 @@ function ok(label, got, want) {
 function sandbox() {
   const cmds = []
   const delays = []
+  let tick = 0
   const server = {
+    get tickCount() { return tick },
+    advance(sec) { tick += Math.round(sec * 20) },
     runCommandSilent: c => { cmds.push(String(c)); return undefined },
     // Sentences are scheduled; run them immediately so a whole line is captured, but
     // KEEP the delay - the pacing is part of a god's character, not an implementation
@@ -47,18 +50,34 @@ function sandbox() {
     Platform: { isLoaded: () => true },
     Utils: { server },
     ServerEvents: { loaded() { }, commandRegistry() { } },
+    PlayerEvents: { loggedOut() { }, loggedIn() { }, tick() { } },
     Text: { of: s => s },
     console: { info() { }, log() { }, warn() { } },
   }
   const keys = Object.keys(stub)
   let V = {}
-  for (const f of ['garble.js', 'immersive.js', 'voice.js']) {
+  // ⚠️ screen.js must load too - it is the referee every send now passes through, and a
+  // sandbox without it tests a path that no longer exists in production.
+  for (const f of ['garble.js', 'immersive.js', 'screen.js', 'voice.js']) {
     const src = fs.readFileSync(path.join(SS, f), 'utf8')
     V = new Function(...keys, 'VELDORA_IN',
       'var VELDORA=VELDORA_IN;' + src.replace(/^var VELDORA = .*$/m, '') + '\n;return VELDORA;'
     )(...keys.map(k => stub[k]), V)
   }
-  return { V, cmds, delays, server, player: { username: 'R', server } }
+  const player = { username: 'R', server, uuid: 'u-' + Math.random() }
+  // ⚠️ THE REFEREE IS LIVE IN THIS SANDBOX, because it is live in production - a
+  // sandbox without it would test a path that no longer exists. But a test measuring
+  // the SHAPE of a command is not testing the queue, and firing 400 sends at one
+  // player with no time passing correctly gets most of them refused.
+  //
+  // 🔑 `say()` clears the modelled backlog first, so shape tests measure shape. The
+  // referee has its own group where the backlog is the thing under test.
+  const say = (god, text, tag, opts) => {
+    try { V.screen.clear(player) } catch (e) { }
+    cmds.length = 0
+    return V.voice.speak(player, god, text, tag, opts)
+  }
+  return { V, cmds, delays, server, player, say }
 }
 
 // Read the style a god's own file declares, by running THAT file's loaded hook.
@@ -120,8 +139,7 @@ grp('* THE STYLE REACHES THE COMMAND — declaration is not emission')
   const s = sandbox()
   s.V.voice.setColour('blade', '§4§l')
   s.V.voice.setStyle('blade', { anchor: 'TOP_CENTER', y: 40, color: '#FFFFFF', font: 'veldora:blade' })
-  s.cmds.length = 0
-  s.V.voice.speak(s.player, 'blade', 'You are marked.', 'mark_declare')
+  s.say('blade', 'You are marked.', 'mark_declare')
   const t = tagOf(s.cmds[0])
   ok('anchor is emitted as the ORDINAL', /anchor:6/.test(t), true)
   ok('...y is emitted, positive for a TOP anchor', /y:40\.0f/.test(t), true)
@@ -139,13 +157,11 @@ grp('* A STYLE CAN SUPPRESS ITS TONE, NOT ONLY ADD TO IT')
   s.V.voice.setStyle('art', { anchor: 'CENTER_CENTER', wave: true, shake: false })
   s.V.voice.setStyle('blade', { anchor: 'TOP_CENTER', y: 40 })
 
-  s.cmds.length = 0
-  s.V.voice.speak(s.player, 'art', 'Give it to me.', 'demand')
+  s.say('art', 'Give it to me.', 'demand')
   ok('ART does not shake on a demand', /shake/.test(tagOf(s.cmds[0])), false)
   ok('...and waves instead', /wave:1b/.test(tagOf(s.cmds[0])), true)
 
-  s.cmds.length = 0
-  s.V.voice.speak(s.player, 'blade', 'You are marked.', 'mark_declare')
+  s.say('blade', 'You are marked.', 'mark_declare')
   ok('BLADE still shakes on the same tone', /shake:1b/.test(tagOf(s.cmds[0])), true)
 }
 
@@ -164,8 +180,7 @@ grp('* WALL IS SCATTERED — measured, not assumed')
   ok('...and a non-zero height', box.y > 0, true)
   const xs = [], ys = []
   for (let i = 0; i < 400; i++) {
-    s.cmds.length = 0
-    s.V.voice.speak(s.player, 'wall', 'x', 'threat')
+    s.say('wall', 'x', 'threat')
     const t = tagOf(s.cmds[0])
     const mx = t.match(/x:(-?[\d.]+)f/), my = t.match(/y:(-?[\d.]+)f/)
     if (mx) xs.push(parseFloat(mx[1]))
@@ -198,8 +213,7 @@ grp('* AN UNSTYLED GOD IS PLAIN, NOT BROKEN')
 {
   const s = sandbox()
   s.V.voice.setColour('nobody', '§6§l')
-  s.cmds.length = 0
-  s.V.voice.speak(s.player, 'nobody', 'A line.', 'plain')
+  s.say('nobody', 'A line.', 'plain')
   const t = tagOf(s.cmds[0])
   ok('it still speaks', s.cmds.length > 0, true)
   ok('...at the default bottom anchor', /anchor:3/.test(t), true)
@@ -268,8 +282,7 @@ grp('* FORGE RAMBLES - and it must not look like Wall')
   //
   // 🔑 The duration IS the pacing now, so that is what gets measured.
   const held = (god) => {
-    s2.cmds.length = 0
-    s2.V.voice.speak(s2.player, god, line, 'idle')
+    s2.say(god, line, 'idle')
     return {
       sends: s2.cmds.length,
       // each message costs its duration plus the mod's 0.5s timeBetweenMessages
@@ -293,7 +306,7 @@ grp('* FORGE RAMBLES - and it must not look like Wall')
   const s3 = sandbox()
   s3.V.voice.setStyle('x', { anchor: 'CENTER_CENTER', beatScale: 0.001 })
   s3.delays.length = 0
-  s3.V.voice.speak(s3.player, 'x', 'One. Two. Three.', 'plain')
+  s3.say('x', 'One. Two. Three.', 'plain')
   ok('🚨 an absurd beatScale still cannot go below the floor',
     Math.min(...s3.delays.map((d, i) => i ? d - s3.delays[i - 1] : d)) >= 10, true)
 
@@ -302,11 +315,85 @@ grp('* FORGE RAMBLES - and it must not look like Wall')
   s4.V.voice.setStyle('forge', fs_)
   const seen = new Set()
   for (let i = 0; i < 200; i++) {
-    s4.cmds.length = 0
-    s4.V.voice.speak(s4.player, 'forge', 'x', 'idle')
-    seen.add(tagOf(s4.cmds[0]).match(/x:(-?[\d.]+)f/)[1])
+    s4.say('forge', 'x', 'idle')
+    // ⚠️ A refused send leaves cmds empty; guard rather than crash on it.
+    const m4 = s4.cmds[0] && tagOf(s4.cmds[0]).match(/x:(-?[\d.]+)f/)
+    if (m4) seen.add(m4[1])
   }
   ok('she genuinely moves', seen.size > 40, true)
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+grp('* THE SCREEN REFEREE - one message at a time, and a queue nobody can jump')
+{
+  const s = sandbox()
+  const p = Object.assign({ uuid: 'u-ref' }, s.player)
+
+  // ⭐ THE INVARIANT, not the numbers. The tolerances and hold caps are tunable; their
+  // RELATIONSHIP is what matters, so this asserts the relationship holds rather than
+  // freezing values Ethan may want to change.
+  // 🔴 ASSERTING `audit() === []` IS VACUOUS ON ITS OWN - an audit that simply returned
+  // nothing would pass it, and a mutation proved exactly that. So the audit is checked
+  // in BOTH directions: it must pass the real tables AND catch a known-broken one.
+  ok('the priority ordering is self-consistent', s.V.screen._audit(), [])
+  ok('🔴 ...and the audit can actually FAIL - fed an inverted ordering',
+    s.V.screen._audit({ WHISPER: 0, AMBIENT: 0, ASIDE: 2, GOD: 0.1, ANNOUNCE: 9, CRASHOUT: 999 },
+                      s.V.screen.HOLD).length > 0, true)
+
+  // 🔑 FAIL OPEN, tested at screen.js's OWN boundary. The earlier version replaced
+  // im.show's reference to claim and therefore exercised immersive.js's catch, not this
+  // one - so breaking screen.js's own fail-open left it green.
+  ok('🔑 an unmodellable player is ALLOWED, never silenced',
+    s.V.screen.claim({ /* no uuid, no server */ }, 'WHISPER', 3), true)
+
+  // ⚠️ THAT ONE EXITS BY THE "cannot model it" BRANCH, not the catch - and a mutation
+  // proved it: breaking the catch's fail-open left the test green. This throws INSIDE
+  // the try, which is the only way to reach it.
+  const boom = { toString() { throw new Error('boom') } }
+  ok('🔑 ...and a THROW inside the referee is allowed too, never silenced',
+    s.V.screen.claim(s.player, boom, 3), true)
+
+  ok('an empty screen owes nothing', s.V.screen.backlog(p), 0)
+
+  const send = (pri, secs) => s.V.im.show(p, 'x', { seconds: secs, priority: pri })
+
+  ok('a whisper speaks into silence', send('WHISPER', 3), true)
+  // 🔴 THE BUG THIS FILE PRODUCED ON ITS FIRST DRAFT: a 3s whisper cost 3.5s of queue
+  // while GOD tolerated 2.5s, so the dead muttering locked out the god about to speak -
+  // the exact inversion the referee exists to prevent.
+  ok('🔴 ...and CANNOT block a god', send('GOD', 5), true)
+  ok('an aside will not talk over a god mid-sentence', send('ASIDE', 3), false)
+  ok('a warning outranks all of it', send('ANNOUNCE', 4), true)
+  ok('...after which a whisper is refused', send('WHISPER', 3), false)
+  ok('🚨 a crashout is never refused', send('CRASHOUT', 3), true)
+
+  // The backlog has to drain, or a god goes permanently quiet.
+  s.server.advance(60)
+  ok('the queue drains with time', s.V.screen.backlog(p), 0)
+  ok('...and a whisper speaks again', send('WHISPER', 3), true)
+
+  // ⚠️ A caller cannot lock the screen by asking for a huge duration.
+  const s2 = sandbox()
+  const p2 = Object.assign({ uuid: 'u-cap' }, s2.player)
+  s2.V.im.show(p2, 'x', { seconds: 300, priority: 'WHISPER' })
+  ok('🚨 a 300s whisper is CLAMPED, not honoured',
+    s2.V.screen.backlog(p2) <= s2.V.screen.HOLD.WHISPER + 1, true)
+
+  // 🔑 FAIL OPEN. A referee that fails closed mutes the pantheon on a glitch, and
+  // silence is the symptom nobody reports.
+  const s3 = sandbox()
+  s3.V.screen.claim = () => { throw new Error('boom') }
+  ok('🔑 a throwing referee does not silence anything',
+    s3.V.im.show(s3.player, 'x', { seconds: 3, priority: 'WHISPER' }), true)
+
+  // A logged-out player's queue is gone with them.
+  const s4 = sandbox()
+  const p4 = Object.assign({ uuid: 'u-out' }, s4.player)
+  s4.V.im.show(p4, 'x', { seconds: 5, priority: 'GOD' })
+  ok('a player carries a backlog', s4.V.screen.backlog(p4) > 0, true)
+  s4.V.screen.clear(p4)
+  ok('...which is dropped on logout', s4.V.screen.backlog(p4), 0)
 }
 
 console.log('\n' + B + (fail ? R + fail + ' FAILED, ' : G) + pass + ' passed' + X)

@@ -85,6 +85,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var failed = 0
   var rcWarned = false
   var fadeWarned = false
+  var refused = 0
   var logged = 0
   var LOG_FIRST = 40
 
@@ -256,6 +257,27 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (!who || !server) return false
 
       var secs = (typeof o.seconds === 'number') ? o.seconds : 4
+
+      // ⭐ THE REFEREE, AT THE ONE DOOR EVERY OVERLAY PASSES THROUGH. The client queues
+      // messages one at a time and cannot be reordered or flushed, so a tide warning
+      // sent behind five whispers is DELIVERED PERFECTLY, LATE, to someone already dead.
+      // Nothing errors and nothing logs it.
+      //
+      // 🔑 It lives here rather than in voice.js because this is the only chokepoint -
+      // announce, ritual, the interior asides and every god all arrive here. A referee
+      // one level up would be a referee something can walk around.
+      //
+      // ⚠️ LATE-BOUND AND FAILS OPEN. KubeJS loads alphabetically, so screen.js is not
+      // in memory when this file is evaluated; reading it at CALL time removes the
+      // ordering question entirely. Missing or throwing, everything is allowed.
+      try {
+        if (VELDORA.screen && typeof VELDORA.screen.claim === 'function') {
+          if (!VELDORA.screen.claim(p, o.priority || 'GOD', secs, o.continuation)) {
+            refused++
+            return false
+          }
+        }
+      } catch (e) { }
       var cmd = MODID + ' sendcustom ' + who + ' ' + buildTag(o, colour) +
                 ' ' + argF(secs) + ' ' + body
 
@@ -312,7 +334,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     available: function () { return GATE && probe() },
     anchors: ANCHOR,
     obfuscateModes: OBFUSCATE,
-    stats: function () { return { sent: sent, failed: failed, lastError: lastError } },
+    stats: function () { return { sent: sent, failed: failed, refused: refused, lastError: lastError } },
     _probe: probe,
     _buildTag: buildTag,
     // ⭐ Published so voice.js can turn a god's registered § colour into a real hex one
