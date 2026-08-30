@@ -691,8 +691,33 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
   var skyWarned = false
 
-  // Both must be true: deep enough, AND their patron has somebody waiting.
+  // ⭐ F1 - SHE DOES NOT REACH INTO THE NETHER OR THE END.
+  //
+  // 🚨 Her gate is depth + no sky, which kept her out of the Nether only BY ACCIDENT:
+  // vanilla's Nether never goes below y0, so belowCutoff happened to be false. That is
+  // a coincidence, not a rule - any mod or datapack that extends the Nether downward
+  // hands her the dimension, and `docs/69` flagged exactly this. The trespass layer
+  // exists precisely because those two places have NO SPEAKER; her arriving there would
+  // undo the entire effect.
+  //
+  // ⚠️ FAILS OPEN, like night.js and for the same reason: if the dimension cannot be
+  // read she is allowed to speak. A Speaker who goes silent everywhere on a glitch is a
+  // bug nobody would trace for weeks; one who speaks in the Nether is obvious on the
+  // first trip.
+  //
+  // Reuses trespass.dimOf rather than reimplementing the accessor - one reader, one
+  // place to fix. Resolved at CALL time, not load time, so load order does not matter.
+  function wrongDimension(p) {
+    try {
+      if (!VELDORA.trespass || typeof VELDORA.trespass.dimOf !== 'function') return false
+      return VELDORA.trespass.dimOf(p) !== null
+    } catch (e) { return false }
+  }
+
+  // All three must hold: deep enough, in a dimension she can reach at all, AND their
+  // patron has somebody waiting.
   function speakerActive(p) {
+    if (wrongDimension(p)) return false
     return belowCutoff(p) && !!speakerFor(p)
   }
 

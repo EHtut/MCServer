@@ -82,11 +82,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       presence: ['minecraft:entity.spider.step', 0.4, 0.6],
       moment: ['minecraft:entity.spider.ambient', 0.55, 0.5],
     },
-    // The trader. Chain for the presence - inventory being moved in a back room -
-    // and the villager trade note for the moment, because her moments are deals.
+    // ⭐ RE-AUTHORED 2026-08-29. Ethan: "salvage's lines should be a wolf growling,
+    // trinkets, etc." She was a shopkeeper - chain and a villager trade note - and a
+    // shopkeeper is not what she is. She is a SCAVENGER STANDING OVER A HOARD.
+    //
+    // The growl carries the presence because it plays on every line: she is territorial
+    // by default, before she has said anything. The chime carries the moment because her
+    // moments are DEALS, and a deal closing should sound like small valuable objects
+    // moving. Same instrument family as before, opposite posture.
     salvage: {
-      presence: ['minecraft:block.chain.place', 0.35, 1.2],
-      moment: ['minecraft:entity.villager.trade', 0.6, 0.8],
+      presence: ['minecraft:entity.wolf.growl', 0.4, 0.85],
+      moment: ['minecraft:block.amethyst_block.chime', 0.55, 1.1],
     },
     // The Goat. Warm, busy, makes things. Her moment is literally a goat, which is
     // the least frightening sound in the pantheon and entirely correct for her -
@@ -95,12 +101,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       presence: ['minecraft:block.wood.place', 0.4, 1.2],
       moment: ['minecraft:entity.goat.ambient', 0.55, 0.9],
     },
-    // The Matriarch. She cannot touch the world, so she does not get an impact -
-    // she gets a resonance. Amethyst and a beacon: cold, tuned, and arriving from
-    // somewhere else.
+    // ⭐ RE-AUTHORED 2026-08-29. Ethan: "Art is horror cave sounds btw." She had
+    // amethyst and a beacon - cold and tuned, which read as CELESTIAL. She is not
+    // celestial. She is "just Kayer, and she is already secretly aligned with the
+    // goddess of death", and she is her own antagonist.
+    //
+    // 🔑 ambient.cave is the sound every player has already learned to dismiss, and
+    // that is exactly why it is hers: her presence is indistinguishable from the thing
+    // you told yourself was nothing. Pitched down so it is subtly WRONG rather than
+    // merely ambient. The shriek carries her moments because a sculk shrieker is the
+    // game's only sound that means "you have been noticed".
     art: {
-      presence: ['minecraft:block.amethyst_block.chime', 0.3, 1.4],
-      moment: ['minecraft:block.beacon.activate', 0.45, 1.6],
+      presence: ['minecraft:ambient.cave', 0.4, 0.7],
+      moment: ['minecraft:block.sculk_shrieker.shriek', 0.45, 0.85],
     },
     // Retired into Wall at the world reset (`34` §0c). Kept so anyone still holding
     // the key sounds like something rather than nothing.

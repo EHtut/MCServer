@@ -283,3 +283,93 @@ not an expedition, it is a chore.
 ⚠️ **And `min_y: -128` in `tectonic.json` is now clearly not doing what was assumed.**
 The floor is −592 regardless. That setting should be re-examined rather than carried
 into the reset on the strength of a measurement taken against a stale world.
+
+---
+
+# ✅ F1 BUILT — 2026-08-29
+
+## The five open questions, answered
+
+| # | question | ruling |
+|---|---|---|
+| 1 | cadence | **Its own channel.** 8% per 60s, 4-min floor — a quarter of `idle.js`'s rate, because a four-line pool at idle's cadence is exhausted inside one Nether trip |
+| 2 | who hears | **Everyone.** They are about the PLACE, not about you |
+| 3 | vary by path | **No.** A line with no speaker should not know who you follow — there is no path check in the file, enforced by the harness |
+| 4 | delivery | **A boss bar** — see below |
+| 5 | the deep Speaker | **Now explicitly blocked**, not blocked by accident |
+
+## 🔑 Q4 — how much control do we actually have?
+
+Ethan asked: *"part of me wants to put all god dialogue in shaking stylzied text on the
+top of the player's screen if possible."* Probed live, 2026-08-29.
+
+**Four places the server can put text:** chat · action bar (above hotbar, ~3s) ·
+title/subtitle (centre, large, controllable fade) · **boss bar (the top of the screen)**.
+
+**Components carry** colour incl. **hex**, bold, italic, underline, strikethrough,
+**obfuscated** — and **`font`**.
+
+⛔ **THERE IS NO SHAKE.** Vanilla cannot animate text position.
+
+🔴 **And my probe of that was worthless.** The server ACCEPTED
+`{"text":"x","shake":true}` and `{"font":"veldora:does_not_exist"}` — unknown component
+fields are silently dropped and fonts resolve **client-side**. Fake and real are
+byte-identical over rcon, exactly like `/playsound`. **A negative control is what
+revealed it**; without one it would have read as "shake works".
+
+**Three routes to something shake-like:**
+1. ⭐ **Re-send jitter** (built) — bar text is centred, so re-sending the name with
+   uneven padding shifts it a few pixels. A real tremor, but **whole-line, not
+   per-glyph**.
+2. **Obfuscated glyphs** — §k genuinely animates, in place, free. Unreadable by design.
+3. **A resource-pack font** — ⭐ and **the pack already ships four resource packs
+   through packwiz**, so a fifth costs nothing to distribute. Fonts can't animate, but
+   they can be *wrong*. `minecraft:alt` (the enchanting runes) is already in vanilla.
+
+⚠️ **Undertale-style per-character motion is a client renderer feature. No server-side
+route reaches it.**
+
+## ⚠️ Before all god dialogue moves there
+
+| cost | why it matters |
+|---|---|
+| **chat is the only record** | a title/bar is gone in seconds; a god line missed mid-fight is gone forever |
+| **bars collide** | Born in Chaos minibosses in the tide already use them |
+| **one short line** | ~45 chars before it looks cramped; god lines are often longer |
+| **rapid lines overwrite** | one bar slot per id |
+
+⭐ **Recommendation: BOTH — bar for presence, chat for the record.** Not a compromise;
+it is what games with subtitles-plus-log do, and it is strictly better than either.
+**F1 is the prototype** — short lines, no speaker, and a nameless bar is exactly right
+for a line from nobody. Judge the effect here before committing the pantheon to it.
+
+## The writing
+
+Touched up at his instruction. **Punctuation regularised; two comma splices broken into
+beats.** No line added, removed, or reworded beyond that.
+
+> `You hear a girl scream, fighting, a murder, then silence`
+> → `You hear a girl scream. A fight. A murder. Then silence.`
+
+⭐ **"You are afraid." · "Run." · "What do you seek here?" are untouched.**
+
+## 🔴 Two false-positive rounds from my own new linter
+
+`tools/rhino_lint.py` was written to catch what `node --check` cannot. **Its first two
+versions both produced findings that contradicted working code:**
+
+1. It flagged `let`/`const`/arrows/templates as "Rhino wants ES5" — **170 hits across
+   eight files that load fine.** KubeJS 2101 ships a modernised Rhino. ⭐ `paths.js:26`
+   states the *real* hazard I'd missed: *"server scripts share ONE global scope — a
+   top-level const collides across."*
+2. Rewritten around that, it reported three global collisions — all inside **arrow
+   function bodies**, which its scanner didn't recognise as scopes.
+
+⚠️ **A linter that cries wolf on working code is worse than none**: it trains you to
+ignore it. The ES6 rules were deleted, not downgraded. So was duplicate-`var` — legal in
+both ES5 and ES6, four false positives on a live file, and the original diagnosis could
+not be reproduced. **It does not go in a linter on a maybe.** What survives is only what
+is verifiable: top-level collisions, and NUL bytes.
+
+**44 trespass assertions (3 negative controls, all red). 578 across 16 harnesses. Live
+56/56, 0 errors.**
