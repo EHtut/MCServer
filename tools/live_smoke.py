@@ -287,6 +287,102 @@ def c_pools():
                  '%d gods, %d tags, %d possible lines' % (gods, tags, lines))
 
 
+# ── 9. every rostered entity id resolves AT THE POINT OF USE ───────────────
+# 🔴 the_knocker was cut today and its ids were still in two live rosters. spawner.js
+# validates every id against the real registry at boot and says so out loud; reading its
+# verdict is stronger than grepping for the string, because a roster can name a mod that
+# loaded and still be wrong.
+def c_rosters():
+    t = log_text()
+    if t is None:
+        return check('entity rosters', UNKNOWN, 'cannot read latest.log')
+    m = None
+    for m in re.finditer(r'roster validated: (\d+) live, (\d+) dead', t):
+        pass
+    if not m:
+        return check('entity rosters', UNKNOWN, 'spawner.js never reported - did it run?')
+    live, dead = int(m.group(1)), int(m.group(2))
+    if dead:
+        return check('entity rosters', BAD, '%d DEAD id(s) in a live roster' % dead)
+    if live == 0:
+        return check('entity rosters', BAD, 'roster is EMPTY - nothing can spawn')
+    return check('entity rosters', OK, '%d id(s) live, 0 dead' % live)
+
+
+# ── 10. the admin surface exists ───────────────────────────────────────────
+WANT_COMMANDS = ['opening', 'bicker', 'gd', 'tide', 'path', 'power']
+
+
+def c_commands():
+    r = rcon('help')
+    if r is None:
+        return check('admin commands', UNKNOWN, 'rcon did not answer')
+    missing = [c for c in WANT_COMMANDS if ('/' + c) not in r]
+    if missing:
+        return check('admin commands', BAD, 'not registered: ' + ', '.join(missing))
+    return check('admin commands', OK, '%d/%d registered' % (len(WANT_COMMANDS), len(WANT_COMMANDS)))
+
+
+# ── 11. recipes and tags actually parsed ───────────────────────────────────
+# ⚠️ A recipe that fails to parse is silently absent from the game - the item simply
+# cannot be made, and nothing in play says why.
+def c_recipes():
+    """⚠️ A recipe that fails to parse is silently absent - the item cannot be made and
+    nothing in play says why.
+
+    🔴 BUT MOST OF THESE ARE BENIGN, AND SAYING SO HONESTLY MATTERS. A modpack is full of
+    OPTIONAL cross-mod compat recipes. Steam'n'Rails ships track recipes for Twilight
+    Forest, Nature's Spirit and Biomes O' Plenty; Ars compat wants `sauce:source_fluid`.
+    None of those mods are installed, so those recipes are SUPPOSED to fail.
+
+    ⚠️ I TRIED TO CLASSIFY THEM BY NAMESPACE AND IT DOES NOT WORK. The failing recipe is
+    `railways:track_twilightforest_x` - `railways` IS installed; the variant is missing
+    because a THIRD mod is not. Namespace tells you nothing, and a check that reports 38
+    healthy recipes as broken every boot is a check people learn to ignore, which is
+    precisely how the tofu bug survived a green suite.
+
+    🔑 SO IT BASELINES INSTEAD. The count today is recorded; a rise means something NEW
+    broke, which is the signal that actually matters. A drop just updates the baseline.
+    """
+    t = log_text()
+    if t is None:
+        return check('recipes parsed', UNKNOWN, 'cannot read latest.log')
+    fails = sorted(set(re.findall(r'Parsing error loading recipe ([\w:]+)', t)))
+    base_path = os.path.join(REPO, 'tools', '.cache', 'recipe_baseline.json')
+    try:
+        os.makedirs(os.path.dirname(base_path), exist_ok=True)
+    except Exception:
+        pass
+    known = None
+    try:
+        known = set(json.load(io.open(base_path, encoding='utf-8')))
+    except Exception:
+        known = None
+
+    if known is None:
+        try:
+            io.open(base_path, 'w', encoding='utf-8').write(json.dumps(fails, indent=1))
+        except Exception:
+            pass
+        return check('recipes parsed', OK,
+                     '%d optional compat recipe(s) - BASELINED, a rise will fail' % len(fails))
+
+    new_ones = sorted(set(fails) - known)
+    if new_ones:
+        return check('recipes parsed', BAD,
+                     '%d NEW failure(s) since baseline: %s'
+                     % (len(new_ones), ', '.join(new_ones[:3])))
+    if len(fails) < len(known):
+        try:
+            io.open(base_path, 'w', encoding='utf-8').write(json.dumps(fails, indent=1))
+        except Exception:
+            pass
+        return check('recipes parsed', OK,
+                     '%d (down from %d) - baseline lowered' % (len(fails), len(known)))
+    return check('recipes parsed', OK,
+                 '%d known optional compat failure(s), none new' % len(fails))
+
+
 def main():
     print('live_smoke.py - asking the RUNNING SERVER, not a sandbox')
     print('=' * 78)
@@ -299,6 +395,9 @@ def main():
     c_pools()
     c_pathless()
     c_world_floor()
+    c_rosters()
+    c_commands()
+    c_recipes()
     if up:
         c_datapacks()
     else:
