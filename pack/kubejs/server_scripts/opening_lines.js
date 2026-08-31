@@ -70,7 +70,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       var o = DATA.openings
       if (!o || !o.length) return []
       var pick = o[((i % o.length) + o.length) % o.length]
-      return pick.concat(DATA.story1, DATA.end, DATA.story2)
+      // 🔴 `end` IS A VARIABLE SECTION, NOT A SEQUENCE. Ethan, from play 2026-08-30:
+      // *"'Your strength returns to you' is actually one of the end variable lines not a
+      // story beat."* It was concat'd whole, so all four variants played one after
+      // another as if they were consecutive story beats - which is why an interchangeable
+      // line read as part of the plot.
+      //
+      // 🔑 Same treatment as `openings`: pick ONE, keyed off the same index so a given
+      // life always ends the same way rather than re-rolling on replay.
+      var ends = DATA.end || []
+      var one = ends.length
+        ? [ends[((i % ends.length) + ends.length) % ends.length]]
+        : []
+      return pick.concat(DATA.story1, one, DATA.story2)
     },
     count: function () { return (DATA.openings || []).length },
   }

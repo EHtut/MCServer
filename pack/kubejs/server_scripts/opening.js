@@ -127,6 +127,31 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // ⚠️ NO OPTIONS AND NO onChoose. Every other consumer of this primitive asks a
     // question; the Opening asks nothing. It is a montage, and the player is remembering,
     // not choosing - so it takes the lines and the dark and none of the machinery.
+    // ⭐⭐ IT READS LIKE A PAGE FILLING IN. Ethan, 2026-08-30: *"stay that cutscene but
+    // be descending like a book instead? with the words staying as the story progresses."*
+    //
+    // 🔑 SO A BEAT NO LONGER REPLACES THE ONE BEFORE IT - it is APPENDED, and the whole
+    // page so far is re-sent. The mod wraps the text itself, so the paragraph grows
+    // downward on its own and the earlier lines stay on screen as the story adds to them.
+    //
+    // ⚠️ NEWLINES ARE IMPOSSIBLE HERE, and that decided the shape. immersive.js strips
+    // ⚠️ NEWLINES ARE IMPOSSIBLE HERE, and that decided the shape. immersive.js strips
+    // carriage returns and tabs because the command's text argument is greedy to end of
+    // line - a newline truncates everything after it. So a page is PROSE that wraps,
+    // which is what a book actually looks like anyway.
+    //
+    // ⚠️ AND IT HAS TO TURN. Fifteen beats accumulated is a wall that overruns the
+    // screen, so a page holds PAGE_BEATS and then starts clean - the turn is the beat
+    // where the text suddenly gets short again, which reads as deliberate.
+    var PAGE_BEATS = 5
+    var page = [], pages = []
+    for (var b = 0; b < beats.length; b++) {
+      page.push(beats[b])
+      pages.push(page.join(' '))
+      if (page.length >= PAGE_BEATS) page = []
+    }
+    beats = pages
+
     var okd = false
     try {
       okd = VELDORA.ritual.begin(p, {
@@ -144,6 +169,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // ⭐ NO COLOUR. This is the player's own voice - no god is speaking, and a tint
         // would attribute it to one.
         colour: null,
+        // ⭐ TOP-anchored so the page grows DOWNWARD. y is POSITIVE for a TOP anchor -
+        // it brings the text down into view (D-123); a negative would push it off.
+        anchor: 'TOP_CENTER',
+        y: 30,
         // ⛔ NOT IN CHAT. Eighteen beats in chat is a wall of text scrolling under the
         // cutscene - seen in play. The montage is the screen; chat stays clean.
         noChat: true,

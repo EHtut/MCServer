@@ -179,35 +179,57 @@ def c_gates():
 # pointed at a github.com/raw/ URL that 302-redirects, which Minecraft's downloader hangs
 # on. Both states looked identical from inside the repo.
 def c_resource_pack():
-    p = os.path.join(INST, 'server.properties')
+    """The god fonts must actually reach a client.
+
+    🔴 THIS CHECK USED TO DEMAND `resource-pack=` BE SET, AND THAT WAS WRONG. Pushing a
+    pack at join CANNOT work on this modpack, and it took a player timing out twice to
+    learn why: applying a resource pack forces a full client resource reload - texture
+    atlas, 2784 Patchouli jsons, ETF/EMF - and on 317 mods that takes longer than
+    Minecraft's HARD 31-second configuration timeout, which is not configurable. The
+    download succeeded every time; the client was still reloading when the server hung up.
+
+    🔑 SO THE FONT SHIPS PREINSTALLED instead, inside the import zip, loaded before the
+    client ever connects. This asserts THAT path: the pack is in the zip AND enabled in
+    the options.txt the zip carries. Shipping it without enabling it looks identical to
+    not shipping it at all - that was the original tofu bug.
+    """
+    import zipfile
+    z = os.path.join(REPO, 'dist', 'CogsAndCadavers.zip')
+    if not os.path.exists(z):
+        return check('font delivery', BAD, 'dist/CogsAndCadavers.zip is missing')
     try:
-        props = io.open(p, encoding='utf-8').read()
-    except Exception:
-        return check('resource pack', UNKNOWN, 'cannot read server.properties')
-    url = re.search(r'^resource-pack=(.*)$', props, re.M)
-    sha = re.search(r'^resource-pack-sha1=(.*)$', props, re.M)
-    # ⚠️ server.properties is a JAVA PROPERTIES file: ':' is stored escaped as '\:'.
-    # Reading it raw produced "unknown url type: https\" - a real URL reported as
-    # broken by the checker rather than by the server.
-    url = url.group(1).strip().replace(chr(92) + chr(58), chr(58)) if url else ''
-    sha = sha.group(1).strip() if sha else ''
-    if not url:
-        return check('resource pack', BAD, 'resource-pack= is EMPTY - the gods render as tofu')
-    if 'github.com' in url and '/raw/' in url:
-        return check('resource pack', BAD,
-                     'github.com/raw/ REDIRECTS; the client hangs. Use raw.githubusercontent.com')
-    try:
-        req = urllib.request.Request(url, headers={'User-Agent': 'Minecraft'})
-        data = urllib.request.urlopen(req, timeout=20).read()
+        zf = zipfile.ZipFile(z)
+        names = zf.namelist()
     except Exception as e:
-        return check('resource pack', BAD, 'URL unreachable: %s' % str(e)[:60])
-    got = hashlib.sha1(data).hexdigest()
-    if not sha:
-        return check('resource pack', BAD, 'no sha1 set - clients re-download every join')
-    if got != sha:
-        return check('resource pack', BAD, 'sha1 MISMATCH: serving %s, declared %s'
-                     % (got[:12], sha[:12]))
-    return check('resource pack', OK, '%d KB, sha1 matches, no redirect' % (len(data) // 1024))
+        return check('font delivery', BAD, 'import zip unreadable: %s' % str(e)[:50])
+
+    pack = '.minecraft/resourcepacks/veldora.zip'
+    if pack not in names:
+        return check('font delivery', BAD, 'veldora.zip NOT in the import zip - tofu')
+    try:
+        opts = zf.read('.minecraft/options.txt').decode('utf-8', 'replace')
+    except Exception:
+        return check('font delivery', BAD, 'no options.txt in the import zip')
+    line = [l for l in opts.splitlines() if l.startswith('resourcePacks:')]
+    if not line:
+        return check('font delivery', BAD, 'options.txt sets no resourcePacks at all')
+    if 'veldora' not in line[0]:
+        return check('font delivery', BAD,
+                     'shipped but NOT ENABLED - identical to not shipping it: %s' % line[0][:60])
+
+    # ⚠️ And the fonts the gods actually name must exist inside it.
+    try:
+        inner = zipfile.ZipFile(io.BytesIO(zf.read(pack))).namelist()
+    except Exception:
+        return check('font delivery', BAD, 'veldora.zip inside the import zip is corrupt')
+    want = ['art', 'blade', 'wall', 'forge', 'salvage']
+    missing = [g for g in want
+               if not any(('font/%s.json' % g) in n for n in inner)]
+    if missing:
+        return check('font delivery', BAD, 'no font provider for: ' + ', '.join(missing))
+    return check('font delivery', OK,
+                 '%d god fonts, preinstalled and enabled (server push cannot work - '
+                 '31s config timeout)' % len(want))
 
 
 # ── 6. the world is what we think it is ────────────────────────────────────
