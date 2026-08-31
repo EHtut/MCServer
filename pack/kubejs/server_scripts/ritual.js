@@ -75,6 +75,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   //
   // ⚠️ Fails soft and silently: a scene that half-renders is worse than one that
   // renders plainly, and the chat copy has already gone out by the time this runs.
+  var STATE_ANCHOR = null, STATE_TYPE = null, STATE_ALIGN = null, STATE_MULTI = false, STATE_PERCHAR = false, STATE_X = null, STATE_Y = null
   function ritualOverlay(p, text, colour, secs) {
     try {
       if (!VELDORA.im || typeof VELDORA.im.show !== 'function') return false
@@ -85,9 +86,33 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // 🔴 WAS A HARDCODED 4s. Fine for a deal, wrong for anything paced differently:
         // the Opening runs beats ~4.2s apart, so a flat 4s left each line overlapping the
         // next and truncating mid-sentence on screen. The caller knows its own pace.
-        seconds: (typeof secs === 'number' && secs > 0) ? secs : 4,
-        anchor: 'CENTER_CENTER',
-        typewriter: 1.0,
+        // ⚠️ A TYPED LINE MUST OUTLIVE ITS OWN TYPING. A flat duration cuts long lines
+        // off mid-word and leaves short ones sitting there - both reported from play. When
+        // the caller sets `perChar`, each line gets time from its OWN length instead.
+        seconds: (STATE_PERCHAR
+          ? Math.max(3, Math.round(String(text).length / 11) + 2)
+          : ((typeof secs === 'number' && secs > 0) ? secs : 4)),
+        anchor: (STATE_ANCHOR || 'CENTER_CENTER'),
+        align: (typeof STATE_ALIGN === 'number') ? STATE_ALIGN : undefined,
+        // 🔴🔴 x AND y WERE NEVER FORWARDED, and that silently ate three fixes. The Opening
+        // set y to 30, then 60, then 110 to clear the Serene Seasons HUD, and this function
+        // dropped every one of them on the floor - so the entry kept rendering in exactly
+        // the same place and looked like the deploy had not landed.
+        //
+        // ⚠️ A pass-through that quietly omits a field is worse than one that errors: the
+        // caller has no way to tell "ignored" from "applied and wrong", so the same fix
+        // gets made repeatedly against a boundary that never carried it.
+        x: (typeof STATE_X === 'number') ? STATE_X : undefined,
+        y: (typeof STATE_Y === 'number') ? STATE_Y : undefined,
+        // Lets a scene keep its newlines - see immersive.js. Off by default, because a
+        // real newline truncates the command's greedy text argument.
+        multiline: STATE_MULTI || undefined,
+        // 🔴 A BOOK PAGE DOES NOT TYPE ITSELF. The Opening accumulates - each beat re-sends
+        // the whole page so far - and with the typewriter on, every beat re-typed all of
+        // it from scratch. Ethan screenshotted two beats caught mid-type and both looked
+        // like the text had been TRUNCATED mid-word, which is what sent me hunting a
+        // length cap that does not exist.
+        typewriter: (STATE_TYPE === false) ? undefined : 1.0,
         fade: true,
         wrap: 260,
       })
@@ -262,8 +287,53 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var hold = spec.holdAfterChoice || 0
     var colour = spec.colour || DEFAULT_COLOUR
 
+    // ⚠️ With perChar the lines are different lengths, so a uniform gap would land the
+    // next one on top of a long one still typing. Pace off the longest.
     var speakFor = LEAD + (lines.length * gap) + TAIL
+    if (spec.perChar) {
+      // ⚠️ Sized from the REAL total, not lines x gap - the dark must outlast the words.
+      var total = LEAD
+      for (var pi = 0; pi < lines.length; pi++) {
+        total += Math.max(40, Math.round((String(lines[pi]).length / 11 + 2) * 20))
+      }
+      speakFor = total + TAIL
+    }
     var whole = speakFor + (options.length ? TIMEOUT : 0) + hold
+
+    // ⭐ THE FINALE - a closing card with its OWN staging. The Opening needs its title
+    // centred and large after the prose has run left-aligned, and a scene cannot switch
+    // anchor mid-flight otherwise. Optional; nothing else uses it.
+    if (spec.finale && spec.finale.text) {
+      var fat = LEAD
+      for (var fi = 0; fi < lines.length; fi++) {
+        fat += spec.perChar
+          ? Math.max(40, Math.round((String(lines[fi]).length / 11 + 2) * 20))
+          : gap
+      }
+      fat += (spec.finale.after || 30)
+      ;(function (fin, when) {
+        server.scheduleInTicks(when, function () {
+          try {
+            if (!STATE[k]) return
+            if (!VELDORA.im) return
+            // ⭐ A popup finale is the two-line card; anything else is a plain overlay.
+            if (fin.popup && typeof VELDORA.im.popup === 'function') {
+              VELDORA.im.popup(p, fin.title, fin.subtitle, fin.seconds || 8)
+              return
+            }
+            if (typeof VELDORA.im.show !== 'function') return
+            VELDORA.im.show(p, fin.text, {
+              seconds: fin.seconds || 8,
+              anchor: fin.anchor || 'CENTER_CENTER',
+              size: fin.size || 1.6,
+              typewriter: 1.0,
+              fade: true,
+            })
+          } catch (e) { }
+        })
+      })(spec.finale, fat)
+      speakFor = fat + Math.round((spec.finale.seconds || 8) * 20)
+    }
 
     STATE[k] = {
       awaiting: false, options: options, hold: hold, colour: colour,
@@ -271,6 +341,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // Opt-in, so every existing caller keeps the behaviour it was written against.
       noChat: !!spec.noChat,
       overlaySeconds: spec.overlaySeconds || 0,
+      anchor: spec.anchor || null,
+      typewriter: (spec.typewriter === false) ? false : null,
+      align: (typeof spec.align === 'number') ? spec.align : null,
+      multiline: !!spec.multiline,
+      perChar: !!spec.perChar,
+      x: (typeof spec.x === 'number') ? spec.x : null,
+      y: (typeof spec.y === 'number') ? spec.y : null,
       // effect ids this scene's own release must not clear - see clearEffects
       keep: spec.keep || null,
     }
@@ -305,9 +382,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     //
     // ⚠️ AND CHAT STILL GETS THE SPEECH TOO. Same reasoning as voice.js: an overlay is
     // gone in seconds and a ritual line is often the only place a thing is ever said.
+    // ⭐⭐ PER-LINE TIMING. With perChar the lines are different lengths, so a UNIFORM gap
+    // either lands the next sentence on top of a long one still typing, or leaves a short
+    // one sitting in silence. Each line now waits for the one before it to finish.
+    var at = LEAD, offsets = []
+    for (var oi = 0; oi < lines.length; oi++) {
+      offsets.push(at)
+      at += spec.perChar
+        ? Math.max(40, Math.round((String(lines[oi]).length / 11 + 2) * 20))
+        : gap
+    }
     for (var i = 0; i < lines.length; i++) {
       (function (idx, text) {
-        server.scheduleInTicks(LEAD + (idx * gap), function () {
+        server.scheduleInTicks(offsets[idx], function () {
           try {
             if (!STATE[k]) return                 // cancelled or logged out
             // 🔴 CHAT IS OPT-OUT NOW. A deal wants its lines in chat - an overlay is gone
@@ -315,6 +402,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
             // Opening is 18 beats, and 18 chat lines is a wall of spam scrolling under a
             // cutscene, which is exactly what it looked like in play.
             if (!STATE[k].noChat) tell(p, paint(text, colour))
+            STATE_ANCHOR = STATE[k].anchor || null
+            STATE_TYPE = (STATE[k].typewriter === false) ? false : null
+            STATE_ALIGN = (typeof STATE[k].align === 'number') ? STATE[k].align : null
+            STATE_MULTI = !!STATE[k].multiline
+            STATE_PERCHAR = !!STATE[k].perChar
+            STATE_X = (typeof STATE[k].x === 'number') ? STATE[k].x : null
+            STATE_Y = (typeof STATE[k].y === 'number') ? STATE[k].y : null
             ritualOverlay(p, text, colour, STATE[k].overlaySeconds)
           } catch (e) { }
         })

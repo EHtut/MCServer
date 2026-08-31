@@ -1,46 +1,26 @@
-// opening_lines.js — GENERATED. Do not edit by hand.
+// opening_lines.js - GENERATED from docs/dialogue/Player intros.txt. Do not hand-edit.
 //
-//     python tools/opening_import.py --write
+// ⭐ ONE SENTENCE PER LINE. Ethan, 2026-08-30: *"every sentence is on a new line, that is
+// a hard rule with everything I write that goes here."*
 //
-// ⭐ THE SOURCE IS `docs/dialogue/Player intros.txt`. This is a regenerated view of it.
+// 🔴 AND IT HAS TO BE ONE SENTENCE PER MESSAGE, WHICH IS MEASURED, NOT ASSUMED. Three
+// things were tested live against the mod on 2026-08-30, all with a player watching:
 //
-// ── ⭐ THE SAME FORMAT AS THE BICKERING DOCUMENTS ────────────────────────────
-// The beat model is identical; only the authoring differs. There he broke each beat onto
-// its own line; here he wrote prose and delegated the breaking — *"as usual periods mean
-// lines."* Not a second format, and not a second delivery path.
+//   an escaped newline   renders LITERALLY - a visible backslash followed by n
+//   an escaped newline   renders LITERALLY - a visible backslash followed by n
+//   a text NBT field     there is none - text is the command greedy trailing argument
+//   maxWidth             a real field in ImmersiveMessage.class, and IGNORED - 90 and
+//                        400 produced identical output
 //
-// ── THE SHAPE ────────────────────────────────────────────────────────────────
-//   begin + mid   the life you had. Interchangeable — see PAIRED in the importer
-//   story1        the plague, and the woman with mismatched eyes
-//   end           waking up, glad
-//   story2        the last line
-//
-// ⭐ SHE NEVER SPEAKS. "She spoke no words. Made no sounds." — which is not only the best
-// line in the passage, it is what makes the whole reveal safe: Alice cannot leak, because
-// she has no dialogue anywhere in the opening. docs/40 §0 says a name is the most
-// expensive word in the game; this spends none of it.
+// So a single message cannot hold two lines of his text, and the hard rule REQUIRES
+// separate sends. The swap between them is unavoidable; typing is what makes it a beat
+// arriving rather than a line popping.
 var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
 ;(function () {
-  var DATA = {
-    "openings": [
-      [
-        "You were a traveler,",
-        "Traveling from a distant land, you picked up your life an set off.",
-        "A life of adventure before you."
-      ],
-      [
-        "You were a fisherman,",
-        "Living in a small village, sectioned away from the world.",
-        "It burned to the ground.",
-        "Sad, but you have never felt more free."
-      ],
-      [
-        "You were a merchant,",
-        "Moving from place to place, never once settling down."
-      ]
-    ],
-    "story1": [
+  var SENTENCES = [
+      "You were a traveler, Traveling from a distant land, you picked up your life an set off.",
+      "A life of adventure before you.",
       "You contracted a mysterious plague, forced to take refuge in nearby village.",
       "You felt the life sapping from you, your strength fading.",
       "It was that 7th night when a mysterious woman arrived in town.",
@@ -49,41 +29,23 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "She tended to your dying body, caring for your sickness.",
       "She spoke no words.",
       "Made no sounds.",
-      "She left the following morning."
-    ],
-    "end": [
-      "You awaken with glee, your body refreshed.",
+      "She left the following morning.",
       "Your mind races with confusion.",
       "Who was that?",
-      "You strength returns to you, you flex your arms"
-    ],
-    "story2": [
       "The world awaits you.",
-      "And life seems almost brighter"
-    ]
-  }
+      "And life seems almost brighter.",
+      "You set off.",
+      "Adventure awaits.",
+      "Yours."
+  ]
+
+  // The card the story closes on - centre screen, alone, its own moment.
+  var TITLE = "ARKHDOTTIR: NEW BLOOD"
 
   VELDORA.openingLines = {
-    all: function () { return DATA },
-    // One assembled opening: a life, then the parts everyone shares.
-    build: function (i) {
-      var o = DATA.openings
-      if (!o || !o.length) return []
-      var pick = o[((i % o.length) + o.length) % o.length]
-      // 🔴 `end` IS A VARIABLE SECTION, NOT A SEQUENCE. Ethan, from play 2026-08-30:
-      // *"'Your strength returns to you' is actually one of the end variable lines not a
-      // story beat."* It was concat'd whole, so all four variants played one after
-      // another as if they were consecutive story beats - which is why an interchangeable
-      // line read as part of the plot.
-      //
-      // 🔑 Same treatment as `openings`: pick ONE, keyed off the same index so a given
-      // life always ends the same way rather than re-rolling on replay.
-      var ends = DATA.end || []
-      var one = ends.length
-        ? [ends[((i % ends.length) + ends.length) % ends.length]]
-        : []
-      return pick.concat(DATA.story1, one, DATA.story2)
-    },
-    count: function () { return (DATA.openings || []).length },
+    sentences: function () { return SENTENCES.slice() },
+    title: function () { return [TITLE] },
+    build: function () { return SENTENCES.slice() },
+    count: function () { return 1 },
   }
 })();

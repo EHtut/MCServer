@@ -437,7 +437,17 @@ t('the silence is RESERVED, not merely waited out', () => {
   setupGod(stripped, true)
   stripped.ctx.VELDORA.voice.crashoutFor(stripped.player, 'wall')
   assert(stripped.reserved.length === 0, 'control: no reserve fn means no reservation')
-  assert(stripped.sent.length === e.sent.length,
+  // 🔴 THIS WAS FLAKY AND IT COMPARED THE WRONG THING. It asserted the stripped run sent
+  // EXACTLY as many lines as a separate full run - but the crashout picks its lines at
+  // random, so two runs legitimately differ and the suite failed roughly one time in two.
+  // Caught by running it twice: 22/22, then 21/22, with nothing changed in between.
+  //
+  // ⚠️ An intermittent test is worse than a missing one - it teaches people that red is
+  // noise, which is exactly how a real failure gets waved through.
+  //
+  // 🔑 The property is FAILS OPEN: without screen.js the crashout must still speak. That
+  // is "it sent something", not "it sent the same number as some other run".
+  assert(stripped.sent.length > 0,
     'a missing screen.js must NOT cost the crashout its lines - it fails open')
 })
 

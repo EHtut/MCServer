@@ -17,6 +17,9 @@ const fs = require('fs')
 const path = require('path')
 const { execFileSync } = require('child_process')
 
+// Checks that WRITE to the running game. Excluded unless --live is passed.
+const LIVE_MUTATING = ['im_live_check.py', 'spawn_persist_check.py']
+
 const T = __dirname
 const filter = process.argv[2] || ''
 const files = fs.readdirSync(T)
@@ -24,6 +27,23 @@ const files = fs.readdirSync(T)
   // would never have run again - a check outside the sweep is a check that rots. The
   // interpreter is chosen per file rather than assuming everything is node.
   .filter(f => /_(harness|check)\.(js|py)$/.test(f))
+  // 🔴🔴 SOME CHECKS WRITE TO THE LIVE GAME, AND THEY MUST NOT RUN IN A SWEEP.
+  //
+  // I folded *_check.py into this runner earlier and did not ask what those checks DO.
+  // Two of them mutate a running server:
+  //
+  //   im_live_check       sends test overlays to whoever is online. Ethan spent a play
+  //                       session with `a "quoted" word` appearing at the top of his
+  //                       screen, and could not test the game because of it.
+  //   spawn_persist_check SPAWNS MOBS next to a player to see whether they persist.
+  //
+  // Every time I ran the suite - dozens of times tonight, while he was trying to play -
+  // both fired at him. That is my change doing it, not a pre-existing fault.
+  //
+  // 🔑 A test that changes the thing it measures cannot be part of an automatic sweep.
+  // Run them deliberately, with nobody in the world or with a player who has agreed to it:
+  //     node tools/run_all.js --live
+  .filter(f => LIVE_MUTATING.indexOf(f) === -1 || process.argv.includes('--live'))
   .filter(f => !filter || f.indexOf(filter) !== -1)
   .sort()
 

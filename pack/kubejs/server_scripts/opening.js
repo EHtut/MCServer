@@ -91,6 +91,22 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
    * Play it. Returns a REASON STRING, never a bare boolean - "did not play" has four
    * causes here and they are not the same event.
    */
+
+  // How long one journal entry needs on screen: the time to type it, plus a moment to
+  // finish reading the last line. ⚠️ voice.TYPE_CHARS_PER_SEC is an ESTIMATE from a single
+  // eyeball reading and the mod's real rate is unreachable (D-123), so this errs long -
+  // an entry that lingers is fine, one that vanishes mid-sentence is the reported bug.
+  // ⭐ How long between lines. Ethan: *"too fast."* At 55 ticks a 22-line entry runs about
+  // a minute - slow enough to read a sentence before the next one lands.
+  var LINE_GAP = 55
+  var NEWLINE = '\n'
+
+  function entrySeconds(lines) {
+    var n = 0
+    for (var i = 0; i < (lines || []).length; i++) n += String(lines[i]).length
+    return Math.max(8, Math.round(n / 13) + 6)
+  }
+
   function play(p, forced) {
     var L = lines()
     if (!L) return 'no-lines'
@@ -127,64 +143,64 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // ⚠️ NO OPTIONS AND NO onChoose. Every other consumer of this primitive asks a
     // question; the Opening asks nothing. It is a montage, and the player is remembering,
     // not choosing - so it takes the lines and the dark and none of the machinery.
-    // ⭐⭐ IT READS LIKE A PAGE FILLING IN. Ethan, 2026-08-30: *"stay that cutscene but
-    // be descending like a book instead? with the words staying as the story progresses."*
-    //
-    // 🔑 SO A BEAT NO LONGER REPLACES THE ONE BEFORE IT - it is APPENDED, and the whole
-    // page so far is re-sent. The mod wraps the text itself, so the paragraph grows
-    // downward on its own and the earlier lines stay on screen as the story adds to them.
-    //
-    // ⚠️ NEWLINES ARE IMPOSSIBLE HERE, and that decided the shape. immersive.js strips
-    // ⚠️ NEWLINES ARE IMPOSSIBLE HERE, and that decided the shape. immersive.js strips
-    // carriage returns and tabs because the command's text argument is greedy to end of
-    // line - a newline truncates everything after it. So a page is PROSE that wraps,
-    // which is what a book actually looks like anyway.
-    //
-    // ⚠️ AND IT HAS TO TURN. Fifteen beats accumulated is a wall that overruns the
-    // screen, so a page holds PAGE_BEATS and then starts clean - the turn is the beat
-    // where the text suddenly gets short again, which reads as deliberate.
-    var PAGE_BEATS = 5
-    var page = [], pages = []
-    for (var b = 0; b < beats.length; b++) {
-      page.push(beats[b])
-      pages.push(page.join(' '))
-      if (page.length >= PAGE_BEATS) page = []
-    }
-    beats = pages
-
+    // ⭐⭐ ONE BLOCK, ONE SEND. There is no step loop any more, deliberately - see
+    // opening_lines.js. Every multi-step shape fades and rewrites because the mod shows
+    // one message at a time, so a second message always replaces the first.
     var okd = false
     try {
       okd = VELDORA.ritual.begin(p, {
         lines: beats,
-        // 🔴 THIS WAS 20*60*SCENE_SCALE/18 = ~23 TICKS, WHICH IS 1.15 SECONDS A BEAT.
-        // Caught by opening_harness asserting every beat gets at least 2s. That is the
-        // vanishing-text bug Ethan reported from play, reintroduced by my own arithmetic
-        // - I divided the whole scene budget by the beat count instead of asking what one
-        // beat needs.
-        //
-        // 🔑 A BEAT IS PACED BY THE FLOOR, NOT BY THE BUDGET. voice.MIN_ON_SCREEN scaled
-        // by this scene's beatScale is what one beat needs; the scene simply lasts as
-        // long as the beats do (~18 x 4.2s = 75s), which is what SCENE_SCALE was for.
-        gap: Math.max(60, Math.round(240 * SCENE_SCALE)),
-        // ⭐ NO COLOUR. This is the player's own voice - no god is speaking, and a tint
-        // would attribute it to one.
-        colour: null,
-        // ⭐ TOP-anchored so the page grows DOWNWARD. y is POSITIVE for a TOP anchor -
-        // it brings the text down into view (D-123); a negative would push it off.
-        anchor: 'TOP_CENTER',
-        y: 30,
-        // ⛔ NOT IN CHAT. Eighteen beats in chat is a wall of text scrolling under the
-        // cutscene - seen in play. The montage is the screen; chat stays clean.
+        // ⭐ TOP_LEFT with align 0, so each new line starts under the last one and the
+        // entry writes DOWN the page. Centred text re-centres every line as the page
+        // grows, which reads as drifting rather than as something being written.
+        anchor: 'TOP_LEFT',
+        align: 0,
+        x: 20,
+        // ⚠️ CLEAR OF THE SEASONS HUD. Serene Seasons draws "Spring, Day 7" at the top
+        // left and the entry was landing straight through it.
+        // ⚠️ 30 -> 60 -> 110. Serene Seasons draws "Spring, Day 7" at the top left and
+        // the entry kept landing through it; 60 was still not clear of it in play. This
+        // sits below the HUD line entirely.
+        y: 110,
+        // Keep the newlines - one line per sentence is the whole point.
+        // (newlines proved not to render - see the note above)
+        // ⭐ TYPED, ALWAYS. The standing rule above. It was only ever turned off to stop
+        // an accumulating page re-typing itself, and there is no accumulation now.
+        typewriter: true,
+        // Each line gets time from its OWN length, so nothing is cut off mid-word.
+        perChar: true,
+        // ⛔ NOT IN CHAT. Twenty-two lines in chat is a wall scrolling under the cutscene.
         noChat: true,
-        // Hold each beat for its own pace rather than ritual's flat 4s, which left lines
-        // overlapping and truncated mid-sentence.
-        overlaySeconds: Math.max(3, Math.round(240 * SCENE_SCALE) / 20),
+        // ⭐ NO COLOUR - this is the player's own voice; a tint would attribute it to a god.
+        colour: null,
+        // ⚠️ Each step must OUTLIVE the next one arriving, or a line blinks out before its
+        // successor lands and the page flickers instead of filling.
+        // One line, so the gap never elapses - but the SCENE must outlast the typing, and
+        // ritual sizes the hold from the gap. Give it the whole entry's length.
+        // ⚠️ Unused when perChar is on - ritual times each line from its own length so a
+        // long sentence is never cut off by a short one's clock.
+        gap: LINE_GAP,
+        // ⭐ THE TITLE AS AN ANNOUNCEMENT. Ethan: *"arkhdottir new blood should play across
+        // the middle of the screen like an announcement."* Centre, large, alone, after the
+        // prose has finished - not a tail on the last paragraph. Fanfare and a font hang
+        // off this same call when he wants them.
+        // ⭐ THE TITLE CARD USES `popup`, not an overlay. Measured in play: it is the ONLY
+        // command route that renders two lines - gold underlined title, subtitle beneath,
+        // in a background box. Exactly the announcement Ethan asked for, and it needs no
+        // NBT at all. Fanfare hangs off this same call when he wants it.
+        finale: {
+          popup: true,
+          title: 'ARKHDOTTIR: NEW BLOOD',
+          subtitle: 'A story written by Rehykt',
+          seconds: 9,
+          after: 40,
+        },
       })
     } catch (e) { console.warn(TAG + 'ritual.begin threw :: ' + e) }
 
     // 🚨 A REFUSED SCENE MUST NOT COUNT AS SEEN. ritual.begin refuses if the player is
-    // already inside another ritual, and stamping K_SEEN above would then burn the only
-    // showing on a scene that never played. Un-stamp so the next login retries.
+    // already inside another ritual, and K_SEEN was stamped above - so leaving it set
+    // would burn the only showing on a scene that never played.
     if (!okd) {
       try { p.persistentData.putBoolean(K_SEEN, false) } catch (e) { }
       console.warn(TAG + p.username + ' - ritual refused the opening; NOT marked seen, ' +

@@ -377,8 +377,12 @@ grp('⭐ THE RITUAL — the text moves, nothing else does')
   ok('🚨 ...and the overlay never renders an option',
     ovBody.indexOf('options') === -1 && ovBody.indexOf('label') === -1, true)
 
-  ok('⭐ a ritual centres, because the world is already gone',
-    ri.indexOf("anchor: 'CENTER_CENTER'") !== -1, true)
+  // ⚠️ CENTER_CENTER is now the DEFAULT rather than a literal - the Opening overrides it
+  // to TOP_CENTER so its page grows downward like a book. The property under test is that
+  // a ritual with no opinion still centres, which is what this string proves.
+  ok('⭐ a ritual centres by default, because the world is already gone',
+    ri.indexOf("|| 'CENTER_CENTER'") !== -1 || ri.indexOf("anchor: 'CENTER_CENTER'") !== -1,
+    true)
 
   const an = code('announce.js')
   // ⚠️ The aftermath sting must NOT shake - shaking makes it read as a warning.

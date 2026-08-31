@@ -33,6 +33,49 @@
 // ⚠️ That argument order is why four rounds of probing failed with "Expected '{'": every
 // attempt put the float before the tag, as every other Minecraft command would. It does not.
 //
+// ══════════════════════════════════════════════════════════════════════════
+// 🔴 WHAT THIS MOD CAN AND CANNOT DO, MEASURED IN PLAY 2026-08-30
+//
+// An entire session was lost to guessing at this. Every line below was tested against a
+// live client with Ethan watching, and the answers are not what reverse-engineering the
+// class file suggested. Read this before designing any text surface.
+//
+// ── THE FIVE SUBCOMMANDS. We only ever used ONE. ─────────────────────────────
+//     test · popup · toast · send · sendcustom
+//
+//   ⭐ popup <players> <duration> <title> <subtitle...>
+//      TWO LINES, and it is the only command route that gets them. Renders the title in
+//      gold and underlined with the subtitle beneath, in a background box. This is the
+//      Popup preset from the docs. USE IT FOR TITLE CARDS.
+//
+//   sendcustom <player> <data:CompoundTag> <duration:float> <text...>
+//      ONE line of text. The NBT comes SECOND - that argument order is why four rounds
+//      of probing once failed with "Expected '{'".
+//
+// ── ⛔ THREE WAYS TO GET A SECOND LINE, ALL DEAD THROUGH THE COMMAND ─────────
+//   an escaped newline      renders literally, as a visible backslash-n
+//   a REAL newline char     renders as an LF GLYPH BOX. It also broke the connection
+//                           with a Network Protocol Error when sent mid-session.
+//   maxWidth in the NBT     a real field on ImmersiveMessage, and IGNORED - 90 and 400
+//                           produced identical output
+//
+// ── 🔑 subtext IS REAL, AND IT IS BUILDER-ONLY ───────────────────────────────
+// The docs describe a recursive subtext system: a full ImmersiveMessage nested inside
+// another with its own delay and Y offset, rendered recursively. It is the right answer
+// for a multi-line journal and it is NOT reachable from here:
+//
+//     {subtext:{text:"...",delay:0.5f,y:20f}}          -> ignored, main line only
+//     {subtext:{...,subtext:{...}}}                    -> ignored, main line only
+//
+// `subtext` exists as a field on ImmersiveMessage with a CODEC, but sendcustom does not
+// deserialize it from the command tag. ⚠️ And the Java builder is unreachable from Rhino
+// (D-123 - Java.loadClass returns a Class object exposing no statics), so a multi-line
+// block needs either a mod of our own or a PR to this one.
+//
+// ⇒ CONSEQUENCE FOR DESIGN: one command, one line. Text that must appear a line at a
+//   time arrives as separate messages, and each REPLACES the last - there is no way to
+//   keep them all on screen. Typing is what makes that read as a beat arriving.
+// ══════════════════════════════════════════════════════════════════════════
 //   int      anchor    0 CENTER_CENTER 1 CENTER_LEFT 2 CENTER_RIGHT 3 BOTTOM_CENTER
 //                      4 BOTTOM_LEFT   5 BOTTOM_RIGHT 6 TOP_CENTER  7 TOP_LEFT 8 TOP_RIGHT
 //   int      obfuscate 0 NONE 1 FULL 2 LEFT 3 RIGHT 4 CENTER 5 RANDOM
@@ -232,6 +275,35 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return '{' + t.join(',') + '}'
   }
 
+  // ⭐ THE TWO-LINE CARD. `popup` is the ONLY command route that renders a second line -
+  // subtext is builder-only and unreachable from Rhino (see the block at the top). It
+  // draws the title gold and underlined with the subtitle beneath it, in a background box.
+  //
+  // ⚠️ No NBT at all, so none of the styling options apply. It is a preset, take it or
+  // leave it - which is exactly right for a title card and useless for anything else.
+  function popup(p, title, subtitle, seconds) {
+    if (!GATE) return false
+    if (!p || !title) return false
+    if (!probe()) return false
+    try {
+      var name = null
+      try { name = p.username } catch (e) { return false }
+      if (!name) return false
+      var secs = (typeof seconds === 'number' && seconds > 0) ? seconds : 8
+      var t = VELDORA.garble ? VELDORA.garble.strip(String(title)) : String(title)
+      var sub = subtitle ? (VELDORA.garble ? VELDORA.garble.strip(String(subtitle)) : String(subtitle)) : ''
+      // ⚠️ Quote the title: it is a plain string argument and the subtitle is greedy, so
+      // an unquoted multi-word title would swallow the boundary between them.
+      var cmd = 'immersivemessages popup ' + name + ' ' + secs.toFixed(1) +
+        ' "' + t.replace(/"/g, '') + '"' + (sub ? ' ' + sub : '')
+      var srv = null
+      try { srv = p.server } catch (e) { }
+      if (!srv) return false
+      srv.runCommandSilent(cmd)
+      return true
+    } catch (e) { return false }
+  }
+
   function show(p, text, opts) {
     if (!GATE) return false
     if (!p || !text) return false
@@ -241,7 +313,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       var raw = String(text)
 
       // The text argument is greedy to end of line, so a newline would truncate it.
-      raw = raw.replace(/[\r\n\t]+/g, ' ')
+      // 🔴 THE STRIP IS OURS, NOT THE MOD, and it is opt-out now. The command text
+      // argument is greedy to end of line, so a REAL newline truncates everything after
+      // it - that part is true and is why this exists. What was never tested is whether
+      // the mod renders an escaped one, and the Opening needs a line per sentence.
+      //
+      // ⚠️ UNTESTED AS OF 2026-08-30 - it needs a player online to see. If the mod does
+      // not honour it the failure is loud and instant: the entry shows its first
+      // sentence and nothing else. That is a better experiment than more guessing.
+      if (o.multiline) {
+        raw = raw.replace(/[\r\t]+/g, ' ')
+      } else {
+        raw = raw.replace(/[\r\n\t]+/g, ' ')
+      }
 
       var colour = o.color || null
       if (!colour) {
@@ -333,6 +417,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     show: show,
     available: function () { return GATE && probe() },
     anchors: ANCHOR,
+    popup: popup,
     obfuscateModes: OBFUSCATE,
     stats: function () { return { sent: sent, failed: failed, refused: refused, lastError: lastError } },
     _probe: probe,

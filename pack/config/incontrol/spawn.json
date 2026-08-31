@@ -71,22 +71,6 @@
   {
     "dimension": "minecraft:overworld",
     "minheight": 40,
-    "mod": [
-      "born_in_chaos_v1",
-      "born_in_chaos_fc",
-      "sculks_of_arda",
-      "grim_and_bleak",
-      "frostiful",
-      "friendsandfoes",
-      "rottencreatures",
-      "born_in_chaos_fg",
-      "infernalexp"
-    ],
-    "result": "deny"
-  },
-  {
-    "dimension": "minecraft:overworld",
-    "minheight": 40,
     "mob": [
       "iceandfire:ghost",
       "iceandfire:dread_beast",
