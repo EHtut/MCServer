@@ -930,6 +930,22 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     try {
       if (!chunks || !chunks.length) return false
       var st = styleOf(god)
+      // ⭐⭐ THE CALLER MAY SET THE PACE. Ethan, from play 2026-08-30: `/gd bicker` *"has a
+      // tendency to keep messages up for a minute straight."*
+      //
+      // 🔑 It was not a bug in the duration maths - it was the 12s MIN_ON_SCREEN floor
+      // being right for the wrong situation. That floor exists so a god speaking ALONE is
+      // readable. A bickering exchange is three-plus chunks per turn and two-plus turns,
+      // so the same floor makes one overheard argument hold the screen for 70-100s.
+      //
+      // ⚠️ Scales the STYLE, not the typing - beatFor already refuses to shorten typing
+      // time, so a faster pace can never cut a line off mid-word.
+      if (opts && typeof opts.beatScale === 'number') {
+        var sc = {}
+        for (var sk in st) if (st.hasOwnProperty(sk)) sc[sk] = st[sk]
+        sc.beatScale = opts.beatScale
+        st = sc
+      }
       var first = false
       for (var i = 0; i < chunks.length; i++) {
         var secs = Math.max(0.6, beatFor(chunks[i], st) / 20)
@@ -956,9 +972,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   /** How long a chunked turn will hold the screen, in TICKS - so a scene can pace the
    *  next speaker instead of talking over the previous one. */
-  function chunksTicks(god, chunks) {
+  function chunksTicks(god, chunks, scale) {
     try {
       var st = styleOf(god)
+      // ⚠️ MUST MATCH speakChunks. broadcast.js uses this to decide how long to hold a
+      // turn before the next god answers; if it ignores the caller's pace it schedules
+      // gaps for a scene that already finished, and the exchange reads as dead air.
+      if (typeof scale === 'number') {
+        var sc2 = {}
+        for (var q in st) if (st.hasOwnProperty(q)) sc2[q] = st[q]
+        sc2.beatScale = scale
+        st = sc2
+      }
       var t = 0
       for (var i = 0; i < (chunks || []).length; i++) t += Math.max(12, beatFor(chunks[i], st))
       return t

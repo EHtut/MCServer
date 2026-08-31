@@ -144,6 +144,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // ⭐ NO COLOUR. This is the player's own voice - no god is speaking, and a tint
         // would attribute it to one.
         colour: null,
+        // ⛔ NOT IN CHAT. Eighteen beats in chat is a wall of text scrolling under the
+        // cutscene - seen in play. The montage is the screen; chat stays clean.
+        noChat: true,
+        // Hold each beat for its own pace rather than ritual's flat 4s, which left lines
+        // overlapping and truncated mid-sentence.
+        overlaySeconds: Math.max(3, Math.round(240 * SCENE_SCALE) / 20),
       })
     } catch (e) { console.warn(TAG + 'ritual.begin threw :: ' + e) }
 

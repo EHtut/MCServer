@@ -45,6 +45,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 ;(function () {
   var TAG = '[bcast] '
 
+  // ⭐ How fast an overheard exchange moves, against a god speaking alone at 1.0. Ethan,
+  // from play 2026-08-30: `/gd bicker` *"has a tendency to keep messages up for a minute
+  // straight."*
+  //
+  // 🔑 The 12s MIN_ON_SCREEN floor is right for a god speaking ALONE and wrong for an
+  // argument: several chunks across several turns held one scene on screen for 144s
+  // measured. At 0.35 the same scene runs 50s, ~4.2s a beat.
+  //
+  // ⚠️ It scales how long a beat SITS there, never its typing time - beatFor refuses to
+  // shorten that - so a faster exchange can still never cut a line off mid-word.
+  var SCENE_SCALE = 0.35
+
   var GAP = 50            // ticks between lines - ritual.js's pacing, ~2.5s
   var LEAD = 10           // a beat before the first line
 
@@ -256,8 +268,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
                   // being an argument you are only half inside.
                   var mine = (typeof VELDORA.voice.alignedTo === 'function')
                     ? VELDORA.voice.alignedTo(ps[k], turn.god) : true
-                  VELDORA.voice.speakChunks(ps[k], turn.god, turn.chunks, opts.tag || null,
-                    mine ? null : { obfuscate: 'RANDOM' })
+                  // ⭐ AN EXCHANGE TUMBLES. Ethan, from play: `/gd bicker` *"has a
+                  // tendency to keep messages up for a minute straight."* The 12s floor
+                  // is right for a god speaking ALONE and wrong here - several chunks
+                  // across several turns held one overheard argument on screen for
+                  // 70-100 seconds. SCENE_SCALE paces the beats without touching the
+                  // typing time, so nothing is ever cut off mid-word.
+                  var so = { beatScale: SCENE_SCALE }
+                  if (!mine) so.obfuscate = 'RANDOM'
+                  VELDORA.voice.speakChunks(ps[k], turn.god, turn.chunks, opts.tag || null, so)
                 } catch (e) { }
               }
               delivered++
@@ -268,7 +287,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // A seven-chunk turn holds the screen far longer than a one-chunk reply, and a
         // uniform gap would land the answer on top of the question.
         var hold = 40
-        try { hold = VELDORA.voice.chunksTicks(turns[i].god, turns[i].chunks) } catch (e) { }
+        // ⚠️ SAME SCALE, or the hold outlasts the speech and the answer lands in dead air.
+        try { hold = VELDORA.voice.chunksTicks(turns[i].god, turns[i].chunks, SCENE_SCALE) } catch (e) { }
         at += hold + GAP
       }
     } catch (e) {

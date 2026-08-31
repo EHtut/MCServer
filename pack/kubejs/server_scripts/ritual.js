@@ -75,14 +75,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   //
   // ⚠️ Fails soft and silently: a scene that half-renders is worse than one that
   // renders plainly, and the chat copy has already gone out by the time this runs.
-  function ritualOverlay(p, text, colour) {
+  function ritualOverlay(p, text, colour, secs) {
     try {
       if (!VELDORA.im || typeof VELDORA.im.show !== 'function') return false
       var t = String(text)
       if (t.charAt(0) === '*') t = t.substring(1)      // narration marker, not speech
       if (!t) return false
       return VELDORA.im.show(p, VELDORA.garble ? VELDORA.garble.strip(t) : t, {
-        seconds: 4,
+        // 🔴 WAS A HARDCODED 4s. Fine for a deal, wrong for anything paced differently:
+        // the Opening runs beats ~4.2s apart, so a flat 4s left each line overlapping the
+        // next and truncating mid-sentence on screen. The caller knows its own pace.
+        seconds: (typeof secs === 'number' && secs > 0) ? secs : 4,
         anchor: 'CENTER_CENTER',
         typewriter: 1.0,
         fade: true,
@@ -265,6 +268,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     STATE[k] = {
       awaiting: false, options: options, hold: hold, colour: colour,
       onChoose: spec.onChoose, onTimeout: spec.onTimeout,
+      // Opt-in, so every existing caller keeps the behaviour it was written against.
+      noChat: !!spec.noChat,
+      overlaySeconds: spec.overlaySeconds || 0,
       // effect ids this scene's own release must not clear - see clearEffects
       keep: spec.keep || null,
     }
@@ -304,8 +310,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         server.scheduleInTicks(LEAD + (idx * gap), function () {
           try {
             if (!STATE[k]) return                 // cancelled or logged out
-            tell(p, paint(text, colour))
-            ritualOverlay(p, text, colour)
+            // 🔴 CHAT IS OPT-OUT NOW. A deal wants its lines in chat - an overlay is gone
+            // in seconds and the offer is often said only once. A MONTAGE does not: the
+            // Opening is 18 beats, and 18 chat lines is a wall of spam scrolling under a
+            // cutscene, which is exactly what it looked like in play.
+            if (!STATE[k].noChat) tell(p, paint(text, colour))
+            ritualOverlay(p, text, colour, STATE[k].overlaySeconds)
           } catch (e) { }
         })
       })(i, lines[i])

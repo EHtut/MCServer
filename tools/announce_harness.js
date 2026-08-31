@@ -363,7 +363,8 @@ grp('⭐ THE RITUAL — the text moves, nothing else does')
     ri.indexOf("['minecraft:blindness', 0]") !== -1, true)
   ok('🚨 the hold still runs', ri.indexOf('holdAfterChoice') !== -1, true)
   ok('⭐ ...and the speech now also goes on screen',
-    ri.indexOf('ritualOverlay(p, text, colour)') !== -1, true)
+    ri.indexOf('ritualOverlay(p, text, colour') !== -1   /* arity-agnostic: a 4th arg was added for per-caller pacing */, true)
+  // ⚠️ Chat is OPT-OUT now (spec.noChat) so a montage can skip it; deals still get it.
   ok('🚨 while chat still gets it', ri.indexOf('tell(p, paint(text, colour))') !== -1, true)
 
   // ⚠️ THE OPTIONS CANNOT MOVE. They are clickable chat components; an overlay is
