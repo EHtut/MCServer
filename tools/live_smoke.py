@@ -50,6 +50,18 @@ import subprocess
 import sys
 import urllib.request
 
+# 🔴 THE INSTRUMENT CRASHED WHENEVER ITS OUTPUT WAS CAPTURED. The Windows console
+# defaults to cp1252 and raises UnicodeEncodeError on the first emoji this file prints -
+# so it worked interactively and died the moment anything piped or redirected it, which
+# is how CI or any wrapper script would ever run it.
+#
+# ⚠️ A liveness check that cannot report is a liveness check that has not passed. It hid
+# behind a TTY for a full day. config_sync.py already carried this guard; this did not.
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INST = r'C:\MCServer\instance'
 LOG = os.path.join(INST, 'logs', 'latest.log')
