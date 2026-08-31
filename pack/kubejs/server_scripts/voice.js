@@ -831,9 +831,39 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   function speak(player, god, s, tag, opts) {
     try {
       var parts = sentences(s)
-      if (parts.length < 2) return overlay(player, god, s, tag, opts)
-
       var st = styleOf(god)
+
+      // 🔴🔴 THE ONE-SENTENCE PATH USED TO SKIP beatFor ENTIRELY, and it is the most
+      // common path in the pack.
+      //
+      // It read `return overlay(player, god, s, tag, opts)` with no `seconds`, so overlay
+      // fell through to the TONE table's flat 5/6/8s. MIN_ON_SCREEN, the per-god
+      // beatScale and Ethan's *"10-15 seconds"* ruling never applied to it at all.
+      //
+      // ⚠️ MEASURED OVER THE REAL POOLS: 208 single-sentence utterances, every one shown
+      // for less time than beatFor asks, and NINETEEN shown for less than their own
+      // typing time - they fade mid-word. The pack's longest beat wants 14.2s and needs
+      // 8.2s just to type; it was being sent as 5.0s.
+      //
+      // 🔑 THIS IS THE EXACT SYMPTOM THE 08-30 REWRITE WAS WRITTEN TO FIX. Ethan, from
+      // play: *"the text frequently fades before the full line is spoken."* The fix went
+      // into the multi-sentence loop below and the single-sentence early return was left
+      // behind it, so the bug survived its own fix on the commonest path.
+      //
+      // 🚨 And it defeated the instrument too: tools/line_duration_check.js measures
+      // beatFor for these beats - a number this path never used. It certified 14.2s while
+      // the client was told 5.0.
+      if (parts.length < 2) {
+        var one = {}
+        if (opts) for (var q in opts) if (opts.hasOwnProperty(q)) one[q] = opts[q]
+        // ⚠️ Only when the caller did not ask for a specific duration. A crashout or a
+        // cutscene beat sets its own and must keep it.
+        if (typeof one.seconds !== 'number') {
+          one.seconds = Math.max(0.6, beatFor(s, st) / 20)
+        }
+        return overlay(player, god, s, tag, one)
+      }
+
       var first = false
       for (var i = 0; i < parts.length; i++) {
         // beatFor is in ticks; the command wants seconds. 0.5s of each is eaten by the
@@ -849,7 +879,29 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // quarters of the way through a line reads as a bug, not as a pause.
         o.continuation = (i > 0)
         var okd = overlay(player, god, parts[i], tag, o)
-        if (i === 0) first = okd
+        if (i === 0) {
+          first = okd
+          // 🔴🔴 IF THE OPENING SENTENCE IS REFUSED, THE WHOLE UTTERANCE IS ABANDONED.
+          //
+          // This loop used to carry on. Sentences 1..N go out with continuation=true, and
+          // screen.claim() skips the backlog check entirely for continuations - so they
+          // were sent UNCONDITIONALLY while only the opening line was dropped.
+          //
+          // ⚠️ The player then reads a line that starts mid-thought:
+          //     "I gave you a blade. Now put it down. Slowly."
+          //   from an utterance that opened "You should not have done that."
+          //
+          // 🔑 The protection above was real and it was applied to the WRONG END. The
+          // comment promised a god is never cut off three quarters through; the code
+          // guaranteed she is never cut off at the TAIL, and cut her off at the HEAD
+          // instead - which is strictly worse, because a missing opening reads as the
+          // god making no sense rather than as a pause.
+          //
+          // 🚨 REACHABLE FROM ONE ORDINARY LINE: ~93% of the pack (2608/2816 utterances)
+          // is multi-sentence, and each leaves 25s+ of modelled backlog against GOD's 13s
+          // tolerance - so ANY god line within ~12s of another one lost its opening.
+          if (!okd) return false
+        }
       }
       return first
     } catch (e) { return false }
@@ -889,7 +941,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         // lament reads as a bug - and Wall's laments run seven chunks.
         o.continuation = (i > 0)
         var okd = overlay(player, god, chunks[i], tag, o)
-        if (i === 0) first = okd
+        if (i === 0) {
+          first = okd
+          // 🔴 SAME ABANDON-ON-REFUSAL AS speak(). This is the BICKERING path, where it
+          // is worse: broadcast.js ignores the return value and counts `delivered++`
+          // regardless, so a decapitated turn was reported as sent and the scene carried
+          // on around a god whose opening line never arrived.
+          if (!okd) return false
+        }
       }
       return first
     } catch (e) { return false }
