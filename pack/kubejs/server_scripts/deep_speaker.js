@@ -75,10 +75,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // overworld floor is -128, not -64 (`tools/make_depth_datapack.py`, NEW_MIN_Y).
   //
   // What the game actually tells a player (`help.js`):
-  //     0 to -64     the old diggings
-  //   -64 to -120    the deep works
-  //  -120 to -128    THE SEALED FLOOR
-  var CUTOFF_Y = -64
+  //     0 to -32     the old diggings
+  //   -32 to -52     the deep works
+  //   -52 to -64     THE SEALED FLOOR
+  //
+  // 🔴 CUTOFF WAS -64 AND THE FLOOR IS NOW -64, which made `y <= CUTOFF_Y` satisfiable
+  // only by bedrock - Art's Deep Speaker would have fired essentially never. Moved to
+  // -40 so "the deep" is the bottom third of the world, as the ladder above intends.
+  var CUTOFF_Y = -40
   var CONF_GAP = 45                 // 2.25s between lines; these voices are halting
 
   var SPEAKERS = {}                 // path key -> speaker

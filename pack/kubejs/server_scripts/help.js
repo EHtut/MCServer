@@ -239,8 +239,10 @@
       p.tell(Text.of('§8  Spending experience is the only thing that lowers it.'))
       p.tell(Text.of(''))
       p.tell(Text.of('§e§lTHE DESCENT§r'))
-      p.tell(Text.of('§8  0 to -64 the old diggings · -64 to -120 the deep works'))
-      p.tell(Text.of('§8  -120 to the floor, the sealed floor. Deeper kills pay more.'))
+      // 🔴 These three bands must match coefficients.js DEPTH_FLAT. They described a
+      // -128 world until 2026-08-30 and told players about depths that no longer exist.
+      p.tell(Text.of('§8  0 to -32 the old diggings · -32 to -52 the deep works'))
+      p.tell(Text.of('§8  -52 to the floor, the sealed floor. Deeper kills pay more.'))
       p.tell(Text.of(''))
       p.tell(Text.of('§e§lWHERE THE IRON IS§r §8- nothing else in this world says so'))
       p.tell(Text.of('§8  Richest at §fy54 to y120§8, and §fnothing hostile spawns'))

@@ -250,7 +250,6 @@
    "first-person-model": "2.7.2",
    "better-third-person": "1.9.0",
    "valarian-conquest": "4.2.1.1",
-   "the-knocker": "1.5.2",
    "server-side-horror": "1.21.1-neoforge-4.2",
    "frights-delight": "neoforge-1.21.1-1.4.8",
    "rottencreatures": "1.21.1-1.1.2",
@@ -264,7 +263,6 @@
    "frostiful": "2.3.3+1.21.1-neoforge",
    "scorchful": "0.15.2+1.21.1-neoforge",
    "corpse": "neoforge-1.21.1-1.1.13",
-   "grim-and-bleak": "2.5.2",
    "yungs-better-dungeons": "1.21.1-NeoForge-5.1.4",
    "yungs-better-mineshafts": "1.21.1-NeoForge-5.1.1",
    "yungs-better-strongholds": "1.21.1-NeoForge-5.1.3",
@@ -1127,7 +1125,6 @@
    "desc": "Pillar 3b: horror. Built from stalkers, atmosphere and escalating pressure rather than jump-scares, so it stays frightening over a long server. Several entries are configurable ambient systems rather than mobs - exactly the surface a future dungeon master would drive. STALKER RULING (Ethan, 2026-07-31): all six hunting entities stay, staggered in config so at most one or two can be active at a time - see docs/06-BURIED-TECH.md and pack/config. Six simultaneous stalkers is comedy, not horror; the config IS the feature. THE BROKEN SCRIPT WAS CUT ON SAFETY, NOT PERIOD: the author states the mod WILL grief the world, WILL destroy buildings, can ban you from your own save and writes files to the desktop. Disqualifying for a shared long-running world.",
    "mods": [
     [
-     "the-knocker",
      "An unpredictable human-like stalker that follows and visits",
      "major"
     ],
@@ -1197,7 +1194,6 @@
      "major"
     ],
     [
-     "grim-and-bleak",
      "Ambience-led horror with its own dimension",
      "minor"
     ]

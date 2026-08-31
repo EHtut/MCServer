@@ -645,8 +645,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     'born_in_chaos_v1:dread_hound_not_despawn',   // Salvage's pack - persistent
     'born_in_chaos_v1:dread_hound',
     'born_in_chaos_v1:dire_hound_leader',         // the Hound herself
-    'the_knocker:knocker',                        // the_hunt's surviving pair
-    'the_knocker:knockerstalk',
+    'rottencreatures:hunter_wolf',                // the_hunt's crew (the_knocker cut
+    'rottencreatures:glacial_hunter',             // for the reset, 2026-08-30)
   ]
 
   ServerEvents.loaded(function (event) {

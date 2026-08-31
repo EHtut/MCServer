@@ -220,14 +220,20 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // produced identical pressure and the gradient died exactly where it should have
   // been sharpest. These values keep everyone under the cap until the sealed floor,
   // which is the one place it is meant to bite.
-  var DEPTH_FULL = 128            // -y at which the multiplier reaches its cap
+  var DEPTH_FULL = 64            // -y at which the multiplier reaches its cap
   var DEPTH_MAX_MULT = 1.5        // was 2.0
 
   //  y at or below, flat addition
+  // 🔴 RESCALED FOR A -64 FLOOR, 2026-08-30. Ethan ruled min_y back to -64, which puts
+  // the old -120 "sealed floor" and the -64..-120 "deep works" OUTSIDE THE WORLD - every
+  // band below -64 was unreachable, so the deepest tier paid nothing and the gradient
+  // ended at the surface tier. The three-tier descent is preserved by rescaling it into
+  // the depth that actually exists (0 to -64). DEPTH_FULL moved 128 -> 64 for the same
+  // reason: it is the depth at which the multiplier caps, and it could never be reached.
   var DEPTH_FLAT = [
-    [-120, 1.0],                  // the sealed floor      (was 1.5)
-    [-64, 0.5],                   // the deep works        (was 1.0)
-    [0, 0.25],                    // below the surface     (was 0.5)
+    [-52, 1.0],                   // the sealed floor      (was -120)
+    [-32, 0.5],                   // the deep works        (was -64)
+    [0, 0.25],                    // below the surface
   ]
 
   function depthOf(player) {

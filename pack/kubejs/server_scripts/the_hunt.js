@@ -39,9 +39,22 @@ const SPAWN_MAX = 40
 // difficulty band does not move - the pack has scarier options
 // (legendary_monsters:ambusher, grim_and_bleak:flesh_eater,
 // rottencreatures:hunter_wolf) but picking those is a content call, not a bug fix.
+// 🔴 RE-CREWED 2026-08-30, because `the_knocker` was REMOVED for the world reset and it
+// was this entire roster. Leaving the list empty would not have errored - it would have
+// silently retired the Hunt, which is the failure mode this file's own header warns about
+// ("nobody rechecked").
+//
+// ⚠️ The old comment called picking replacements "a content call, not a bug fix" and it
+// was right - but the mod going away turns it into a bug fix by force. These are the two
+// hunters the comment itself named as the scarier options, minus the ones whose mods are
+// not installed: legendary_monsters is absent, grim_and_bleak is being cut in the same
+// pass. rottencreatures IS installed and both ids were read out of its own lang file.
+//
+// 🔑 spawner.js validates every id at boot and says so out loud, so a wrong id here is
+// found on the day it dies rather than the day someone notices the Hunt is empty.
 var HUNTERS = [           // var, not const: K8 prunes ids that do not spawn
-  'the_knocker:knocker',
-  'the_knocker:knockerstalk',
+  'rottencreatures:hunter_wolf',
+  'rottencreatures:glacial_hunter',
 ]
 
 function heatOf(player) {

@@ -1,6 +1,0 @@
-{
-  "pack": {
-    "pack_format": 48,
-    "description": "MCServer: overworld extended to y=-128. Derived from vanilla by tools/make_depth_datapack.py - only min_y and height are changed."
-  }
-}
