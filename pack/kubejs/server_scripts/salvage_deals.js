@@ -405,6 +405,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   VELDORA.deals = {
+    // ⭐ TEST-ONLY. Salvage is gated OFF by ruling, which correctly makes her harnesses
+    // measure nothing. Deleting those tests to turn a feature off for a while would lose
+    // coverage of logic that is still correct, so the harness flips this around its own
+    // blocks and flips it back. Production never calls it; the default being OFF is
+    // itself asserted.
+    _setGate: function (v) { GATE = !!v },
     taken: taken,
     threshold: CHOSEN_AT,
     qualifies: function (p) { return taken(p) >= CHOSEN_AT },

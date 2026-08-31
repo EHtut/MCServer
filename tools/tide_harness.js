@@ -521,7 +521,9 @@ grp('⭐ THE CLOCK RUNS WHEREVER YOU ARE')
 
   // Now go under: the tide that has been waiting should arrive.
   Y = -20; SKY = false
-  ticks(3 + Math.ceil(1200 / 100) + 2); drain()   // enter, clear GRACE, land
+  // 🔴 WAS A HARDCODED 1200. GRACE moved to 6000 and this kept waiting the old
+  // duration, so a correct gate failed a correct test on a stale copy of a constant.
+  ticks(3 + Math.ceil(T.GRACE / 100) * 2 + 4); drain()   // enter, clear GRACE, land
   ok('🚨 going under while DUE brings it immediately', WAVES.length > 0, true)
 }
 

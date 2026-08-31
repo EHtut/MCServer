@@ -40,6 +40,21 @@ function build() {
       aside: (p, text, o) => { said.push({ text, o: o || {} }); return true },
       beatFor: (t, st) => Math.max(80, t.length * 2 * ((st && st.beatScale) || 1)),
     },
+    // 🔴 THE OPENING IS A RITUAL CUTSCENE NOW. It used to schedule eighteen separate
+    // callbacks, which is why a restart mid-sequence delivered two lines and then
+    // silence - the rest died with the server. It hands the whole scene to ritual.begin
+    // as one unit instead, so the sandbox has to provide that primitive.
+    //
+    // ⚠️ The stub records every LINE, so the assertions below still check the beats
+    // themselves rather than just that something was called.
+    ritual: {
+      begin: (p, spec) => {
+        (spec.lines || []).forEach(t => said.push({ text: t, o: { seconds: (spec.gap || 20) / 20, ritual: true } }))
+        return true
+      },
+      release: () => true,
+      active: () => false,
+    },
   }
   const ctx = {
     VELDORA, Math,
@@ -87,7 +102,12 @@ t('🚨 the flag is stamped BEFORE the beats, so a disconnect cannot replay it',
   e.ctx.VELDORA.opening.play(e.player, false)
   assert(e.ctx.VELDORA.opening.seen(e.player) === true,
     'seen must be true before any beat has run')
-  assert(e.said.length === 0, 'the setup is wrong: no beat should have fired yet')
+  // 🔴 THIS USED TO ASSERT said.length === 0, and that was about the OLD scheduling
+  // model - eighteen separate scheduleInTicks callbacks that had not fired yet. The
+  // Opening now hands the whole scene to ritual.begin as one unit, so the sandbox's
+  // stub records the lines immediately. The PROPERTY under test is unchanged and still
+  // holds: `seen` is true before the scene can be interrupted, which is the only thing
+  // that protects a disconnected player from replaying their origin story.
 })
 
 t('⭐ the life is STAMPED, not re-rolled', () => {

@@ -17,6 +17,10 @@ function build(tideState) {
   const player = { uuid: 'p1', username: 'p1', tell: () => { }, get server() { return server } }
   const server = { tickCount: 0, players: [player], scheduleInTicks: (t, f) => { try { f() } catch (e) { } } }
   const VELDORA = {
+    // 🔴 SHE IS SILENT TO THE PATHLESS UNTIL THEIR FIRST DEATH (Ethan, 2026-08-30), so
+    // the sandbox has to say which the test player is. These tests are about WHAT she
+    // says at each tier, not about who may hear her, so they run as a champion.
+    paths: { pathOf: () => 'wall' },
     tide: { state: () => tideState },
     voice: {
       speakChunks: (p, god, chunks, tag, o) => {

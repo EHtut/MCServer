@@ -109,37 +109,56 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // "after" version cannot survive a disconnect, which is precisely when it matters.
     try { p.persistentData.putBoolean(K_SEEN, true) } catch (e) { }
 
-    var uid = null
-    try { uid = String(p.uuid) } catch (e) { }
+    // ⭐⭐ IT IS A CUTSCENE NOW, THROUGH ritual.js - the same primitive that runs the
+    // deals and the trades. Ethan, 2026-08-30: *"it should also be a cutscene using the
+    // same system as the deals or trades."*
+    //
+    // 🔴 WHY THE OLD VERSION FIRED HALF AN INTRO. It scheduled EIGHTEEN separate
+    // `scheduleInTicks` callbacks, one per beat, spread over ~90 seconds. Every one of
+    // those dies with the server - so any restart, and the player got the first few
+    // beats of their origin story and then silence. Worse, K_SEEN is stamped BEFORE the
+    // first beat (correctly - a disconnect must not replay it), so a truncated run is
+    // never retried. Half an intro, once, forever.
+    //
+    // 🔑 ritual.begin owns the whole sequence as ONE scene: it holds the dark, paces the
+    // lines itself, and releases at the end. One unit that either runs or does not,
+    // instead of eighteen independent timers each able to vanish on their own.
+    //
+    // ⚠️ NO OPTIONS AND NO onChoose. Every other consumer of this primitive asks a
+    // question; the Opening asks nothing. It is a montage, and the player is remembering,
+    // not choosing - so it takes the lines and the dark and none of the machinery.
+    var okd = false
+    try {
+      okd = VELDORA.ritual.begin(p, {
+        lines: beats,
+        // 🔴 THIS WAS 20*60*SCENE_SCALE/18 = ~23 TICKS, WHICH IS 1.15 SECONDS A BEAT.
+        // Caught by opening_harness asserting every beat gets at least 2s. That is the
+        // vanishing-text bug Ethan reported from play, reintroduced by my own arithmetic
+        // - I divided the whole scene budget by the beat count instead of asking what one
+        // beat needs.
+        //
+        // 🔑 A BEAT IS PACED BY THE FLOOR, NOT BY THE BUDGET. voice.MIN_ON_SCREEN scaled
+        // by this scene's beatScale is what one beat needs; the scene simply lasts as
+        // long as the beats do (~18 x 4.2s = 75s), which is what SCENE_SCALE was for.
+        gap: Math.max(60, Math.round(240 * SCENE_SCALE)),
+        // ⭐ NO COLOUR. This is the player's own voice - no god is speaking, and a tint
+        // would attribute it to one.
+        colour: null,
+      })
+    } catch (e) { console.warn(TAG + 'ritual.begin threw :: ' + e) }
 
-    var at = 20
-    for (var i = 0; i < beats.length; i++) {
-      (function (text, delay) {
-        srv.scheduleInTicks(delay, function () {
-          try {
-            // ⚠️ RE-LOOKED-UP. Three minutes is long enough to log out in, and a stale
-            // player reference outlives the player.
-            var ps = srv.players
-            for (var k = 0; k < ps.length; k++) {
-              if (String(ps[k].uuid) !== uid) continue
-              // ⭐ THE INTERIOR SURFACE. This is the player's own voice - no god, no
-              // colour, no chime - which is the same register as the C3 asides, because
-              // it is the same thing: a person, thinking.
-              VELDORA.voice.aside(ps[k], text, {
-                seconds: beatSeconds(text),
-                priority: 'ANNOUNCE',
-              })
-              return
-            }
-          } catch (e) { }
-        })
-      })(beats[i], at)
-      at += beatTicks(beats[i]) + BEAT_GAP
+    // 🚨 A REFUSED SCENE MUST NOT COUNT AS SEEN. ritual.begin refuses if the player is
+    // already inside another ritual, and stamping K_SEEN above would then burn the only
+    // showing on a scene that never played. Un-stamp so the next login retries.
+    if (!okd) {
+      try { p.persistentData.putBoolean(K_SEEN, false) } catch (e) { }
+      console.warn(TAG + p.username + ' - ritual refused the opening; NOT marked seen, ' +
+        'it will retry on the next login')
+      return 'refused'
     }
 
     console.info(TAG + p.username + ' - opening ' + (lifeOf(p) + 1) + '/' + L.count() +
-      ', ' + beats.length + ' beats over ' + Math.round(at / 20) + 's' +
-      (forced ? ' (forced)' : ''))
+      ', ' + beats.length + ' beats as ONE ritual cutscene' + (forced ? ' (forced)' : ''))
     return 'played'
   }
 

@@ -1399,6 +1399,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // pure functions of trust and depth, which makes them exactly the part worth
     // testing without a server - and the part nobody can verify in play, because
     // checking a 40% ranged mix by eye across a 30-second wave is not possible.
+    // ⭐ Exported so the harness stops hardcoding it. tide_harness waited a literal
+    // 1200 ticks for this; raising it to 6000 made a correct test fail on a stale copy.
+    GRACE: GRACE,
     tiers: TIERS,
     mods: MODS,
     bosses: BOSSES,

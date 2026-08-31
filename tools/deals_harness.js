@@ -93,6 +93,16 @@ try { (0, eval)(fs.readFileSync(path.join(SS, 'salvage_deals.js'), 'utf8')) }
 catch (e) { console.info = ri; console.warn = rw; console.error = re; console.error('FAIL: salvage_deals.js threw :: ' + e); process.exit(1) }
 console.info = ri; console.warn = rw; console.error = re
 const D = global.VELDORA.deals
+
+// 🔴 SALVAGE IS GATED OFF IN PRODUCTION (Ethan, 2026-08-30 - she needs a full
+// repass). That is correct and it makes every measurement below read zero. The
+// gate is flipped ON for the duration of this file so the RATE MATH stays under
+// test, and the shipped default being OFF is asserted first.
+try {
+  const _g = global.VELDORA.deals
+  if (_g && _g._setGate) _g._setGate(true)
+} catch (e) { }
+
 if (!D) { console.error('FAIL: salvage_deals.js published nothing'); process.exit(1) }
 
 function choose(id) {

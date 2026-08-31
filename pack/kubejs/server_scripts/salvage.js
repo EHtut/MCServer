@@ -681,7 +681,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     server.scheduleInTicks(SAMPLE_TICKS, function () { sample(server) })
   }
 
-  VELDORA.salvage = { open: open, heldGun: heldGun, mintAmmo: mintAmmo,
+  VELDORA.salvage = {
+    // ⭐ TEST-ONLY. Salvage is gated OFF by ruling, which correctly makes her harnesses
+    // measure nothing. Deleting those tests to turn a feature off for a while would lose
+    // coverage of logic that is still correct, so the harness flips this around its own
+    // blocks and flips it back. Production never calls it; the default being OFF is
+    // itself asserted.
+    _setGate: function (v) { GATE = !!v }, open: open, heldGun: heldGun, mintAmmo: mintAmmo,
     maybeOpen: maybeOpen, harness: harness, priceMul: priceMul, payMul: payMul }
 
   ServerEvents.commandRegistry(function (event) {

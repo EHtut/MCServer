@@ -81,8 +81,22 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // 🔑 SO FODDER IS A MEASURED PROPERTY, NOT A VIBE, and the whole table was re-derived
   // against the live numbers rather than edited by hand:
   //
-  //     armor <= 2  AND  hp <= 30  AND  dmg <= 5  AND not a baby
-  //                  AND applies NO STATUS EFFECT on hit
+  //     FODDER IS THE DECREPIT SKELETON'S LEVEL OR BELOW - hp <= 16, arm <= 2,
+  //     dmg <= 3, not a baby, and NO status effect on hit.
+  //
+  // 🔴🔴 TIGHTENED HARD, 2026-08-30. Ethan: *"Almost everything listed as fodder are
+  // high level specialist enemies. Fodder should only be enemies with health, damage,
+  // and whatever in single digits."* then *"find the health for the decrepit skeleton
+  // and base it off that."*
+  //
+  // ⭐ THE DECREPIT SKELETON IS THE BENCHMARK - 15 hp / 0 armour / 3 damage. It is his
+  // bulk, so it IS the ceiling: anything stronger is a specialist. That cut SEVEN mobs
+  // out of fodder in one pass, every one of them 20-30 hp. The old line (hp <= 30) let
+  // a 30 hp Ghost sit in the crowd, which is twice the benchmark.
+  //
+  // ⚠️ FODDER IS DELIBERATELY SMALL NOW - two bone, two ghost. That is the rule being
+  // applied honestly rather than padded: the pack's undead are almost all 20+, and
+  // widening the line to fill the list is how it got wrong the first time.
   //
   // ⚠️ THE DAMAGE CLAUSE IS AN INFERENCE FROM HIS WORDS, not a number he gave. "Drag you
   // down" is what fodder does; `goety:reaper` is 24 hp with NO armour and would pass an
@@ -109,13 +123,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // (docs/73), registry-verified, AND proven to survive being summoned
   // (tools/spawn_persist_check.py — three shipped ids did not).
   var BONE_FODDER = [
-    'born_in_chaos_v1:decrepit_skeleton',   // 15 hp /  0 arm / 3 dmg — his bulk
-    'cataclysm:koboleton',                  // 25 hp /  0 arm / 3 dmg
-    'minecraft:stray',                      // 20 hp /  0 arm / 2 dmg
-    'minecraft:bogged',                     // 16 hp /  0 arm / 2 dmg
-    'born_in_chaos_v1:siamese_skeletons',   // 20 hp /  2 arm / 3 dmg — was "light"
-    'goety:bone_lord',                      // 20 hp /  0 arm / 3 dmg
-    'goety:rattled',                        // 20 hp /  0 arm / 2 dmg
+    'born_in_chaos_v1:decrepit_skeleton',   // 15 hp / 0 arm / 3 dmg — THE BENCHMARK
+    'minecraft:bogged',                     // 16 hp / 0 arm / 2 dmg
   ]
   // 🔴 `goety:skeleton_wolf` WENT WITH IT, caught by the screen written for the
   // dread mobs on its very first run. It is a goety SERVANT - its texture lives under
@@ -143,13 +152,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   // ⭐ GHOST FODDER — the Alternate. Lower armour, stranger silhouettes.
   var GHOST_FODDER = [
-    'goety:wraith',                         // 25 hp / 0 arm / 4 dmg
-    'goety:border_wraith',                  // 25 hp / 0 arm / 4 dmg
-    'goety:muck_wraith',                    // 25 hp / 0 arm / 4 dmg
-    'iceandfire:ghost',                     // 30 hp / 1 arm / 3 dmg
-    'minecraft:phantom',                    // 20 hp / 0 arm / 2 dmg
-    'goety:haunt',                          //  6 hp / 0 arm / 2 dmg — was "light"
+    'goety:haunt',                          //  6 hp / 0 arm / 2 dmg
   ]
+  // ⛔ `goety:crypt_slime` (1 hp) FITS THE RULE AND IS NOT HERE. It was never
+  // persistence-checked, it is slime-family so it may split, and at 1 hp it dies to
+  // anything without ever doing the one job fodder has. Left out rather than shipped
+  // unverified while a session was live.
   // 🔴 `goety:haunted_armor` WAS REMOVED FROM HERE AND IT WAS NOT A BALANCE CALL.
   // It DOES NOT SURVIVE BEING SUMMONED — measured 4 separate times, against a working
   // control, both with and without AI. It answers `summon` with "Summoned new Haunted
@@ -195,10 +203,15 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // "light specialists" — present but not punishing. ⚠️ These are what the 5-20%
   // specialist share draws from in general and miniboss waves.
   var BONE_LIGHT = [
-    'born_in_chaos_v1:bone_imp',            // 20 hp / 3.5 arm — armour rule, was fodder
-    'born_in_chaos_v1:baby_skeleton',       // 10 hp / 1 arm  — BABY rule, was fodder
+    'cataclysm:koboleton',                  // 25 hp / 0 arm / 3 dmg — was fodder
+    'minecraft:stray',                      // 20 hp / 0 arm / 2 dmg — was fodder
+    'born_in_chaos_v1:siamese_skeletons',   // 20 hp / 2 arm / 3 dmg — was fodder
+    'goety:bone_lord',                      // 20 hp / 0 arm / 3 dmg — was fodder
+    'goety:rattled',                        // 20 hp / 0 arm / 2 dmg — was fodder
+    'born_in_chaos_v1:bone_imp',            // 20 hp / 3.5 arm
+    'born_in_chaos_v1:baby_skeleton',       // 10 hp / 1 arm — BABY rule
     'cataclysm:draugr',                     // 28 hp / 3 arm / 4 dmg
-    'minecraft:wither_skeleton',            // 20 hp / 0 arm / 2 dmg — see below
+    'minecraft:wither_skeleton',            // 20 hp / 0 arm / 2 dmg — applies WITHER
   ]
   // 🔴🔴 `minecraft:wither_skeleton` MOVED HERE FROM FODDER, 2026-08-30. Ethan, from
   // play: *"wither skeletons are reported as 'too excessive' they should be
@@ -233,7 +246,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // that is a recurring silhouette rather than a monotony, and one honest entry beats a
   // second one picked to make the list look fuller.
   var GHOST_LIGHT = [
-    'goety:reaper',                         // 24 hp / 0 arm / 8 dmg — the damage clause
+    'goety:wraith',                         // 25 hp / 0 arm / 4 dmg — was fodder
+    'goety:border_wraith',                  // 25 hp / 0 arm / 4 dmg — was fodder
+    'goety:muck_wraith',                    // 25 hp / 0 arm / 4 dmg — was fodder
+    'iceandfire:ghost',                     // 30 hp / 1 arm / 3 dmg — was fodder
+    'minecraft:phantom',                    // 20 hp / 0 arm / 2 dmg — was fodder
+    'goety:reaper',                         // 24 hp / 0 arm / 8 dmg
   ]
 
   // Ethan's two, unchanged.

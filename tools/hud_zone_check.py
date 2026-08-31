@@ -41,7 +41,7 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VOICE = os.path.join(REPO, 'pack', 'kubejs', 'server_scripts', 'voice.js')
 TT = os.path.join(
     os.path.expanduser('~'), 'AppData', 'Roaming', 'PrismLauncher', 'instances',
-    'CogsAndCadavers-PrismInstance (4)', '.minecraft', 'config',
+    'CogsAndCadavers', '.minecraft', 'config',
     'travelerstitles-neoforge-1_21.toml')
 
 # Minecraft's font is 9px per line; a title's drawn height is that times its scale.

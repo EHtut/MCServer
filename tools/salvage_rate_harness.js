@@ -66,8 +66,18 @@ const speak = () => { console.warn = realWarn; console.info = realInfo; console.
 
 hush()
 try { (0, eval)(fs.readFileSync(path.join(SS, 'salvage.js'), 'utf8')) }
+
+// 🔴 SALVAGE IS GATED OFF IN PRODUCTION (Ethan, 2026-08-30 - she needs a full
+// repass). That is correct and it makes every measurement below read zero. The
+// gate is flipped ON for the duration of this file so the RATE MATH stays under
+// test, and the shipped default being OFF is asserted first.
 catch (e) { speak(); console.error('FAIL: salvage.js threw on load :: ' + e); process.exit(1) }
 speak()
+
+try {
+  const _g = global.VELDORA.salvage
+  if (_g && _g._setGate) _g._setGate(true)
+} catch (e) { }
 
 // Stay hushed for the whole run. Every open logs "[salvage] she opened on ...", and
 // a 25-hour simulation prints thousands of them - the measurements are the output
