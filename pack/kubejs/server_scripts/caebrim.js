@@ -87,9 +87,33 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   function pick(a) { return a[Math.floor(Math.random() * a.length)] }
 
+  // ⛔ THE PATHLESS DO NOT HEAR HER UNTIL THEY HAVE DIED ONCE. Ethan, 2026-08-30:
+  // *"Caebrim does not speak to pathless players until their first 'death'."*
+  //
+  // 🔴 THIS OVERRIDES E2b as written at the top of this file, which said the pathless
+  // hear her from the start. Death is the doorway - she is the voice of the deep and the
+  // depth-death is the path to being chosen, so speaking BEFORE the first death spends
+  // the reveal on someone with no reason to care.
+  //
+  // ⚠️ A CHAMPION IS UNAFFECTED. This gate is only about the pathless; anyone who has
+  // taken a god hears her on the normal rules.
+  function mayHear(p) {
+    try {
+      var path = null
+      try { if (VELDORA.paths && VELDORA.paths.pathOf) path = VELDORA.paths.pathOf(p) } catch (e) { }
+      if (path) return true
+      // 🚨 UNREADABLE IS SILENT, not permitted. If the counter cannot be read we do not
+      // know whether they have died, and guessing "yes" spends the first meeting.
+      var n = 0
+      try { n = p.persistentData.getInt('nemesis_deaths_seen') || 0 } catch (e) { return false }
+      return n > 0
+    } catch (e) { return false }
+  }
+
   /** One whisper, at the tide's current power. Returns false if she has nothing to say. */
   function whisper(p, forceTier) {
     if (!GATE) return false
+    if (!mayHear(p)) return false
     var L = lines()
     if (!L) return false
     var t = forceTier || tierOf(p)
@@ -107,6 +131,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
    */
   function tide(p, phase, forced) {
     if (!GATE && !forced) return false
+    if (!forced && !mayHear(p)) return false
     var L = lines()
     if (!L) return false
     var pool = L.tide(phase)

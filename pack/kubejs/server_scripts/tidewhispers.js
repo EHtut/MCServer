@@ -80,21 +80,57 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       '[CLAUDE-DRAFT] cold down here',
       '[CLAUDE-DRAFT] we were told to wait',
       '[CLAUDE-DRAFT] something moved',
+      '[CLAUDE-DRAFT] the light went out ages ago',
+      '[CLAUDE-DRAFT] was that the tide or',
+      '[CLAUDE-DRAFT] nobody came back up',
+      '[CLAUDE-DRAFT] keep counting',
+      '[CLAUDE-DRAFT] i lost the thread of it',
+      '[CLAUDE-DRAFT] there was a door here',
+      '[CLAUDE-DRAFT] it is not the dark that',
+      '[CLAUDE-DRAFT] how long has it',
+      '[CLAUDE-DRAFT] shh',
     ],
     near: [
       '[CLAUDE-DRAFT] it knows your name',
       '[CLAUDE-DRAFT] closer than that',
       '[CLAUDE-DRAFT] we were told to wait and we waited',
+      '[CLAUDE-DRAFT] do not look at the ceiling',
+      '[CLAUDE-DRAFT] it came through the wall',
+      '[CLAUDE-DRAFT] that is not stone',
+      '[CLAUDE-DRAFT] we said the same thing',
+      '[CLAUDE-DRAFT] it took the quiet one first',
+      '[CLAUDE-DRAFT] something is breathing wrong',
+      '[CLAUDE-DRAFT] go back go back',
+      '[CLAUDE-DRAFT] your light is showing you',
+      '[CLAUDE-DRAFT] there were more of us',
     ],
     close: [
       '[CLAUDE-DRAFT] you are standing on us',
       '[CLAUDE-DRAFT] it has already started',
       '[CLAUDE-DRAFT] there is no further down',
+      '[CLAUDE-DRAFT] turn around slowly',
+      '[CLAUDE-DRAFT] it is between you and the',
+      '[CLAUDE-DRAFT] do not let it hear the',
+      '[CLAUDE-DRAFT] we are under your feet',
+      '[CLAUDE-DRAFT] that was not your echo',
+      '[CLAUDE-DRAFT] it is copying you',
+      '[CLAUDE-DRAFT] hold still hold still',
+      '[CLAUDE-DRAFT] it has your shape now',
+      '[CLAUDE-DRAFT] stop digging',
     ],
     inside: [
       '[CLAUDE-DRAFT] we are already inside',
       '[CLAUDE-DRAFT] stop',
       '[CLAUDE-DRAFT] it is wearing your',
+      '[CLAUDE-DRAFT] too late for the',
+      '[CLAUDE-DRAFT] do not swallow',
+      '[CLAUDE-DRAFT] it is in the',
+      '[CLAUDE-DRAFT] that is not your hand',
+      '[CLAUDE-DRAFT] we were you',
+      '[CLAUDE-DRAFT] open your',
+      '[CLAUDE-DRAFT] it fits',
+      '[CLAUDE-DRAFT] there is no out',
+      '[CLAUDE-DRAFT] welcome ho',
     ],
   }
 
@@ -206,6 +242,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         try { if (VELDORA.screen && VELDORA.screen.isQuiet(p)) continue } catch (e) { }
         var waves = wavesOf(p)
         if (waves === null) continue
+        // 🔴 THE PATHLESS HEAR NOTHING. Ethan, from play 2026-08-30: *"the gods are
+        // already whispering to pathless players."*
+        //
+        // ⚠️ THIS FILE HAD NO PATH CHECK AT ALL - not a wrong one, NONE. `roll` walked
+        // every online player and gated only on quiet-mode and a wave count, so anyone
+        // standing in a tide heard the dead whether or not they had chosen a god. A
+        // player who has not joined the world's story yet should not be inside its
+        // atmosphere.
+        //
+        // 🔑 One line, and reversible: delete it and the dead talk to everyone again.
+        var path = null
+        try { if (VELDORA.paths && VELDORA.paths.pathOf) path = VELDORA.paths.pathOf(p) } catch (e) { }
+        if (!path) continue
         var band = bandFor(waves)
         if (Math.random() > band[1] * difficultyScale(p)) continue
         if (speak(p, band)) sent++; else skipped++

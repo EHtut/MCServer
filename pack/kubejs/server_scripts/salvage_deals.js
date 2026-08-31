@@ -42,7 +42,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
 ;(function () {
   var TAG = '[deals] '
-  var GATE = true
+  // ⛔ SALVAGE IS OFF. Ethan, 2026-08-30: *"lets disable salvage aswell. it will need a
+  // complete repass and not this session."*
+  //
+  // 🔴 THIS GATE WAS STILL `true` ON THE LIVE SERVER and she reached out within minutes of
+  // the new world - the ruling was made and never landed in the code. She comes back when
+  // the repass happens, not before.
+  var GATE = false
   var GOD = 'salvage'
   var COLOUR = '§6§l'
 

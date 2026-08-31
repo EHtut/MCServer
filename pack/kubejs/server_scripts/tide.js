@@ -71,7 +71,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ⚠️ AND SURFACING WIPES THE RUN, so every dip restarted that clock from zero. A
   // player who goes in and out - which is how anyone actually mines - could never
   // reach a wave at all.
-  var GRACE = 1200                // 60s minimum before the first wave can land
+  // 🔴 1200 -> 6000 on 2026-08-30. Sixty seconds was not a grace, it was an ambush -
+  // Ethan spawned into the fresh world and a wave killed him inside a minute. Five
+  // minutes is long enough to find a tool and a wall before the world starts hunting.
+  //
+  // ⚠️ This is the FLOOR between waves as well as the delay before the first, so it also
+  // stops a run from stacking waves on top of each other.
+  var GRACE = 6000                // 5 min minimum before the first wave can land
 
   // ⭐ THE FIRST WAVE IS ITS OWN WINDOW, NOT THE ORDINARY CADENCE. Going under has to
   // announce itself while you still remember choosing it; the 5-10 minute rhythm is
@@ -1106,6 +1112,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         try { uuid = String(p.uuid) } catch (e) { continue }
         var st = runs[uuid]
         if (!st) { st = runs[uuid] = { active: false, in: 0, out: 0, waves: 0, bosses: 0, next: 0, age: 0 } }
+
+        // ⛔ NO TIDES FOR THE PATHLESS. Ethan, from play 2026-08-30: *"TIDES SHOULD NOT
+        // SPAWN FOR PATHLESS PLAYERS!"* A player who has not chosen a god is not in the
+        // world's story yet and must not be hunted by it - he spawned into a fresh world
+        // and a wave killed him inside a minute.
+        //
+        // 🔑 Placed BEFORE the clock, not just before the landing. Gating only the wave
+        // would leave the countdown running, so a tide would fire the instant they took
+        // a path - arriving as a punishment for choosing one.
+        var tp = null
+        try { if (VELDORA.paths && VELDORA.paths.pathOf) tp = VELDORA.paths.pathOf(p) } catch (e) { }
+        if (!tp) {
+          if (st.active) { st.active = false; st.next = 0 }
+          continue
+        }
 
         var enc = enclosed(p)
         if (enc === null) continue          // cannot read sky: do nothing, ever

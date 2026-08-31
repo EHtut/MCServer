@@ -1596,7 +1596,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // 🚨 SAY WHAT WENT SILENT. A pool emptied by the draft filter is a REAL loss of
     // content, and the one failure mode this project keeps paying for is a subsystem that
     // is configured, running, and producing nothing without saying so.
-    var ds = draftSilenced()
+    // 🔴 `draftSilenced` IS THE ARRAY, NOT THE ACCESSOR. This read `draftSilenced()` and
+    // threw TypeError on every boot, killing the rest of this report - so the "what went
+    // silent" warning it exists to print never printed, which is the exact failure it was
+    // written to prevent.
+    //
+    // ⚠️ My sandbox test passed because it called the EXPORT (line ~1332), which IS a
+    // function. Testing the public surface proved nothing about the internal call.
+    var ds = draftSilenced
     if (ds.length) {
       var dn = 0
       for (var q = 0; q < ds.length; q++) dn += parseInt(String(ds[q]).split(' ')[1], 10) || 0
