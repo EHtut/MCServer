@@ -49,12 +49,21 @@ for (const f of files) {
   const sum = (clean.match(/^\s*(?:\d+\/\d+ passed\.?|\d+ passed|\d+ FAILED, \d+ passed|\d+ passed, \d+ failed)\s*$/m) || [''])[0].trim()
   // ⚠️ A missing summary on a non-zero exit is a CRASH, not a failure. They are different
   // facts and collapsing them is how a dead file passes for a failing one.
-  const isCrash = code !== 0 && !sum
+  // 🔴 EXIT 3 IS A THIRD STATE, NOT A CRASH. spawn_persist_check returns it for
+  // "some mobs could not be tested - re-run needed", which is deliberately distinct from
+  // both clean(0) and failing(1). Collapsing it into CRASH made a check that was working
+  // correctly look broken, and buried what it was actually telling us: the mobs it could
+  // not verify included the Hunt crew swapped in the same day.
+  const needsRerun = code === 3
+  const isCrash = code !== 0 && !sum && !needsRerun
   if (isCrash) { crashed++; bad.push([name, 'CRASH', (clean.trim().split('\n').pop() || '').slice(0, 70)]) }
+  else if (needsRerun) { bad.push([name, 'RERUN', sum || 'some cases untested']) }
   else if (code !== 0) { red++; bad.push([name, 'FAIL', sum]) }
   else green++
 
-  const badge = isCrash ? (R + 'CRASH' + X) : code !== 0 ? (R + ' FAIL' + X) : (G + '   ok' + X)
+  const badge = isCrash ? (R + 'CRASH' + X)
+    : needsRerun ? (Y + 'RERUN' + X)
+    : code !== 0 ? (R + ' FAIL' + X) : (G + '   ok' + X)
   console.log(badge + '  ' + name.padEnd(26) + (sum || ''))
 }
 
