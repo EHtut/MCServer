@@ -359,7 +359,15 @@ grp('* FORGE RAMBLES - and it must not look like Wall')
   // bypasses the queue. Do not quietly lower the per-line floor to make this number go
   // down; that reverses a ruling made from play.
   ok('🔑 no SINGLE sentence outlasts the referee model for a god',
-    f2.screen / f2.sends <= 14.5 && w2.screen / w2.sends <= 14.5, true)
+    // 🔴 WAS A HARDCODED 14.5. That is screen.js's HOLD.GOD - a constant the CODE owns,
+    // copied into a test. Five separate assertions broke in one session from exactly this
+    // (the scatter reach, the tide GRACE, the opening beat count twice, this), every time
+    // because a correct change to a value moved it out from under a stale copy.
+    //
+    // 🔑 Read it from the source. A test that carries its own number tests the number, not
+    // the behaviour.
+    f2.screen / f2.sends <= s2.V.screen.HOLD.GOD &&
+    w2.screen / w2.sends <= s2.V.screen.HOLD.GOD, true)
   ok('🚨 OPEN: four sentences still hold the screen ~50s - see the note above',
     f2.screen < 60 && w2.screen < 60, true)
   ok('...by her declared beatScale', fs_.beatScale < 1, true)

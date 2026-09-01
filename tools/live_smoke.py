@@ -92,10 +92,45 @@ def rcon(cmd):
 
 
 def log_text():
+    """The most recent boot's log, wherever it now lives.
+
+    🔴 THIS USED TO READ ONLY latest.log, AND THAT MADE THREE CHECKS EXPIRE. Minecraft
+    rotates the log at midnight, so the morning after a restart the boot evidence is in a
+    gzipped sibling and `kubejs scripts`, `entity rosters` and `gods registered pools` all
+    went UNKNOWN - on a server that was perfectly healthy.
+
+    ⚠️ Reporting UNKNOWN rather than green was correct; the EVIDENCE SOURCE was wrong. A
+    check that can only answer just after a restart is useless precisely when you would
+    ask it, which is of a long-running server.
+
+    🔑 So it walks back: latest.log first, then the newest rotated archives, until it finds
+    a boot. Still honest - if no boot line exists anywhere, the callers say UNKNOWN.
+    """
+    import glob
+    import gzip
+    texts = []
     try:
-        return io.open(LOG, encoding='utf-8', errors='replace').read()
+        texts.append(io.open(LOG, encoding='utf-8', errors='replace').read())
     except Exception:
-        return None
+        pass
+    if any('KubeJS server scripts' in t for t in texts):
+        return texts[0]
+    try:
+        d = os.path.dirname(LOG)
+        olds = sorted(glob.glob(os.path.join(d, '*.log.gz')),
+                      key=os.path.getmtime, reverse=True)[:6]
+        for f in olds:
+            try:
+                with gzip.open(f, 'rt', encoding='utf-8', errors='replace') as fh:
+                    t = fh.read()
+            except Exception:
+                continue
+            if 'KubeJS server scripts' in t:
+                # ⚠️ Newest FIRST, so a stale boot never masks a newer one.
+                return t
+    except Exception:
+        pass
+    return texts[0] if texts else None
 
 
 # ── 1. is it even up ────────────────────────────────────────────────────────
@@ -393,6 +428,10 @@ def c_recipes():
     except Exception:
         known = None
 
+    # ⚠️ A BASELINE IS ONLY AS GOOD AS THE LOG IT WAS TAKEN FROM. The first one here was
+    # captured after a midnight rotation, from a log containing no boot at all - so it
+    # recorded ZERO known failures and then reported all 31 real ones as new. Re-recorded
+    # once log_text() learned to walk back to the actual boot.
     if known is None:
         try:
             io.open(base_path, 'w', encoding='utf-8').write(json.dumps(fails, indent=1))

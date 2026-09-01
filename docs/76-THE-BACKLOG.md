@@ -429,3 +429,72 @@ at file time, not at draft time.**
 
 Art → Wall → Forge, then **C2a the priority model**, then whispers. Salvage stays last.
 If Ethan wants a different order, this file is where to say so.
+
+---
+
+# ⭐ THE TOOLKIT ARC — closed 2026-08-31
+
+> Four autonomous chunks, run overnight while Ethan slept. Ethan, 2026-08-30: *"we turn
+> them from dedicated functions into tools"* — these systems become the open-source way to
+> build stories and acts.
+>
+> ⛔ **Additive throughout. No live behaviour changed, the server was never restarted.**
+> Ethan tests in-game before anything else moves.
+
+| chunk | landed |
+|---|---|
+| 1 | `docs/80-THE-TOOLKIT-SEAMS.md` — the seam map and the doc audit |
+| 2 | `cutscene.js` + `cutscene_harness.js` — the general scene tool |
+| 3 | `speaker.js` + `speaker_harness.js`, `story_import.py` + `story_format_check.py` |
+| 4 | `docs/TOOLKIT.md` — the open-source facing doc; test audit; doc archive |
+
+**Suites:** `run_all` **36/36 green** · `live_smoke` **13/13**.
+
+## 🔑 What the arc actually found
+
+**The engine was already general and nobody had written that down.** A grep for
+`god|tide|path` suggests deep coupling — `voice.js` alone has 195 hits — but measured at
+the point of use, `ritual.js`, `broadcast.js` and `opening.js` have **zero** references to
+`VELDORA.paths/counter/tide/pantheon`. Most of those 195 are the *parameter named `god`*,
+already an opaque speaker key. The five real hardcoded names live in the `/gd` **debug
+command**, not the engine.
+
+⇒ So chunks 2 and 3 deliberately did **not** move working code. They added the vocabulary,
+the presets, the declared geometry and the **validators** — which is what was missing.
+Moving scene code while Ethan cannot test buys nothing and risks the one failure this
+project keeps paying for.
+
+## ⚠️ Still coupled to Veldora, on purpose
+
+- **`pantheon.js`** — the reference adapter. Keep it; it is the worked example of binding a
+  project's vocabulary to the tools.
+- **`bicker.js`** — the second adapter, tier/pair/god logic.
+- **`/gd`** — five hardcoded names in a debug command you use daily. Moving it changes a
+  tool without improving the product.
+- **`alignedTo`** — reaches for `VELDORA.paths`, but degrades to "everyone hears it" when
+  absent. An optional integration, not a dependency.
+
+## 🔴 Needs Ethan's judgement, not a refactor
+
+1. **Screen geometry.** Declared in `cutscene.geometry`, **not solved**. Keep-out bands
+   encode *this* client's HUD. The highest-risk coupling for any outside consumer.
+2. **`broadcast.js`'s two-player premise.** Whether the multi-listener gate becomes a
+   configurable minimum or is deleted is a story decision under the single-player reframe.
+3. **`opening_import.py` is broken against its own document** — it wants five sections and
+   finds zero, because the intro was rewritten as flat prose and `opening_lines.js` is now
+   generated directly. A stale tool; deciding the opening's real format is his call.
+4. **The docs marked UPDATE in `docs/80`** — `00-DESIGN`, `02-OPS-RUNBOOK`,
+   `11-OPEN-DECISIONS`, `21-THE-SIX-ROLES`, `23-THE-PATH-SYSTEM`, `17-PATHS-TO-POWER`,
+   `26-INTRODUCTIONS`. They are still true about mechanics and wrong about audience.
+5. **`13-CUT-LIST` / `07-THEME-AUDIT`** carry two rationales proven false (F44 accessories,
+   F31 collective, both annotated in `tools/modlist.json`). A health warning, not an edit.
+6. **`03-AI-DM-SEAM`** — single-player arguably makes it *more* interesting. Design, not rot.
+
+## ⛔ Known-imperfect, recorded rather than hidden
+
+- **`crashout_two_harness` flaked once** at 21/22, then passed 12 targeted runs and three
+  full sweeps. One flaky assertion in that file was fixed 2026-08-30; a second, rarer one
+  appears to remain. An intermittent test teaches people that red is noise.
+- **21 harnesses have no explicit negative control.** Found by a crude grep that is too
+  broad to act on wholesale — several likely do have controls phrased differently. Worth a
+  real pass, not a batch edit.
