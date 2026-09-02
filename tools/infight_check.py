@@ -113,23 +113,98 @@ def rostered():
 
 
 def camel_variants(name):
-    """`dread_thrall` -> DreadThrall, DreadThrallEntity, EntityDreadThrall."""
-    cam = ''.join(w.capitalize() for w in name.split('_'))
-    return (cam, cam + 'Entity', 'Entity' + cam)
+    """Every class-name shape a mod might use for `dread_thrall`.
+
+    ⚠️ THREE SHAPES WERE NOT ENOUGH AND THE GAP WAS INVISIBLE. This returned only
+    DreadThrall / DreadThrallEntity / EntityDreadThrall, and 12 of 45 rostered ids matched
+    none of them - 27% of the roster went unscreened while the tool reported "no rostered
+    mob carries a KNOWN targeting goal".
+
+    L_Ender's Cataclysm keeps the underscores and suffixes the class:
+        royal_draugr -> Royal_Draugr_Entity
+    """
+    parts = name.split('_')
+    cam = ''.join(w.capitalize() for w in parts)
+    snake = '_'.join(w.capitalize() for w in parts)      # Royal_Draugr
+    return (
+        cam, cam + 'Entity', 'Entity' + cam,
+        snake, snake + '_Entity', snake + 'Entity',
+    )
+
+
+# ⭐ CLIENT-SIDE CLASSES CANNOT CARRY AI GOALS, and matching one is worse than matching
+# nothing: it makes the id look screened when the thing that decides its targeting was
+# never read. The first broadened pass "matched" cataclysm mobs to their Renderers.
+CLIENT_ONLY = ('Renderer', 'Model', 'Layer', 'Animation', 'ClientSetup', 'ModelLayers')
+
+
+def is_client_class(simple_name):
+    return any(k in simple_name for k in CLIENT_ONLY)
+
+
+def find_by_id(index_by_jar, ns, name):
+    """Fallback: the class that actually CARRIES the registry id.
+
+    🔑 GUESSING NAMES DOES NOT SCALE - every mod invents its own convention and the tool
+    silently skips whatever it has not been taught. So when no name shape matches, look
+    for the id string itself in the jar's bytes and take the non-client classes that hold
+    it. That adapts to a mod nobody has seen instead of needing a new guess per author.
+
+    ⚠️ The id appears in registries (ModEntities) and renderers too, so client classes are
+    excluded and the registry aggregators are skipped - they name every mob in the mod and
+    would attribute one mob's goal to all of them.
+    """
+    # 🔴 THE FALLBACK MUST BE NAMESPACED OR IT INVENTS FINDINGS. The first version searched
+    # EVERY jar for the bare id, and reported `minecraft:skeleton` as carrying Goety's
+    # `Summoned$NaturalAttackGoal` - because the string "skeleton" appears in Goety's
+    # servant class. Vanilla skeletons carry no mod goal.
+    #
+    # ⚠️ A FALSE POSITIVE IS WORSE THAN THE GAP IT REPLACED: the gap was at least honest
+    # about being a gap, while a wrong finding sends somebody hunting a bug that is not
+    # there - and teaches them the screen cries wolf.
+    #
+    # 🔑 Vanilla ids are never searched: their classes are in the game jar, not a mod, and
+    # a mod jar mentioning "skeleton" is talking about its own thing. For a modded id, only
+    # jars whose filename plausibly belongs to that namespace are read.
+    if ns == 'minecraft':
+        return []
+    needle = name.encode('utf-8')
+    stem = ns.replace('_', '')
+    out = []
+    for jar, entries in index_by_jar.items():
+        base = os.path.basename(jar).lower().replace("'", '').replace('_', '').replace('-', '')
+        if stem not in base and base.split('.')[0] not in stem:
+            continue        # a different mod's jar cannot define this namespace's entity
+        try:
+            z = zipfile.ZipFile(jar)
+        except Exception:
+            continue
+        for entry in entries:
+            simple = entry.rsplit('/', 1)[-1][:-6]
+            if is_client_class(simple):
+                continue
+            if simple.startswith('Mod') or simple.startswith('CM') or 'Config' in simple:
+                continue      # registry/config aggregators name every mob in the mod
+            try:
+                if needle in z.read(entry):
+                    out.append((jar, entry))
+            except Exception:
+                continue
+    return out
 
 
 def scan():
     findings, unreadable = [], []
     ids, missing = rostered()
     if missing:
-        return None, None, missing, ids, []
+        return None, None, missing, ids, [], (0, 0)
     if not ids:
-        return None, None, ['<no ids parsed at all>'], ids, []
+        return None, None, ['<no ids parsed at all>'], ids, [], (0, 0)
 
     jars = [os.path.join(MODS, f) for f in sorted(os.listdir(MODS))
             if f.endswith('.jar')]
     if not jars:
-        return None, None, ['<no jars at %s>' % MODS], ids, []
+        return None, None, ['<no jars at %s>' % MODS], ids, [], (0, 0)
 
     # Index every class file once, by simple name.
     index = {}
@@ -142,11 +217,29 @@ def scan():
             if n.endswith('.class'):
                 index.setdefault(n.rsplit('/', 1)[-1][:-6], []).append((j, n))
 
+    # For the id fallback: every class entry, grouped by the jar that holds it.
+    by_jar = {}
+    for simple, hits in index.items():
+        for jar, entry in hits:
+            by_jar.setdefault(jar, []).append(entry)
+
     checked = 0
+    by_name = 0
+    by_id = 0
     for ns, name in ids:
         cands = []
         for v in camel_variants(name):
-            cands += index.get(v, [])
+            # ⚠️ Skip client-side matches. A Renderer makes an id LOOK screened while the
+            # class that decides its targeting was never read - worse than no match at all.
+            cands += [(j, e) for (j, e) in index.get(v, [])
+                      if not is_client_class(e.rsplit('/', 1)[-1][:-6])]
+        if cands:
+            by_name += 1
+        else:
+            # 🔑 No name shape matched - go and find the class that carries the id.
+            cands = find_by_id(by_jar, ns, name)
+            if cands:
+                by_id += 1
         if not cands:
             unreadable.append('%s:%s' % (ns, name))
             continue
@@ -159,11 +252,11 @@ def scan():
             for pat, why in REPORTABLE:
                 if pat in data:
                     findings.append(('%s:%s' % (ns, name), pat.decode(), why))
-    return findings, checked, [], ids, unreadable
+    return findings, checked, [], ids, unreadable, (by_name, by_id)
 
 
 def main():
-    findings, checked, failed, ids, unreadable = scan()
+    findings, checked, failed, ids, unreadable, how = scan()
 
     print('=' * 70)
     print('INFIGHTING SCREEN - does a rostered mob attack its own wave?')
@@ -201,15 +294,30 @@ def main():
     # and the list was being collected and then DISCARDED at the return - so a run where
     # only one mob in forty-five resolved looked exactly like a run where all of them did.
     # A screen that cannot state its own coverage is not a screen, it is a reassurance.
+    # 🔑 VANILLA AND MODDED GAPS ARE DIFFERENT FACTS AND MUST NOT SHARE A LIST. A vanilla
+    # id has no mod jar to read and carries no mod goal - that is expected and permanent.
+    # A MODDED id here means the tool failed to find a class it should have found.
+    #
+    # ⚠️ Printing them together buried the real signal: 12 unscreened ids read as one blob
+    # ending "most are vanilla", when five of them were modded cataclysm mobs that nothing
+    # had ever screened.
     if unreadable:
         pct = (100 * checked) // max(1, len(ids))
-        print('  ⚠ %d of %d id(s) (%d%% screened) HAVE NO CLASS FILE under any name this'
-              % (len(unreadable), len(ids), pct))
-        print('    tool guesses. They were NOT screened, and nothing below covers them:')
-        for u in sorted(unreadable):
-            print('       ' + u)
-        print('    Most are vanilla (no mod jar to read) - but a MODDED id in this list')
-        print('    means the guess missed, not that the mob is innocent.')
+        vanilla = sorted(u for u in unreadable if u.startswith('minecraft:'))
+        modded = sorted(u for u in unreadable if not u.startswith('minecraft:'))
+        print('  %d of %d id(s) screened (%d%%)' % (checked, len(ids), pct))
+        if vanilla:
+            print('    %d vanilla id(s) have no mod jar to read - expected, not a gap:'
+                  % len(vanilla))
+            print('       ' + ', '.join(v.split(':', 1)[1] for v in vanilla))
+        if modded:
+            print()
+            print('  🔴 %d MODDED id(s) WERE NOT SCREENED. The tool could not find their'
+                  % len(modded))
+            print('     class under any name shape OR by searching their own mod jar for')
+            print('     the id. That is a hole in this screen, not a clean bill:')
+            for u in modded:
+                print('       ' + u)
         print()
 
     if findings:
