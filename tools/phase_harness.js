@@ -73,7 +73,11 @@ grp("⭐ THE RULING — every Trial lands in 75–100 raw notoriety")
   ok('art (x3) needs 75, not 34', trialAt(3), 75)
 
   const all = [1, 2, 3].map(trialAt)
-  ok('🚨 every path is inside 75-100', all.every(v => v >= 75 && v <= 100), true)
+  // 🔑 THE FLOOR IS READ, NOT COPIED. This was `v >= 75` - a duplicate of TRIAL_RAW_FLOOR
+  // sitting a few lines above the assertion that pins it. `PH.trialRawFloor` is published
+  // exactly so consumers stop recomputing it, and this file is a consumer.
+  ok('🚨 every path is inside the published floor..cap window',
+    all.every(v => v >= PH.trialRawFloor && v <= 100), true)
 }
 
 grp('⭐ THE CURVE IS KEPT — a bigger coefficient still arrives sooner')
@@ -86,9 +90,14 @@ grp('⭐ THE CURVE IS KEPT — a bigger coefficient still arrives sooner')
 
 grp('🚨 THE FLOOR HOLDS AGAINST A COEFFICIENT NOBODY HAS INVENTED YET')
 {
-  ok('x4 is clamped, not extrapolated', trialAt(4), 75)
-  ok('x10 too', trialAt(10), 75)
-  ok('x1000 too', trialAt(1000), 75)
+  // 🔑 "CLAMPED" MEANS "EQUAL TO THE FLOOR", so that is what these say. They read a
+  // literal 75 - three more copies of TRIAL_RAW_FLOOR, on top of the one in the ruling
+  // group. Four assertions breaking together on a correct retune is the exact failure
+  // this repo has paid for repeatedly; the pin at the end of this group is the ONE place
+  // the number itself is asserted.
+  ok('x4 is clamped, not extrapolated', trialAt(4), PH.trialRawFloor)
+  ok('x10 too', trialAt(10), PH.trialRawFloor)
+  ok('x1000 too', trialAt(1000), PH.trialRawFloor)
   ok('🚨 no coefficient can drag a Trial below the floor',
     [4, 10, 50, 1000].every(c => trialAt(c) >= PH.trialRawFloor), true)
   ok('...and the floor is the published one', PH.trialRawFloor, 75)

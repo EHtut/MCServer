@@ -26,7 +26,26 @@ let DAY = 5
 let SAID = []
 let RITUAL_ACTIVE = false
 let PLAYER_Y = 64
-const CUTOFF = -64
+
+// 🔴🔴 THIS WAS `const CUTOFF = -64`, AND BOTH HALVES OF IT WERE WRONG.
+//
+// Found by an adversarial audit, 2026-09-01. The literal was a copy of a number
+// deep_speaker.js had already MOVED - `CUTOFF_Y` is -40, and that file's own comment
+// says why: at -64 the Speaker "would have fired essentially never". So the boundary
+// group below asserted an edge the game has not had for some time, and passed, because
+// the only thing it consulted was this harness's own copy of the number.
+//
+// ⚠️ AND THE RULE WAS WRONG TOO, WHICH IS THE WORSE HALF. -40 is only the FALLBACK for
+// a build that cannot read sky. The rule the game runs is `y < 0 && !sky` - "the depths"
+// is enclosure PLUS negative y, not a flat number (Ethan, 2026-08-22: *"anything that's
+// no ceilling and in negative y"*). A stub written as `PLAYER_Y <= CUTOFF` reproduced
+// the DEGRADED path and called it the contract.
+//
+// 🔑 THE FIX IS THIS PROJECT'S OLDEST RULE: measure at the point of USE. The stub below
+// no longer re-implements the boundary - it borrows deep_speaker.js's own `active`. A
+// change to that rule now moves this harness with it instead of out from under it.
+let CUTOFF = null            // deep_speaker.js's published fallback cutoff
+let REAL_ACTIVE = null       // ...and the real depth predicate it publishes
 
 const server = {
   players: [], overworld: () => ({ dayTime: () => DAY * 24000 + 6000 }),
@@ -51,6 +70,44 @@ global.BlockEvents = { placed: () => { }, broken: () => { }, rightClicked: () =>
 global.Text = { of: (s) => s }
 global.Item = { of: () => ({}) }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// ⭐ BORROW THE REAL DEPTH PREDICATE BEFORE ANYTHING ELSE LOADS.
+//
+// deep_speaker.js publishes `VELDORA.speaker` in its SCRIPT BODY (`cutoff`, `active`,
+// `speakers`); `registerLines` runs exclusively inside `ServerEvents.loaded`, which is
+// NOT run here - the handler is popped straight back off `LOADED`. So this capture is
+// side-effect-free and cannot disturb the boot-path group at the bottom, which still
+// loads the file itself and counts the registrations for real.
+//
+// 🚨 IT FAILS LOUD. If the seam moves, this must not quietly fall back to a literal -
+// that is the "I failed / I found nothing" collision, and a stale literal is exactly
+// what this block exists to remove.
+{
+  const savedLoaded = LOADED.length
+  global.VELDORA = {
+    paths: { pathOf: () => 'blade' },
+    ritual: { begin: () => true, active: () => false },
+    voice: { registerLines: () => true, setColour: () => { }, say: () => true, line: () => 'x' },
+    phase: { of: () => 'early' },
+  }
+  const rw = console.warn, ri = console.info, re = console.error
+  console.warn = () => { }; console.info = () => { }; console.error = () => { }
+  let err = null
+  try { (0, eval)(fs.readFileSync(path.join(SS, 'deep_speaker.js'), 'utf8')) }
+  catch (e) { err = e }
+  console.warn = rw; console.info = ri; console.error = re
+  LOADED.length = savedLoaded
+  const pub = global.VELDORA.speaker
+  if (err) { console.error('FAIL: deep_speaker.js threw while reading its cutoff :: ' + err); process.exit(1) }
+  if (!pub || typeof pub.active !== 'function' || typeof pub.cutoff !== 'number') {
+    console.error('FAIL: deep_speaker.js does not publish {cutoff, active} - the ' +
+      'boundary cannot be tested, and a hardcoded copy is what this replaced')
+    process.exit(1)
+  }
+  CUTOFF = pub.cutoff
+  REAL_ACTIVE = pub.active
+}
+
 global.VELDORA = {
   paths: { pathOf: () => 'blade' },
   ritual: { active: () => RITUAL_ACTIVE },
@@ -63,7 +120,11 @@ global.VELDORA = {
   },
   speaker: {
     cutoff: CUTOFF,
-    active: (p) => PLAYER_Y <= CUTOFF,
+    // ⭐ THE REAL PREDICATE, not a re-implementation of it. `say`/`forPath` stay stubs
+    // because this half of the file is testing idle.js's BILLING, and a recording stub
+    // is what lets us see which voice was charged. But WHICH voice is on duty is
+    // deep_speaker.js's decision, and it is now deep_speaker.js that makes it.
+    active: (p) => REAL_ACTIVE(p),
     forPath: () => ({ name: 'the Speaker' }),
     say: (p, tag) => { SAID.push({ kind: 'speaker', tag }); return true },
   },
@@ -186,7 +247,64 @@ grp("⭐ ETHAN'S CHANGE — a god may speak MORE THAN ONCE per world day")
   }
   server.overworld = realOw
   ok('speaks repeatedly within a single world day (was capped at 1)', spoke > 1, true)
-  ok('...but never twice inside the 90s floor', spoke <= 10, true)
+
+  // 🔴 THIS ASSERTED `spoke <= 10` INSIDE A TEN-ITERATION LOOP. `spoke` increments at
+  // most once per pass, so the condition was arithmetically incapable of being false -
+  // and it was the only thing in this file claiming the anti-stacking floor existed.
+  // A green tick that cannot go red is worse than no tick: it occupies the slot.
+  //
+  // ⚠️ AND THE OLD LOOP COULD NOT HAVE SEEN THE FLOOR EVEN IF IT HAD ASSERTED ONE. It
+  // steps 2400 ticks a pass, which is ABOVE the floor, so every attempt was legitimately
+  // allowed. Testing a floor requires stepping BELOW it.
+  //
+  // 🔑 MEASURED, NOT PINNED. idle.js does not export GAP_TICKS, so this asserts the
+  // floor's BEHAVIOUR - refused immediately, allowed eventually - and carries no copy of
+  // its value. A retune moves the measured gap; it does not break this.
+  {
+    const f = mkPlayer()
+    DAY = 41; PLAYER_Y = 64; RITUAL_ACTIVE = false
+    let clock = 0
+    server.overworld = () => ({ dayTime: () => DAY * 24000 + 6000 + clock })
+    ok('the first line of a fresh stretch lands', !!I.attempt(server, f, false), true)
+    ok('🚨 an immediate second attempt is refused - there IS a floor',
+      I.attempt(server, f, false), null)
+
+    // Walk forward in small steps until it speaks again. The guard is far past any
+    // plausible floor, so a floor that never lifts fails here rather than hanging.
+    let waited = 0, guard = 0
+    while (guard++ < 400) {
+      clock += 100
+      waited += 100
+      if (I.attempt(server, f, false)) break
+    }
+    ok('...and it does lift - the floor is a gap, not a mute', guard < 400, true)
+    ok('🚨 ...having actually held the line back for a real span, not one tick',
+      waited > 100, true)
+
+    // ⭐ THE RELATIONSHIP, WHICH IS THE PART THAT CARRIES MEANING. idle.js picks
+    // `deep ? DEEP_GAP : GAP_TICKS`, and the deep floor is deliberately the shorter of
+    // the two - *"he is why you came down"*. Their VALUES are tunable and neither is
+    // exported; their ORDER is the design. Measuring both and comparing catches the two
+    // failures that matter - a swapped ternary, or one floor collapsing to zero -
+    // without this file carrying a copy of either number.
+    const d = mkPlayer()
+    DAY = 42; PLAYER_Y = -127
+    clock = 0
+    server.overworld = () => ({ dayTime: () => DAY * 24000 + 6000 + clock })
+    ok('the first deep line lands', I.attempt(server, d, false), 'speaker')
+    let deepWait = 0, dguard = 0
+    while (dguard++ < 400) {
+      clock += 100
+      deepWait += 100
+      if (I.attempt(server, d, false)) break
+    }
+    server.overworld = realOw
+    ok('the deep floor lifts too', dguard < 400, true)
+    ok('🚨 the DEEP floor is shorter than the surface one - he is why you came down',
+      deepWait < waited, true)
+    console.log('      (measured floors: surface ' + waited + 't / ' + (waited / 20).toFixed(0) +
+      's, deep ' + deepWait + 't / ' + (deepWait / 20).toFixed(0) + 's)')
+  }
 }
 
 grp('THE GUARDS THE COMMENT WARNS ABOUT ARE INTACT')
@@ -206,18 +324,61 @@ grp('THE GUARDS THE COMMENT WARNS ABOUT ARE INTACT')
   RITUAL_ACTIVE = false
 }
 
-grp('THE CUTOFF DECIDES WHICH VOICE, AND -64 IS INCLUSIVE')
+grp('THE DEPTHS DECIDE WHICH VOICE - and "the depths" is enclosure AND negative y')
 {
+  // 🔴 THIS GROUP USED TO READ "-64 IS INCLUSIVE" AND TEST NOTHING BUT ITS OWN STUB.
+  // See the note at the top of the file. The boundary is now deep_speaker.js's, and
+  // the sandbox player reports sky exactly where a real one would: above y0.
   const p = mkPlayer()
   DAY = 20; RITUAL_ACTIVE = false
-  PLAYER_Y = -63; SAID = []
+  PLAYER_Y = -1; SAID = []
   I.attempt(server, p, true)
-  ok('y-63 is still the god (one block above the cutoff)', SAID[0].kind, 'idle')
+  ok('y-1 under a roof is ALREADY the Speaker - the depths start at y0',
+    SAID[0].kind, 'speaker')
 
   const q = mkPlayer()
-  PLAYER_Y = -64; SAID = []
+  PLAYER_Y = 1; SAID = []
   I.attempt(server, q, true)
-  ok('y-64 is already the Speaker (cutoff is inclusive)', SAID[0].kind, 'speaker')
+  ok('y1 is still the god - positive y is never the depths', SAID[0].kind, 'idle')
+
+  // 🚨 THE OTHER HALF OF THE RULE, AND THE ONE A FLAT NUMBER CANNOT EXPRESS. Deep AND
+  // enclosed. A player below y0 who can still see sky (a ravine, a deep valley) is not
+  // in the depths - the In Control README records this exact mistake twice, where an
+  // absolute height was used as a proxy for being underground.
+  const r = mkPlayer()
+  r.level = { canSeeSky: () => true, getEntitiesWithin: () => [] }
+  PLAYER_Y = -100; SAID = []
+  I.attempt(server, r, true)
+  ok('🚨 y-100 WITH SKY is the god, not the Speaker - depth alone is not the rule',
+    SAID[0].kind, 'idle')
+
+  // ⭐ AND THE OTHER CONJUNCT, ISOLATED THE SAME WAY. A roof over your head at a
+  // POSITIVE y is a basement, not the depths. Without this the two assertions above
+  // pass unchanged if the y term is deleted or its threshold drifts upward, because
+  // the sandbox player's sky is a function of its y and the two never disagree.
+  const u = mkPlayer()
+  u.level = { canSeeSky: () => false, getEntitiesWithin: () => [] }
+  PLAYER_Y = 1; SAID = []
+  I.attempt(server, u, true)
+  ok('🚨 an ENCLOSED player at y1 is still the god - enclosure alone is not the rule',
+    SAID[0].kind, 'idle')
+
+  // 🔑 THE NEGATIVE CONTROL. Every assertion above reads `SAID[0].kind`, so all three
+  // would pass against a system that had stopped consulting the predicate at all and
+  // simply always answered the same way. Flip the predicate and the SAME inputs must
+  // give the opposite answers; if they do not, this group is measuring nothing.
+  const realActive = REAL_ACTIVE
+  REAL_ACTIVE = (pl) => !realActive(pl)
+  const s = mkPlayer()
+  PLAYER_Y = 1; SAID = []
+  I.attempt(server, s, true)
+  ok('...with the predicate inverted, y1 becomes the Speaker (the group can fail)',
+    SAID[0].kind, 'speaker')
+  REAL_ACTIVE = realActive
+
+  // ...and the published fallback is still a real number, because a build that cannot
+  // read sky falls back to it. `null` here would mean the seam moved.
+  ok('deep_speaker.js still publishes a numeric fallback cutoff', typeof CUTOFF, 'number')
 }
 
 grp('A PATHLESS PLAYER HEARS NOBODY, AT ANY DEPTH')

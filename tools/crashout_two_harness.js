@@ -161,15 +161,43 @@ t('a crashout_flat pool routes to TWO movements', () => {
 })
 
 t('movement 1 alternates clean and garbled', () => {
-  const e = realRun(true)
-  const panic = movements(e).panic
-  assert(panic.length === 3, 'expected 3 panic lines, got ' + panic.length)
-  const flags = panic.map(s => !!s.obfuscate)
-  assert(flags[0] === false && flags[1] === true && flags[2] === false,
-    'panic must alternate clean/garbled/clean, got ' + JSON.stringify(flags))
-  // 🔑 MUTATION-BY-CONSTRUCTION: if the code used Math.random() instead of i % 2 this
-  // exact pattern would appear only 1 run in 8. Asserting the EXACT sequence is what
-  // makes the check able to fail; asserting "some are garbled" would not.
+  // 🔴 THIS WAS THE SECOND FLAKY ASSERTION IN THIS FILE, AND IT WAS `panic.length === 3`.
+  //
+  // `crashoutFor` collects DISTINCT lines: it draws from the pool at most 8 times, skips
+  // anything already taken, and stops at 3. Getting all 3 of a THREE-line pool inside 8
+  // draws fails about 3.3% of the time, so this file came back 21/22 roughly one run in
+  // thirty. Measured before the fix: 14/400 running this case alone, 1/120 running the
+  // whole file, and the 21/22 Ethan hit on 2026-08-31 was this.
+  //
+  // ⚠️ IT IS NOT A BUG IN voice.js, AND THE THRESHOLD IS NOT WHAT WAS WRONG. The 8-draw
+  // bound is deliberate - "looping until unique would spin forever on a one-line pool" -
+  // so a two-line panic is the designed degradation. The test was measuring a SAMPLE (how
+  // many lines this particular draw happened to yield) instead of the RULE (they alternate
+  // clean/garbled from the first one). The rule holds for however many lines arrive.
+  //
+  // 🔑 AND THE MUTATION SURVIVES - STRONGER THAN BEFORE. The point of asserting the exact
+  // sequence is that an implementation garbling with Math.random() must fail it. Over one
+  // three-line run such an implementation slipped through 1 time in 8; asserting the
+  // pattern positionally across every line of a dozen runs drops that to about 1 in 2^35.
+  let sawFull = 0
+  const RUNS = 12
+  for (let r = 0; r < RUNS; r++) {
+    const panic = movements(realRun(true)).panic
+    // The one thing that IS invariant: the first draw always lands, so a god with a
+    // crashout pool always gets a panic, and it can never exceed the pool.
+    assert(panic.length >= 1 && panic.length <= 3,
+      'run ' + r + ' produced ' + panic.length + ' panic lines, outside 1..3')
+    if (panic.length === 3) sawFull++
+    const flags = panic.map(s => !!s.obfuscate)
+    flags.forEach((f, i) => assert(f === (i % 2 === 1),
+      'panic must alternate clean/garbled starting clean; run ' + r + ' gave ' +
+      JSON.stringify(flags)))
+  }
+  // 🔑 THE CONTROL, so "fewer lines are fine" cannot rot into "one line is fine": the
+  // collection loop must still REACH the full panic. That happens 96.7% of the time, so
+  // twelve consecutive misses is not something chance produces (~1 in 10^17) - it means
+  // the dedup stopped filling, or movement 1 stopped being a burst.
+  assert(sawFull > 0, 'no run in ' + RUNS + ' produced the full 3-line panic')
 })
 
 t('movement 1 shakes even though Wall never shakes', () => {

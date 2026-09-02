@@ -65,8 +65,18 @@ for (const f of files) {
     out = (e.stdout || '') + (e.stderr || '')
   }
   const clean = strip(out)
-  // The summary line each file prints, in either of the two shapes they use.
-  const sum = (clean.match(/^\s*(?:\d+\/\d+ passed\.?|\d+ passed|\d+ FAILED, \d+ passed|\d+ passed, \d+ failed)\s*$/m) || [''])[0].trim()
+  // The summary line each file prints, in any of the shapes they use.
+  //
+  // 🔴 A SHAPE THIS MISSES TURNS EVERY FAILURE IN THAT FILE INTO A "CRASH", which is the
+  // one distinction this runner exists to keep. `crashout_two_harness` ends on a bare
+  // `22/22` and `story_format_check` on `10 checks passed`; neither matched, so when
+  // crashout_two flaked to 21/22 on 2026-08-31 this runner would have called it CRASH and
+  // printed a truncated stack-shaped last line - sending the reader looking for a thrown
+  // exception that was never there.
+  //
+  // ⚠️ Widened by MEASUREMENT, not by guess: the old and new patterns were run against all
+  // 36 files and differ on exactly those two, both from blank to their real summary.
+  const sum = (clean.match(/^\s*(?:\d+\/\d+(?: passed)?\.?|\d+(?: \w+)? passed|\d+ FAILED, \d+ passed|\d+ passed, \d+ failed)\s*$/m) || [''])[0].trim()
   // ⚠️ A missing summary on a non-zero exit is a CRASH, not a failure. They are different
   // facts and collapsing them is how a dead file passes for a failing one.
   // 🔴 EXIT 3 IS A THIRD STATE, NOT A CRASH. spawn_persist_check returns it for

@@ -50,6 +50,23 @@ const all = files.map(f => ({ f, src: fs.readFileSync(path.join(SS, f), 'utf8') 
 
 grp('THE CONFESSION IS GONE - and must not come back by accident')
 {
+  // 🚨 THE NEGATIVE CONTROL, AND IT COMES FIRST. Every assertion in this group is an
+  // ABSENCE - "no file references X" - and an absence is precisely what a sweep that read
+  // NOTHING also reports. Point SS somewhere wrong, or let the extension filter drift,
+  // and this would certify the retcon against zero files and print a clean 4/4.
+  //
+  // 🔑 "I found nothing" and "I did not look" must never share a result. So the sweep
+  // states its own size before it is trusted to report an empty one.
+  ok('the sweep actually read the script tree - an empty read is not a clean one',
+    all.length > 40, true)
+  ok('...and it read CONTENT, not just filenames',
+    all.every(x => x.src.length > 0), true)
+  // ⭐ And the file the retcon was ABOUT is definitely in the sweep. A filter that quietly
+  // stopped matching it would make this group vacuous while the count above still looked
+  // healthy.
+  ok('...including deep_speaker.js, the file this retcon emptied',
+    all.some(x => x.f === 'deep_speaker.js'), true)
+
   // ⚠️ Measured at the point of USE across the WHOLE tree, not in deep_speaker.js alone.
   // A retired idiom returns through NEW code; that has happened in this repo before.
   const hits = all.filter(x => /confessionEligible|speaker\.eligible|confessionStage/.test(x.src))

@@ -122,14 +122,14 @@ def scan():
     findings, unreadable = [], []
     ids, missing = rostered()
     if missing:
-        return None, None, missing, ids
+        return None, None, missing, ids, []
     if not ids:
-        return None, None, ['<no ids parsed at all>'], ids
+        return None, None, ['<no ids parsed at all>'], ids, []
 
     jars = [os.path.join(MODS, f) for f in sorted(os.listdir(MODS))
             if f.endswith('.jar')]
     if not jars:
-        return None, None, ['<no jars at %s>' % MODS], ids
+        return None, None, ['<no jars at %s>' % MODS], ids, []
 
     # Index every class file once, by simple name.
     index = {}
@@ -159,11 +159,11 @@ def scan():
             for pat, why in REPORTABLE:
                 if pat in data:
                     findings.append(('%s:%s' % (ns, name), pat.decode(), why))
-    return findings, checked, [], ids
+    return findings, checked, [], ids, unreadable
 
 
 def main():
-    findings, checked, failed, ids = scan()
+    findings, checked, failed, ids, unreadable = scan()
 
     print('=' * 70)
     print('INFIGHTING SCREEN - does a rostered mob attack its own wave?')
@@ -178,6 +178,39 @@ def main():
 
     print('  %d rostered id(s), %d matched to a class file' % (len(ids), checked))
     print()
+
+    # ⛔ ZERO MATCHED IS A FAILURE TO READ, NOT A PEACEFUL ROSTER.
+    #
+    # 🔴 Found by an adversarial audit, 2026-09-01. `checked` was computed and printed and
+    # never TESTED, so if every camel-case guess missed - a mod renaming its classes, an
+    # obfuscated jar, the mods folder pointed somewhere else - this fell straight through
+    # to "OK - no rostered mob carries a KNOWN mob-vs-mob targeting goal." Forty-five ids
+    # screened against nothing, reported as a clean bill of health.
+    #
+    # That is this file's own stated rule ("an empty roster read is a failure, not a clean
+    # run") applied one step further along: the roster parsed fine, and then nothing was
+    # matched to it. Both are "nothing was screened".
+    if not checked:
+        print('  !! NOT ONE ROSTERED ID MATCHED A CLASS FILE - this is a FAILURE, not a')
+        print('     pass. The rosters parsed, and then nothing was screened against them.')
+        print('     Check that %s is the live mods folder and that the' % MODS)
+        print('     naming guesses in camel_variants() still match this pack.')
+        return 2
+
+    # ⚠️ SAY WHAT WAS NOT SCREENED. The header promises this ("Say what was NOT screened")
+    # and the list was being collected and then DISCARDED at the return - so a run where
+    # only one mob in forty-five resolved looked exactly like a run where all of them did.
+    # A screen that cannot state its own coverage is not a screen, it is a reassurance.
+    if unreadable:
+        pct = (100 * checked) // max(1, len(ids))
+        print('  ⚠ %d of %d id(s) (%d%% screened) HAVE NO CLASS FILE under any name this'
+              % (len(unreadable), len(ids), pct))
+        print('    tool guesses. They were NOT screened, and nothing below covers them:')
+        for u in sorted(unreadable):
+            print('       ' + u)
+        print('    Most are vanilla (no mod jar to read) - but a MODDED id in this list')
+        print('    means the guess missed, not that the mob is innocent.')
+        print()
 
     if findings:
         print('  !! %d MOB(S) CARRY A MOB-VS-MOB TARGETING GOAL:' % len(findings))

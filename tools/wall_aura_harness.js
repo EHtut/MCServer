@@ -227,11 +227,27 @@ grp('⚠️ A BROKEN isMonster() DISABLES IT, LOUDLY — it must not bite everyt
 
 grp('⚠️ THE PER-SWEEP CEILING HOLDS')
 {
+  // 🔴 BOTH ASSERTIONS CARRIED A LITERAL 24 - wall_aura.js's MAX_PER_SWEEP. A TPS guard
+  // is exactly the kind of number that gets retuned off a live server, and both of these
+  // would have gone red on a correct retune while proving nothing about the ceiling.
+  //
+  // ⚠️ wall_aura.js exports radiusAt / biteAt / floorFrac but NOT MAX_PER_SWEEP, so it is
+  // read from the source. Exporting it would be a change to game code.
+  // 🚨 A MISSED READ IS A FAILURE, NOT A DEFAULT.
+  const mCap = /var MAX_PER_SWEEP = (\d+)/.exec(
+    fs.readFileSync(path.join(SS, 'wall_aura.js'), 'utf8'))
+  ok('wall_aura.js declares a per-sweep ceiling where this can read it',
+    !!mCap && +mCap[1] > 0, true)
+  const CAP = mCap ? +mCap[1] : -1
+
+  // 🔑 THE CANDIDATE POOL IS DERIVED FROM THE CEILING, not a fixed 60. Hardcoded, a
+  // ceiling raised past 60 would stop being reachable and the second assertion would fail
+  // for the wrong reason - "the cap was never hit" reported as "the cap broke".
   NEAR = []
-  for (let i = 0; i < 60; i++) NEAR.push(mob({ hp: 20, max: 20 }))
+  for (let i = 0; i < CAP * 2 + 12; i++) NEAR.push(mob({ hp: 20, max: 20 }))
   const touched = A._bite(server, player, 5)
-  ok('never touches more than the ceiling in one sweep', touched <= 24, true)
-  ok('...and the ceiling is actually reached with 60 candidates', touched, 24)
+  ok('never touches more than the ceiling in one sweep', touched <= CAP, true)
+  ok('...and the ceiling is actually reached when candidates exceed it', touched, CAP)
 }
 
 console.log('\n' + (fail === 0

@@ -297,5 +297,18 @@ for (const [name, fn] of CASES) {
     console.log('        ' + e.message)
   }
 }
-console.log((CASES.length - failed) + '/' + CASES.length)
+// 🚨 AN EMPTY CASE LIST IS A FAILURE, NOT A CLEAN RUN. `0/0` and `9/9` both exited 0
+// and both printed a summary run_all.js cannot parse - its regex wants the word "passed" -
+// so this file showed a BLANK count next to a green tick either way. A case list that
+// stopped being populated (a refactor, a bad merge, an early `return`) was therefore
+// indistinguishable, in the sweep, from a file passing everything it has.
+//
+// ⭐ Two fixes, because either alone still hides it: say "passed" so the sweep can READ
+// the count, and refuse to report success on a count of zero.
+if (!CASES.length) {
+  console.error('FAIL: no cases were registered - this file asserted NOTHING. ' +
+    'An empty run is a failure to test, never a pass.')
+  process.exit(1)
+}
+console.log((CASES.length - failed) + '/' + CASES.length + ' passed')
 process.exit(failed ? 1 : 0)

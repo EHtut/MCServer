@@ -914,8 +914,20 @@ grp('🧹 THE DESPAWN — "server cleanliness and lag", his ask 2026-08-30')
     d.indexOf("endRun(p, uuid, 'the player died', true)") !== -1, true)
   ok('⭐ the idle rule is keyed to KILLS, not to elapsed time',
     d.indexOf('st.lastKill') !== -1 && d.indexOf('DESPAWN_IDLE') !== -1, true)
-  ok('   ...5 minutes, read from the constant',
-    /var DESPAWN_IDLE = 6000/.test(d), true)
+  // 🔴 THIS WAS `/var DESPAWN_IDLE = 6000/` UNDER THE LABEL "read from the constant".
+  // It was the opposite: a copy of the constant's VALUE, asserted against tide.js's own
+  // source text. A correct retune of the idle window would have turned this red while
+  // the label insisted the number was being read rather than duplicated.
+  //
+  // 🔑 tide.js does not export DESPAWN_IDLE, so this asserts the two things that are
+  // actually contracts and neither of which is its value: it is DECLARED as a named
+  // constant (not a literal buried at the use site), and the sentence the player is shown
+  // DERIVES its minutes from that same constant instead of restating them.
+  const mIdle = /var DESPAWN_IDLE = (\d+)/.exec(d)
+  ok('   ...the idle window is a named constant, not a literal at the use site',
+    !!mIdle && +mIdle[1] > 0, true)
+  ok('   ...and the line the player sees derives its minutes from that constant',
+    d.indexOf('Math.round(DESPAWN_IDLE / 1200)') !== -1, true)
   ok('🚨 ...and it cannot fire before the first wave lands',
     d.indexOf('st.waves > 0 && (st.age - (st.lastKill || 0)) >= DESPAWN_IDLE') !== -1, true)
 

@@ -583,9 +583,37 @@ grp('* THE DEAD BANDS - a scattered line never lands where it cannot be read')
   // a forbidden band; a single escape is a line delivered onto the crosshair in play.
   const s = sandbox()
   const d = s.V.voice.dodgeCrosshair
-  const CROSS = 34                        // voice.CROSSHAIR_BAND
-  const TITLE_LO = -53, TITLE_HI = -11    // voice.TITLE_BAND
-  const CHAT = 60                         // voice.CHAT_FLOOR
+  // 🔴 ALL THREE OF THESE WERE HARDCODED COPIES OF NUMBERS voice.js OWNS - 34, -53/-11
+  // and 60 - sitting directly beneath a note explaining why the scatter reach below must
+  // NOT be hardcoded. The reach got the lesson; the bands it is measured against did not.
+  //
+  // ⚠️ A STALE COPY HERE FAILS IN BOTH DIRECTIONS. Widen a band in voice.js and this went
+  // on checking the old narrow one and passed (a real escape, reported green). Narrow one
+  // and this failed a correct change. Neither is a test.
+  //
+  // 🔑 THE INVARIANT IS RELATIONAL, and that is what makes reading them the right fix
+  // rather than a tautology: "whatever keep-out you declare, dodgeCrosshair never lands in
+  // it". A dodge that ignored its bands, inverted a sign, or clamped to an edge still
+  // fails this - only a band that MOVED stops being a false alarm.
+  const CROSS = s.V.voice.CROSSHAIR_BAND
+  ok('voice.js publishes its crosshair band', typeof CROSS, 'number')
+  // ⚠️ TITLE_BAND and CHAT_FLOOR are NOT on voice.js's export table, so they are read
+  // from its source the same way the scatter reach below is read from the god files.
+  // Exporting them would be a change to game code, which this harness may not make.
+  // 🚨 A MISSED SCRAPE IS A FAILURE, NOT A DEFAULT. Falling back to a literal is exactly
+  // the stale copy this replaced, so there is no fallback: it fails loudly instead.
+  const VSRC = fs.readFileSync(path.join(SS, 'voice.js'), 'utf8')
+  const mTitle = /var TITLE_BAND = \{ lo: (-?\d+), hi: (-?\d+) \}/.exec(VSRC)
+  const mChat = /var CHAT_FLOOR = (-?\d+)/.exec(VSRC)
+  ok('...and declares TITLE_BAND where this can still read it', !!mTitle, true)
+  ok('...and CHAT_FLOOR too', !!mChat, true)
+  if (!mTitle || !mChat) {
+    console.error('FAIL: voice.js moved TITLE_BAND / CHAT_FLOOR - the keep-out bands ' +
+      'cannot be read, so nothing below is measuring the real box')
+    process.exit(1)
+  }
+  const TITLE_LO = +mTitle[1], TITLE_HI = +mTitle[2]
+  const CHAT = +mChat[1]
   const N = 20000
 
   // 🔑 THE REACH IS READ FROM THE GOD FILES, NOT HARDCODED HERE. It was written as

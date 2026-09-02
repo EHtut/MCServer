@@ -21,7 +21,25 @@ const fs = require('fs')
 const path = require('path')
 const SS = path.join(__dirname, '..', 'pack', 'kubejs', 'server_scripts')
 
-const SAMPLE = 40                 // must match SAMPLE_TICKS in salvage.js
+// 🔴 THIS WAS `const SAMPLE = 40` UNDER THE COMMENT "must match SAMPLE_TICKS in
+// salvage.js" - a duplicated constant that documented itself as one and then relied on a
+// human noticing. Every rate below is measured PER SAMPLE, so a retune of the sampler
+// would not fail here: it would silently rescale every approach-rate this file reports
+// and keep the bands green against numbers that no longer mean what they say.
+//
+// ⚠️ salvage.js does not export SAMPLE_TICKS, so it is read from the source instead.
+// Exporting it would be a change to game code, which this harness may not make.
+// 🚨 A MISSED READ IS A FAILURE, NOT A DEFAULT - a literal fallback is the stale copy.
+const SAMPLE = (() => {
+  const m = /var SAMPLE_TICKS = (\d+)/.exec(
+    fs.readFileSync(path.join(SS, 'salvage.js'), 'utf8'))
+  if (!m) {
+    console.error('FAIL: salvage.js no longer declares SAMPLE_TICKS where this can read ' +
+      'it - every rate below would be measured in an unknown unit')
+    process.exit(1)
+  }
+  return +m[1]
+})()
 const MIN = 20 * 60               // ticks per real minute
 const LAST_OFFER = 'veldora_salvage_last_offer'
 

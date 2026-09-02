@@ -49,6 +49,27 @@ const CASES = []
 const t = (n, f) => CASES.push([n, f])
 function assert(c, m) { if (!c) throw new Error(m || 'failed') }
 
+// 🔴 THE CROSSHAIR BAND IS voice.js's NUMBER, AND THIS FILE CARRIED ITS OWN COPY.
+// The announcement case asserted `Math.abs(y) >= 34` - 34 being `voice.CROSSHAIR_BAND`,
+// a value the engine owns and has already moved once. A copy here goes stale silently:
+// widen the band in voice.js and this keeps clearing the OLD one, reports green, and her
+// one un-missable line sits on the crosshair - which is the exact play report that put
+// the band there.
+//
+// ⚠️ voice.js is not loaded in this sandbox (she only needs speakChunks), so the value is
+// read from its source. 🚨 A MISSED READ IS A FAILURE, NOT A DEFAULT - falling back to a
+// literal would quietly restore the stale copy this removes.
+const CROSSHAIR_BAND = (() => {
+  const m = /var CROSSHAIR_BAND = (\d+)/.exec(
+    fs.readFileSync(path.join(SS, 'voice.js'), 'utf8'))
+  if (!m) {
+    console.error('FAIL: voice.js no longer declares CROSSHAIR_BAND where this can read ' +
+      'it - the crosshair assertion below would be measuring a number nobody owns')
+    process.exit(1)
+  }
+  return +m[1]
+})()
+
 t('her tier is the TIDE, not a relationship', () => {
   assert(build(null).ctx.VELDORA.caebrim.tierOf({ uuid: 'p1' }) === null,
     'no tide must be null, not "low" - she has no register for a quiet world')
@@ -91,7 +112,8 @@ t('⭐ the tide announcement is CENTRED and does not scatter', () => {
   // crosshair is unreadable (Ethan, from play) - and this is the one line of hers that
   // must not be missed, so it is the last one that should be sitting there.
   assert(s.o.x === 0, 'must be horizontally centred, got x=' + s.o.x)
-  assert(Math.abs(s.o.y) >= 34, 'must clear the crosshair band, got y=' + s.o.y)
+  assert(Math.abs(s.o.y) >= CROSSHAIR_BAND,
+    'must clear voice.js\'s crosshair band (' + CROSSHAIR_BAND + '), got y=' + s.o.y)
   assert(s.o.priority === 'ANNOUNCE',
     'a warning behind ambience arrives after the thing it warned about')
 })
@@ -135,5 +157,18 @@ for (const [n, f] of CASES) {
     failed++; console.log('  FAIL  ' + n); console.log('        ' + e.message)
   }
 }
-console.log((CASES.length - failed) + '/' + CASES.length)
+// 🚨 AN EMPTY CASE LIST IS A FAILURE, NOT A CLEAN RUN. `0/0` and `9/9` both exited 0
+// and both printed a summary run_all.js cannot parse - its regex wants the word "passed" -
+// so this file showed a BLANK count next to a green tick either way. A case list that
+// stopped being populated (a refactor, a bad merge, an early `return`) was therefore
+// indistinguishable, in the sweep, from a file passing everything it has.
+//
+// ⭐ Two fixes, because either alone still hides it: say "passed" so the sweep can READ
+// the count, and refuse to report success on a count of zero.
+if (!CASES.length) {
+  console.error('FAIL: no cases were registered - this file asserted NOTHING. ' +
+    'An empty run is a failure to test, never a pass.')
+  process.exit(1)
+}
+console.log((CASES.length - failed) + '/' + CASES.length + ' passed')
 process.exit(failed ? 1 : 0)
