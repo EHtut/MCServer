@@ -36,7 +36,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 ;(function () {
   var TAG = '[forgetalk] '
   var GATE = true
-  var COLOUR = '§2§l'               // hers, from arrival.js
+  var COLOUR = '§2§l'               // hers. Registered via pantheon.define in forge_voice.js.
+                                    // ⚠️ Was 'from arrival.js' until that scene was cut 2026-09-05.
 
   var NIGHTS_NEEDED = 6             // "after the 6th night"
   var BENCH = 'minecraft:crafting_table'

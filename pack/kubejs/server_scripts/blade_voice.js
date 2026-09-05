@@ -764,6 +764,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // stays literally true here.
     VELDORA.pantheon.define(GOD, {
       label: 'The Warrior',
+      // 🔴 EXPLICIT NOW, BECAUSE arrival.js IS GONE. He never declared a colour and
+      // inherited voice.js's DEFAULT_COLOUR - which was harmless only because arrival.js
+      // was quietly calling setColour('blade', '§4§l') at boot for its own scene. Cutting
+      // that scene removed the one explicit registration in the pack, so the "one-line
+      // change" the note below defers is made here: same value, now stated where it belongs.
+      colour: '§4§l',
       // ⭐ The thresholds, declared once so pantheon.tierOf can read them. art and forge
       // published no tier function at all before this, which silently made every
       // bickering scene gated on them unreachable.

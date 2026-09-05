@@ -196,7 +196,6 @@ SYSTEM_NOTE = {
     "deep_speaker.js": "met in the depths, or on the 30th night",
     "voice.js": "the engine itself",
     "chosen.js": "being offered a path, or taking one",
-    "arrival.js": "the arrival",
     "harvest.js": "the Harvest",
     "reckoning.js": "the reckoning",
     "fall.js": "the fall",

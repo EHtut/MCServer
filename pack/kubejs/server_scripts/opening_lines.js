@@ -45,7 +45,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   VELDORA.openingLines = {
     sentences: function () { return SENTENCES.slice() },
     title: function () { return [TITLE] },
+    // ⛔ THERE IS ONE ORIGIN, AND count() IS GONE WITH THE RANDOMISED LIFE.
+    // Ethan cut it 2026-09-05: the story is the script he wrote, not a roll. build()
+    // used to take a life index and discard it, and count() was hardcoded to 1 - so the
+    // whole apparatus already described a single life while claiming to pick one.
     build: function () { return SENTENCES.slice() },
-    count: function () { return 1 },
   }
 })();

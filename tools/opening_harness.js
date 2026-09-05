@@ -158,24 +158,32 @@ t('🚨 the flag is stamped BEFORE the beats, so a disconnect cannot replay it',
   // that protects a disconnected player from replaying their origin story.
 })
 
-t('⭐ the life is STAMPED, not re-rolled', () => {
-  // A randomised backstory that changes is not a backstory.
+t('⛔ THE RANDOMISED LIFE IS CUT, AND MUST STAY CUT', () => {
+  // ⭐ ETHAN, 2026-09-05: *"we cut the old introduction and randomized life."* There is
+  // ONE origin - the script he wrote. This replaces two assertions that used to prove the
+  // life was stamped rather than re-rolled; both are meaningless now, and DELETING them
+  // without leaving something behind is how a cut feature quietly grows back.
+  //
+  // ⚠️ It was always one life in practice: count() was hardcoded to 1 and build()
+  // discarded the index it was handed. The apparatus described a roll it never made.
   const e = build()
-  const first = e.ctx.VELDORA.opening.lifeOf(e.player)
-  for (let i = 0; i < 40; i++) {
-    assert(e.ctx.VELDORA.opening.lifeOf(e.player) === first,
-      'the life changed between reads: ' + first + ' then ' +
-      e.ctx.VELDORA.opening.lifeOf(e.player))
-  }
+  assert(typeof e.ctx.VELDORA.opening.lifeOf !== 'function',
+    'lifeOf is back - the randomised life was cut')
+  assert(e.store['veldora_opening_which'] === undefined,
+    'the life index key is back in player data')
+  const src = fs.readFileSync(path.join(SS, 'opening_lines.js'), 'utf8')
+  assert(src.indexOf('count: function') === -1,
+    'opening_lines.count() is back - there is one origin, not a set to pick from')
 })
 
-t('...and a reset clears the life too, not just the flag', () => {
+t('⭐ ...and the one origin still delivers every beat', () => {
+  // 🔑 THE NEGATIVE ABOVE NEEDS THIS. On its own it would pass just as well against
+  // an opening that had been gutted entirely - "the life is gone" and "the story is gone"
+  // must not look the same.
   const e = build()
   e.ctx.VELDORA.opening.play(e.player, false)
-  e.ctx.VELDORA.opening.reset(e.player)
-  assert(e.ctx.VELDORA.opening.seen(e.player) === false, 'reset must clear seen')
-  assert(e.store['veldora_opening_which'] === 0,
-    'reset must clear the life, or replaying gives the same three beats')
+  assert(e.said.length === 18,
+    'expected the 18 sentences of the origin, got ' + e.said.length)
 })
 
 t('🚨 NO GOD APPEARS ANYWHERE IN IT', () => {

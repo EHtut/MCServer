@@ -89,7 +89,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 ;(function () {
   var TAG = '[forge] '
   var GOD = 'forge'
-  var COLOUR = '§2§l'          // dark green. Reserved for her centrally in arrival.js.
+  var COLOUR = '§2§l'          // dark green. Declared here and registered through
+                               // pantheon.define below. ⚠️ arrival.js used to reserve it
+                               // centrally; that scene was cut 2026-09-05.
 
   // Trust is the COUNTER: things built - blocks placed + items crafted + smelted
   // (counter_hooks.js, already live). ⭐ It was written for "The Thief" and it fits the

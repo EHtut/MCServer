@@ -41,7 +41,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var GATE = true
 
   var K_SEEN = 'veldora_opening_seen'
-  var K_WHICH = 'veldora_opening_which'   // which life they got, +1 so 0 means unset
+  // ⛔ K_WHICH IS GONE. It stored WHICH randomised life a player rolled; Ethan cut the
+  // randomised life 2026-09-05 - there is ONE origin, the script he wrote. A stored index
+  // into a one-element set is state that can only ever be wrong.
 
   // ⚠️ A WINDOW, not a fixed delay. 5-10 minutes, rolled per player, so two people
   // joining together do not get their origin stories in lockstep.
@@ -69,23 +71,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     try { return !!p.persistentData.getBoolean(K_SEEN) } catch (e) { return true }
   }
 
-  /**
-   * ⭐ THE LIFE IS STAMPED, not re-rolled. If the cutscene is ever replayed - by the admin
-   * command, or by a future "remember your origin" surface - the player must get the SAME
-   * past. A randomised backstory that changes is not a backstory.
-   */
-  function lifeOf(p) {
-    var L = lines()
-    if (!L) return 0
-    var n = L.count()
-    if (!n) return 0
-    var v = 0
-    try { v = p.persistentData.getInt(K_WHICH) } catch (e) { }
-    if (v > 0) return (v - 1) % n
-    var pick = Math.floor(Math.random() * n)
-    try { p.persistentData.putInt(K_WHICH, pick + 1) } catch (e) { }
-    return pick
-  }
 
   /**
    * Play it. Returns a REASON STRING, never a bare boolean - "did not play" has four
@@ -113,7 +98,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (!forced && !GATE) return 'gated'
     if (!forced && seen(p)) return 'already-seen'
 
-    var beats = L.build(lifeOf(p))
+    var beats = L.build()
     if (!beats || !beats.length) return 'empty'
 
     var srv = null
@@ -208,8 +193,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       return 'refused'
     }
 
-    console.info(TAG + p.username + ' - opening ' + (lifeOf(p) + 1) + '/' + L.count() +
-      ', ' + beats.length + ' beats as ONE ritual cutscene' + (forced ? ' (forced)' : ''))
+    console.info(TAG + p.username + ' - opening, ' + beats.length +
+      ' beats as ONE ritual cutscene' + (forced ? ' (forced)' : ''))
     return 'played'
   }
 
@@ -255,13 +240,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   VELDORA.opening = {
     play: play,
     seen: seen,
-    lifeOf: lifeOf,
     reset: function (p) {
       try {
         p.persistentData.putBoolean(K_SEEN, false)
-        // ⚠️ The LIFE is cleared too. Resetting to watch it again and getting the same
-        // three beats is a worse test than a fresh roll.
-        p.persistentData.putInt(K_WHICH, 0)
         return true
       } catch (e) { return false }
     },
@@ -274,9 +255,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       console.error(TAG + 'no lines - run `python tools/opening_import.py --write`')
       return
     }
-    var n = L.count()
-    var beats = L.build(0).length
-    console.info(TAG + n + ' life/lives, ' + beats + ' beats each. Fires ' +
+    var beats = L.build().length
+    console.info(TAG + beats + ' beats. Fires ' +
       (DELAY_MIN / 1200) + '-' + (DELAY_MAX / 1200) + ' minutes after login, ONCE per ' +
       'world (persistentData is per-world, so a new world is a new player). ' +
       'Delivered in the player\'s own voice - no god, no colour. ' +
@@ -293,8 +273,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
           var p = ctx.source.player
           if (!p) return 0
           var L = lines()
-          p.tell(Text.of('§8seen: §f' + seen(p) + '§8 · your life: §f' +
-            (L ? (lifeOf(p) + 1) + '/' + L.count() : '?')))
+          p.tell(Text.of('§8seen: §f' + seen(p) + '§8 · beats: §f' +
+            (L ? L.build().length : '?')))
           p.tell(Text.of('§8/opening play §7force it · §8/opening reset §7forget it'))
           return 1
         })
