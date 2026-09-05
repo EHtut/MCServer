@@ -1,0 +1,256 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Arkhdottir — dialogue emulator</title>
+<!--
+  The player half of tools/dialogue_emu.js. It is DATA-FREE until the tool injects a
+  timeline in place of the marker below, so this file can be opened and edited on its own.
+
+  ⛔ IT DRAWS WHAT THE PACK SENDS, NOT WHAT THE JAR DRAWS. Immersive Messages renders with
+  Minecraft's own font metrics and each god has a custom font (font:"veldora:art"), none of
+  which a browser can load. So SPEAKERS ARE DISTINGUISHED BY COLOUR HERE - Ethan's call,
+  2026-09-05: *"for the emulator you can use god colors so we don't have to use a font
+  system."* The colours are a reading aid in this window and nothing else; the gods carry
+  no colour in game.
+
+  ⇒ Trust: order, timing, duration, anchor, offset. Do not trust: wrapping, glyph width,
+    exact size. Those need the game.
+-->
+<style>
+  :root {
+    --bg: #0e0f12; --panel: #16181d; --line: #23262e; --ink: #e8eaf0; --dim: #8b90a0;
+    --accent: #d9a441; --bad: #e3564a; --ok: #5db07a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 13px/1.5 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+  header { padding: 14px 18px; border-bottom: 1px solid var(--line); display: flex;
+           align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  h1 { font-size: 15px; margin: 0; font-weight: 650; letter-spacing: .01em; }
+  .sub { color: var(--dim); font-size: 12px; }
+  .wrap { display: grid; grid-template-columns: minmax(0,1fr) 340px; gap: 18px; padding: 18px;
+          align-items: start; }
+  @media (max-width: 900px) { .wrap { grid-template-columns: minmax(0,1fr); } }
+
+  /* ── the screen ─────────────────────────────────────────────── */
+  .screenbox { background: #000; border: 1px solid var(--line); border-radius: 8px;
+               position: relative; overflow: hidden; aspect-ratio: 640 / 360; }
+  /* a flat stand-in for the world - deliberately plain, so text contrast is honest */
+  .screenbox::before { content: ''; position: absolute; inset: 0;
+    background: linear-gradient(#1b2430 0%, #26313c 55%, #2f3a34 55%, #202a24 100%); }
+  #stage { position: absolute; inset: 0; }
+  .beat { position: absolute; white-space: pre; font-weight: 600;
+          text-shadow: 2px 2px 0 rgba(0,0,0,.85); line-height: 1.1; }
+  .card { position: absolute; left: 50%; transform: translateX(-50%);
+          text-align: center; padding: 10px 22px; border-radius: 3px;
+          background: rgba(0,0,0,.72); }
+  .card .t { color: #ffd35c; text-decoration: underline; font-weight: 700; letter-spacing: .04em; }
+  .card .s { color: #e8eaf0; font-weight: 500; margin-top: 4px; }
+
+  /* keep-out bands, drawn only where they actually apply */
+  .zone { position: absolute; left: 0; right: 0; pointer-events: none;
+          background: repeating-linear-gradient(45deg, rgba(227,86,74,.14) 0 6px, transparent 6px 12px);
+          border-top: 1px dashed rgba(227,86,74,.5); border-bottom: 1px dashed rgba(227,86,74,.5); }
+  .zone span { position: absolute; right: 4px; top: 2px; font-size: 9px; color: #e3564a; opacity: .85; }
+  .crosshair { position: absolute; left: 50%; top: 50%; width: 9px; height: 9px;
+               transform: translate(-50%,-50%); opacity: .5; pointer-events: none; }
+  .crosshair:before, .crosshair:after { content: ''; position: absolute; background: #fff; }
+  .crosshair:before { left: 4px; top: 0; width: 1px; height: 9px; }
+  .crosshair:after { top: 4px; left: 0; height: 1px; width: 9px; }
+
+  /* ── controls ───────────────────────────────────────────────── */
+  .controls { display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  button { background: var(--panel); color: var(--ink); border: 1px solid var(--line);
+           border-radius: 6px; padding: 6px 13px; font: inherit; cursor: pointer; }
+  button:hover { border-color: #3a3f4b; }
+  button.on { border-color: var(--accent); color: var(--accent); }
+  input[type=range] { flex: 1; min-width: 160px; accent-color: var(--accent); }
+  .clock { font-variant-numeric: tabular-nums; color: var(--dim); min-width: 92px; }
+
+  /* ── the beat list ──────────────────────────────────────────── */
+  .list { background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+          max-height: 74vh; overflow: auto; }
+  .row { padding: 7px 11px; border-bottom: 1px solid var(--line); cursor: pointer;
+         display: grid; grid-template-columns: 52px 1fr; gap: 9px; }
+  .row:hover { background: #1b1e25; }
+  .row.now { background: #21252e; box-shadow: inset 3px 0 0 var(--accent); }
+  .row .t { color: var(--dim); font-variant-numeric: tabular-nums; font-size: 11px; }
+  .row .x { color: var(--dim); font-size: 11px; }
+  .flag { color: var(--bad); font-size: 11px; }
+  .legend { padding: 10px 12px; color: var(--dim); font-size: 11px; border-top: 1px solid var(--line); }
+  .swatch { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px;
+            vertical-align: -1px; }
+  footer { padding: 6px 18px 24px; color: var(--dim); font-size: 11px; max-width: 900px; }
+</style>
+
+<header>
+  <h1>Arkhdottir — dialogue emulator</h1>
+  <span class="sub" id="hd"></span>
+</header>
+
+<div class="wrap">
+  <div>
+    <div class="screenbox">
+      <div id="stage"></div>
+      <div class="crosshair" id="xh"></div>
+    </div>
+    <div class="controls">
+      <button id="play">▶ play</button>
+      <button id="back">⏮ restart</button>
+      <span class="clock" id="clock">0.0s</span>
+      <input type="range" id="scrub" min="0" value="0" step="0.05">
+      <button id="speed">1×</button>
+      <button id="zones" class="on">zones</button>
+    </div>
+  </div>
+  <div>
+    <div class="list" id="list"></div>
+    <div class="legend" id="legend"></div>
+  </div>
+</div>
+
+<footer id="caveat"></footer>
+
+<script>
+const DATA = /*__DATA__*/null;
+
+// Minecraft's GUI space at scale 3 on a 1080p screen. Anchors and x/y offsets are in
+// these units, so the mock uses them directly rather than inventing a mapping.
+const VW = 640, VH = 360;
+
+// ⚠️ EMULATOR-ONLY. The gods carry no colour in game - they carry custom FONTS, which a
+// browser cannot load. Colour stands in for font here purely so speakers are separable.
+const GOD_COLOUR = {
+  blade: '#e06c6c', wall: '#c08adf', salvage: '#e8b451',
+  forge: '#6fbf7a', art: '#6f9ddf', _default: '#e8eaf0',
+};
+const ANCHOR = {
+  CENTER_CENTER: [.5, .5, 'center'], CENTER_LEFT: [0, .5, 'left'], CENTER_RIGHT: [1, .5, 'right'],
+  BOTTOM_CENTER: [.5, 1, 'center'], BOTTOM_LEFT: [0, 1, 'left'], BOTTOM_RIGHT: [1, 1, 'right'],
+  TOP_CENTER: [.5, 0, 'center'], TOP_LEFT: [0, 0, 'left'], TOP_RIGHT: [1, 0, 'right'],
+};
+
+const stage = document.getElementById('stage');
+const listEl = document.getElementById('list');
+const scrub = document.getElementById('scrub');
+const clockEl = document.getElementById('clock');
+const playBtn = document.getElementById('play');
+const speedBtn = document.getElementById('speed');
+const zonesBtn = document.getElementById('zones');
+
+const beats = (DATA && DATA.beats) || [];
+const cps = (DATA && DATA.typeCps) || 15;
+const END = beats.length ? Math.max(...beats.map(b => b.at + b.shownS)) + 1 : 1;
+let t = 0, playing = false, speed = 1, showZones = true, last = null;
+
+document.getElementById('hd').textContent = DATA
+  ? DATA.name + ' — ' + DATA.what + ' · ' + beats.length + ' beats · ' + END.toFixed(1) + 's'
+  : 'no timeline injected';
+document.getElementById('caveat').textContent =
+  'Timing, order, duration, anchor and offset come from the pack’s own code and are exact. ' +
+  'Wrapping, glyph width and exact size need the game — each god renders in a custom font ' +
+  'this window cannot load, so colour stands in for font here and nowhere else.';
+scrub.max = END;
+
+function godOf(b) {
+  const m = /veldora:(\w+)/.exec(b.command || '');
+  return m ? m[1] : null;
+}
+
+// The keep-out bands are CENTRE-RELATIVE, so they are drawn measured from the centre line.
+function drawZones() {
+  document.querySelectorAll('.zone').forEach(n => n.remove());
+  if (!showZones || !DATA) return;
+  for (const z of DATA.zones) {
+    const top = VH / 2 + z.from, bot = VH / 2 + Math.min(z.to, VH);
+    const d = document.createElement('div');
+    d.className = 'zone';
+    d.style.top = (top / VH * 100) + '%';
+    d.style.height = ((bot - top) / VH * 100) + '%';
+    d.innerHTML = '<span>' + z.name + '</span>';
+    stage.appendChild(d);
+  }
+}
+
+function render() {
+  const active = beats.filter(b => t >= b.at && t < b.at + b.shownS);
+  const b = active.length ? active[active.length - 1] : null;
+  if (b !== last) { stage.innerHTML = ''; drawZones(); last = b; }
+  else if (b) { const e = stage.querySelector('.beat,.card'); if (e) e.remove(); }
+  if (!b) { highlight(-1); return; }
+
+  if (b.kind === 'popup') {
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.style.top = '42%';
+    el.innerHTML = '<div class="t" style="font-size:22px"></div><div class="s" style="font-size:13px"></div>';
+    el.querySelector('.t').textContent = b.text;
+    el.querySelector('.s').textContent = b.subtitle || '';
+    stage.appendChild(el);
+  } else {
+    const a = ANCHOR[b.anchor] || ANCHOR.TOP_CENTER;
+    const el = document.createElement('div');
+    el.className = 'beat';
+    // Typed so far, at the pack's own characters-per-second.
+    const shown = b.typewriter ? Math.max(0, Math.floor((t - b.at) * cps)) : b.text.length;
+    el.textContent = b.text.slice(0, shown);
+    el.style.color = GOD_COLOUR[godOf(b)] || GOD_COLOUR._default;
+    el.style.fontSize = (9 * (b.size || 1.4)) / VH * 100 + 'cqh';
+    el.style.fontSize = Math.max(10, 9 * 1.6) + 'px';
+    const left = a[0] * VW + (b.x || 0), top = a[1] * VH + (b.y || 0);
+    el.style.left = (left / VW * 100) + '%';
+    el.style.top = (top / VH * 100) + '%';
+    el.style.transform = 'translate(' + (a[2] === 'center' ? '-50%' : a[2] === 'right' ? '-100%' : '0') + ',-50%)';
+    if (a[0] === 0) el.style.left = ((left + 14) / VW * 100) + '%';
+    stage.appendChild(el);
+  }
+  highlight(b.i);
+}
+
+function highlight(i) {
+  listEl.querySelectorAll('.row').forEach(r => r.classList.toggle('now', +r.dataset.i === i));
+}
+
+function buildList() {
+  listEl.innerHTML = '';
+  for (const b of beats) {
+    const r = document.createElement('div');
+    r.className = 'row'; r.dataset.i = b.i;
+    const flags = [];
+    if (!b.delivered) flags.push('not delivered');
+    if (b.shownS > 15) flags.push('>15s');
+    if (b.truncated) flags.push('cut mid-type');
+    if (b.queuedS > 0.05) flags.push('queued ' + b.queuedS.toFixed(1) + 's');
+    r.innerHTML = '<div class="t">' + b.at.toFixed(1) + 's</div><div><div></div>' +
+      '<div class="x">' + b.anchor + (b.y ? ' y' + b.y : '') + '</div>' +
+      (flags.length ? '<div class="flag">' + flags.join(' · ') + '</div>' : '') + '</div>';
+    r.querySelector('div > div').textContent = b.text + (b.subtitle ? ' / ' + b.subtitle : '');
+    const g = godOf(b);
+    if (g) r.querySelector('div > div').style.color = GOD_COLOUR[g] || GOD_COLOUR._default;
+    r.onclick = () => { t = b.at + 0.01; playing = false; playBtn.textContent = '▶ play'; sync(); };
+    listEl.appendChild(r);
+  }
+  const gods = [...new Set(beats.map(godOf).filter(Boolean))];
+  document.getElementById('legend').innerHTML = gods.length
+    ? 'colour = speaker (emulator only): ' + gods.map(g =>
+        '<span class="swatch" style="background:' + (GOD_COLOUR[g] || GOD_COLOUR._default) + '"></span>' + g).join('  ')
+    : 'one voice, no god — the origin script is the player’s own.';
+}
+
+function sync() { scrub.value = t; clockEl.textContent = t.toFixed(1) + 's / ' + END.toFixed(1) + 's'; render(); }
+
+let prev = performance.now();
+function tick(now) {
+  const dt = (now - prev) / 1000; prev = now;
+  if (playing) { t += dt * speed; if (t >= END) { t = END; playing = false; playBtn.textContent = '▶ play'; } sync(); }
+  requestAnimationFrame(tick);
+}
+
+playBtn.onclick = () => { playing = !playing; if (t >= END) t = 0; playBtn.textContent = playing ? '⏸ pause' : '▶ play'; };
+document.getElementById('back').onclick = () => { t = 0; sync(); };
+scrub.oninput = () => { t = +scrub.value; sync(); };
+speedBtn.onclick = () => { speed = speed === 1 ? 2 : speed === 2 ? 8 : 1; speedBtn.textContent = speed + '×'; };
+zonesBtn.onclick = () => { showZones = !showZones; zonesBtn.classList.toggle('on', showZones); last = null; sync(); };
+document.getElementById('xh').style.display = 'block';
+
+buildList(); sync(); requestAnimationFrame(tick);
+</script>
