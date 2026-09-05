@@ -1,4 +1,4 @@
-// stalker.js — C5 + C6 of the Stalker build.  docs/19-STALKER-BUILD.md
+// stalker.js — C5 + C6 of the Stalker build.  docs/archive/19-STALKER-BUILD.md
 //
 // C5  THE INVARIANT: in phases 1–3 a stalker cannot die. Below the flee
 //     threshold the incoming damage is CANCELLED, it leaves, and it is

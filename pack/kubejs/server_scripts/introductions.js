@@ -1,4 +1,4 @@
-// introductions.js - I2 of the Introductions build.  docs/26-INTRODUCTIONS.md
+// introductions.js - I2 of the Introductions build.  docs/archive/26-INTRODUCTIONS.md
 //
 // The six scenes, and what refusing one costs.
 //

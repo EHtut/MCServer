@@ -48,7 +48,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var COOLDOWN_DAYS = 3                 // in-game days. ~1 hour of real play.
   var CD_KEY = 'veldora_path_cooldown'  // world day the player may take a path again
 
-  // Beat 6 from docs/25-PATRON-DIALOGUE.md. Ethan's own lines outrank these.
+  // Beat 6 from docs/archive/25-PATRON-DIALOGUE.md. Ethan's own lines outrank these.
   var DISMISSAL = {
     blade: 'What I needed is mine. Go.',
     salvage: 'Enough.',

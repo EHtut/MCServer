@@ -1,6 +1,6 @@
 """Apply the theme-audit decisions to modlist.json.
 
-Companion to docs/07-THEME-AUDIT.md. Every cut here traces to a numbered audit
+Companion to docs/archive/07-THEME-AUDIT.md. Every cut here traces to a numbered audit
 finding and an explicit decision, so the reasoning survives longer than the
 conversation that produced it. Like trim_to_budget.py, cuts are DATA: delete a
 line and re-run to restore the mod.
@@ -98,7 +98,7 @@ CUTS: dict[str, str] = {
     #   "apotheosis needs to go. period."
     #   "it feels very gamey with the minimap and the indicator of who
     #    you're attacking. GUI should be minimal."
-    "apotheosis": "F38. Ethan's call, 2026-08-02: \"apotheosis needs to go. period.\" Its World Tier tutorial screen fires on first join in every new world, and with the pack regenerating repeatedly during testing it fired every time - crashing the whole group on the join that was supposed to be the first playable session. There is no config key to suppress it (world_tiers exposes only 'Enable Manual World Tier Changes'). A gameplay system that cannot be prevented from interrupting a join is not worth its affix curve.\n\n        NOTE: this retires D7 in docs/10-DEPTH-LOOP.md, which planned to bind Apotheosis's rarity tiers to depth as the progression answer to \"Epic Knights gets weak really fast\". That problem is now unsolved again and needs a different mechanism.",
+    "apotheosis": "F38. Ethan's call, 2026-08-02: \"apotheosis needs to go. period.\" Its World Tier tutorial screen fires on first join in every new world, and with the pack regenerating repeatedly during testing it fired every time - crashing the whole group on the join that was supposed to be the first playable session. There is no config key to suppress it (world_tiers exposes only 'Enable Manual World Tier Changes'). A gameplay system that cannot be prevented from interrupting a join is not worth its affix curve.\n\n        NOTE: this retires D7 in docs/archive/10-DEPTH-LOOP.md, which planned to bind Apotheosis's rarity tiers to depth as the progression answer to \"Epic Knights gets weak really fast\". That problem is now unsolved again and needs a different mechanism.",
     "apothic-attributes": "F38. Apotheosis addon - goes with it.",
     "apothic-enchanting": "F38. Apotheosis addon - goes with it.",
     "apothic-spawners": "F38. Apotheosis addon - goes with it.",
@@ -115,7 +115,7 @@ CUTS: dict[str, str] = {
     # amount to actually get the server fully started... We can add them back
     # overtime anyways."
     #
-    # Tiers and full rationale: docs/13-CUT-LIST.md. The triage behind it:
+    # Tiers and full rationale: docs/archive/13-CUT-LIST.md. The triage behind it:
     # docs/12-TRIAGE.md - all 398 jars opened, content counted, dependency
     # graph built. It found the pack's chosen core is ~34 content mods; the
     # other 115 'mandatory' entries are libraries downstream of those.
@@ -501,7 +501,7 @@ def main() -> int:
 
     data["theme_audit"] = {
         "_comment": [
-            "Applied by tools/apply_audit.py; findings in docs/07-THEME-AUDIT.md.",
+            "Applied by tools/apply_audit.py; findings in docs/archive/07-THEME-AUDIT.md.",
             "Cuts are data, not history: delete an entry from CUTS and re-run to restore.",
         ],
         "cuts": [[slug, reason] for slug, reason in sorted(CUTS.items())],

@@ -5,7 +5,7 @@
 // and dies with "{} is not a function".
 var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
-// notoriety.js — C1 of the Stalker build.  docs/19-STALKER-BUILD.md
+// notoriety.js — C1 of the Stalker build.  docs/archive/19-STALKER-BUILD.md
 //
 //   notoriety = max( current XP level , daysSinceLastHarvest × rate )
 //

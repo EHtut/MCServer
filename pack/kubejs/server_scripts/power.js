@@ -1,4 +1,4 @@
-// power.js — C3 of the Stalker build.  docs/19-STALKER-BUILD.md
+// power.js — C3 of the Stalker build.  docs/archive/19-STALKER-BUILD.md
 //
 // XP is not only a drop multiplier, it is POWER. As notoriety climbs you get
 // harder to kill and hit harder — which is what closes the design's loop: the

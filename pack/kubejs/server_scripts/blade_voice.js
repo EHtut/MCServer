@@ -65,7 +65,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // than one that waits); the pools were simply never filled.
     //
     // ⭐ FILLED 2026-08-24 AS DRAFTS, against the writing sheets in
-    // `docs/45-BLADE-LINES.md` - line counts and voice constraints taken from there
+    // `docs/archive/45-BLADE-LINES.md` - line counts and voice constraints taken from there
     // rather than invented. Every one is marked [CLAUDE-DRAFT] and appears in
     // `docs/51` for Ethan's pass.
     // ═══════════════════════════════════════════════════════════════════════

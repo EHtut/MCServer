@@ -9,7 +9,7 @@
 // ⚠️ ETHAN WRITES THESE. Claude wrote a full set on 2026-08-15 and they were cut:
 // "the lines you write are usually obviously ai generated. You only do code unless
 // I ask you to bulk lines." The TAGS and the comments are the brief; the arrays are
-// his. Same list as a fill-in sheet: docs/44-SALVAGE-LINES.md
+// his. Same list as a fill-in sheet: docs/archive/44-SALVAGE-LINES.md
 //
 // A placeholder line is worse than an empty pool - it anchors the writing and gets
 // mistaken for content later. Empty is honest, and the boot log shouts about it.

@@ -1,6 +1,6 @@
 """Push materials down to the depth where they belong.
 
-THE RULE THIS ENFORCES (docs/10-DEPTH-LOOP.md §2b, Ethan's framing)
+THE RULE THIS ENFORCES (docs/archive/10-DEPTH-LOOP.md §2b, Ethan's framing)
 
     The depths hold what wouldn't make sense to exist in a fantasy world.
     Gems, gunpowder, modern technology.
@@ -176,7 +176,7 @@ def main() -> int:
         "pack": {
             "pack_format": PACK_FORMAT,
             "description": "Pushes materials to the depth they belong at "
-                           "(docs/10-DEPTH-LOOP.md §2b).",
+                           "(docs/archive/10-DEPTH-LOOP.md §2b).",
         }
     }, indent=2) + "\n", encoding="utf-8", newline="\n")
 

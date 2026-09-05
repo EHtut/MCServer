@@ -59,7 +59,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     wall: 'grief', salvage: 'appetite', art: 'readiness',
   }
 
-  // Curated from docs/25-PATRON-DIALOGUE.md. Ethan's own lines outrank these; the
+  // Curated from docs/archive/25-PATRON-DIALOGUE.md. Ethan's own lines outrank these; the
   // three marked there as needing a rewrite are carried as-is until he replaces
   // them, because a placeholder that never ships is how a feature ends up shadow
   // -built and silently dead.

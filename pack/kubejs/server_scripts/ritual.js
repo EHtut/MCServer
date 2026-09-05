@@ -1,4 +1,4 @@
-// ritual.js - I1 of the Introductions build.  docs/26-INTRODUCTIONS.md
+// ritual.js - I1 of the Introductions build.  docs/archive/26-INTRODUCTIONS.md
 //
 // THE ATTENTION RITUAL. A primitive, deliberately NOT an introduction feature.
 // Three known consumers: the introductions (I2), Salvage's trades, Wall's requests.

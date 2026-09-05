@@ -1,174 +1,130 @@
-# docs — the index, and where things go
+# docs — the index
 
-*Written 2026-08-14 after Ethan called it: **"can we work off the same documents if
-possible instead of building endless amounts of documents and suffering from doc
-rot."*** He was right — ten new documents were created in a single session.
-
----
-
-## 🚫 THE ROSTER — read this before writing for a patron
-
-> ### There are **FIVE** paths: **Blade · Salvage · Forge · Wall · Art**
->
-> **CROWN IS RETIRED.** Merged into Wall, 2026-08-14 (`35-WALL-REFRESH.md` §6).
-> Ethan: *"We merge crown and wall. The idea being the spider mother wants you to
-> build a family, a web, like hers. Also missionary is kinda a boring patron compared
-> to the others."*
->
-> Wall's household is everything she **raises and binds** — Goety servants, Occultism
-> familiars, Automaticons. The court IS the family IS the web.
->
-> ⚠️ **MineColonies was CUT.** The merge was originally argued on a colony; that mod is
-> no longer in the pack (nor is Theurgy). `35-WALL-REFRESH.md` carries the correction.
->
-> **Crown's writing is kept on purpose**, marked RETIRED in `27` and `28`, in case a
-> sixth patron is ever wanted. **Nothing is built from it and nothing new is written
-> for it.** His key stays claimable in `paths.js` — and his scene keeps generating —
-> only until the world reset.
->
-> 🚨 *This section exists because the mistake was already made.* On 2026-08-15 Crown
-> was scaffolded, deployed and given a full content worksheet, because `22` and `27`
-> still read as live and the merge was recorded only in §6 of a doc about Wall.
-> **`tools/new_god.py` now refuses the key outright** — a doc can be misread, the
-> guard cannot.
+> What exists, where it goes, and what not to write. **Read `FORMAT.md` before creating a
+> doc; there is a good chance you should not create one.**
 
 ---
 
-## 🚨 THE ROUTING RULE — read before writing anything
+## ① DIGEST
 
-> ### There are SIX living documents. New work goes INTO one of them.
-> **A new file is the exception and needs a reason.** If a thing does not obviously
-> belong in one of the six below, that is a sign it belongs in the closest one anyway.
+**The estate, 2026-09-05: 75 top-level docs → 34.** Forty were archived, stamped, and indexed
+by what they hold. Nothing was deleted.
 
-| # | doc | what goes here | how often it changes |
-|---|---|---|---|
-| **23** | `THE-PATH-SYSTEM` | the master design. What the system *is* | rarely |
-| **28** | `THE-SCENES` | **everything a patron says** — scenes, the Arrival, the silence, colours | when writing |
-| **30** | `THE-THESIS` | what Veldora *means*. The world's argument with itself | rarely |
-| **32** | `TEST-SUITE` | the suite, and the results of every run | each playtest |
-| **34** | `THE-REMAINING-BUILD` | ⭐ **the live queue.** What is built, what is next, what is held | constantly |
-| **36** | `THE-MOD-TAXONOMY` | every mod question — the taxonomy, the audit stages, the wishlist, worldgen | each audit stage |
+**Status now lives in the PATH, not the filename.** A number encodes when a doc was written,
+never whether it is still true — and `20-AUDIT-2026-08-11.md` was cited by five docs as *"the
+live state of what exists"*, which it stopped being the day after it was written. Anything in
+`archive/` is spent. Anything at the top level is live, reference, or generated.
 
-Plus **35** `WALL-REFRESH`, which is a live *design* doc while Wall and "being chosen"
-are being redesigned. **It folds into 23 when the design lands.**
+**Before writing anything:** grep `archive/INDEX.md`. Forty docs' worth of rulings,
+measurements and arguments are summarised there. The odds are good yours has been had before.
 
-### Where the obvious things go
-
-* a patron said a new line → **28**
-* an audit stage (A2…A8) → **36**, appended
-* a playtest result → **32**
-* "what are we doing next" → **34**
-* a mechanic that changes what the system *is* → **23**
-* a held or deferred idea → **34**, under HELD
-* a mod added, cut or moved → **36**
+**Where things go.** State → `STATUS.md`. Broken things → `DEFECTS.md` with a `D-` id.
+History → **git**, never a doc. Design → the one doc that owns that subject.
 
 ---
 
-## Consolidated 2026-08-14 — where the vanished docs went
+## ② THE ESTATE
 
-Five documents were merged and deleted. Their content survives whole.
+### Read these first
 
-| was | now lives in |
+| doc | answers |
 |---|---|
-| `29-THE-XP-COUPLING` | **34** § HELD |
-| `31-I3-THE-FLAGSHIPS` | **34** § HELD |
-| `33-BEING-CHOSEN` | **35** |
-| `37-THE-ARRIVAL` | **28** |
-| `38-A1-CREATE-AUDIT` | **36** |
+| **`FORMAT.md`** | how a doc here is written, and when not to write one |
+| **`VOICES.md`** | the dialogue mod's real limits · where every god stands · how to write a voice |
+| **`DEFECTS.md`** | what is known-broken, with `D-` ids |
+| **`TOOLKIT.md`** | the story tools, written for other projects to use |
 
-Cross-references were repointed automatically. Git history holds the originals.
+### The world and its people — Ethan's writing lives here
 
----
+| doc | subject |
+|---|---|
+| `15-LORE.md` | the world bible. The angels, the descent, the strata, the Vaults |
+| `30-THE-THESIS.md` | what it means — *a patron is what an angel becomes once it wants something* |
+| `40-BLADE-THE-WARRIOR.md` | Blade / Gregor — brief, tiers, events. The reference implementation |
+| `43-WALL-THE-SPIDER.md` | Wall / Mera — the arc that tightens, as the Warrior's inverse |
+| `53-MATRIARCH-KAYER.md` | Kayer Alice Rysor — the cold ruling, the two depth registers |
+| `56-FORGE-MILANTROS.md` | Forge |
+| `58` `59` `60` `61`-CANON | the canon dumps — Kayer · Mera · Gregor · Caebrim |
+| `57-CAEBRIM.md` | Caebrim — now every deep speaker |
+| `28-THE-SCENES.md` | the introduction text per god. ⚠️ **`gen_scenes.py` parses this** |
 
-## The full index
+### The systems
 
-**Foundation** — `00-DESIGN` · `07-THEME-AUDIT` (R1–R8) · `15-LORE` · `30-THE-THESIS`
+| doc | subject |
+|---|---|
+| `23-THE-PATH-SYSTEM.md` | the master design — coefficients, the ledger, the reckoning engine |
+| `63-THE-TRIAL.md` · `67-BEING-CHOSEN.md` | the Trial · how a path is offered and taken |
+| `74-THE-WAVES-AND-THE-LADDER.md` | the tide's composition, as shipped |
+| `75-THE-SCREEN-AS-A-STAGE.md` | placement as characterisation |
+| `77-THE-TONE-PASS.md` | tone, counted rather than felt |
+| `78-THE-OPENING.md` | Act 0's opening. ⚠️ **still marked DRAFT while `opening.js` shipped from it** |
+| `76-THE-BACKLOG.md` | the work register — who holds what |
 
-**The path system** — `23-THE-PATH-SYSTEM` (master) · `24-PATH-SYSTEM-BUILD` (the
-original chunk plan; **the live state lives in 34**) · `34-THE-REMAINING-BUILD` ·
-`35-WALL-REFRESH` · **`47-THE-RELEASE-SYSTEM`** (how each god puts you down —
-never / 4 buff-deaths / 3 refusals)
+### Reference — how to work, not the work
 
-**The patrons, per-god** — `40-BLADE-THE-WARRIOR` · `43-WALL-THE-SPIDER` ·
-`44-SALVAGE-LINES` · **`56-FORGE-MILANTROS`** (2026-08-22 — retcon to female; the Goat is a CHILD who
-gives, and the anti-Kayer) · **`53-MATRIARCH-KAYER`** (2026-08-22 — replaces "The Nightmare"
-wholesale; her release condition is CAPABILITY, not failure) ·
-**`54-MATRIARCH-LINES`** (the chart + sheet: the god/champion matrix, her voice rule,
-her pools) · **`55-MATRIARCH-EVERY-LINE`** (DRAFT lines to edit and hand back —
-⚠️ not generated from source, none of it is in the game yet)
+`02-OPS-RUNBOOK.md` · `41-BUILDING-A-GOD.md` · `80-THE-TOOLKIT-SEAMS.md` ·
+`14-TELEMETRY-SEAM.md` · `73-THE-UNDEAD-TABLE.md` · `12-TRIAGE.md` · `27-THE-SIX-VOICES.md` ·
+`54-MATRIARCH-LINES.md` · `01-MODLIST.md`
 
-**Plans** — **`70-THE-NIGHT`** (2026-08-29 — the danger moves from the depths to the NIGHT; the deep Speaker silences the gods after night 30, except Wall, Forge and Art, for a lore reason nobody knows) · **Plans** — **`69-YOU-DO-NOT-BELONG-HERE`** (2026-08-29 — the Nether and End STAY, and are reframed: Ethan's ambient lines, which deliberately have ✦no speaker✦) · **Plans** — **`68-THE-GAMEPLAN`** (2026-08-29 — 🔑 **THE BUILD ORDER for retiring the world.** Everything sorts into before-the-reset and any-time, because the reset is a one-shot; the only true blocker is the reopened dimension question) · **`67-BEING-CHOSEN`** (the five entry conditions, each a character test) · **`66-ONE-DIMENSION-TEST`** (measured: it composes with Tectonic, but CUT for the Distant Horizons conflict) · **Rulings** — **`65-THERE-IS-NO-END`** (2026-08-24 — 🔴 **THE RULING THAT RETIRED `47`.** All six gods `mode: 'never'`; `fall.js` died via the registry without being edited; regard saturates instead of executing. Deleted two open problems rather than solving them, and caught the sixth lying banner **live in the boot log**) · **Rulings** — **`64-THE-DEPTH`** (2026-08-24 — the bottom 64 blocks are an EMPTY
-BOX. ⭐ TECTONIC owns the terrain and its own min_y is still -64 while the dimension goes
-to -128. Fix is one config value, STAGED — worldgen is baked into level.dat at creation so
-it only applies to a regenerated world) · **Rulings** — **`63-THE-TRIAL`** (2026-08-24 — the Harvest REFRAMED, not gone: a
-challenge that moves TRUST, and trust replaces notoriety as what buys buffs and drops.
-⭐ The machinery was gated not deleted, so this is a gate flip. 🔴 TWO PROBLEMS NEED A
-RULING: notoriety cannot "reset to 0" without an offset, and the rate curve now REWARDS
-falling) · **Rulings** — **`62-THE-HARVEST-IS-CUT`** (2026-08-23 — Ethan: *"no reason for an
-ending anymore since it is essentially an act-based story"*. ⭐ It was already half-dead —
-only 3 of 5 gods had a handler and it FIRED FOR HIM ON ART AND DID NOTHING. ⚠️ RULED, not
-executed: 20 files / ~300 refs, gate before deleting)
+### ⛔ Generated — regenerate, never hand-edit
 
-**The book canon** — **`61-CAEBRIM-CANON`** (2026-08-23 — ✅ **the deep-speaker map is FINAL**:
-Caebrim holds blade + forge, **the Doctor was ALICE all along**, Kayer speaks for herself,
-Salvage exempted · ⭐ she is a **MOTHER**, and "waiting is most of what I am" turned out to be
-her canon · the shadow-form art rules double as a voice rule) · **`60-GREGOR-CANON`** (2026-08-23 — Ethan's notes for Gregor =
-**BLADE**. ⭐⭐⭐ **The name rule in `docs/40` turns out to be his canon** — he cannot say
-names because he lost his own · his coldness is the COST of the link severance, not his
-character · 🔴 OPEN: the deep Speaker may be **Kayer**) · **`59-MERA-CANON`** (2026-08-23 — Ethan's series notes for Mera =
-**WALL**, verbatim + an honest usability triage. 🔴 **Wall is Blade's daughter and
-neither of them knows** · her clinging is PURPOSE-LOSS, not motherhood · ⚠️ OPEN: her
-anti-undead golden light vs. her necromancy path — blocks the voice rewrite) ·
-**`58-KAYER-CANON`** (2026-08-22 — Ethan's series notes for Kayer,
-verbatim + reconciled. ⭐ **Forge is Milantros and Wall is MERA, and Kayer cannot forgive
-either of them for being Alice's daughter** · she MADE Blade (*Gregor **Kayer** Court*) ·
-her silence is foresight, not surveillance · ⚠️ the Homelander trap, which is a review
-gate on every line of hers)
+| doc | tool |
+|---|---|
+| `04-GAP-REPORT.md` | `python tools/gen_docs.py` |
+| `48-EVERY-EVENT.md` | regenerated from a live boot |
+| `51-LINES-TO-REFRESH.md` | `python tools/dialogue_doc.py` |
+| `dialogue/*.md` | `python tools/dialogue_doc.py` — **the live copy of every god's lines** |
 
-**Not a patron — the thing in the dark** — **`57-CAEBRIM`** (2026-08-22 — she is
-FEMALE; the shadow stalker is taken off Art and reserved as **her** form, Art recast to
-the Lifestealer's TRUE form and why the base one would have turned on its own champion;
-🔴 **Kayer hates Milantros**; 🔴 OPEN: should Caebrim replace every depth speaker?)
+### `archive/` — stamped, kept, never built from
 
-**Next direction** *(captured 2026-08-18, unscoped)* —
-**`52-EARNING-THE-PATH`** (the item makes you NOTICED not chosen · Forge + Art +
-Undeath · villagers as player models)
-
-**Writing** — **`51-LINES-TO-REFRESH`** (GENERATED: every pool Claude drafted and
-Ethan has not yet swept, from `[CLAUDE-DRAFT]` markers in the source — regenerate with
-`python tools/gen_lines.py`) · `27-THE-SIX-VOICES` · `28-THE-SCENES`
-
-**The gods against each other** *(new axis, 2026-08-16)* —
-**`49-RETALIATION-AND-DEFECTION`** (the Warning · the Interception · the Grudge · the
-Argument; **A is built**, the rest design) · **`50-THE-TIDE`** (the Darktide loop for
-the deep, the Bickering, and the measured finding that everything below y-64 is an
-empty void)
-
-**The patrons** — `22-THE-PATRONS` · `25-PATRON-DIALOGUE` (death ladder) ·
-`26-INTRODUCTIONS` (mechanic + the I-chunk records) · `27-THE-SIX-VOICES` (the tweak
-sheet writers are briefed from) · `28-THE-SCENES` (**all final text**)
-
-**The stalkers** — `18-THE-STALKERS` · `19-STALKER-BUILD` · `20-AUDIT-2026-08-11` ·
-`21-THE-SIX-ROLES`
-
-**Mods and world** — `01-MODLIST` · `36-THE-MOD-TAXONOMY` · `06-BURIED-TECH` ·
-`13-CUT-LIST` · `11-OPEN-DECISIONS`
-
-**Operations** — `02-OPS-RUNBOOK` · `08-CLIENT-PACK` · `09-SHARING` ·
-`14-TELEMETRY-SEAM` · `32-TEST-SUITE`
-
-**Older / historical** — `03` `04` `10` `12` `16` `17`
+⛔ **FICTION UNLESS RE-VERIFIED.** Read `archive/INDEX.md` first: it records, per doc, what
+would be lost if that file were deleted.
 
 ---
 
-## Why doc rot happened, so it does not again
+## ③ THE ROSTER — before writing for a god
 
-Each new document was individually justifiable — a design needed somewhere to live,
-an audit needed a home. **The failure was never deciding where things go**, so every
-new topic got a new file, and the same subject ended up split across three of them:
-the flagships were in `26`, `29` and `31` at once, and the first-join scene existed in
-both `33` and `37` saying different things.
+> **FIVE paths: Blade · Salvage · Forge · Wall · Art.**
+>
+> **CROWN IS RETIRED** — merged into Wall, 2026-08-14. Ethan: *"the spider mother wants you
+> to build a family, a web, like hers."* Wall's household is everything she raises and binds.
+> Crown's writing is kept on purpose in case a sixth is ever wanted; **nothing is built from
+> it and nothing new is written for it.**
+>
+> 🚨 **This section exists because the mistake was already made.** On 2026-08-15 Crown was
+> scaffolded, deployed and given a full content worksheet, because two docs still listed him.
 
-**Splitting a subject across documents is the rot.** One subject, one home, appended
-to — even when the document gets long. **A long document is easier to read than four
-short ones that disagree.**
+⭐ **Gods no longer carry colours** (Ethan, 2026-09-05) — they carry per-god *fonts*, and they
+speak through the dialogue mod, not the chat bar. Any doc describing a god by his chat colour
+is stale. `VOICES.md` is the current word.
+
+---
+
+## ④ WHAT NOT TO WRITE
+
+| you want to write… | it goes in |
+|---|---|
+| what is running right now | `STATUS.md` — **only STATUS may say NEXT** |
+| a bug, a finding, anything broken | `DEFECTS.md`, with a `D-` id |
+| a plan for unbuilt work | the doc that already owns that subject |
+| what happened this session | **the commit message.** git never rots |
+| an audit's results | `DEFECTS.md`. An audit doc becomes a stale audit doc |
+
+⛔ **Do not create a new doc.** A new gameplan, brief, roadmap or audit doc is how 75 happened.
+If a subject genuinely finishes, its doc is **replaced** — archived, and the next live front
+takes the slot.
+
+---
+
+## ⑤ CORRECTIONS
+
+**"Splitting a subject across documents is the rot."** ⚠️ True but incomplete, and the missing
+half is why the 2026-08-14 consolidation did not hold. Merging fixed the split and the count
+was back to 75 within three weeks, because **nothing ever archived anything** — the estate
+could only grow. Consolidation without retirement buys weeks.
+
+**"A `DRAFT` banner stops people building from a doc."** ❌ It does not. `68-THE-GAMEPLAN.md`
+said `DRAFT` and *"Zero code written from this doc"* while nine of its chunks had shipped, and
+`78-THE-OPENING.md` still said *"design only, zero code"* ten minutes before `opening.js`'s
+first commit named it as the design. That is why status is now the file's **location**, which
+cannot be wrong the way a line of prose can.

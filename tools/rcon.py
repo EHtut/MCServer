@@ -8,7 +8,7 @@ Two jobs:
      world save, and on a 344-mod world that is how you lose a chunk.
 
   2. Architecturally, it is a working demonstration of the seam described in
-     docs/03-AI-DM-SEAM.md. Everything a future dungeon master needs to observe
+     docs/archive/03-AI-DM-SEAM.md. Everything a future dungeon master needs to observe
      and act on the world goes through this protocol, and it needs no mod.
 
 The password is read from the instance's server.properties, which is generated
