@@ -108,12 +108,12 @@ function judge(beats) {
  * construction. The rule passed its unit test only because the test handed it a beat
  * directly and skipped the engine. Measure at the point of USE.
  */
-function lint(lines) {
+function lint(lines, ctx) {
   const findings = [], warnings = []
   lines.forEach((line, n) => {
     for (const r of SOURCE_RULES) {
       let msg = null
-      try { msg = r.test(line) } catch (e) { msg = 'rule ' + r.id + ' threw: ' + e.message }
+      try { msg = r.test(line, ctx) } catch (e) { msg = 'rule ' + r.id + ' threw: ' + e.message }
       if (!msg) continue
       const hit = { rule: r.id, line: n + 1, beat: -1, at: 0, text: String(line),
                     why: r.why, detail: msg }
@@ -123,10 +123,24 @@ function lint(lines) {
   return { findings, warnings }
 }
 
+/**
+ * ⭐ THE WRITING LIMITS, DERIVED FROM THE LOADED CODE. Never written down twice: move
+ * screen.js's HOLD.GOD or voice.js's TYPE_CHARS_PER_SEC and every rule that depends on
+ * them moves too. A test carrying its own copy of a constant the code owns is how five
+ * assertions broke here in one session.
+ */
+function limitsOf(w) {
+  const V = w.ctx.VELDORA
+  let cps = 15, holdS = 14.5
+  try { cps = V.voice.TYPE_CHARS_PER_SEC || cps } catch (e) { }
+  try { holdS = V.screen.HOLD.GOD || holdS } catch (e) { }
+  return { cps, holdS, maxChars: Math.floor(cps * holdS) }
+}
+
 function verify(input) {
   const inp = Array.isArray(input) ? { lines: input } : (input || {})
   let w, src = { findings: [], warnings: [] }
-  if (inp.lines) { src = lint(inp.lines); w = fromLines(inp.lines, inp) }
+  if (inp.lines) { w = fromLines(inp.lines, inp); src = lint(inp.lines, limitsOf(w)) }
   else if (inp.god) w = fromGod(inp.god, inp)
   else if (inp.scene) w = fromScene(inp.scene)
   else throw new Error('verify() needs one of: lines, god, scene')
@@ -148,4 +162,4 @@ function verify(input) {
   return { ok: findings.length === 0, beats, findings, warnings }
 }
 
-module.exports = { verify, judge, lint, SCENES, fromLines, fromGod, fromScene }
+module.exports = { verify, judge, lint, limitsOf, SCENES, fromLines, fromGod, fromScene }

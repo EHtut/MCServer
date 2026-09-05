@@ -15,7 +15,7 @@
 // nothing" and "I could not run" sharing an exit code is how a broken check reads as green.
 'use strict'
 const fs = require('fs')
-const { verify, judge, lint, SCENES } = require('./dialogue/verify')
+const { verify, judge, lint, limitsOf, fromLines, SCENES } = require('./dialogue/verify')
 
 const G = '\x1b[32m', R = '\x1b[31m', Y = '\x1b[33m', D = '\x1b[90m', B = '\x1b[1m', X = '\x1b[0m'
 const GODS = ['blade', 'wall', 'salvage', 'forge', 'art']
@@ -82,6 +82,21 @@ function selftest() {
   t('...ordinary text is not', srcFires('src-escape', 'ordinary text'), false)
   t('a blank line is caught', srcFires('src-blank', '   '), true)
 
+  // 🔴 THE REAL WRITING LIMIT, measured 2026-09-05 and DERIVED, never hardcoded:
+  // screen.js caps a GOD hold at 14.5s and voice.js types at 15/sec, so 217 characters is
+  // the most that can finish typing. Past that the line is pulled mid-word.
+  //
+  // ⚠️ AND IT IS WHY THE 15s CEILING CANNOT FIRE FOR A GOD. 14.5 < 15, so the cap
+  // enforces D-131 structurally and `hold-ceiling` is a backstop for other priorities only.
+  const lim = limitsOf(fromLines(['x']))
+  t('the limit is derived from the code, not written here', lim.maxChars, 217)
+  t('a line one over the limit is caught',
+    lint(['a'.repeat(lim.maxChars + 1)], lim).findings.some(f => f.rule === 'src-too-long'), true)
+  t('...one exactly at the limit is not',
+    lint(['a'.repeat(lim.maxChars)], lim).findings.some(f => f.rule === 'src-too-long'), false)
+  t('...and no god line can breach the 15s ceiling, because the cap is lower',
+    lim.holdS < 15, true)
+
   // 🔴 AND THE ONE THAT PROVES THE SOURCE RULES ARE NEEDED AT ALL: the engine splits a
   // two-sentence line before it renders, so NO beat-level rule can ever see one. Checking
   // only beats would have passed this silently, which is what it did until 2026-09-05.
@@ -109,9 +124,13 @@ try {
   const file = val('--file')
   if (file || argv.includes('-')) {
     const raw = file ? fs.readFileSync(file, 'utf8') : fs.readFileSync(0, 'utf8')
-    const lines = raw.split(/\r?\n/).map(s => s.trim()).filter(Boolean)
-    if (!lines.length) { console.error('no lines given'); process.exit(2) }
-    console.log(D + 'checking ' + lines.length + ' draft line(s) against the real engine' + X)
+    // ⚠️ BLANKS ARE KEPT, NOT FILTERED. Stripping them here made `src-blank` unreachable
+    // from the CLI — the same dead-rule shape as the one-sentence bug, one layer up.
+    // lint() reports them as a warning; fromLines() skips speaking them.
+    const lines = raw.split(/\r?\n/).map(s => s.trim())
+    while (lines.length && !lines[lines.length - 1]) lines.pop()   // the trailing newline only
+    if (!lines.filter(Boolean).length) { console.error('no lines given'); process.exit(2) }
+    console.log(D + 'checking ' + lines.filter(Boolean).length + ' line(s) against the real engine' + X)
     bad += report(file || 'stdin', verify({ lines }))
   } else if (words.length) {
     for (const w of words) {

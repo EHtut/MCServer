@@ -117,8 +117,13 @@ const SOURCE_RULES = [
   },
   {
     id: 'src-blank',
+    // ⚠️ A WARNING, NOT A FAILURE, and that was a correction. As a failure it made every
+    // normally-formatted draft file red for having paragraph breaks in it - so the CLI
+    // filtered blanks out before linting, which made the rule unreachable instead. Neither
+    // is right: the line is worth mentioning and is not worth failing over.
+    level: 'warn',
     why: 'an empty line says nothing but still costs a beat',
-    test: (line) => String(line).trim() ? null : 'blank line',
+    test: (line) => String(line).trim() ? null : 'blank line - ignored, not sent',
   },
   {
     id: 'src-escape',
@@ -132,6 +137,28 @@ const SOURCE_RULES = [
       if (s.indexOf('\\n') !== -1) return 'contains a literal backslash-n, which renders as visible text'
       if (/[\r\n]/.test(s)) return 'contains a real newline, which has dropped a connection before'
       return null
+    },
+  },
+  {
+    id: 'src-too-long',
+    // 🔴 THE REAL LIMIT ON A LINE, AND IT IS NOT THE 15s CEILING. Measured 2026-09-05:
+    // screen.js caps a GOD hold at 14.5s and voice.js types at 15 chars/sec, so anything
+    // past ~217 characters is PULLED OFF SCREEN MID-WORD. The player sees a sentence that
+    // stops. The ceiling in D-131 cannot fire for a god at all - 14.5 < 15 - so this is
+    // the constraint that actually bites while writing.
+    //
+    // ⭐ THE NUMBER IS DERIVED FROM THE CODE, not written down here. ctx carries
+    // HOLD.GOD x TYPE_CHARS_PER_SEC out of the loaded screen.js and voice.js, so moving
+    // either constant moves this rule with it.
+    why: 'a line longer than the hold cap can type is cut off mid-word',
+    test: (line, ctx) => {
+      const max = (ctx && ctx.maxChars) || 0
+      if (!max) return null
+      const n = String(line).length
+      return n > max
+        ? 'is ' + n + ' characters; anything past ' + max + ' is cut off mid-word, '
+          + 'because the hold caps at ' + ctx.holdS + 's and typing runs at ' + ctx.cps + '/sec'
+        : null
     },
   },
   {
