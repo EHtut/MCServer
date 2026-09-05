@@ -52,7 +52,7 @@ function build(lineFor) {
   }
   vm.createContext(ctx)
   vm.runInContext(fs.readFileSync(path.join(SS, 'speaker.js'), 'utf8'), ctx)
-  return { ctx, calls, warned, S: ctx.VELDORA.speaker, player: { uuid: 'p1', username: 'T' } }
+  return { ctx, calls, warned, S: ctx.VELDORA.cast, player: { uuid: 'p1', username: 'T' } }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

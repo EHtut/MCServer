@@ -298,12 +298,27 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       }
       speakFor = total + TAIL
     }
-    var whole = speakFor + (options.length ? TIMEOUT : 0) + hold
+    // ⚠️ `whole` IS COMPUTED BELOW THE FINALE BLOCK, NOT HERE - it used to be on this
+    // line. The finale extends `speakFor`, and `whole` sizes the blindness and the
+    // detarget sweep, so computing it first let the world come back ~9s BEFORE the scene
+    // released - on top of the title card, with mobs live again. It was unreachable only
+    // because the gate below was dead; fixing that gate is what made it reachable, so
+    // both move in the same commit.
 
     // ⭐ THE FINALE - a closing card with its OWN staging. The Opening needs its title
     // centred and large after the prose has run left-aligned, and a scene cannot switch
     // anchor mid-flight otherwise. Optional; nothing else uses it.
-    if (spec.finale && spec.finale.text) {
+    //
+    // 🔴 THIS GATE WAS `spec.finale.text` ALONE, AND IT SILENTLY KILLED EVERY POPUP CARD.
+    // A popup finale carries `title`/`subtitle` and needs no `text` at all - so the
+    // Opening's title card, the thing the whole cutscene builds to, never rendered once.
+    // It shipped 2026-08-30 under a commit message saying it landed.
+    //
+    // ⚠️ NO HARNESS COULD SEE IT. opening_harness.js asserts on the spec the caller
+    // PASSED, through a ritual stub that returns true - so it proved the Opening ASKED
+    // for a card, never that one appeared. Check a gate against what the callee requires,
+    // not against what the caller sent.
+    if (spec.finale && (spec.finale.text || spec.finale.popup)) {
       var fat = LEAD
       for (var fi = 0; fi < lines.length; fi++) {
         fat += spec.perChar
@@ -334,6 +349,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       })(spec.finale, fat)
       speakFor = fat + Math.round((spec.finale.seconds || 8) * 20)
     }
+
+    // ⭐ AFTER the finale, so the dark outlasts the card. Every consumer of `whole`
+    // (applyEffects, the detarget sweep, the boot log) must see the EXTENDED window.
+    var whole = speakFor + (options.length ? TIMEOUT : 0) + hold
 
     STATE[k] = {
       awaiting: false, options: options, hold: hold, colour: colour,

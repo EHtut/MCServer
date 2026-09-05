@@ -8,13 +8,13 @@
 // A named voice with a look and some things to say. It is NOT a god, a patron, a champion
 // or a tide. Those are the CALLER's vocabulary, and this tool has never heard of them.
 //
-//     VELDORA.speaker.define('narrator', {
+//     VELDORA.cast.define('narrator', {
 //       colour: '§7',
 //       style:  { anchor: 'TOP_LEFT', font: 'veldora:art', beatScale: 0.6 },
 //       lines:  { greeting: ['You again.', 'Still here, then.'] },
 //       frags:  { warning: { opens: ['Go back'], closes: ['while you can.'] } },
 //     })
-//     VELDORA.speaker.say(player, 'narrator', 'greeting')
+//     VELDORA.cast.say(player, 'narrator', 'greeting')
 //
 // ── 🔑 WHY THIS IS THIN, AND WHY THAT IS THE FINDING ────────────────────────
 // docs/80 measured the coupling instead of grepping for it. `voice.js` looks Veldora-bound
@@ -187,7 +187,27 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   function reportFor(id) { return KNOWN[id] ? KNOWN[id].report : null }
 
-  VELDORA.speaker = {
+  // 🔴 THIS IS `VELDORA.cast`, NOT `VELDORA.speaker`, AND THE RENAME IS THE FIX.
+  //
+  // deep_speaker.js:758 has published `VELDORA.speaker` since long before this tool
+  // existed - the Doctor and the other deep voices. This file sorts AFTER it, so
+  // claiming the same key wiped `active`, `met`, `forPath`, `introduce`, `register`,
+  // `speakers` and `cutoff` on every boot. idle.js then called `.active(p)` inside a
+  // try/catch and swallowed the TypeError, so THE DEEP SPEAKER WENT SILENT BELOW THE
+  // CUTOFF with nothing in any log to say why.
+  //
+  // ⚠️ A MERGE GUARD WOULD NOT HAVE FIXED IT. Both objects define `say`, with different
+  // signatures - deep_speaker's is say(player, tag), this tool's is say(player, id, tag).
+  // Merging just moves the collision onto one key and picks a winner by load order. Two
+  // different systems sharing a word need two words, which is the lesson doc 78 already
+  // records about introductions.js: "Two systems called the same thing is how the wrong
+  // one gets edited at two in the morning."
+  //
+  // ⭐ THE NEW TOOL MOVED, NOT THE INCUMBENT - it had zero live consumers (verified by
+  // grep) while deep_speaker has four. And `cast` reads better in the toolkit docs
+  // anyway: a cast is the set of named voices a story can call on.
+  VELDORA.cast = VELDORA.cast || {}
+  var _castPub = {
     define: define,
     say: say,
     speak: speak,
@@ -198,9 +218,18 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // discovering a two-sentence line on somebody's screen.
     carriesTwoSentences: carriesTwoSentences,
   }
+  for (var _ck in _castPub) {
+    if (_castPub.hasOwnProperty(_ck)) VELDORA.cast[_ck] = _castPub[_ck]
+  }
 
   ServerEvents.loaded(function () {
-    console.info(TAG + 'the general speaker tool is live - ' + known().length +
+    // ⚠️ Shout if the key this tool used to own has been taken by something that is not
+    // the deep speaker. A silent namespace fight is what this whole comment is about.
+    if (VELDORA.speaker && typeof VELDORA.speaker.active !== 'function') {
+      console.error(TAG + 'VELDORA.speaker exists but is NOT deep_speaker - something ' +
+        'else has claimed that key. Check for a third writer.')
+    }
+    console.info(TAG + 'the general speaker tool is live as VELDORA.cast - ' + known().length +
       ' speaker(s) defined through it. Enforces ONE SENTENCE PER SEND and TYPED BY ' +
       'DEFAULT, both of which are rules that slipped repeatedly while merely written down.')
   })

@@ -755,7 +755,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
 
 
-  VELDORA.speaker = {
+  // ⚠️ MERGE, DO NOT CLOBBER. This object was silently WIPED for the life of the toolkit
+  // arc: speaker.js sorted after this file and claimed the same key, taking `active`,
+  // `met`, `forPath` and the rest with it. idle.js:275 then threw inside a try/catch, so
+  // THE DEEP SPEAKER WENT SILENT BELOW THE CUTOFF and nothing anywhere said so. That tool
+  // is `VELDORA.cast` now; this guard is so the next one cannot repeat it by accident.
+  VELDORA.speaker = VELDORA.speaker || {}
+  var _deepPub = {
     register: register,
     speakers: SPEAKERS,
     cutoff: CUTOFF_Y,
@@ -776,6 +782,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         return !!p.persistentData.getBoolean(metKey(sp))
       } catch (e) { return false }
     },
+  }
+  for (var _dk in _deepPub) {
+    if (_deepPub.hasOwnProperty(_dk)) VELDORA.speaker[_dk] = _deepPub[_dk]
   }
 
   ServerEvents.commandRegistry(function (event) {

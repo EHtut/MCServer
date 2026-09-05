@@ -689,7 +689,17 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (CONTEXT[_c].length) WRITTEN++
   }
 
-  VELDORA.salvage = {
+  // ⚠️ MERGE, DO NOT CLOBBER. This file sorts AFTER salvage.js, so a plain
+  // `VELDORA.salvage = {...}` silently wiped every mechanic that file published -
+  // open, heldGun, mintAmmo, maybeOpen, priceMul, payMul, harness. It shipped that way.
+  // salvage_events.js:683 then read `VELDORA.salvage.priceMul(p)` behind a truthiness
+  // check that the surviving voice object PASSES, so the guard did not save it.
+  //
+  // 🔑 The two key sets are disjoint - mechanics here, voice there - so merging is the
+  // whole fix and neither side loses anything. Same pattern, and same reason, as
+  // wall_voice.js: relying on file NAMES for load order breaks months later on a rename.
+  VELDORA.salvage = VELDORA.salvage || {}
+  var _salvagePub = {
     tier: tierOf,
     colour: COLOUR,
     written: WRITTEN,
@@ -702,6 +712,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (!VELDORA.voice) return false
       return VELDORA.voice.say(player, GOD, t + '_' + kind)
     },
+  }
+  for (var _sk in _salvagePub) {
+    if (_salvagePub.hasOwnProperty(_sk)) VELDORA.salvage[_sk] = _salvagePub[_sk]
   }
 
   ServerEvents.commandRegistry(function (event) {

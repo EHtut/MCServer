@@ -681,7 +681,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     server.scheduleInTicks(SAMPLE_TICKS, function () { sample(server) })
   }
 
-  VELDORA.salvage = {
+  // ⚠️ MERGE, DO NOT CLOBBER - see the same note in salvage_voice.js. This file happens
+  // to sort FIRST today, so clobbering here is currently harmless; that is exactly the
+  // condition a rename silently reverses. Both ends merge so neither can win by accident.
+  VELDORA.salvage = VELDORA.salvage || {}
+  var _salvageMech = {
     // ⭐ TEST-ONLY. Salvage is gated OFF by ruling, which correctly makes her harnesses
     // measure nothing. Deleting those tests to turn a feature off for a while would lose
     // coverage of logic that is still correct, so the harness flips this around its own
@@ -689,6 +693,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // itself asserted.
     _setGate: function (v) { GATE = !!v }, open: open, heldGun: heldGun, mintAmmo: mintAmmo,
     maybeOpen: maybeOpen, harness: harness, priceMul: priceMul, payMul: payMul }
+  for (var _mk in _salvageMech) {
+    if (_salvageMech.hasOwnProperty(_mk)) VELDORA.salvage[_mk] = _salvageMech[_mk]
+  }
 
   ServerEvents.commandRegistry(function (event) {
     var Commands = event.commands

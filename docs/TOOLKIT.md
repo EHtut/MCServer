@@ -52,14 +52,14 @@ A speaker is a **named voice**. Not a god, a patron, an NPC or a quest-giver —
 your vocabulary. The tool has never heard of them.
 
 ```js
-VELDORA.speaker.define('narrator', {
+VELDORA.cast.define('narrator', {
   colour: '§7',
   style:  { anchor: 'TOP_LEFT', font: 'mypack:serif', beatScale: 0.6 },
   lines:  { greeting: ['You again.', 'Still here, then.'] },
   frags:  { warning:  { opens: ['Go back'], closes: ['while you can.'] } },
 })
 
-VELDORA.speaker.say(player, 'narrator', 'greeting')
+VELDORA.cast.say(player, 'narrator', 'greeting')
 ```
 
 | call | does |
@@ -180,7 +180,7 @@ python tools/story_import.py --write         # emit the registration script
 
 ```js
 // 1. define who is speaking
-VELDORA.speaker.define('narrator', {
+VELDORA.cast.define('narrator', {
   colour: '§7',
   style: { anchor: 'TOP_LEFT', beatScale: 0.6 },
   lines: { arrival: ['The road ends here.'] },
@@ -199,7 +199,7 @@ VELDORA.cutscene.play(player, {
 })
 
 // 3. later, in the world, the narrator says one thing
-VELDORA.speaker.say(player, 'narrator', 'arrival')
+VELDORA.cast.say(player, 'narrator', 'arrival')
 ```
 
 ⚠️ **`play()` returning `false` is a real answer** — the player may already be in a scene.
