@@ -341,7 +341,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       //     "Good, its thematic. The Matriarch is aligned to the goddess of death
       //      secretly, why would she spend time building up an army of her own?"
       //
-      // 🔑 The Matriarch LEADS the pantheon (docs/15) and is secretly the goddess of
+      // 🔑 The Matriarch LEADS the pantheon (LORE.md > the World) and is secretly the goddess of
       // death's. She does not need an army because she is already standing next to one.
       // ⛔ So DO NOT "fix" this by adding mobs. A thin Art roster is the most-told part
       // of the whole system: her wave is almost entirely the goddess's own dead, led by

@@ -252,7 +252,7 @@
     //      the closest form to her... We can use the lifestealer for art"
     //
     // `nightmare_stalker` is RESERVED. It is Caebrim's form and must not be cast by
-    // any path. docs/57.
+    // any path. LORE.md > Caebrim.
     //
     // 🔴 AND IT IS THE **TRUE FORM**, NOT THE BASE LIFESTEALER. That is not a
     // preference, it is forced. Decompiling the mod:

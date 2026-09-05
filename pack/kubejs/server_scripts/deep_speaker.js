@@ -1,4 +1,4 @@
-// deep_speaker.js - THE VOICES BELOW THE CUTOFF.  docs/15 §0b, docs/40, docs/43
+// deep_speaker.js - THE VOICES BELOW THE CUTOFF.  LORE.md > the World §0b, docs/40, docs/43
 //
 // ══════════════════════════════════════════════════════════════════════════════
 // 🔴 TWO RETCONS, 2026-08-30. READ THESE FIRST — much of the history below describes
@@ -70,7 +70,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var TAG = '[speaker] '
 
   // ── ⚠️ THE CUTOFF, AND WHY IT IS NOT -40 ───────────────────────────────────
-  // It was -40 briefly, taken from `15-LORE.md` - which said the Sealed Floor ran
+  // It was -40 briefly, taken from `LORE.md` - which said the Sealed Floor ran
   // "minus sixty to the bottom". That doc PREDATES the world extension: the
   // overworld floor is -128, not -64 (`tools/make_depth_datapack.py`, NEW_MIN_Y).
   //
@@ -101,7 +101,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   //     "no speaker for everyone except mera and kayer should be caebrim. (except
   //      salvage). kayer speaks for herself and alice speaks to mera."
   //
-  // ⚠️ I GUESSED KAYER YESTERDAY (docs/60 §2) AND I WAS WRONG. The line I leaned on -
+  // ⚠️ I GUESSED KAYER YESTERDAY (LORE.md > Gregor §2) AND I WAS WRONG. The line I leaned on -
   // "I had to rescue my goddess from that church" - I read as Kayer's war. It is not.
   // It is CAEBRIM'S LITERAL BOOK-5 PLOT: Kayer refused the rescue and turned to war;
   // Caebrim refused BOTH and led a small party to free Alice from the Church.
@@ -188,13 +188,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   register('wall', {
     // ⭐⭐⭐ THE DOCTOR IS ALICE - AND ETHAN ALREADY WROTE THAT, IN AUGUST.
     //
-    // His ruling 2026-08-23 was "alice speaks to mera". Wall IS Mera (docs/59). And the
+    // His ruling 2026-08-23 was "alice speaks to mera". Wall IS Mera (LORE.md > Mera). And the
     // colour comment on the very next line, written 2026-08-15, already says "She IS
     // the goddess." Nothing needs implementing. It was done before either of us knew
     // who Wall was.
     //
     // 🔑 SO THE MOTHER SPEAKS TO HER DAUGHTER'S CHAMPION. Mera is Alice's daughter
-    // (docs/59 §3), believes she is a manufactured clone, and in the books attacks
+    // (LORE.md > Mera §3), believes she is a manufactured clone, and in the books attacks
     // Alice on sight. Alice knows. Alice says nothing. And Ethan's existing
     // characterisation - "the only voice in the world that is CURIOUS about you",
     // a scientist among the things she has finished looking at - is exactly what a
@@ -258,7 +258,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // "(except salvage)". He keeps his Keeper, and the reason is the same reason Salvage
   // is the freest god in the pantheon: "she isn't a real character in the actual
   // story", so there is no book character for a speaker to defer to. Nothing here can
-  // contradict canon, so nothing here has to move. docs/61 §2.
+  // contradict canon, so nothing here has to move. LORE.md > Caebrim (book canon) §2.
   //
   // ⭐ THE ONLY SPEAKER WHO IS NOT TALKING ABOUT YOU. The Speaker apologises to
   // Blade; the Doctor explains herself to the Spider's champion. He is grieving
@@ -367,7 +367,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         'I notice who follows their champion into the dark and who does not. Yours does not.',
         'No one is watching you but me. Make of that what you will. I already have.',
       ],
-      // ⭐⭐ THE FIRST LINE SURVIVES THE BOOK CANON AND GETS BETTER (docs/58 §2).
+      // ⭐⭐ THE FIRST LINE SURVIVES THE BOOK CANON AND GETS BETTER (LORE.md > Kayer §2).
       // I wrote it as DISMISSAL. It is not. Caebrim is her closest bond in the entire
       // series - "her rock, more than her husband" - and the four words that matter are
       // **"she'd never admit it"**. She timed the siege of Harrowfen so her sister would
@@ -404,7 +404,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   //
   // ── ⭐ SHE IS NOT HUNTING YOU TO KILL YOU ──────────────────────────────────
   // Ethan: "She is the one who hunts you in the depth, and the stalker is the closest
-  // form to her." `nightmare_stalker` is RESERVED as her body (docs/57 §2) - so the
+  // form to her." `nightmare_stalker` is RESERVED as her body (LORE.md > Caebrim §2) - so the
   // thing that follows you down here and the thing that talks to you down here are
   // THE SAME PERSON, which is the whole reason this pairing works.
   //
@@ -431,7 +431,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   //
   // 🔑 TWO ENTRIES, ONE WOMAN. Distinct ids because the pools and the confession
   // stages key off `id` - and because she has a different history with each of them.
-  // docs/61 §1.
+  // LORE.md > Caebrim (book canon) §1.
   register('forge', {
     id: 'death_shadow',
     name: 'Caebrim',
@@ -445,7 +445,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       ],
       // [CLAUDE-DRAFT] shadow/intro
       // 🔴 REWRITTEN 2026-08-23. The draft had "Nobody sent me and I came anyway" -
-      // she does not do that. docs/61 §3, her behavioural tell: **she will not reach
+      // she does not do that. LORE.md > Caebrim (book canon) §3, her behavioural tell: **she will not reach
       // out to anyone unless she feels fully welcome.** Feeling false, she refuses to
       // impose herself where she is not sure she is wanted. **She waits to be invited.**
       // So she is ALREADY HERE and has been; you are the one who arrived.
@@ -457,7 +457,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // [CLAUDE-DRAFT] shadow/common
       // ⭐ THE REGISTER: pleased, patient, and never once threatening. She has nothing
       // to gain from you and she is not going anywhere.
-      // ⭐ REGISTER CORRECTED 2026-08-23 (docs/61 §3). Two changes, both from the dump:
+      // ⭐ REGISTER CORRECTED 2026-08-23 (LORE.md > Caebrim (book canon) §3). Two changes, both from the dump:
       //
       //   1. **DEADPAN AND DRY.** The draft was lyrical. She is not. Flatter, shorter,
       //      no cadence. Her shadow-form art note generalises straight into dialogue:
@@ -502,7 +502,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       //
       // 🔑 The last two are the load-bearing ones: "family isn't healthy, but it's
       // family" is her actual position on the sister who burned everything, and
-      // **the kids don't know it was Kayer - and would walk if they did** (docs/61 §5).
+      // **the kids don't know it was Kayer - and would walk if they did** (LORE.md > Caebrim (book canon) §5).
       rare: [
         'I asked for something once. I got it. That is not the same as it going well.',
         'She used to call me a name. I am not going to tell you what it was.',

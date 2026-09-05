@@ -70,7 +70,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // ⭐ EVERY GUIDANCE LINE POINTS AWAY FROM HERE. She is the errand god - the only
     // patron who moves you across the map, while Wall pulls you home. docs/54 §2.
     // ⭐ PASS 2026-08-23: half of these were a tutor giving directions - the archetype
-    // writing itself (docs/58 §4). Every line now touches the foresight or the fold.
+    // writing itself (LORE.md > Kayer §4). Every line now touches the foresight or the fold.
     guidance: [
       'Source pools do not fill themselves. Go dig some.',
       'You will not find glyphs standing here. Walk.',
@@ -89,7 +89,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       'Speak to someone who cares what you did today. Not me.',
     ],
     // ⭐⭐ SILENCE IS FORESIGHT. docs/53 §4 upgraded this pool from apathy to
-    // surveillance; the book canon (docs/58 §5) upgrades it again, and further.
+    // surveillance; the book canon (LORE.md > Kayer §5) upgrades it again, and further.
     //
     // She was formed from the THREE ORACLES - Past, Present and Future - reunited, and
     // Ethan's phrase for it is divination "in the most brutal sense": she does not plan
@@ -106,7 +106,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "There is nothing you can do in front of me that I have not already had time to get bored of.",
       "I don't need to speak to know what you did. Or what you are going to.",
     ],
-    // ⚠️ REWRITTEN AGAINST docs/58 §4. Ethan on his own weakest voice: she "rides the
+    // ⚠️ REWRITTEN AGAINST LORE.md > Kayer §4. Ethan on his own weakest voice: she "rides the
     // Homelander archetype... the template does the work, so the uniquely-Kayer verbal
     // print stays thin." Three lines here were exactly that - "Finish it. Now.",
     // "That opening was obvious.", "You are slower than the last one" - stock menace
@@ -134,7 +134,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // closer the champion is to being too capable to control - and high_gift is
     // currently carrying the entire warning for `cut_down`, which docs/55 flags as
     // load-bearing by accident rather than by design.
-    // ⭐⭐ HER GIFTS ARE INDUCTION, NOT GENEROSITY (docs/58 §9 - the dark shepherd).
+    // ⭐⭐ HER GIFTS ARE INDUCTION, NOT GENEROSITY (LORE.md > Kayer §9 - the dark shepherd).
     // Her creed is THE FOLD: the undead are "OUR people", belonging is salvation, and
     // she genuinely believes forced belonging is MERCY - she gave a man who begged for
     // death eternal undeath and called it a gift.
@@ -221,7 +221,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // over them and asks anyway, which is exactly what a manipulator with no hands
     // does - and it is the mechanic that unblocks docs/49 §1 B without needing the
     // ruling that has been holding it. docs/54 §4d.
-    // 🔑 SHE MADE HIM (docs/58 §3 - "Gregor KAYER Court"). She will not say it, and
+    // 🔑 SHE MADE HIM (LORE.md > Kayer §3 - "Gregor KAYER Court"). She will not say it, and
     // ⚠️ QUALIFIED 2026-08-30: "will not say it" was written as never, and Ethan's
     // bickering scenes have her say it TWICE - both times as the last line of a
     // high-trust scene ("I will hold you to that. / Gregor." and "Mera, You are not
@@ -237,7 +237,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "I asked. That was the courtesy. There isn't a second one.",
       "Blade's champion, doing Blade's work, standing in front of me. Interesting choices.",
     ],
-    // ⚠️ ALSO A MERA POOL (docs/58 §0), and colder than the others for it - she is
+    // ⚠️ ALSO A MERA POOL (LORE.md > Kayer §0), and colder than the others for it - she is
     // shorter with Wall's champion than with anybody else's, and will not say why.
     demand_wall: [
       "You belong to Wall. That's not an argument, it's a fact I'm setting aside.",
@@ -253,7 +253,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // because the tag is concatenated, and newly LIVE the moment forge opened.
     //
     // ⭐ demand_forge is the loaded one: this is Kayer speaking directly to the
-    // champion of the god she cannot forgive (docs/57 §4). Same rule as near_forge -
+    // champion of the god she cannot forgive (LORE.md > Caebrim §4). Same rule as near_forge -
     // the contempt shows, the cause never does.
     // [CLAUDE-DRAFT] art/demand_forge · art/demand_art
     demand_forge: [
@@ -303,8 +303,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // underground line, that is a decision to take on purpose, not a gap to fill.
 
     // [CLAUDE-DRAFT] art/near_blade · art/near_wall · art/near_salvage
-    // 🔑 SHE MADE HIM. docs/58 §3 - the naming convention gives Blade as "Gregor
-    // KAYER Court", and a falsehood's middle name is the maker. docs/15 calls his
+    // 🔑 SHE MADE HIM. LORE.md > Kayer §3 - the naming convention gives Blade as "Gregor
+    // KAYER Court", and a falsehood's middle name is the maker. LORE.md > the World calls his
     // deference to her a mystery; it is not one. She will not spell it out.
     near_blade: [
       'Blade thinks strength has to come from your own arm. Naive, but I understand the appeal.',
@@ -313,7 +313,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       'Ask him why he still needs a champion, if his own arm is so sufficient.',
     ],
     // ═══════════════════════════════════════════════════════════════════════
-    // 🔴 THIS IS THE MERA POOL, AND IT IS THE MOST LOADED THING SHE HAS. docs/58 §0.
+    // 🔴 THIS IS THE MERA POOL, AND IT IS THE MOST LOADED THING SHE HAS. LORE.md > Kayer §0.
     //
     // Wall is MERA - Alice and Arkh's genetic heir - and Kayer's core wound, in her own
     // words: "I am the daughter of Alice, not her." On a news broadcast Mera is hailed
@@ -339,11 +339,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "She inherited hers. Every single thing I have, I was given, and giving can be revoked.",
     ],
     // ⭐ THE ONLY GOD SHE HAS NOTHING AGAINST - which is itself characterising. She
-    // hates the two who got to be daughters (docs/58 §0) and made the third. Salvage
+    // hates the two who got to be daughters (LORE.md > Kayer §0) and made the third. Salvage
     // is outside the family entirely, and it is the only place her voice goes level.
     // ═══════════════════════════════════════════════════════════════════════
     // 🔴🔴 THIS POOL DID NOT EXIST AND IT IS THE ONE SHE MOST NEEDED. Forge is
-    // MILANTROS, and Kayer hates her (docs/57 §4) - a goat girl called her "Short,
+    // MILANTROS, and Kayer hates her (LORE.md > Caebrim §4) - a goat girl called her "Short,
     // Ugly, Weird, Smelly" the day they met and was then adopted by Kayer's own maker.
     //
     // ⭐ THE CALIBRATION IS THE MIRROR OF forge/near_art. Milantros thinks the nickname
@@ -352,7 +352,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // with the cause sealed inside, and the player only ever gets the temperature.
     //
     // 🚨 SHE MUST NOT NAME ALICE, and she must never sound wounded. She sounds bored,
-    // which is what she is (docs/58 §5) - right up until this one subject.
+    // which is what she is (LORE.md > Kayer §5) - right up until this one subject.
     // [CLAUDE-DRAFT] art/near_forge
     near_forge: [
       "The Goat's. Of course it is.",

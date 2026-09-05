@@ -115,13 +115,13 @@ never chosen with three named stages in mind.
 ✅ **CLOSED 2026-08-23. THE SPEAKER IS CAEBRIM** — Ethan ruled the whole map at once, and
 she holds blade AND forge. Alice speaks to Mera (wall), Kayer speaks for herself (art),
 Salvage keeps her Keeper. **Not one word of the confession changed** — only the nameplate.
-`docs/61 §0`. The stale note below is kept for the reasoning.
+`LORE.md > Caebrim (book canon) §0`. The stale note below is kept for the reasoning.
 
 🔴 **UPDATE 2026-08-23 — THIS QUESTION HAS MOVED, TWICE.** (a) Caebrim is now
-**Forge's** deep speaker (`docs/57 §3`), so she is no longer a candidate to replace
+**Forge's** deep speaker (`LORE.md > Caebrim §3`), so she is no longer a candidate to replace
 Blade's. (b) The book canon points hard at a different answer: **the Speaker may be
 KAYER** — every line of the confession fits her, and *"Blinded by faith"* fits nothing
-else. The evidence, and the real counter-case, are in **`docs/60 §2`**. ⚠️ Still open,
+else. The evidence, and the real counter-case, are in **`LORE.md > Gregor §2`**. ⚠️ Still open,
 and it is the biggest lore ruling left.
 
 **4. Caebrim vs the Speaker.** `deep_speaker.js` already gives Blade a deep voice —
@@ -174,7 +174,7 @@ single most expensive word in the game, and it means:
   is the point;
 * Caebrim and Alice are **titles-in-waiting** in the deep speaker, not labels to print.
 
-### ⭐⭐⭐ AND THIS RULE TURNS OUT TO BE HIS CANON (`docs/60 §0`, 2026-08-23)
+### ⭐⭐⭐ AND THIS RULE TURNS OUT TO BE HIS CANON (`LORE.md > Gregor §0`, 2026-08-23)
 
 The rule above was made for **pacing**. Ethan's book notes then arrived and said that
 Gregor is the character *defined* by a name:

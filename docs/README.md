@@ -36,16 +36,19 @@ History → **git**, never a doc. Design → the one doc that owns that subject.
 
 ### The world and its people — Ethan's writing lives here
 
+⭐ **`LORE.md` is the one to read.** `15-LORE` plus the four canon dumps and `57-CAEBRIM`
+merged into it 2026-09-05 (Ethan: *"those are lores and should go into a lore doc"*), verified
+line-for-line with zero lost. The docs below are **build** docs — tiers, events, voice rules —
+not lore.
+
 | doc | subject |
 |---|---|
-| `15-LORE.md` | the world bible. The angels, the descent, the strata, the Vaults |
+| **`LORE.md`** | **the lore bible** — the world, the angels, the strata, and the canon for Kayer, Mera, Gregor and Caebrim. **Ethan's four verbatim dumps live here.** |
 | `30-THE-THESIS.md` | what it means — *a patron is what an angel becomes once it wants something* |
 | `40-BLADE-THE-WARRIOR.md` | Blade / Gregor — brief, tiers, events. The reference implementation |
 | `43-WALL-THE-SPIDER.md` | Wall / Mera — the arc that tightens, as the Warrior's inverse |
 | `53-MATRIARCH-KAYER.md` | Kayer Alice Rysor — the cold ruling, the two depth registers |
 | `56-FORGE-MILANTROS.md` | Forge |
-| `58` `59` `60` `61`-CANON | the canon dumps — Kayer · Mera · Gregor · Caebrim |
-| `57-CAEBRIM.md` | Caebrim — now every deep speaker |
 | `28-THE-SCENES.md` | the introduction text per god. ⚠️ **`gen_scenes.py` parses this** |
 
 ### The systems

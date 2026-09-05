@@ -215,3 +215,44 @@ tree; `docs/FORMAT.md` records the rules it applied.
 **an audit of 270 keybind entries across 31 conflicted keys, and the rekeying proposed from it**  
 *Spent because:* The pass shipped (V went from 11 actions to 1) and the doc's own CORRECTIONS section records that the audit which proposed it was wrong twice.  
 **HOLDS:** The two corrections and the recorded false alarm so neither is repeated; the durable rule that core controls are cleared and nothing else may sit on them ('jumping should not deploy a siege ladder'); the packwiz delivery problem for pushing options.txt to players; and the two items left genuinely open.
+
+---
+
+## Merged into `docs/LORE.md`, 2026-09-05
+
+> ⭐ These six are a different case from everything above. They were not spent — they
+> were the SAME SUBJECT split across six files that had begun to disagree, and Ethan
+> ruled them into one: *"those are lores and should go into a lore doc."* Every body
+> line was carried across and verified line-for-line: **zero lost.** They are kept only
+> as provenance. ⛔ Read `LORE.md` instead — it carries corrections these do not.
+
+### `15-LORE.md`
+**the world bible - angels, descent, strata, the Vaults**  
+*Why archived:* merged whole into docs/LORE.md  
+**HOLDS:** nothing unique — carried across in full.
+
+### `57-CAEBRIM.md`
+**Caebrim: the rulings, the shadow stalker, the Kayer/Milantros triangle**  
+*Why archived:* merged whole into docs/LORE.md  
+**HOLDS:** nothing unique — carried across in full.
+
+### `58-KAYER-CANON.md`
+**Kayer book canon + the naming convention**  
+*Why archived:* merged whole into docs/LORE.md  
+**HOLDS:** nothing unique — carried across in full.
+
+### `59-MERA-CANON.md`
+**Mera book canon; Wall is Blade’s daughter**  
+*Why archived:* merged whole into docs/LORE.md  
+**HOLDS:** nothing unique — carried across in full.
+
+### `60-GREGOR-CANON.md`
+**Gregor book canon; the name rule as canon**  
+*Why archived:* merged whole into docs/LORE.md  
+**HOLDS:** nothing unique — carried across in full.
+
+### `61-CAEBRIM-CANON.md`
+**Caebrim book canon; the speaker map, final**  
+*Why archived:* merged whole into docs/LORE.md  
+**HOLDS:** nothing unique — carried across in full.
+

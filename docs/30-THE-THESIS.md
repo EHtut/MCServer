@@ -14,10 +14,10 @@ and nothing has ever connected them.
 | | where | what it governs | health |
 |---|---|---|---|
 | **The pack thesis** | `07-THEME-AUDIT.md` R1–R7 | period, Create ceiling, one-system-per-verb | ✅ enforced, audited, holds on 6 of 7 |
-| **The world thesis** | `15-LORE.md` | angels, the descent, the old ones, you cannot die | ✅ strong, and Ethan's own canon |
+| **The world thesis** | `LORE.md` | angels, the descent, the old ones, you cannot die | ✅ strong, and Ethan's own canon |
 | **The play thesis** | `23`–`29` | six patrons, XP as currency, the fall, the flagships | ✅ the most developed thing we have |
 
-**And here is the finding.** `15-LORE.md` mentions the patrons, the paths, or the
+**And here is the finding.** `LORE.md` mentions the patrons, the paths, or the
 fall **exactly zero times.** Not once. Meanwhile not one of the six introduction
 scenes in `28` mentions the angels, the descent, the Vaults, or the fact that the
 player *cannot die* — the single strangest fact about being alive in this world.
@@ -34,7 +34,7 @@ you a mod is period-appropriate. They cannot tell you a scene is *about* anythin
 
 ## 2. The join was already in Ethan's canon
 
-`15-LORE.md` §3, on the stalkers:
+`LORE.md` §3, on the stalkers:
 
 > **"They do not command. They do not announce. They have no message."**
 
@@ -71,7 +71,7 @@ behalf of something above them that is merely watching.**
 
 ## 3. The mechanics were already the lore. Nobody noticed.
 
-`15-LORE.md` was written 2026-08-03. E2a–E2f were built 2026-08-12/13. Read the lore
+`LORE.md` was written 2026-08-03. E2a–E2f were built 2026-08-12/13. Read the lore
 again with the build sheet open:
 
 | the lore, verbatim | the system, built later, independently |
@@ -212,6 +212,6 @@ Nothing is thrown away. The thesis is a lens, not a rewrite.
 3. **Salvage's gun is Vault tech** (§5.2) — one line, welds two pillars.
 4. **The subclass datapack** (§6) — was scoped as a build; it is a JSON authoring job.
 5. **R8 into `07-THEME-AUDIT.md`** — so future additions are audited for meaning.
-6. **`15-LORE.md` gains a patrons section** — the lore must know its own characters.
+6. **`LORE.md` gains a patrons section** — the lore must know its own characters.
 
 None of it blocks the test suite, and none of it blocks I3.

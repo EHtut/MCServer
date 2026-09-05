@@ -463,7 +463,7 @@ grp('🚨 deep_speaker.js IS ACTUALLY LOADED AND BOOTED — both were missing')
   // still flags it as such - and Ethan's retcon replaced it with her actual name:
   // *"im retconning the rule for unique deep speakers. It will always just be
   // caebrim."* All five entries now read Caebrim.
-  ok('caebrim holds BOTH blade and forge, by name (docs/61)',
+  ok('caebrim holds BOTH blade and forge, by name (LORE.md > Caebrim (book canon))',
     [spk.blade && spk.blade.name, spk.forge && spk.forge.name], ['Caebrim', 'Caebrim'])
 
   global.VELDORA.speaker = stubSpeaker

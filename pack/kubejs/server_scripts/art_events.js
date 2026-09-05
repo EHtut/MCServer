@@ -272,7 +272,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // entity was found", which is a real registered type. The lang-file lesson
   // (magistuarmory:bronze_ingot) is why this is stated.
   //
-  // 🚨 NOT nightmare_stalker - that is RESERVED as Caebrim's form (docs/57 §2) and
+  // 🚨 NOT nightmare_stalker - that is RESERVED as Caebrim's form (LORE.md > Caebrim §2) and
   // no path may cast it.
   var TRIAL_ACTOR = 'born_in_chaos_v1:scarlet_persecutor'
   var TRIAL_TAG = 'veldora_art_trial'

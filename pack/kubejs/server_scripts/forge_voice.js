@@ -1,4 +1,4 @@
-// forge_voice.js — the Goat's lines.  docs/56 (brief) · docs/57 §3 (her deep speaker)
+// forge_voice.js — the Goat's lines.  docs/56 (brief) · LORE.md > Caebrim §3 (her deep speaker)
 //
 // Milantros. Orphaned when her village was razed - an ornate "D" left in the tracks -
 // and found standing in it by CAEBRIM and MOMMA PILLE, who kept her. Alice adopted her
@@ -257,7 +257,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     ],
 
     // [CLAUDE-DRAFT] forge/warn_wave
-    // The tide herald above the cutoff. Below it Caebrim takes over (docs/57 §3).
+    // The tide herald above the cutoff. Below it Caebrim takes over (LORE.md > Caebrim §3).
     warn_wave: [
       "- somethin's comin' up outta the ground an' there is a great deal of it.",
       "Oh, I know that sound. Ain't heard that sound in a real long time. Get somewhere with a roof.",
@@ -373,7 +373,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "I remember weather. Not the cold or the wet, just - that it happened, an' that I was out in it. That's 'bout all that's left.",
       "There was a castle. There was a siege. I was real small an' then I wasn't anything. Anyway - what're you makin'?",
     ],
-    // ⚠️ Below the cutoff Caebrim speaks, not her (docs/57 §3). These are for the
+    // ⚠️ Below the cutoff Caebrim speaks, not her (LORE.md > Caebrim §3). These are for the
     // shallow enclosed spaces that are still ABOVE it, which is most caving.
     // [CLAUDE-DRAFT] forge/loc_below · forge/rare_loc_below
     loc_below: [
@@ -447,14 +447,14 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // one-sided grudge pays off.
     // [CLAUDE-DRAFT] forge/near_blade · forge/near_wall · forge/near_salvage · forge/near_art
     // ⭐⭐ THEY ARE FOSTER-SIBLINGS AND NOBODY HAD NOTICED. Caebrim raised Gregor -
-    // calls him "my boy" - and Caebrim also raised HER (docs/61 §3). Blade and Forge
+    // calls him "my boy" - and Caebrim also raised HER (LORE.md > Caebrim (book canon) §3). Blade and Forge
     // grew up under the same woman.
     //
     // 🔑 And the first line of this pool already said so by accident: "He was serious
     // about everything, EVEN BEFORE." Before what? She knew him before. Keep it.
     //
     // ⚠️ SHE REMEMBERS AND HE DOES NOT SAY. Blade's own pools have no warmth in them
-    // for anyone - that is the severance (docs/60 §1). So this is entirely one-sided,
+    // for anyone - that is the severance (LORE.md > Gregor §1). So this is entirely one-sided,
     // like everything else she has: she is fond of a man who is a rank now.
     near_blade: [
       "- that one's his. He's real serious about it. He was serious about everything, even before.",
@@ -463,7 +463,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "Him an' me got raised by the same woman, y'know. He don't bring it up. He don't bring anything up.",
       "I knew him when he was somebody's boy an' not somebody's general. Long time ago now.",
     ],
-    // ⭐⭐ SHE IS THE ONE WHO IS KIND TO MERA. Wall is Mera (docs/59), and in the books
+    // ⭐⭐ SHE IS THE ONE WHO IS KIND TO MERA. Wall is Mera (LORE.md > Mera), and in the books
     // Milantros is the one who insists to her face: **"you're not a clone to me."**
     // Everyone else - Kayer especially - treats Mera as a manufactured copy.
     //
@@ -482,7 +482,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       "- careful, that one'll trade you somethin' you needed for somethin' you wanted.",
       "The hound's. I like her, matter of fact. She's loud an' she don't never pretend she ain't.",
     ],
-    // ⭐⭐ THE PAYOFF POOL. Kayer hates her (docs/57 §4) and the cause is canon rather
+    // ⭐⭐ THE PAYOFF POOL. Kayer hates her (LORE.md > Caebrim §4) and the cause is canon rather
     // than my guess: a small goat girl called her **"Short, Ugly, Weird, Smelly"** the
     // day they met, and was then adopted by Kayer's own mother.
     //

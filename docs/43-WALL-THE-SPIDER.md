@@ -110,7 +110,7 @@ we still are honestly missing a **why**. but its a sandbox game so it isn't the 
 priority."*
 > 🔑 **Her why, recorded:** *she goes down to learn the truth.* And the larger admission
 > is worth keeping visible — **the world does not yet have a reason a champion descends
-> at all**, beyond loot and a Harvest. `docs/15` §0b's moral gradient (*the deeper you
+> at all**, beyond loot and a Harvest. `LORE.md > the World` §0b's moral gradient (*the deeper you
 > go, the worse your patron looks*) is the closest thing to one. Not scheduled.
 
 **2. ✅ RULED — `Assassinations → 0`, everything moves to Contracts.** *"switch to
@@ -179,7 +179,7 @@ written months before any of this:
 > *"Her champions fight with **someone else's hands**."*
 > *"The spider's champions borrow their strength from her silk."*
 
-And it lands exactly on the Mera canon (`docs/59 §2`) — a hero whose purpose was taken
+And it lands exactly on the Mera canon (`LORE.md > Mera §2`) — a hero whose purpose was taken
 from her, holding on to the one thing that still needs her. **"Finding strength in
 others" and "she calls her obsession devotion" are the same sentence.** Nothing needs a
 new mod to say it.

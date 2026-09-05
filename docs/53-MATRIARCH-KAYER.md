@@ -17,7 +17,7 @@
 > She is **not your ally**. She knows your every move, and when you go down into the
 > dark — if you prove to be too capable — **she will cut you down herself.**
 >
-> 🔴 *(**SUPERSEDED 2026-08-22 by the book canon** — `docs/58 §1`. She is **married**
+> 🔴 *(**SUPERSEDED 2026-08-22 by the book canon** — `LORE.md > Kayer §1`. She is **married**
 > to Ank; her surname *Rysor* IS that marriage. And Caebrim is not merely a sibling, she
 > is **"her rock, more than her husband"** — a thing Kayer would never admit. The
 > ESTRANGEMENT is real and stays; the **"no allies"** framing does not.)*
@@ -52,7 +52,7 @@ she is not.
 
 ## 1. 🔴 THIS IS A REPLACEMENT, NOT A REVISION
 
-What is written across `docs/15/18/21/22/25/26/27/28` today:
+What is written across `LORE.md` and archived `18/21/22/25/26/27/28` today:
 
 > **Art — The Nightmare** · *"She wants you to sleep. She wants you to sleep."*
 > Fragmentary, repetitive, dreamlike. **Never threatens**, and is **the only patron
@@ -143,11 +143,11 @@ true. If they ever do, it should be an event, not a pool.
 🔴 **AND ETHAN IS ALREADY CONSIDERING EXACTLY THAT** (2026-08-22): *"the depth speaker I
 might change to all of them might just be Caebrim."* It is a `might`, it is NOT built, and
 the argument on both sides — including whether *"unwilling to speak to **her**"* means
-Kayer specifically — is written up in **`docs/57 §3`**. Caebrim is also now female, and
+Kayer specifically — is written up in **`LORE.md > Caebrim §3`**. Caebrim is also now female, and
 the shadow stalker (`nightmare_stalker`) has been taken off Art and reserved as **her**
-form; Kayer's stalker is the Lifestealer's true form instead. `docs/57 §2`.
+form; Kayer's stalker is the Lifestealer's true form instead. `LORE.md > Caebrim §2`.
 
-🔴 **She also hates Milantros** (`docs/57 §4`) — which makes the two strongest gods
+🔴 **She also hates Milantros** (`LORE.md > Caebrim §4`) — which makes the two strongest gods
 personal enemies, and gives `broadcast.js` its first real reason to fire.
 
 ---

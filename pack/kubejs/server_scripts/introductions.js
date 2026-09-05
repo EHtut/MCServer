@@ -221,7 +221,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     //   SOOTHING       "Let her carry it instead" is comfort. Ethan: "kayer needs to
     //                  be cold and sound cold and almost cruel."
     //
-    // ⭐ WHAT REPLACES IT, from the canon (docs/58): she is an ORACLE - she has already
+    // ⭐ WHAT REPLACES IT, from the canon (LORE.md > Kayer): she is an ORACLE - she has already
     // seen this conversation, which is why she is bored rather than menacing - and her
     // creed is THE FOLD, so an introduction is an INDUCTION, not a bargain.
     //

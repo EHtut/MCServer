@@ -447,7 +447,7 @@
   //
   // She clears it: forge_voice.js (42 pools, accent written), forge_events.js (four
   // events - notion, gift, kindness, lend, and SIX explicit zeroes), a deep-speaker
-  // entry that is CAEBRIM (docs/61 §0 - the woman who raised her), a validated drop
+  // entry that is CAEBRIM (LORE.md > Caebrim (book canon) §0 - the woman who raised her), a validated drop
   // table, a live counter (blocks placed + crafted + smelted), a coefficient row that
   // was always hers (drops 5.0, the highest in the game), and a release rule decided
   // rather than inherited (`never` - she does not put champions down).

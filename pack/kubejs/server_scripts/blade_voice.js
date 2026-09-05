@@ -335,7 +335,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // told you what it is. He never raises his voice and never apologises.
     //
     // 🔴🔴 AND WHEN THE RIVAL IS WALL, THIS IS A FATHER ARGUING WITH HIS DAUGHTER OVER
-    // A CORPSE. docs/59 §1 - Blade is Gregor, Wall is Mera, she was brainwashed as an
+    // A CORPSE. LORE.md > Mera §1 - Blade is Gregor, Wall is Mera, she was brainwashed as an
     // infant to forget him, and neither of them can know. These pools do not name the
     // rival, so nothing here needs changing and nothing here should HINT.
     //
@@ -487,7 +487,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
               "I have outlasted every one of them."
           ]
       },
-      // ⭐⭐ AND HIS COLDNESS IS THE COST, NOT THE CHARACTER (docs/60 §1). The book
+      // ⭐⭐ AND HIS COLDNESS IS THE COST, NOT THE CHARACTER (LORE.md > Gregor §1). The book
       // Gregor is "the most human of the entire undead cast" - kind, humble, warm, no
       // irony and no god-distance. That looks unrecoverable against the god of war
       // until you read his TWO CARDS:
@@ -502,7 +502,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // "the warrior focuses on you and really only tests you" - he is the one god
       // whose entire attention is on the person in front of him.
       //
-      // 🔴🔴 HE IS DESCRIBING HIS DAUGHTER. docs/59 §1.
+      // 🔴🔴 HE IS DESCRIBING HIS DAUGHTER. LORE.md > Mera §1.
       //
       // Blade is GREGOR (docs/40 §0). Wall is MERA - and per Ethan's book canon she is
       // Gregor and Marlynn's daughter, raised by him until Alison killed him and
@@ -517,7 +517,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // surfaces it surfaces to the PLAYER, through a third party - never through
       // either of them noticing.
       //
-      // ⭐ And docs/15 calls his contempt a temperament clash between a warrior and a
+      // ⭐ And LORE.md > the World calls his contempt a temperament clash between a warrior and a
       // smotherer. It is not a temperament clash.
       "wall": {
           "opens": [

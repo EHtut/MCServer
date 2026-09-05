@@ -961,13 +961,13 @@ none of what happened", is verbatim — the halting is the performance.*
 
 ## ⚠️ The cutoff was wrong, and a stale doc is why
 
-I set the Speaker's cutoff to **−40** off `15-LORE.md`, which says the Sealed Floor is
+I set the Speaker's cutoff to **−40** off `LORE.md`, which says the Sealed Floor is
 *"minus sixty to the bottom"*. **That doc predates the world extension** — the
 overworld floor is **−128**, not −64 (`tools/make_depth_datapack.py`). So −40 was a
 third of the way down, inside the old diggings, when Ethan had asked for *"low or
 almost lowest"*.
 
-Corrected to **−64** (where the deep works begin), and `docs/15` is fixed with a note
+Corrected to **−64** (where the deep works begin), and `LORE.md > the World` is fixed with a note
 on what the staleness cost. The numbers now match `/help`, which is the only version a
 player can check.
 

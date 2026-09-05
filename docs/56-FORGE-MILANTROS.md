@@ -2,7 +2,7 @@
 
 > **STATUS 2026-08-23** — ✅ **BUILT AND OPEN.** `forge_voice.js` (42 pools, accent
 > written) · `forge_events.js` (four events, six explicit zeroes) · Caebrim as her deep
-> speaker (`docs/61 §0`) · release rule `never` · **the `CLOSED` table is now empty and
+> speaker (`LORE.md > Caebrim (book canon) §0`) · release rule `never` · **the `CLOSED` table is now empty and
 > the live server says so**: *"CLOSED (unbuilt, cannot be claimed): none"*. Every path
 > in Veldora is claimable. Verified on a real restart: 0 errors, 301/301 harnesses.
 
@@ -75,7 +75,7 @@ been sitting in Ethan's whisper line since 2026-08-05.
 
 ---
 
-## 0d. 🔑 THE FAMILY — and it re-writes §4 of `docs/57`
+## 0d. 🔑 THE FAMILY — and it re-writes §4 of `LORE.md > Caebrim`
 
 Everyone in the depths is **Alice's found family**, and Milantros is the one who was
 adopted rather than raised from the start:
@@ -90,7 +90,7 @@ adopted rather than raised from the start:
 
 ### 🔴 "Kayer hates Milantros" now has a real cause, and it is not the one I guessed
 
-`docs/57 §4` says the motive is **mine** — jealousy over Alice's attention — and flags it
+`LORE.md > Caebrim §4` says the motive is **mine** — jealousy over Alice's attention — and flags it
 as a reading. **The dump replaces it with something better on both counts:**
 
 1. ⭐ **A small child called her Short, Ugly, Weird and Smelly, and then was adopted by
@@ -101,13 +101,13 @@ as a reading. **The dump replaces it with something better on both counts:**
    **Milantros is her adoptive sister**, and the coldest thing in the world is losing an
    argument to a nine-year-old who is now a god.
 
-🔑 **And Milantros does not know**, which was already the design (`docs/57 §4`) and is now
+🔑 **And Milantros does not know**, which was already the design (`LORE.md > Caebrim §4`) and is now
 much more likely to be literally true — she name-called *everybody* that day. She has no
 idea one of them kept score.
 
 ### ⭐ CAEBRIM IS HER MOTHER, NOT HER PETITIONER — the deep speaker just got much heavier
 
-`deep_speaker.js` registers Caebrim as **Forge's** voice in the dark (`docs/57 §3`), which
+`deep_speaker.js` registers Caebrim as **Forge's** voice in the dark (`LORE.md > Caebrim §3`), which
 I justified as *"the one who begged Alice to raise her."* **That was the thin version.**
 She found her in a razed village, kept her, raised her in an undead camp, and put a silver
 rifle in her hands.
@@ -180,7 +180,7 @@ friends with one.
 the warmest one almost certainly does not know. It is the first hostility in the pantheon
 that is about **attention** rather than power, and it is the missing trigger `broadcast.js`
 has been waiting for. Full triangle — Caebrim asked, Alice paid, Kayer resents, Milantros
-is oblivious — in **`docs/57 §4`**.
+is oblivious — in **`LORE.md > Caebrim §4`**.
 
 ⭐ **And that is what makes the accident matter.** Kayer was *made* — chosen, funded,
 poured into. Milantros was an afterthought whose soul went up because a spell broke.
@@ -280,7 +280,7 @@ asking because it did not occur to her to ask. Same mechanic, opposite meaning.
   one of the two siblings banished to the depths who will not speak to Kayer (`docs/53`).
   **Did the collapsed ritual cause her banishment?** That is the obvious inference and I
   am not making it. *(Her pronoun was `he` here until Ethan corrected it 2026-08-22 —
-  it was my inference, not his. `docs/57`.)*
+  it was my inference, not his. `LORE.md > Caebrim`.)*
 - ✅ **ANSWERED — she knows.** Ethan, 2026-08-22: *"She knows, she's been dead for a very
   long time."*
 

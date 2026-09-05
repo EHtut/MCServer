@@ -103,7 +103,7 @@ length.
 
 `art_voice.js:224` states the rule flatly:
 
-> *"🔑 SHE MADE HIM (docs/58 §3 — "Gregor KAYER Court"). **She will not say it**…"*
+> *"🔑 SHE MADE HIM (LORE.md > Kayer §3 — "Gregor KAYER Court"). **She will not say it**…"*
 
 Your bickering has her say it **twice**, both times as the last line of a high-trust scene:
 
