@@ -31,6 +31,7 @@ History → **git**, never a doc. Design → the one doc that owns that subject.
 
 | doc | answers |
 |---|---|
+| **`WORDS.md`** | 🔴 **what Ethan means when he says it.** Read it BEFORE building anything he described in a sentence — four rebuilds this project has paid for came from one word each |
 | **`FORMAT.md`** | how a doc here is written, and when not to write one |
 | **`VOICES.md`** | the dialogue mod's real limits · where every god stands · how to write a voice |
 | **`NPCS.md`** | Easy NPC as it actually is — the preset schema, objectives, attributes, read from the jar |
