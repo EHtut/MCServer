@@ -108,6 +108,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var NAME = 'Ank'
   var K_GREET = 'veldora_ank_greet'  // world day + 1 of his last greeting. 0 means never.
   var BEAT = 25                      // ~1.25s between his lines. See the note on scheduling.
+  var speechEpoch = 0                // bumped per greeting, so an old tail cannot interleave
 
   function getInt(p, k) { try { return p.persistentData.getInt(k) } catch (e) { return 0 } }
   function putInt(p, k, v) { try { p.persistentData.putInt(k, v) } catch (e) { } }
@@ -147,17 +148,55 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
    * landed, so a restart mid-greeting costs a tail, not the beat. ⛔ Do not grow this into
    * a long chain; if a scene ever needs one, it needs a resumable one.
    */
-  function saySeq(srv, p, lines) {
-    if (!lines || !lines.length) return 0
-    var sent = chat(p, lines[0]) ? 1 : 0
-    if (!sent) return 0
+  /**
+   * @param guarded  true when this is ANK speaking and the tail must die if he leaves.
+   *                 false for a deliberate read-aloud (`/ank greet <day>`), where nobody
+   *                 is in the cave and the whole point is to see the words.
+   *
+   * THE GUARD BROKE THE READ-ALOUD THE MOMENT IT WAS ADDED. `/ank greet 7` printed one
+   * line and swallowed four, because isActive() is false for an admin standing in a
+   * field - so the one tool that exists to READ ETHAN'S WRITING silently truncated it.
+   * Liveness is a property of the speaker, not of the text.
+   */
+  function saySeq(srv, p, lines, guarded) {
+    if (!lines || !lines.length) return null
+    if (!chat(p, lines[0])) return null
+
+    var epoch = ++speechEpoch
     for (var i = 1; i < lines.length; i++) {
       (function (text, n) {
-        try { srv.scheduleInTicks(BEAT * n, function () { chat(p, text) }) }
-        catch (e) { chat(p, text) }   // ⚠️ no scheduler - say it now rather than lose it
+        function beat() {
+          // A MAN WHO HAS LEFT MUST STOP TALKING. Without this guard the tail of a
+          // greeting keeps arriving after the boundary despawned him - so the player
+          // reads "A chill runs up your spine." and then three more <Ank> lines from
+          // somebody who is not there. The eeriest beat in Act 0, ruined by a callback.
+          //
+          // TWO CONDITIONS, AND TODAY THEY ARE REDUNDANT WITH EACH OTHER - measured,
+          // not assumed: removing either one alone leaves the harness green, and only
+          // removing BOTH fails it. Said plainly because a comment claiming two
+          // independent guards, when one is dead, is how a real guard gets deleted later
+          // by somebody tidying up.
+          //
+          // `isActive` is the live one: he left, so he stops talking.
+          //
+          // `epoch` covers a case the once-a-day gate makes unreachable TODAY - two
+          // greetings overlapping without a despawn between them. It is kept because B5+
+          // adds more speech to this same file (the argument, the day-4 meeting) and the
+          // gate that currently makes it unreachable is a property of greet(), not of
+          // saySeq. ⛔ If it is still unreachable when this file stops growing, delete it
+          // rather than leaving a guard nothing can trip.
+          if (guarded && !isActive(p)) return
+          if (epoch !== speechEpoch) return
+          chat(p, text)
+        }
+        try { srv.scheduleInTicks(BEAT * n, beat) }
+        catch (e) { beat() }   // no scheduler - say it now rather than lose it
       })(lines[i], i)
     }
-    return lines.length
+    // WHAT WAS CONFIRMED, AND WHAT WAS ONLY QUEUED, REPORTED SEPARATELY. Returning
+    // lines.length claimed five deliveries when exactly one had been proven and four were
+    // callbacks that may never run. "I sent it" and "I scheduled it" are different facts.
+    return { sent: 1, queued: lines.length - 1 }
   }
 
   // NEEDS-GAME: day 7 arrives as five <Ank> chat lines, paced, not one wall :: /ank greet 7
@@ -193,14 +232,25 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // rotation itself is empty, which the importer would have to have produced.
     if (!lines.length) return 'empty:' + src
 
-    var said = saySeq(srv, p, lines)
+    var said = saySeq(srv, p, lines, true)
     if (!said) {
       console.error(TAG + 'he had ' + lines.length + ' line(s) for day ' + day +
         ' and delivered NONE - the cast layer is not carrying him. Not stamping the day.')
       return 'mute'
     }
     putInt(p, K_GREET, day + 1)
-    return 'spoke:' + src + ':' + said
+
+    // MEETING HIM IS A PLOT BEAT, AND NOTHING WAS GRANTING IT. `ank` is one of the nine
+    // Act 0 advancements, it has a shipped datapack file, and no call site existed - so
+    // the achievement could never fire and `/story audit` could not see the gap, because
+    // it compares the key list to the datapack rather than to callers. Only 2 of the 9
+    // were reachable at all before this.
+    //
+    // Here rather than at spawn: he is met when he SPEAKS. A body appearing behind you in
+    // a cave is not an introduction.
+    try { if (VELDORA.story) VELDORA.story.reach(p, 'ank') } catch (e) { }
+
+    return 'spoke:' + src + ':' + said.sent + '+' + said.queued
   }
 
   function seesSky(p) {
@@ -330,6 +380,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       // the LOG must tell them apart, or a stuck Ank is invisible.
       var gone = despawn(srv, p)
       setActive(p, false)
+      speechEpoch++            // anything still queued from his last greeting is now void
       chill(srv, p)
       if (!gone) console.warn(TAG + p.username + ' - the chill fired but the despawn FAILED')
       else console.info(TAG + p.username + ' - Ank is gone (y ' + Math.round(yOf(p)) + ')')
@@ -415,7 +466,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         }
         p.tell(Text.of('§7day §f' + d + '§7 · source §f' + got.source +
           '§7 · §f' + got.lines.length + '§7 beat(s)'))
-        saySeq(ctx.source.server, p, got.lines)
+        saySeq(ctx.source.server, p, got.lines, false)
         return 1
       }))
       .executes(function (ctx) {

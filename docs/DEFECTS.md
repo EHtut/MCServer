@@ -1360,3 +1360,128 @@ this is fixed; a known-failing entry that has been fixed is the next stale claim
 require a namespace to look like an id (`[a-z0-9_]+:[a-z0-9_/.]+`) rather than any word
 followed by a colon.
 
+
+---
+
+## D-135 — Ethan's whole dialogue tree was in the file and nothing could open it ✅ FIXED 2026-09-06
+
+`make_npc_datapack.py` wrote `ON_INTERACTION: [{Type: "OPEN_TRADING_SCREEN"}]`, so
+right-clicking Ank went **straight to the wheat shop**. The imported intro tree — his
+opening line, the three player options, the sheriff branch — sat in every preset with
+nothing able to open it.
+
+🔴 **Every instrument said it was fine.** The importer printed *"dialogue: 4 screen(s) from
+Ethan's document"*, `ank_harness` asserted the screens were in the preset, and the preset
+genuinely contained them. Nothing asked whether a player could **reach** them. This is the
+project's own rule — measure at the point of USE — failing on content rather than code, and
+it is worse here because the thing lost was the writing.
+
+**Fixed:** `ON_INTERACTION` → `OPEN_DEFAULT_DIALOG`, and the shop moved to a
+*"What have you got?"* button on each reply screen. ⭐ **That is also the right order:** he
+talks you out of going down first, and the shop is what he offers when that fails. A
+merchant who opens with his inventory is not making an argument.
+
+⛔ **Still unproven in game** — the preset load path itself is unsettled (see D-139).
+
+---
+
+## D-136 — seven of the nine Act 0 achievements could never be earned ⚠️ PARTLY FIXED 2026-09-06
+
+`VELDORA.story.reach` was called for exactly **two** of the nine declared beats:
+`introductions` (opening.js) and `the_caves` (urge.js). The other seven had a key, a shipped
+advancement file, and **no call site** — including `ank`, the achievement for meeting the man
+you meet in the first cave.
+
+🔴 **And `/story audit` was built to catch exactly this, and could not.** It compared the key
+list against the datapack — which is precisely where those two agreed. A beat is unearnable
+when the *third* leg is missing, and nothing looked at call sites.
+
+**Fixed:** `ank` is granted when he first speaks — not when he spawns, because a body
+appearing behind you in a cave is not an introduction. Three of nine now reachable.
+
+⬜ **The remaining six belong to unbuilt chunks B5–B11** and correctly have no caller. That
+is now asserted rather than assumed: `story_harness.js` greps for call sites, checks the
+three built beats have one, and **fails if an unbuilt beat gains one** — because that means a
+chunk shipped and the list is stale.
+
+---
+
+## D-137 — `/story audit` reported "no gaps found" and computed nothing ✅ FIXED 2026-09-06
+
+It declared `var missing = 0`, never incremented it, opened no datapack, and printed
+*"no gaps found in this file"* on every run. Its own comment claimed it was *"the only thing
+that can see"* a drift between the key list and the advancements.
+
+🚨 **And a second false green was built on top of it.** `act0_smoke.py`'s
+*"the 9 beats agree"* check parsed that command's output for the words *missing / drift /
+mismatch* — none of which it could ever print. Worse, the command needs a player and RCON has
+none, so it returned nothing at all; `rcon.py` echoes the command before the response, so the
+check's own empty-answer fallback never fired either and it printed the echoed command as
+though it were the audit's reply.
+
+**Fixed both ways:** the drift question moved **offline** to `story_harness.js`, which can
+read the key list and the datapack directory; `/story audit` now reports only what a server
+can honestly answer (this player's progress, and which beats have a caller today); and
+`act0_smoke.py`'s check reports `UNKNOWN` with the reason instead of green.
+
+---
+
+## D-138 — Ank kept talking after he had gone ✅ FIXED 2026-09-06
+
+His greeting sends the first line immediately and schedules the rest ~1.25s apart. The
+scheduled callbacks had no liveness guard, so crossing the boundary mid-greeting produced
+*"A chill runs up your spine."* — and then three more `<Ank>` lines from a man who was no
+longer there. **The eeriest beat in Act 0, ruined by a callback.**
+
+🔴 **The harness ran exactly this scenario and passed**, because its scheduler stub fired
+every callback synchronously — so all five lines landed before the despawn could happen. A
+stub more permissive than the game is not a test.
+
+**Fixed:** the stub now queues callbacks and the test ticks them; the tail is guarded by
+`isActive`, and voided on despawn.
+
+⚠️ **The guard broke `/ank greet <day>` the moment it landed.** An admin standing in a field
+is not active, so the one tool that exists to read Ethan's writing aloud silently truncated
+it to one line. Liveness is a property of the speaker, not of the text — so the read-aloud
+path is deliberately unguarded and the harness asserts that split.
+
+⚠️ **Measured, not assumed:** the `isActive` and epoch guards are **redundant today** —
+removing either alone leaves the harness green, and only removing both fails it. Recorded in
+both files, because a comment claiming two independent guards when one is dead is how a real
+guard gets deleted by somebody tidying up.
+
+---
+
+## D-139 — the Act 0 suite's own false greens ✅ FIXED 2026-09-06 (found by an independent audit)
+
+`act0_smoke.py` and the `prefire.js` changes were audited adversarially **before** the server
+was turned on — four lenses, each instructed to refute. 35 findings; below are the ones that
+would have made the testing phase worthless. They are filed together because they are one
+shape: **a checker that cannot fail.**
+
+| | what it did | now |
+|---|---|---|
+| **throw detector** | required the words `Error`, `Exception` or `threw` on the line. Real KubeJS throws look like `paths.js#1304: Failed to read item stack` — none of those words. So `ank.js#317: Cannot find function forDay` would have printed **ok** | uses `live_smoke.py`'s pattern, narrowed to Act 0's files. ⭐ The **same** pattern, not a second one — two patterns for one log format is how they come to disagree |
+| **stale evidence** | one good boot made three checks green **forever**, including for code rewritten afterwards. Boot once, move the greeting to the chat bar, never restart — still ok | `stale_since_boot()` compares deployed mtimes against the boot; anything newer makes those checks UNKNOWN. It currently reports all six Act 0 scripts as never-loaded, which is true |
+| **`easy_npc preset list`** | does not exist — the mod has `export` / `generate` / `import`. The check's guard for a missing command could not fire, so it would have reported *"the datapack load path is wrong"*: a confident wrong answer about the one question B1 is blocked on | UNKNOWN, naming the real subcommand, read out of the jar |
+| **`fail` counted as answered** | mark all 38 items failed and it printed *"38/38 answered"*, suppressing its own "nothing is green by default" warning | `passed_count` and `failed_count` are separate. A failed item is answered and is the opposite of done |
+| **exit codes** | `act0_smoke` consulted only the rcon half, so it exited 0 with the entire playtest untouched. `prefire` counted only offline steps, so a human-recorded in-game **failure** left it green — the gate this project uses to close a chunk. `prefire --game` skips the offline block entirely, so it was **always** 0 | both fail on an unanswered or failed eyes item; proved by recording one of each |
+| **the playtest was invisible** | prefire's owed list comes from tree markers; the 22 play-ordered steps live only inside `act0_smoke.py`, which prefire deliberately does not scan. So it could print *"nothing is waiting on the game"* with the playtest untouched | the ledger carries `_totals`; prefire prints them, and says so when they are **absent** rather than assuming zero |
+| **the ledger destroyed itself** | `load_ledger` returned `{}` on any read failure, and the next `--pass` wrote that empty dict back over every recorded answer | a missing file is fine; an unreadable one is a hard stop. Writes go to a temp and are moved into place |
+| **it scanned itself** | listed its own marker regex as outstanding work — the exact bug `prefire.js` already carried an exclusion for. Copying the scan and not the exclusion put it straight back | both files exclude both |
+
+⭐ **And one that is not in the table, because it happened to a tool while these were being
+fixed:** `tools/story_harness.js` was **truncated to zero bytes** by a patch script that
+opened it for writing and then hit a `UnicodeEncodeError` — the open truncates before the
+encode fails. Restored from git. The ledger writer now encodes first and moves a temp file
+into place for exactly this reason.
+
+⬜ **Not everything the audit raised is fixed.** Still open, in rough order of how much they
+would cost: `spawn()` and `despawn()` both return true whether the command worked or did
+nothing (so "he spawned" and "the command silently failed" share a return value, and
+`K_ACTIVE` latches so it never retries); Ank is found by **one global scoreboard tag** with no
+per-player binding, so on a shared server one player's despawn would kill another's; a player
+who acquires a path while Ank is out is skipped by the sweep forever, so he is never
+despawned and the chill never fires; and the *"he cannot be killed"* playtest step is written
+with the same `/kill @e[tag=veldora_ank]` the despawn path uses, so a tester confirming
+unkillability would be filing a pass for the observation that proves the despawn is broken.

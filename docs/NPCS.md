@@ -251,7 +251,7 @@ player or needs `TargetPlayerName`; whether removing an objective at runtime sto
 already following; whether `Invulnerable` also blocks void and `/kill`. Each is a
 `NEEDS-GAME` marker and appears in `node tools/prefire.js`.
 
-<!-- NEEDS-GAME: a preset we ship under data/easy_npc/preset is found at all :: /easy_npc preset list -->
+<!-- NEEDS-GAME: a preset we ship under data/easy_npc/preset is found at all, and under WHICH of the two paths :: /easy_npc preset import_new then tab-complete -->
 <!-- NEEDS-GAME: the skins render on an NPC, not as a missing texture :: F3+T then /easy_npc spawn -->
 <!-- NEEDS-GAME: FOLLOW_PLAYER targets the nearest player without TargetPlayerName :: /easy_npc objective set follow -->
 <!-- NEEDS-GAME: Invulnerable:1b survives void and /kill, not just damage :: /kill @e[type=easy_npc:humanoid] -->

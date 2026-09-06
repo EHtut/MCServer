@@ -21,7 +21,7 @@ player surfaces or goes too deep. That is `pack/kubejs/server_scripts/ank.js`.
 ⚠️ THE LOAD PATH IS THE UNPROVEN PART. The mod's own presets sit under
 `data/easy_npc/api/preset/base/`, while the loader's string constant is `easy_npc/preset`.
 Those are not obviously the same folder and only the game can say which one a THIRD-PARTY
-datapack is read from — so this writes BOTH, which is cheap, and `/easy_npc preset list`
+datapack is read from — so this writes BOTH, which is cheap, and `/easy_npc preset import_new`'s suggestion list
 settles it. ⛔ Delete the loser once it is known; two copies of one character is exactly the
 duplicated-state problem this project keeps paying for.
 
@@ -191,7 +191,15 @@ def dialog_block(d):
             "Label": "reply_%d" % i,
             "Name": br["choice"][:24],
             "Texts": [{"Text": "<br><br>".join(br["reply"])}],
-            "Buttons": [{"Label": "close", "Name": "...", "Actions": [{"Type": "CLOSE_DIALOG"}]}],
+            # THE SHOP IS REACHED THROUGH WHAT HE SAYS, and every one of his replies
+            # ends by offering it - "if you need anything. Come find me instead", "I'll get
+            # you whatever you need". So the button is the sentence he just spoke, made
+            # clickable, rather than a UI affordance bolted on.
+            "Buttons": [
+                {"Label": "trade", "Name": "What have you got?",
+                 "Actions": [{"Type": "OPEN_TRADING_SCREEN"}]},
+                {"Label": "close", "Name": "...", "Actions": [{"Type": "CLOSE_DIALOG"}]},
+            ],
         })
     return {"DialogDataSet": dialogs, "Type": "STANDARD"}
 
@@ -273,7 +281,17 @@ def preset(key, spec, trades, name_suffix=""):
             },
             "Offers": {"Recipes": offers(trades)},
             "ActionData": {"ActionEventSet": {
-                "ON_INTERACTION": [{"Type": "OPEN_TRADING_SCREEN"}],
+                # RIGHT-CLICK OPENS THE CONVERSATION, NOT THE SHOP. This said
+                # OPEN_TRADING_SCREEN for two commits, which meant Ethan's entire imported
+                # dialogue tree - the opening line, the three options, the sheriff branch -
+                # sat in every preset with NOTHING ABLE TO OPEN IT. The importer reported
+                # "4 screen(s)", the harness asserted they were in the file, and the player
+                # would have gone straight to a wheat shop and never heard him speak.
+                #
+                # It is also the better order: he talks you out of going down FIRST, and
+                # the shop is what he offers when that fails. A merchant who opens with his
+                # inventory is not making an argument.
+                "ON_INTERACTION": [{"Type": "OPEN_DEFAULT_DIALOG"}],
             }},
             "Status": {"finalized": True},
             **({"DialogData": DIALOG} if DIALOG else {}),
@@ -331,7 +349,7 @@ def main():
     for d in PRESET_DIRS:
         print("  " + os.path.relpath(d, ROOT))
     print("\n⚠️  Two paths on purpose - only the game can say which one a "
-          "third-party\n   datapack is read from. `/easy_npc preset list` settles it; "
+          "third-party\n   datapack is read from. `/easy_npc preset import_new`'s suggestion list settles it; "
           "delete the loser.")
     return 0
 

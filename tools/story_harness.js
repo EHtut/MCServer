@@ -156,5 +156,41 @@ grp("⛔ ETHAN'S TEXT IS VERBATIM — typos included")
   }
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+grp('🔴 A BEAT WITH NO CALLER CAN NEVER BE EARNED')
+{
+  // ⭐ THIS IS THE HALF NOTHING WAS CHECKING. This file already compares the key list
+  // against the datapack's files, so a beat with no advancement is caught. A beat with a
+  // key AND an advancement AND **nothing that calls it** passes both, and is unearnable.
+  //
+  // Seven of the nine were in exactly that state — including `ank`, the achievement for
+  // meeting the man you meet in the first cave. It had a key, a shipped advancement file
+  // and zero call sites. `/story audit` could not see it because it compared the list to
+  // the datapack, which is precisely where those two agreed.
+  const SS = path.join(ROOT, 'pack', 'kubejs', 'server_scripts')
+  const src = fs.readdirSync(SS).filter(f => f.endsWith('.js') && f !== 'story.js')
+    .map(f => fs.readFileSync(path.join(SS, f), 'utf8')).join('\n')
+  const called = new Set()
+  const RE = /story\.reach\(\s*[A-Za-z_$][\w$]*\s*,\s*['"]([a-z_]+)['"]/g
+  let m
+  while ((m = RE.exec(src)) !== null) called.add(m[1])
+
+  // ⚠️ BUILT means a chunk that has shipped. B5–B11 are unbuilt, so their beats correctly
+  // have no caller — listing those as failures would train somebody to ignore this block.
+  const BUILT = ['introductions', 'the_caves', 'ank']
+  const UNBUILT = ['the_arguments', 'the_shadow', 'the_whispers', 'the_white_coat',
+                   'the_hordes', 'what_happened']
+
+  for (const k of BUILT) ok('`' + k + '` is granted by something', called.has(k), true)
+  ok('...and the two lists still cover all nine', BUILT.length + UNBUILT.length, 9)
+
+  // 🔑 A caller appearing for an unbuilt beat is NOT a failure — it means that chunk
+  // shipped and this list is stale. It has to SAY so rather than pass quietly.
+  const surprises = UNBUILT.filter(k => called.has(k))
+  ok('the unbuilt beats are still unbuilt' +
+     (surprises.length ? ' (now wired: ' + surprises.join(', ') + ' — update BUILT here)' : ''),
+     surprises.length, 0)
+}
+
 console.log('\n' + (fail ? R + fail + ' FAILED, ' + X : G) + pass + ' passed' + X)
 process.exit(fail ? 1 : 0)

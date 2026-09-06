@@ -137,7 +137,7 @@
       ActionEventSet:{
         ON_INTERACTION:[
           {
-            Type:"OPEN_TRADING_SCREEN"
+            Type:"OPEN_DEFAULT_DIALOG"
           }
         ]
       }
@@ -198,6 +198,15 @@
           ],
           Buttons:[
             {
+              Label:"trade",
+              Name:"What have you got?",
+              Actions:[
+                {
+                  Type:"OPEN_TRADING_SCREEN"
+                }
+              ]
+            },
+            {
               Label:"close",
               Name:"...",
               Actions:[
@@ -218,6 +227,15 @@
           ],
           Buttons:[
             {
+              Label:"trade",
+              Name:"What have you got?",
+              Actions:[
+                {
+                  Type:"OPEN_TRADING_SCREEN"
+                }
+              ]
+            },
+            {
               Label:"close",
               Name:"...",
               Actions:[
@@ -237,6 +255,15 @@
             }
           ],
           Buttons:[
+            {
+              Label:"trade",
+              Name:"What have you got?",
+              Actions:[
+                {
+                  Type:"OPEN_TRADING_SCREEN"
+                }
+              ]
+            },
             {
               Label:"close",
               Name:"...",

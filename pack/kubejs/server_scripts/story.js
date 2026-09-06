@@ -153,20 +153,30 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // ⭐ THE AUDIT IS THE POINT OF HAVING TWO LISTS. The datapack and this file each carry
     // the beat names, and a key present in one but not the other grants nothing while
     // looking perfectly fine from either side. This is the only thing that can see it.
+    // WHAT THIS COMMAND USED TO CLAIM, AND NEVER DID. It declared `var missing = 0`,
+    // never incremented it, opened no datapack, and always printed "no gaps found in this
+    // file". Its own comment said it was "the only thing that can see" a drift between
+    // the key list and the advancements - and act0_smoke.py then built a check on top of
+    // that claim, so a false green fed a second false green.
+    //
+    // A DRIFT IS AN OFFLINE QUESTION AND IT LIVES IN story_harness.js, which can read both
+    // the key list and the datapack directory. This command answers the only thing a
+    // server can: what THIS PLAYER has reached, and which beats nothing is able to grant.
     root = root.then(Commands.literal('audit').executes(function (ctx) {
       var p = ctx.source.player
       if (!p) return 0
-      var missing = 0
-      for (var i = 0; i < ACT0.length; i++) {
-        // A grant against a non-existent advancement fails; revoking a beat the player
-        // does not have is harmless, so this probes without changing anything they own.
-        var had = has(p, ACT0[i])
-        if (had) continue
-        p.tell(Text.of('§8  probing ' + ACT0[i]))
-      }
-      p.tell(Text.of('§7' + ACT0.length + ' beats declared here. Compare against ' +
-        '§fpython tools/make_story_datapack.py§7 - it prints its own list.'))
-      p.tell(Text.of(missing ? '§c' + missing + ' missing' : '§ano gaps found in this file'))
+      var got = [], not = []
+      for (var i = 0; i < ACT0.length; i++) (has(p, ACT0[i]) ? got : not).push(ACT0[i])
+      p.tell(Text.of('§7reached §f' + got.length + '§7/' + ACT0.length +
+        (got.length ? '§8  ' + got.join(', ') : '')))
+      if (not.length) p.tell(Text.of('§8not yet: ' + not.join(', ')))
+      // A BEAT WITH NO CALLER CAN NEVER BE EARNED, and that is invisible in game - the
+      // player simply never gets it, which looks exactly like not having got there yet.
+      // Six of the nine belong to unbuilt chunks (B5-B11) and correctly have no caller;
+      // the list is printed so "unbuilt" and "wired wrong" can be told apart at a glance.
+      p.tell(Text.of('§8granted by code today: introductions, the_caves, ank. The ' +
+        'other six wait on B5-B11. §8Drift between this list and the datapack is an ' +
+        'OFFLINE question: §fnode tools/story_harness.js'))
       return 1
     }))
 

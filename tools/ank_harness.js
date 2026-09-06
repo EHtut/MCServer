@@ -30,10 +30,18 @@ function build() {
   // for. Deferring for real would make the harness time-dependent; dropping the callback
   // would make a scheduled line indistinguishable from a lost one — which is the exact
   // failure the opening's 18 dead callbacks were.
-  const delays = []
+  // 🔴 THE STUB USED TO RUN EVERY CALLBACK SYNCHRONOUSLY, AND THAT IS WHAT HID THE BUG.
+  // The block below drives exactly the failing scenario — greet on day 7, then drop below
+  // −32 — and it passed, because all five lines had already fired before the despawn could
+  // happen. In game the order is the opposite: the chill lands, then three more <Ank>
+  // lines from a man who is no longer there.
+  //
+  // So callbacks are now QUEUED, and `e.tick()` runs them. A test that never ticks is
+  // testing the same instant the game would not be in.
+  const delays = [], queued = []
   const server = {
     tickCount: 0, players: [], runCommandSilent: (c) => commands.push(c),
-    scheduleInTicks: (t, fn) => { delays.push(t); fn() },
+    scheduleInTicks: (t, fn) => { delays.push(t); queued.push(fn) },
   }
   let descents = 0
   let day = 0
@@ -69,7 +77,9 @@ function build() {
       putInt(k, v) { this._d[k] = v }, getInt(k) { return this._d[k] | 0 },
     },
   })
+  const tick = () => { const q = queued.splice(0); q.forEach(fn => fn()) }
   return { A: ctx.VELDORA.ank, ctx, server, player, commands, ambient, logs, spoken, delays,
+           tick, queued,
            setDescents: (n) => { descents = n },
            setDay: (n) => { day = n },
            setMute: (v) => { mute = v },
@@ -301,7 +311,12 @@ grp('⭐ THE GREETING — in the chat bar, as <Ank>, once a day')
   // of ours. A future session adding §7 or a [NPC] prefix should fail here.
   const e = build()
   e.setDay(7)
-  e.A.greet(e.server, e.player(10, false))
+  e.A.consider(e.server, e.player(10, false))
+  e.tick()
+  // 🚨 PIN THE COUNT FIRST. `[].every()` is true and `[].some()` is false, so all three of
+  // these assertions reported ok when NOTHING had been said — the project's own
+  // "I failed and I found nothing must not share a return value", at the assertion level.
+  ok('he said all five of day 7', e.spoken.length, 5)
   ok('every line is vanilla chat shape',
     e.spoken.every(t => t.indexOf('<Ank> ') === 0), true)
   ok('...with no colour codes smuggled in', e.spoken.some(t => /§/.test(t)), false)
@@ -357,10 +372,14 @@ grp('⭐ THE GREETING — in the chat bar, as <Ank>, once a day')
 {
   // 🔴 ETHAN'S WRITING, THROUGH THE WHOLE PIPE. The harness loads the real
   // ank_lines.js, so this asserts HIS text arrives at the chat call unedited — not
-  // that a fixture does.
+  // that a fixture does. ⚠️ And it drives `consider`, not `greet`, because the tail is
+  // now liveness-guarded: greeting a player Ank is not out with is correctly silent.
   const e = build()
+  const p = e.player(10, false)
   e.setDay(7)
-  e.A.greet(e.server, e.player(10, false))
+  e.A.consider(e.server, p)
+  ok('only the first line has landed before any time passes', e.spoken.length, 1)
+  e.tick()
   const said = e.spoken.map(t => t.replace('<Ank> ', ''))
   ok('day 7 arrives as five separate chat lines', said.length, 5)
   ok('...with his first line intact', said[0], 'Hey, Stay out of the mines today.')
@@ -373,7 +392,8 @@ grp('⭐ THE GREETING — in the chat bar, as <Ank>, once a day')
   // Ethan did not write.
   const e2 = build()
   e2.setDay(2)
-  e2.A.greet(e2.server, e2.player(10, false))
+  e2.A.consider(e2.server, e2.player(10, false))
+  e2.tick()
   ok('a four-sentence line stays ONE chat message', e2.spoken.length, 1)
   ok('...and the em-dash interruption survives to the mouth',
     e2.spoken[0].indexOf('agree with—') !== -1, true)
@@ -436,11 +456,48 @@ grp('⭐ THE GREETING — in the chat bar, as <Ank>, once a day')
   const p = e.player(10, false)
   e.setDay(7)
   e.A.consider(e.server, p)              // arrive + greet
+  e.tick()
+  ok('...while every one of his own lines went to chat',
+    e.spoken.length === 5 && e.spoken.every(t => t.indexOf('<Ank> ') === 0), true)
   p.y = -50; e.A.consider(e.server, p)   // leave: the chill
   ok('the AMBIENT surface carries the chill and NOTHING else',
     e.ambient, ['A chill runs up your spine.'])
-  ok('...while every one of his own lines went to chat',
-    e.spoken.length >= 5 && e.spoken.every(t => t.indexOf('<Ank> ') === 0), true)
+}
+
+{
+  // 🔴 A MAN WHO HAS LEFT MUST STOP TALKING. This is the regression the synchronous stub
+  // hid: the tail of a greeting kept arriving after the boundary despawned him, so the
+  // player read "A chill runs up your spine." and then three more <Ank> lines from
+  // somebody who was not there. The eeriest beat in Act 0, ruined by a callback.
+  const e = build()
+  const p = e.player(10, false)
+  e.setDay(7)
+  e.A.consider(e.server, p)
+  ok('one line out, four still queued', [e.spoken.length, e.queued.length], [1, 4])
+
+  p.y = -50
+  ok('he leaves mid-greeting', e.A.consider(e.server, p), 'despawned')
+  ok('...and the chill is the last thing said', e.ambient.length, 1)
+  e.tick()
+  // ⚠️ MEASURED NEGATIVE CONTROL: this goes red only when BOTH the isActive guard and the
+  // epoch guard are removed from ank.js. Either alone holds it. That is recorded here
+  // because the first version of this comment claimed the isActive guard was what did the
+  // work, and the control disproved it.
+  ok('...and the four queued lines are DROPPED, not delivered', e.spoken.length, 1)
+}
+
+{
+  // ⚠️ AND THE READ-ALOUD IS NOT LIVENESS-GUARDED, because nobody is in a cave when an
+  // admin runs it. The guard truncated `/ank greet 7` to one line the moment it landed —
+  // silently gutting the one tool that exists to READ ETHAN'S WRITING.
+  const e = build()
+  const got = e.lines.forDay(7)
+  ok('the read-aloud path exists', got.lines.length, 5)
+  const src = fs.readFileSync(path.join(SS, 'ank.js'), 'utf8')
+  ok('...and the command asks for it UNguarded',
+    /saySeq\(ctx\.source\.server, p, got\.lines, false\)/.test(src), true)
+  ok('...while his own greeting is guarded',
+    /saySeq\(srv, p, lines, true\)/.test(src), true)
 }
 
 console.log('\n' + (fail ? R + fail + ' FAILED, ' + X : G) + pass + ' passed' + X)

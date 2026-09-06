@@ -170,6 +170,14 @@ function loadAnswers() {
 }
 
 const answers = loadAnswers()
+// ⭐ THE PLAY-ORDERED HALF, WHICH THIS FILE CANNOT SEE FOR ITSELF. act0_smoke.py holds 22
+// eyes-only steps that exist nowhere in the tree as markers, so scanNeedsGame() is blind
+// to them and prefire could print "nothing is waiting on the game" with the entire
+// playtest untouched. act0_smoke writes its totals into the ledger on every answer; this
+// reads them. ⚠️ AND SAYS SO WHEN THEY ARE ABSENT rather than assuming zero — a playtest
+// nobody has started and a playtest this file cannot see are different states.
+const totals = answers._totals || null
+delete answers._totals
 const all = scanNeedsGame().map(o => Object.assign({}, o, { id: sid(o.what), a: answers[sid(o.what)] }))
 const owed = all.filter(o => !o.a)
 const answered = all.filter(o => o.a && o.a.state === 'pass')
@@ -207,6 +215,16 @@ if (broke.length) {
   console.log(R + broke.length + ' item(s) FAILED in game' + X +
               D + '  — somebody looked at these and they were wrong' + X)
 }
+if (!totals) {
+  console.log(Y + 'the play-ordered checklist has not been started' + X + D +
+    '  — 22 steps prefire cannot see. python tools/act0_smoke.py --script' + X)
+} else {
+  const rest = totals.script - (totals.passed || 0)
+  console.log((rest > 0 ? Y : G) + 'playtest: ' + (totals.passed || 0) + ' passed' +
+    (totals.failed ? ', ' + totals.failed + ' FAILED' : '') + X + D +
+    '  of ' + (totals.script + totals.markers) + ' eyes-only items, as of ' +
+    totals.when + X)
+}
 console.log(owed.length
   ? Y + owed.length + ' item(s) unproven until the testing phase' + X +
     D + (answered.length ? '  (' + answered.length + ' answered)' : '') +
@@ -214,4 +232,9 @@ console.log(owed.length
   : D + 'nothing is waiting on the game' +
     (answered.length ? '  (' + answered.length + ' answered by hand)' : '') + X)
 console.log('')
-process.exit(failed ? 1 : 0)
+// 🚨 THE EXIT CODE USED TO COUNT ONLY THE OFFLINE STEPS. A human could record
+// `--fail he arrived mute`, prefire would print it in red, and still exit 0 — so the gate
+// the project's own ruling uses to close a chunk read green on a known-broken item.
+// `--game` was worse: it skips the offline block entirely, so `failed` was always 0.
+const brokeInGame = broke.length + ((totals && totals.failed) || 0)
+process.exit((failed || brokeInGame) ? 1 : 0)
