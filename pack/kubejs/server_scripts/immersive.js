@@ -214,6 +214,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       if (typeof ob === 'number' && ob > 0) t.push('obfuscate:' + ob)
     }
 
+    // 🔴🔴 `align` WAS DOCUMENTED AT THE TOP OF THIS FILE AND NEVER EMITTED — the x/y bug
+    // (D-123) again, in this same function, hidden because the field is listed as if it
+    // were supported.
+    //
+    // ⚠️ IT WAS THREADED THROUGH FOUR LAYERS BEFORE BEING DROPPED. cutscene.js's `journal`
+    // preset sets `align: 0`, cutscene.js:168 forwards it, ritual.js:365 stores it and :96
+    // passes it in — and it died here, on a line that did not exist. Every scene using that
+    // preset rendered centred while asking to be left-aligned.
+    //
+    // 🔑 The lesson the last one already taught, and cutscene.js's own header repeats: a
+    // pass-through that quietly omits a field is worse than one that errors, because the
+    // caller cannot tell "ignored" from "applied and wrong" — so the same fix gets made
+    // over and over against a boundary that never carried it.
+    if (typeof o.align === 'number') t.push('align:' + Math.round(o.align))
+
     if (colour) t.push('color:' + quote(colour))
     if (o.font) t.push('font:' + quote(o.font))
     if (o.bgColor) t.push('bgColor:' + quote(o.bgColor))

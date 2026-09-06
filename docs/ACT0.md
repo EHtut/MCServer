@@ -15,8 +15,9 @@ day 4 **Caebrim finds you in person** to warn you off; more meetings follow. **O
 run into Alice.** She tells you a few things, disappears, and **tides you at the hardest
 difficulty.** You die, and wake up wrong.
 
-⭐ **The shape is: two people try to keep you out, and you go anyway.** Nothing lures the
-player down. Every beat is somebody trying to stop them, which is what makes the ending land.
+⭐ **The shape is: the caves pull, and two people push back.** Something down there whispers
+for you to come closer — and Ank and Caebrim spend seven days trying to keep you out. You go
+anyway. Every beat is somebody trying to stop you, which is what makes the ending land.
 
 **Where it stands.** The opening is built and lands its title card. **Everything else in the
 act is unbuilt** — Ank does not exist in any form, the argument does not exist, and there is
@@ -76,10 +77,11 @@ YOU DIE, AND WAKE UP WRONG                           Act 1
 
 ### 🔑 The four things that carry it
 
-**⭐ THEY ARE KEEPING YOU OUT, NOT DRAWING YOU IN.** Ank blocks the entrance and *trades* to
-keep you above ground; Caebrim comes to warn you in person. **The player descends against
-advice, repeatedly, from people who turn out to be right.** Every beat is somebody trying to
-stop you, which is why the ending lands: you were told.
+**⭐ THE CAVES PULL AND THE PEOPLE PUSH BACK.** *"There is something down there, it whispers
+for you to get closer"* — and Ank blocks the entrance, trades to keep you above ground, and
+Caebrim comes to warn you in person. **The player descends against advice, repeatedly, from
+people who turn out to be right.** ⚠️ Both halves are needed: a pull with no warning is an
+ordinary dungeon crawl, and a warning with no pull gives the player no reason to disobey.
 
 **The cave is PEACEFUL, and that is a mechanic.** For seven days the danger is not mobs — it
 is two immortals arguing about what to do with you. If the caves fight the player, the
@@ -113,7 +115,8 @@ She has no dialogue at all in the opening, so there is nothing to leak.
 | ✅ | **The title card** — typed, centred, clear of the crosshair and biome bands | 2 sends over 12.5s in the emulator; harness asserts both are typed and neither sits in a keep-out band |
 | ✅ | **`arrival.js` cut** — no god speaks in Act 0 | word-boundary grep empty; blade's colour made explicit first |
 | ✅ | **The randomised life cut** — one origin | harness asserts `lifeOf` is gone *and* 18 sentences still reach the player |
-| 🔜 | **Achievements for plot progression** | Ethan, 2026-09-05: *"We can also do an achievement system to track plot progression."* **Not built.** Falsifier: reaching a beat grants a visible advancement, and a fresh world grants none |
+| ✅ | **The plot ledger** — 9 Act 0 achievements, Ethan's text verbatim. `VELDORA.story.reach(p, key)` grants and records in one call | `story_harness` 26/26: an unknown key is loud, `clear` revokes as well as un-stamps, and **the script's key list and the datapack's files are compared** — a drift in either grants silently |
+| ✅ | **`align` reaches the wire** — the cutscene machinery's second silent drop, after x/y | `passthrough_check` drives a real scene with every staging field set and asserts each survives all four layers. Verified by reverting the fix: 2 failures |
 
 ### The act, in order
 
@@ -173,11 +176,17 @@ path is taken and arrive as a punishment for choosing one.
 
 ## ⑥ CORRECTIONS
 
-**"Around day 7 something pulls you DOWN."** ❌ **The arc is inverted, and this was the whole
-design.** *(Ethan, 2026-09-05, rejecting most of the previous ledger.)* Nothing pulls. **Ank
-blocks the way and trades to keep you out; Caebrim comes in person to warn you off.** The
-player descends *against advice*, from people who turn out to be right. Everything the old
-§③ said about a lure, and chunks A4–A10 built on it, are void.
+**"Around day 7 something pulls you DOWN."** ❌ **The arc is inverted.** *(Ethan, 2026-09-05,
+rejecting most of the previous ledger.)* **Ank blocks the way and trades to keep you out;
+Caebrim comes in person to warn you off.** The player descends *against advice*, from people
+who turn out to be right. Chunks A4–A10, built on a day-7 lure, are void.
+
+**"Nothing lures the player down."** ⚠️ **Over-corrected, and my own doc said it for one
+revision.** Ethan's achievement text for `the_caves` is *"There is something down there, it
+whispers for you to get closer."* So there IS a pull — it just is not day 7, and it is not a
+god. 🔑 **Both halves are load-bearing:** a pull with no warning is an ordinary dungeon crawl,
+and a warning with no pull gives the player no reason to disobey. The inversion was about
+*who does the pulling*, not about removing it.
 
 **"The seven days are bulk to be filled."** ❌ They are **the argument**, escalating. The old
 A5 called it "1–2 hours of bulk" and measured it in authored lines, which is the wrong unit:

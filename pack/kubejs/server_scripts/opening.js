@@ -121,6 +121,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // lands after the title finishes rather than over it.
     titleCard(p)
 
+    // ⭐ THE FIRST BEAT OF THE PLOT LEDGER. Ethan, 2026-09-05: *"there should be an
+    // achievement for everything plot related."* The journal arriving IS "Introductions",
+    // so it is granted here rather than on a timer - the beat and its record fire together
+    // or the ledger starts lying immediately.
+    try { if (VELDORA.story) VELDORA.story.reach(p, 'introductions') } catch (e) { }
+
     console.info(TAG + p.username + ' - journal given (' + (gave ? 'ok' : 'FAILED') +
       '), ' + beats.length + ' sentences, title card typed' + (forced ? ' (forced)' : ''))
     return 'played'

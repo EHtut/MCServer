@@ -1,0 +1,19 @@
+{
+ "display": {
+  "icon": {
+   "id": "minecraft:black_candle"
+  },
+  "title": "The shadow",
+  "description": "A strange woman deep in the caves approached you. She warned you to leave and never return.",
+  "frame": "goal",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": false
+ },
+ "criteria": {
+  "c": {
+   "trigger": "minecraft:impossible"
+  }
+ },
+ "parent": "mcserver:act0/the_arguments"
+}

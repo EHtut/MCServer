@@ -1,0 +1,19 @@
+{
+ "display": {
+  "icon": {
+   "id": "minecraft:written_book"
+  },
+  "title": "Introductions",
+  "description": "You are healed, awakened in an unknown land your new life begins",
+  "frame": "task",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": false,
+  "background": "minecraft:textures/block/deepslate.png"
+ },
+ "criteria": {
+  "c": {
+   "trigger": "minecraft:impossible"
+  }
+ }
+}
