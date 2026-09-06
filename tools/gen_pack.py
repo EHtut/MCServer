@@ -29,7 +29,7 @@ PACK = REPO / "pack"
 RESOLVED = HERE / ".cache" / "resolved.json"
 
 # Placeholder name - change it here and nowhere else.
-PACK_NAME = "Cogs & Cadavers"
+PACK_NAME = "Arkhdottir: New Blood"
 PACK_AUTHOR = "EHtut"
 PACK_VERSION = "0.1.0"
 

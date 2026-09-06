@@ -27,7 +27,7 @@ $RepoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $log = Join-Path $InstanceDir "logs\latest.log"
 
 Write-Host ""
-Write-Host "  Cogs & Cadavers - starting server" -ForegroundColor Cyan
+Write-Host "  Arkhdottir: New Blood - starting server" -ForegroundColor Cyan
 Write-Host "  ---------------------------------" -ForegroundColor DarkGray
 Write-Host ""
 

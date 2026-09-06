@@ -1,4 +1,4 @@
-HOW TO JOIN - Cogs & Cadavers
+HOW TO JOIN - Arkhdottir: New Blood
 =============================
 
 Four steps. You do not need to understand any of it.
@@ -32,7 +32,7 @@ STEP 3 - Sign in
 
 STEP 4 - Play
 
-    Double-click "Cogs and Cadavers".
+    Double-click "Arkhdottir: New Blood".
 
     The FIRST launch downloads about 1.5 GB of mods and looks frozen for
     several minutes. It is not frozen. Leave it alone.

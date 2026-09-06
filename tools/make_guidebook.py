@@ -1,4 +1,4 @@
-"""Build the Cogs and Cadavers in-game guidebook (Patchouli, external book).
+"""Build the Arkhdottir: New Blood in-game guidebook (Patchouli, external book).
 
 WHY A GUIDEBOOK AT ALL
 
@@ -38,23 +38,27 @@ import json
 import pathlib
 import shutil
 
-BOOK_ID = "cogs_and_cadavers"
+BOOK_ID = "arkhdottir"
 OUT = pathlib.Path(__file__).resolve().parent.parent / "client" / "patchouli_books" / BOOK_ID
 
 # MINIMAL ON PURPOSE. The first version carried creative_tab and book_texture
 # and the book never registered - Patchouli logged NEITHER success NOR failure,
-# and `cogs_and_cadavers` appeared zero times in an 11.6 MB client debug log.
+# and `arkhdottir` appeared zero times in an 11.6 MB client debug log.
 #
 # With no error to read, the only honest move is to remove everything that is
 # not required and re-test. `name` and `landing_text` are the only mandatory
 # fields; creative_tab in particular takes a ResourceLocation and a bad one is a
 # silent skip, which fits the symptom exactly.
 BOOK = {
-    "name": "Cogs and Cadavers",
+    "name": "My Journal",
     "landing_text": (
-        "A world of cogs above and cadavers below.$(br2)"
-        "The surface belongs to animals and to whatever people still live out here. "
-        "Everything that wants you dead is $(o)underground$().$(br2)"
+        # [CLAUDE-DRAFT] - the landing page is the first thing he reads and it is
+        # PROSE, which is Ethan's. This is a placeholder in the journal's voice,
+        # kept short on purpose so replacing it is cheap. The last line is
+        # FUNCTIONAL, not flavour - it is the one instruction a new player needs.
+        "I am keeping this because I do not trust my memory any more.$(br2)"
+        "The surface belongs to animals and to whatever people still live out "
+        "here. Everything that wants me dead is $(o)underground$().$(br2)"
         "$(italic)Read the first chapter before your first night.$()"
     ),
     "version": 1,

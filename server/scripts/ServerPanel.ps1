@@ -93,7 +93,7 @@ function Get-ServerProcess {
 
 # --- UI ----------------------------------------------------------------------
 $form                = New-Object System.Windows.Forms.Form
-$form.Text           = "Cogs & Cadavers - Server Control"
+$form.Text           = "Arkhdottir: New Blood - Server Control"
 $form.Size           = New-Object System.Drawing.Size(760, 560)
 $form.StartPosition  = "CenterScreen"
 $form.BackColor      = [System.Drawing.Color]::FromArgb(30, 30, 34)

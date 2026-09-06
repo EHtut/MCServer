@@ -17,7 +17,7 @@
 //
 // THE ITEM SYNTAX IS FUSSY AND WAS TESTED LIVE
 //
-//   patchouli:guide_book[patchouli:book='patchouli:cogs_and_cadavers']
+//   patchouli:guide_book[patchouli:book='patchouli:arkhdottir']
 //
 // SINGLE quotes. Double quotes and a bare resource location both fail with
 // "Expected ']'". The component name was confirmed from Patchouli's
@@ -25,10 +25,10 @@
 // through RCON before being written here - it returned "Gave 1 [Guide Book]".
 //
 // External Patchouli books live under the `patchouli` namespace, which is why
-// the book id is patchouli:cogs_and_cadavers and not some pack namespace.
+// the book id is patchouli:arkhdottir and not some pack namespace.
 
 const FLAG = 'cc_guidebook_given'
-// ⚠️ WAS patchouli:cogs_and_cadavers, which exists in NO jar and in NO
+// ⚠️ WAS patchouli:arkhdottir, which exists in NO jar and in NO
 // server-side patchouli_books folder - it lives only as loose CLIENT files.
 // Patchouli answers an unknown id with item.patchouli.guide_book.invalid, so
 // /give SUCCEEDED and every player was handed an "Invalid Book" on first join

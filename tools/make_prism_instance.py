@@ -39,7 +39,7 @@ PACK_URL = "https://raw.githubusercontent.com/EHtut/MCServer/main/pack/pack.toml
 
 MC_VERSION = "1.21.1"
 NEOFORGE_VERSION = "21.1.247"
-INSTANCE_NAME = "Cogs and Cadavers"
+INSTANCE_NAME = "Arkhdottir: New Blood"
 
 # 8192 was the original value and it was NOT enough: 410 mods plus Distant
 # Horizons exhausted the heap during terrain load, which presents as a freeze at
@@ -292,7 +292,7 @@ OverrideConsole=false
 }
 """ % (MC_VERSION, NEOFORGE_VERSION))
 
-    install_txt = f"""HOW TO JOIN - Cogs & Cadavers
+    install_txt = f"""HOW TO JOIN - Arkhdottir: New Blood
 =============================
 
 Four steps. You do not need to understand any of it.
@@ -326,7 +326,7 @@ STEP 3 - Sign in
 
 STEP 4 - Play
 
-    Double-click "Cogs and Cadavers".
+    Double-click "Arkhdottir: New Blood".
 
     The FIRST launch downloads about 1.5 GB of mods and looks frozen for
     several minutes. It is not frozen. Leave it alone.
@@ -484,12 +484,12 @@ Options -> Controls if you hate it.
         ".minecraft/options.txt": OPTIONS,
     }
 
-    zpath = out_dir / "CogsAndCadavers-PrismInstance.zip"
+    zpath = out_dir / "ArkhdottirNewBlood-PrismInstance.zip"
     with zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED) as z:
         for name, content in stage_files.items():
             z.writestr(name, content)
         z.writestr(".minecraft/servers.dat",
-                   servers_dat([("Cogs & Cadavers", args.game)]))
+                   servers_dat([("Arkhdottir: New Blood", args.game)]))
         z.write(cache, ".minecraft/packwiz-installer-bootstrap.jar")
 
         # Client configs that must not be left at their defaults. packwiz syncs

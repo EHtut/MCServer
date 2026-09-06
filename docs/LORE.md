@@ -100,7 +100,7 @@ than her husband is, and she would never admit it.
 **"Gods are identified by a chat colour."** ❌ Retired 2026-09-05. They carry per-god fonts
 and speak through the dialogue mod. See `VOICES.md`.
 
-**"Veldora / Cogs & Cadavers"** ⚠️ The world is still Veldora; the *project* is **Arkhdottir:
+**"Veldora / Arkhdottir: New Blood"** ⚠️ The world is still Veldora; the *project* is **Arkhdottir:
 New Bloods**. The old title survives in headings below and is not worth rewriting his prose to
 remove — but it is not the name of the thing any more.
 

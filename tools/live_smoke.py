@@ -241,9 +241,9 @@ def c_resource_pack():
     not shipping it at all - that was the original tofu bug.
     """
     import zipfile
-    z = os.path.join(REPO, 'dist', 'CogsAndCadavers.zip')
+    z = os.path.join(REPO, 'dist', 'ArkhdottirNewBlood.zip')
     if not os.path.exists(z):
-        return check('font delivery', BAD, 'dist/CogsAndCadavers.zip is missing')
+        return check('font delivery', BAD, 'dist/ArkhdottirNewBlood.zip is missing')
     try:
         zf = zipfile.ZipFile(z)
         names = zf.namelist()

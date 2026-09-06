@@ -1,6 +1,6 @@
 @echo off
 REM ===========================================================================
-REM  Cogs & Cadavers - THE server menu.  Double-click it.
+REM  Arkhdottir: New Blood - THE server menu.  Double-click it.
 REM
 REM  Also takes an argument, so it works from a shortcut or another script:
 REM      Server.bat start | stop | restart | status | backup | errors
@@ -19,7 +19,7 @@ REM  safe path is also the easy one.
 REM
 REM  Written 2026-08-16 so Ethan stops having to ask for a restart every time.
 REM ===========================================================================
-title Cogs ^& Cadavers - server
+title Arkhdottir: New Blood - server
 
 set "REPO=C:\MCServer\repo"
 set "INSTANCE=C:\MCServer\instance"
@@ -50,7 +50,7 @@ if not "%~1"=="" (
 cls
 echo.
 echo   ===========================================================
-echo      COGS ^& CADAVERS
+echo      ARKHDOTTIR: NEW BLOOD
 echo   ===========================================================
 echo.
 call :status

@@ -41,6 +41,11 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VOICE = os.path.join(REPO, 'pack', 'kubejs', 'server_scripts', 'voice.js')
 TT = os.path.join(
     os.path.expanduser('~'), 'AppData', 'Roaming', 'PrismLauncher', 'instances',
+    # HIS PRISM FOLDER IS NOT OURS TO RENAME. The pack became "Arkhdottir: New Blood"
+    # on 2026-09-06 and a tree-wide replace moved this path with it - but the folder on
+    # disk is still CogsAndCadavers, because renaming a Prism instance directory breaks
+    # the launcher's own entry. The pack name and the folder name are different things,
+    # and only one of them is ours.
     'CogsAndCadavers', '.minecraft', 'config',
     'travelerstitles-neoforge-1_21.toml')
 
