@@ -66,6 +66,29 @@ NPCS = {
             {"Type": "LOOK_AT_PLAYER"},
             {"Type": "LOOK_AT_RESET"},
         ],
+        # ── ⭐ THE BRIBE ────────────────────────────────────────────────────
+        # Ethan, 2026-09-05: *"ank has ores that are at severely reduced cost to go
+        # below... he tries very hard to keep you out without actually stopping you."*
+        #
+        # 🔑 SO THE TRADES ARE AN ARGUMENT, NOT AN ECONOMY. Every one of these is a
+        # terrible deal FOR HIM and he offers it anyway. The player is meant to notice
+        # that the prices make no sense - somebody is paying a lot to keep them out of a
+        # cave - which is the same information the warnings carry, in a form they can act
+        # on. ⛔ Balance it and you delete the beat.
+        #
+        # ⚠️ THE NUMBERS ARE A FIRST GUESS AND ARE MEANT TO BE. Vanilla runs the other
+        # way entirely: a villager BUYS iron and SELLS emeralds. Do not argue about these
+        # - watch a playthrough and move them. They are one edit and a re-run.
+        #
+        # ⚠️ maxUses is deliberately high. A trade that locks out mid-Act-0 turns the
+        # bribe into a puzzle about restocking, which is not the point of it.
+        "trades": [
+            ("minecraft:emerald", 1, "minecraft:iron_ingot", 8),
+            ("minecraft:emerald", 1, "minecraft:coal", 24),
+            ("minecraft:emerald", 1, "minecraft:copper_ingot", 12),
+            ("minecraft:emerald", 2, "minecraft:gold_ingot", 6),
+            ("minecraft:emerald", 4, "minecraft:diamond", 1),
+        ],
     },
 }
 
@@ -96,6 +119,25 @@ def snbt(value, indent=0):
             parts.append("\n" + pad + "  " + k + ":" + snbt(v, indent + 1))
         return "{" + ",".join(parts) + "\n" + pad + "}"
     raise TypeError("cannot serialise %r" % type(value))
+
+
+def offers(trades):
+    """Vanilla MerchantOffers. ⚠️ 1.21 items are `{id, count}` — lowercase `count`; the
+    pre-1.20.5 `Count` is silently ignored and the trade shows an empty slot."""
+    out = []
+    for buy_id, buy_n, sell_id, sell_n in trades:
+        out.append({
+            "buy": {"id": buy_id, "count": buy_n},
+            "sell": {"id": sell_id, "count": sell_n},
+            "maxUses": 9999,
+            "uses": 0,
+            "rewardExp": False,
+            "xp": 0,
+            "priceMultiplier": 0.0,
+            "demand": 0,
+            "specialPrice": 0,
+        })
+    return out
 
 
 def preset(key, spec):
@@ -129,6 +171,22 @@ def preset(key, spec):
             "PersistenceRequired": True,
             "ObjectiveData": {"ObjectiveDataSet": spec["objectives"]},
             "SkinData": {"Type": "RESOURCE_LOCATION", "Texture": spec["skin"]},
+            # ⭐ ADVANCED = the full vanilla Offers list, which is what gives control over
+            # exact counts. BASIC generates offers from a simpler shape and cannot express
+            # "one emerald buys eight iron".
+            "TradingData": {
+                "Type": "ADVANCED",
+                "MaxUses": 9999,
+                "RewardedXP": 0,
+                # ⚠️ Restocks hourly. He is not a shop with stock pressure; he is somebody
+                # standing in a cave mouth trying to buy you off, and running out would
+                # end the argument early.
+                "ResetsEveryMin": 60,
+            },
+            "Offers": {"Recipes": offers(spec.get("trades", []))},
+            "ActionData": {"ActionEventSet": {
+                "ON_INTERACTION": [{"Type": "OPEN_TRADING_SCREEN"}],
+            }},
             "Status": {"finalized": True},
             "VariantType": spec["variant"],
             "id": spec["entity"],

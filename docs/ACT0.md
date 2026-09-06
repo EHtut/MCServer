@@ -23,11 +23,18 @@ anyway. Every beat is somebody trying to stop you, which is what makes the endin
 act is unbuilt** — Ank does not exist in any form, the argument does not exist, and there is
 no act state machine at all.
 
-**B1 is built and B2 is next.** Ank exists as an Easy NPC preset — unkillable, following,
+**B1, B3 and B3b are built; B2 is the writing.** Ank exists as an Easy NPC preset — unkillable, following,
 wearing his own skin — plus the band he lives in: **underground, above y −32**, leaving when
-you surface or go deeper, with *"A chill runs up your spine."* ⚠️ Proven offline only; he has
-never been spawned. **Next is B2, Ank stops you** — he currently *accompanies* the player
-rather than arguing them out of descending.
+you surface or go deeper, with *"A chill runs up your spine."* He now also **trades**: ores at
+a cost that makes no sense, which is the argument in a form the player can act on.
+
+⭐ **And the urge answers him.** Every day the player stays out of the deep, the pull gets
+louder — four tiers across the seven days, reset by a single descent. **So Ank's bribe
+working is what turns the volume up**, and the two systems argue through the player.
+
+⚠️ **Proven offline only. He has never been spawned.** **Next is B2 — the words**, and they
+are Ethan's: *"Once we get ank done without dialogue we can do the testing."* Every pool is
+empty and the boot log says so.
 
 🔑 **The band boundary is −32**, and it is not a number I chose: `help.js` already tells the
 player *"0 to -32 the old diggings · -32 to -52 the deep works"*, so the game had committed
@@ -129,8 +136,9 @@ She has no dialogue at all in the opening, so there is nothing to leak.
 |---|---|---|---|
 | **B1** | ✅ **Ank exists** | an Easy NPC preset — unkillable, follows you, wears his own skin. Plus the band he lives in | `ank_harness` 35/35. The preset carries `Invulnerable:1b`, `FOLLOW_PLAYER` and no attack objective; the band is asserted by sky **and** depth. ⚠️ Only the game can prove he spawns |
 | **B1b** | 🔜 **He leaves, with the line** | out of the band → despawn + *"A chill runs up your spine."* | fires on surfacing **and** on going below −32, once each, and **not** on a two-block bob at the boundary |
-| **B2** | ⬜ **Ank stops you** | he intercepts the player at a cave mouth and argues them out of descending | a player heading down is met. One who stays above ground is not |
-| **B3** | ⬜ **Ank trades** | he offers something worth staying up for | the offer is *taken* often enough to be a real choice, not a speed bump |
+| **B2** | 🔜 **Ank argues** | the words. He tries hard to keep you out **without stopping you** | 🖊️ **Ethan writes these.** The mechanism is built and every pool is empty |
+| **B3** | ✅ **Ank trades** | a real trade UI — ores at absurdly reduced cost, to buy you out of going down | `ank_harness`: `TradingData ADVANCED`, five offers in vanilla `Offers.Recipes`. ⚠️ Prices are a first guess; they are meant to look like somebody overpaying |
+| **B3b** | ✅ **The urge** | days *without* the deep escalate through four tiers. Descending resets it | `urge_harness` 21/21: the ramp fits inside the seven days, a descent silences it, and an empty pool reports `no-lines:<tier>` rather than going quiet |
 | **B4** | ⬜ **The cave is peaceful** | hostiles suppressed in the Act 0 band for the seven days | a player can sit in a cave on day 3 and not be attacked |
 | **B5** | ⬜ **The argument, overheard** | Ank and Caebrim argue *about the player*, audible from underground | it fires only below ground, only pathless, and it is **legible without being addressed to you** |
 | **B6** | ⬜ **The argument escalates** | seven days of ramp — distant and oblique → unmistakable and about you | day 1 and day 6 are distinguishable **as writing**, not just as frequency |
