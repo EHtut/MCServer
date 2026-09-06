@@ -72,22 +72,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // NEEDS-GAME: the card is legible, clear of the Seasons HUD and the crosshair :: /opening reset then relog
   var TITLE_Y = -70
 
-  // ── THE TITLE CARD'S FACE ──────────────────────────────────────────────────
-  // Ethan, 2026-09-06, on items 1 and 2 passing: "only complaint with 1 and 2 is it would
-  // look alot better with a font."
-  //
-  // ⚠️ THIS IS A BORROWED FACE, NOT A CHOSEN ONE. The pack ships five TTFs and every one
-  // of them belongs to a god - art, blade, forge, salvage, wall. Act 0 has NO GODS, which
-  // is the whole point of the opening, so none of them is right for the title on purpose.
-  //
-  // 🔑 IT IS ONE OF THE FIVE ANYWAY BECAUSE THOSE ARE ALREADY ON HIS CLIENT. Fonts reach
-  // players through clientpack/kubejs/assets/veldora/font/, which travels in the release
-  // zip - a NEW face means a client update before he can see it, and this is a polish
-  // item. Swap the constant to try another; ship veldora:title.ttf when there is one.
-  //
-  //     veldora:art      veldora:blade      veldora:forge
-  //     veldora:salvage  veldora:wall
-  var TITLE_FONT = 'veldora:art'
 
   function lines() {
     try { return VELDORA.openingLines || null } catch (e) { return null }
@@ -240,12 +224,13 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       }
       var common = { anchor: 'CENTER_CENTER', typewriter: 1.0, priority: 'ANNOUNCE' }
       VELDORA.im.show(p, TITLE, {
-        seconds: TITLE_SECONDS, size: 1.9, y: TITLE_Y, font: TITLE_FONT,
+        seconds: TITLE_SECONDS, size: 1.9, y: TITLE_Y,
         anchor: common.anchor, typewriter: common.typewriter, priority: common.priority,
       })
-      // ⭐ THE BYLINE KEEPS THE VANILLA FACE, deliberately. It is a credit, not part of
-      // the title - "A story written by Rehykt" in the same display face as the name of
-      // the game reads as a subtitle rather than an attribution.
+      // ⛔ NO FONT ON EITHER LINE. One was wired on 2026-09-06 and removed the same
+      // hour: Ethan asked for a font, I could only offer a GOD'S font, and Act 0 has no
+      // gods by design. He agreed the objection was the right one. ⚠️ A bespoke
+      // veldora:title.ttf is the real answer and needs a client build, not a constant.
       VELDORA.im.show(p, BYLINE, {
         seconds: BYLINE_SECONDS, size: 1.1, y: TITLE_Y,
         anchor: common.anchor, typewriter: common.typewriter, priority: common.priority,
