@@ -102,6 +102,18 @@
    [
     "fog",
     "CUT 2026-08-29 after breaking BOTH sides in one day. (1) It loads net/minecraft/client/KeyMapping during mod construction, which is an instant hard failure on a DEDICATED_SERVER - Modrinth said server_side \"optional\" and the jar itself declares side=\"BOTH\", so neither source was the code. Forced client-only. (2) Then it crashed the CLIENT: NoSuchFieldError on Polytone.BIOME_MODIFIERS from its own PolytoneCompat, because fog was unpinned and resolved to newest while polytone is PINNED - the third unpinned-vs-pinned-library failure of the day after supplementaries/moonlight. It is cosmetic (\"just makes the world beautiful\") and it cost two crashes, so it is out rather than pinned."
+   ],
+   [
+    "cave-dust",
+    "Fabric and Forge only; never shipped a NeoForge build. Checked 2026-09-06. subtle-effects covers some of the same ambient-particle ground."
+   ],
+   [
+    "particular",
+    "Fabric only. Checked 2026-09-06. subtle-effects is the NeoForge equivalent and is in this batch."
+   ],
+   [
+    "resonance-ambiance",
+    "Advertises fabric+neoforge but has NO 1.21.1 build - its oldest is newer than this pack. Checked 2026-09-06."
    ]
   ]
  },
@@ -427,6 +439,14 @@
    [
     "skyrim-music-pack",
     "Ethan's pick. 72.6 MB and three 1.21.1 builds. Ships OFF like every other pack here - delivered by packwiz so enabling it is two clicks and no download. Sounds of Tamriel was the other request and is NOT included: it has no 1.21.1 build at all (latest is 1.20). Sound-only packs often survive a format bump, but that is unverified and shipping it would be a guess."
+   ],
+   [
+    "allure-pack",
+    "Ethan's list, 2026-09-06 (post-Act-0 playtest batch). Ethan picked it; 28 of its 31 versions support 1.21.1."
+   ],
+   [
+    "allure-3d-plants",
+    "Ethan's list, 2026-09-06 (post-Act-0 playtest batch). Companion to allure-pack."
    ]
   ]
  },
@@ -1366,6 +1386,21 @@
      "tectonic",
      "Bigger mountains, deeper caves - Ethan's ask. Needs lithostitched, already present. WARNING: overrides minecraft:overworld noise settings, collides with mcserver_depth - see docs/16-THE-REFORGE.md D1",
      "major"
+    ],
+    [
+     "streams-reflowing",
+     "Ethan's list, 2026-09-06 (post-Act-0 playtest batch). Real flowing rivers. Surface texture for a pack whose surface is the safe half.",
+     "minor"
+    ],
+    [
+     "roadweaver",
+     "Ethan's list, 2026-09-06 (post-Act-0 playtest batch). Generated roads between structures - makes the overworld feel inhabited.",
+     "minor"
+    ],
+    [
+     "the-roads-more-travelled",
+     "Ethan's list, 2026-09-06 (post-Act-0 playtest batch). More road generation, alongside roadweaver. BETA channel.",
+     "minor"
     ]
    ]
   },
@@ -1626,6 +1661,26 @@
      "travelers-titles",
      "Biome and dimension names as a centre-screen title on entry - the actual answer to the information drought, and it reads every mod's biome names",
      "minor"
+    ],
+    [
+     "countereds-smooth-steps",
+     "Ethan's list, 2026-09-06 (post-Act-0 playtest batch). Smooth step-up on blocks. Movement feel.",
+     "minor"
+    ],
+    [
+     "respawning-animals",
+     "Ethan's list, 2026-09-06 (post-Act-0 playtest batch). Animals come back. Matters because the surface belongs to animals here.",
+     "minor"
+    ],
+    [
+     "travelersbackpack",
+     "Ethan's list, 2026-09-06 (post-Act-0 playtest batch). Backpacks. Inventory pressure is real on a deep-diving pack.",
+     "minor"
+    ],
+    [
+     "autohud",
+     "Ethan's list, 2026-09-06 (post-Act-0 playtest batch). Fades the HUD when idle. Act 0 is meant to be a clean screen.",
+     "minor"
     ]
    ]
   },
@@ -1676,6 +1731,11 @@
      "farmers-delight",
      "The cooking and farming base",
      "major"
+    ],
+    [
+     "untitled-duck-mod",
+     "Ethan's list, 2026-09-06 (post-Act-0 playtest batch). Ducks.",
+     "minor"
     ]
    ]
   },
@@ -1820,6 +1880,16 @@
     [
      "camerapture",
      "Take, place and share photographs between players - the social half of a 4-player world",
+     "minor"
+    ],
+    [
+     "subtle-effects",
+     "Ethan's list, 2026-09-06 (post-Act-0 playtest batch). Particle and visual detail on ordinary actions - the ambient layer the pack leans on hardest.",
+     "minor"
+    ],
+    [
+     "particle-rain",
+     "Ethan's list, 2026-09-06 (post-Act-0 playtest batch). Weather particles. Sits with weather2 rather than replacing it.",
      "minor"
     ]
    ]
