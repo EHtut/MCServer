@@ -25,13 +25,24 @@ function ok(label, got, want) {
 function grp(t) { console.log('\n' + B + t + X) }
 
 function build() {
-  const commands = [], ambient = [], logs = []
+  const commands = [], ambient = [], logs = [], spoken = []
   const server = { tickCount: 0, players: [], runCommandSilent: (c) => commands.push(c) }
   let descents = 0
+  let day = 0
+  // ⚠️ `mute` makes cast.speak REFUSE, which is not the same as having no cast at all.
+  // Losing his voice and having nothing to say must stay distinguishable here too.
+  let mute = false
   const ctx = {
     VELDORA: {
       announce: { text: (s, p, t) => { ambient.push(t); return true }, P_AMBIENT: 0 },
-      urge: { descents: () => descents },
+      urge: { descents: () => descents, dayOf: () => day },
+      cast: {
+        define: (id, spec) => { spoken.defined = { id, spec }; return { id } },
+        speak: (pl, id, text, tag) => {
+          if (mute) return false
+          spoken.push({ id, text, tag }); return true
+        },
+      },
     },
     Math, String, JSON,
     console: { info: (m) => logs.push(String(m)), warn: (m) => logs.push('WARN ' + m), error: (m) => logs.push('ERR ' + m) },
@@ -39,6 +50,9 @@ function build() {
     ServerEvents: { tick() { }, commandRegistry() { }, loaded() { } },
   }
   vm.createContext(ctx)
+  // ⭐ THE REAL IMPORTED TEXT, not a fixture. A stub would test the plumbing and let
+  // Ethan's actual writing arrive broken - which is the only failure that matters here.
+  vm.runInContext(fs.readFileSync(path.join(SS, 'ank_lines.js'), 'utf8'), ctx)
   vm.runInContext(fs.readFileSync(path.join(SS, 'ank.js'), 'utf8'), ctx)
   const player = (y, sky) => ({
     username: 'Rehykt', y, server,
@@ -47,10 +61,14 @@ function build() {
     persistentData: {
       _d: {},
       putBoolean(k, v) { this._d[k] = v }, getBoolean(k) { return !!this._d[k] },
+      putInt(k, v) { this._d[k] = v }, getInt(k) { return this._d[k] | 0 },
     },
   })
-  return { A: ctx.VELDORA.ank, ctx, server, player, commands, ambient, logs,
-           setDescents: (n) => { descents = n } }
+  return { A: ctx.VELDORA.ank, ctx, server, player, commands, ambient, logs, spoken,
+           setDescents: (n) => { descents = n },
+           setDay: (n) => { day = n },
+           setMute: (v) => { mute = v },
+           lines: ctx.VELDORA.ankLines }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -255,6 +273,135 @@ grp("🖊️ HIS DIALOGUE, IMPORTED AND NOT EDITED")
     (lines.match(/^    [0-9]+: \[/gm) || []).length, 3)
   ok('...and the rotation is there to cover the rest',
     (lines.match(/^    \[/gm) || []).length >= 6, true)
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+grp('⭐ THE GREETING — his words reach the player, once a day')
+{
+  const e = build()
+  const p = e.player(10, false)          // in his band
+  e.setDay(2)                            // a day Ethan wrote
+
+  ok('he greets on arriving', e.A.consider(e.server, p), 'spawned')
+  ok('...and does not greet twice on one arrival',
+    e.A.greet(e.server, p), 'greeted-today')
+  ok('...and something was actually said', e.spoken.length > 0, true)
+  ok('...in his own voice, not the ambient surface', e.spoken[0].id, 'ank')
+  ok('...and the chill did NOT fire on arriving', e.ambient.length, 0)
+}
+
+{
+  // 🔑 ONCE A DAY, NOT ONCE AN ARRIVAL. He respawns every time the player crosses the
+  // boundary, and an ungated greeting would fire several times an hour — which would make
+  // the written days stop reading as days at all.
+  const e = build()
+  const p = e.player(10, false)
+  e.setDay(4)
+  e.A.consider(e.server, p)
+  const first = e.spoken.length
+  ok('day 4 is written, so he has something to say', first > 0, true)
+
+  // ⚠️ DOWN, not up. The player stub's sky answer is fixed at construction, so surfacing
+  // cannot be simulated by raising y - a cave at y=100 under a mountain is still a cave.
+  // Going below the deep works is the boundary crossing this stub can actually express.
+  p.y = -50                              // the deep works: he leaves
+  ok('going deep sends him away', e.A.consider(e.server, p), 'despawned')
+  p.y = 10                               // back up into his band: he returns
+  ok('he comes back', e.A.consider(e.server, p), 'spawned')
+  ok('...and says nothing the second time today', e.spoken.length, first)
+
+  e.setDay(5)                            // a NEW day
+  p.y = -50; e.A.consider(e.server, p)
+  p.y = 10
+  e.A.consider(e.server, p)
+  ok('...but greets again tomorrow', e.spoken.length > first, true)
+}
+
+{
+  // ⭐ A BLANK DAY IS ANSWERED BY THE ROTATION. Ethan left days 0/1/3/5/6 empty on
+  // purpose, so the falsifier is not "day 5 says nothing" — it is "day 5 says something,
+  // and the code KNOWS it came from the rotation rather than from a written day".
+  const e = build()
+  e.setDay(5)
+  const r = e.A.greet(e.server, e.player(10, false))
+  ok('a blank day still speaks', r.indexOf('spoke:') === 0, true)
+  ok('...and reports the rotation as the source', r.indexOf(':general:') !== -1, true)
+
+  const e2 = build()
+  const r2 = e2.A.greet(e2.server, e2.player(10, false))   // day 0 — also blank
+  ok('day 0 is blank and falls through the same way', r2.indexOf(':general:') !== -1, true)
+
+  const e3 = build()
+  e3.setDay(7)
+  const r3 = e3.A.greet(e3.server, e3.player(10, false))
+  ok('day 7 is written and says so', r3.indexOf(':day:') !== -1, true)
+}
+
+{
+  // 🔴 ETHAN'S WRITING, THROUGH THE WHOLE PIPE. The harness loads the real
+  // ank_lines.js, so this asserts HIS text arrives at the speak() call unedited — not
+  // that a fixture does.
+  const e = build()
+  e.setDay(7)
+  e.A.greet(e.server, e.player(10, false))
+  const said = e.spoken.map(x => x.text)
+  ok('day 7 arrives as five separate sends, not one blob', said.length, 5)
+  ok('...with his first line intact', said[0], 'Hey, Stay out of the mines today.')
+  ok("...and 'apart of' still not corrected",
+    said.some(t => t.indexOf('apart of') !== -1), true)
+  ok('...ending on the plea', said[said.length - 1], 'Please')
+
+  const e2 = build()
+  e2.setDay(2)
+  e2.A.greet(e2.server, e2.player(10, false))
+  ok('the day-2 em-dash interruption survives to the mouth',
+    e2.spoken[0].text.indexOf('agree with—') !== -1, true)
+}
+
+{
+  // ⚠️ "I FAILED" AND "I FOUND NOTHING" MUST NOT SHARE A RETURN VALUE. Four
+  // states, and only two of them are faults.
+  const e = build()
+  e.setMute(true)
+  const p = e.player(10, false)
+  e.setDay(7)
+  ok('a cast that refuses every line is MUTE, not a quiet day',
+    e.A.greet(e.server, p), 'mute')
+  ok('...and it is logged as an error',
+    e.logs.some(l => l.indexOf('ERR') === 0 && l.indexOf('delivered NONE') !== -1), true)
+
+  // 🔑 AND THE DAY IS NOT STAMPED, so a recovered voice still greets today.
+  e.setMute(false)
+  ok('...and he has not lost the day', e.A.greet(e.server, p).indexOf('spoke:'), 0)
+}
+
+{
+  const e = build()
+  delete e.ctx.VELDORA.ankLines
+  ok('no imported lines is loud, and not the same as an empty day',
+    e.A.greet(e.server, e.player(10, false)), 'no-lines')
+
+  const e2 = build()
+  delete e2.ctx.VELDORA.urge.dayOf
+  ok('no world clock is its own state, and he does NOT greet blind',
+    e2.A.greet(e2.server, e2.player(10, false)), 'unreadable')
+  ok('...and it names the load order',
+    e2.logs.some(l => l.indexOf('LOAD ORDER') !== -1), true)
+}
+
+{
+  // ⭐ PLACEMENT IS CHARACTERISATION. The gods loom; Ank stands next to you.
+  const e = build()
+  ok('...he declares an explicit colour, so a default change cannot move him',
+    e.A.COLOUR, '§e')
+  ok('...that is not bold - every god in this pack is', /§l/.test(e.A.COLOUR), false)
+
+  const src = fs.readFileSync(path.join(SS, 'ank.js'), 'utf8')
+  const def = src.slice(src.indexOf('cast.define('), src.indexOf('cast.define(') + 700)
+  ok('...and declares NO style, so he keeps voice.js hotbar default',
+    def.indexOf('style:') !== -1, false)
+  ok('...and no font - a font is what a god has', src.indexOf('font:') !== -1, false)
 }
 
 console.log('\n' + (fail ? R + fail + ' FAILED, ' + X : G) + pass + ' passed' + X)

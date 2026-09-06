@@ -188,6 +188,11 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   VELDORA.urge = {
     consider: consider,
+    // 🔑 PUBLISHED FOR ANK. He greets once per world day and the urge escalates per world
+    // day; a second clock in his file could drift from this one and the escalation would
+    // read as wrong with nothing pointing at the cause. One definition, and it lives here
+    // because the urge is the system the day count is FOR.
+    dayOf: dayOf,
     tierOf: tierOf,
     daysWithout: daysWithout,
     descended: descended,

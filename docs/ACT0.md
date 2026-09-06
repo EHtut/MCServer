@@ -19,14 +19,19 @@ difficulty.** You die, and wake up wrong.
 for you to come closer — and Ank and Caebrim spend seven days trying to keep you out. You go
 anyway. Every beat is somebody trying to stop you, which is what makes the ending land.
 
-**Where it stands.** The opening is built and lands its title card. **Everything else in the
-act is unbuilt** — Ank does not exist in any form, the argument does not exist, and there is
-no act state machine at all.
+**Where it stands.** The opening is built and lands its title card. **Ank is built, and now
+he talks.** The rest of the act — the argument, Caebrim, day 7, the tide, waking up wrong —
+is unbuilt, and there is still no act state machine.
 
-**B1, B3 and B3b are built; B2 is the writing.** Ank exists as an Easy NPC preset — unkillable, following,
-wearing his own skin — plus the band he lives in: **underground, above y −32**, leaving when
-you surface or go deeper, with *"A chill runs up your spine."* He now also **trades**: ore for **wheat**, at
-a rate that makes no sense, which is the argument in a form the player can act on.
+**B1, B1b, B2, B2b, B3, B3b and B3c are done.** Ank is an Easy NPC preset — unkillable,
+following, wearing his own skin — inside a band: **underground, above y −32**, leaving when
+you surface or go deeper, with *"A chill runs up your spine."* He **trades** ore for **wheat**
+at a rate that makes no sense, which is the argument in a form the player can act on.
+
+🖊️ **And his words are in.** Your `ANK Act 0 - Dialogue.txt` is imported and reaches the
+player two ways: the **branching intro tree** lives in the preset (three options, one of them
+sharing a reply), and the **day greeting** fires when he steps out, at most once per world
+day. Days 2, 4 and 7 are yours; the rest fall to the rotation on purpose.
 
 ⭐ **And the price falls every time he loses.** Four tiers, driven by **descents rather than
 days**: each descent is Ank losing the argument, so his next offer is better. The discount is
@@ -42,19 +47,25 @@ it costs to keep somebody up there where the wheat grows.
 louder — four tiers across the seven days, reset by a single descent. **So Ank's bribe
 working is what turns the volume up**, and the two systems argue through the player.
 
-⚠️ **Proven offline only. He has never been spawned.** **Next is B2 — the words**, and they
-are Ethan's: *"Once we get ank done without dialogue we can do the testing."* Every pool is
-empty and the boot log says so.
+⭐ **He is the only voice in Act 0 that stands next to you.** No font, no bold, no anchor of
+his own — he speaks from just above the hotbar while every god looms from the centre or the
+top. That is deliberate, and it is the whole of his characterisation on screen.
+
+⚠️ **Proven offline only. He has never been spawned.** 87/87 in his harness against your real
+text, 42/42 across the suite — and **16 things are owed the moment a server comes up**, listed
+by `node tools/prefire.js`. Green is not tested; the prefire says so itself.
 
 🔑 **The band boundary is −32**, and it is not a number I chose: `help.js` already tells the
 player *"0 to -32 the old diggings · -32 to -52 the deep works"*, so the game had committed
 to it. Say if the deep works are too shallow a place for him to give up.
 
-**🔴 What needs Ethan.** Three, all cheap to answer and all blocking something:
-**(a)** Does the doctor's gift survive? The old arc had a buff granted in the opening and lost
-on death; your new arc does not mention one, and *"wake up wrong"* needs something to contrast
-against. **(b)** Is Caebrim's meeting fixed at day 4 or a window — you wrote "Day 4(?)".
-**(c)** Is Ank a literal trader (a real trade UI) or persuasion that *reads* as a merchant?
+**🔴 What needs Ethan.** Three, all cheap and all blocking something:
+**(a)** 🖊️ **The urge pools are still empty** — `urge_1`…`urge_4`, the *"you feel an urge to
+go below"* escalation. The mechanism is live and reports `no-lines:<tier>` rather than going
+quiet, so it is waiting on words and nothing else. **(b)** Does the doctor's gift survive?
+The old arc had a buff granted in the opening and lost on death; your new arc does not mention
+one, and *"wake up wrong"* needs something to contrast against. **(c)** Is Caebrim's meeting
+fixed at day 4 or a window — you wrote "Day 4(?)".
 
 ---
 
@@ -149,9 +160,10 @@ She has no dialogue at all in the opening, so there is nothing to leak.
 | | chunk | what changes | falsifier |
 |---|---|---|---|
 | **B1** | ✅ **Ank exists** | an Easy NPC preset — unkillable, follows you, wears his own skin. Plus the band he lives in | `ank_harness` 35/35. The preset carries `Invulnerable:1b`, `FOLLOW_PLAYER` and no attack objective; the band is asserted by sky **and** depth. ⚠️ Only the game can prove he spawns |
-| **B1b** | 🔜 **He leaves, with the line** | out of the band → despawn + *"A chill runs up your spine."* | fires on surfacing **and** on going below −32, once each, and **not** on a two-block bob at the boundary |
-| **B2** | 🔜 **Ank argues** | the words. He tries hard to keep you out **without stopping you** | 🖊️ **Ethan writes these.** The mechanism is built and every pool is empty |
+| **B1b** | ✅ **He leaves, with the line** | out of the band → despawn + *"A chill runs up your spine."* | `ank_harness`: fires on surfacing **and** below −32, once each, and **not** on a two-block bob. 🔴 The hysteresis was DECORATIVE first — checked below the spawn branch, so at −31 it never ran; the harness caught what the game would have shown only as a line that repeats, which reads as a design choice |
+| **B2** | ✅ **Ank argues** | his words, imported from Ethan's document and given a mouth: a branching intro tree in the preset, and a **greeting on arriving, once per world day** | `ank_harness` 87/87 against the **real** `ank_lines.js`, not a fixture. Day 7 leaves as 5 separate sends; the em-dash interruption and *"apart of"* survive to the `speak()` call; a blank day reports `spoke:general` and a written one `spoke:day`. Both gates proved by reverting — removing the once-a-day stamp fails 3, stamping before speaking fails 1. ⚠️ The **preset's** tree has never been opened in game |
 | **B3** | ✅ **Ank trades** | a real trade UI — ore for **wheat**, at a rate that makes no sense | `ank_harness` asserts the currency is surface-obtainable and that nothing he takes has to be mined. ⚠️ Counts are a first guess |
+| **B2b** | ✅ **He has a voice of his own** | `cast.define('ank')` — plain yellow, **no bold, no font**, and no `style` key at all, so he keeps voice.js's `BOTTOM_CENTER` hotbar default | the harness asserts all four absences. ⭐ **The absences ARE the characterisation**: every god here is bold, dark, fonted and centred or overhead. Ank is the only Act 0 voice that speaks from where a person would be standing |
 | **B3c** | ✅ **The price falls as he loses** | four preset tiers, chosen at spawn. **Driven by descents, not days** | the ramp is read off the files: tier 0 is an ordinary trade, each tier strictly better, tier 3 absurd — and the tier reaches the spawn command, not just a table |
 | **B3b** | ✅ **The urge** | days *without* the deep escalate through four tiers. Descending resets it | `urge_harness` 21/21: the ramp fits inside the seven days, a descent silences it, and an empty pool reports `no-lines:<tier>` rather than going quiet |
 | **B4** | ⬜ **The cave is peaceful** | hostiles suppressed in the Act 0 band for the seven days | a player can sit in a cave on day 3 and not be attacked |
@@ -206,6 +218,8 @@ hardcoded to 1 and `build()` discarded the index it was handed.
 and champion-kill give a player who never descends a way in — rejected, because *the descent
 is the act*. ⚠️ **Ruled but not implemented** — see §①.
 
+**A blank day is a design, not a gap.** *(Ethan, 2026-09-05: "i left some days of dialogue blank because well there's nothing to say. we start the player's journey before the tides even became a thing. so you're good to proceed, this is also why i built alot of randomized trade dialogue aswell.")* Days 0, 1, 3, 5 and 6 have no written greeting and fall through to the rotation. The counter-argument was to fill them for completeness — **rejected**, and the reason is the arc: Act 0 starts *before* the tides exist, so on most days Ank genuinely has nothing to report, and a written line for every day would make a man with nothing to say sound like a man with an agenda. ⛔ **So a future session must not treat the blanks as a TODO.** `forDay()` returns `{lines, source}` for exactly this reason: *"he had nothing special today"* and *"nobody wrote day 5"* are the same output and must never be the same report.
+
 **Gods carry fonts, not colours, and speak through the dialogue mod.** *(Ethan, 2026-09-05.)*
 See `VOICES.md`.
 
@@ -233,6 +247,12 @@ and a warning with no pull gives the player no reason to disobey. The inversion 
 **"The seven days are bulk to be filled."** ❌ They are **the argument**, escalating. The old
 A5 called it "1–2 hours of bulk" and measured it in authored lines, which is the wrong unit:
 the content is one conversation getting louder, not a quantity of ambience.
+
+**"The mechanism is built and every pool is empty."** ⚠️ **True when written, false the same day.** The B2 row said Ethan's writing was the only thing missing; his document arrived, and importing it found that the *mechanism* was half a mechanism — `ank_lines.js` was generated and **nothing anywhere read it.** A file full of his words with no consumer is this project's own standing failure (*a gate ships with a live consumer or not at all*), and it would have shipped looking finished.
+
+**"`speaker.js` is the toolkit's speech surface."** ⚠️ It was a surface with **zero consumers** — `cast.define` had never been called by anything but its own doc comment, for six days. Ank is its first. ⭐ Worth saying plainly because it read as infrastructure in every doc that mentioned it, and untested infrastructure is not infrastructure.
+
+**"Ank's day-2 line is corrupted — there is a replacement character in it."** ❌ **No: the console was.** The em-dash is U+2014, intact from his file through the JSON cache to the generated script; a Windows codepage on `print` rendered it as `�`. 🔑 Verify an encoding claim against the BYTES, never against a terminal — the same mistake read as mojibake in the MOTD, where it was real.
 
 **"The depths are dangerous during Act 0."** ❌ **The cave is peaceful for the seven days,
 deliberately.** If mobs fight the player, the argument becomes background and day 7 stops

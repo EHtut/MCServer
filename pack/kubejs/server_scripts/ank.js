@@ -86,6 +86,97 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // would attribute the chill to a speaker.
   var CHILL = 'A chill runs up your spine.'
 
+  // ── ⭐ HIS VOICE, AND WHY IT IS THE PLAINEST ONE IN THE GAME ───────────
+  // Ank is a PERSON. Every god in this pack speaks through their own font from the middle
+  // or the top of the screen; Ank has no font and speaks from just above the hotbar, which
+  // is voice.js's DEFAULT_STYLE. That is not an omission - `75-THE-SCREEN-AS-A-STAGE.md`
+  // makes placement characterisation, and he is the only speaker in Act 0 who is standing
+  // NEXT TO YOU rather than looming over the world. The absent font IS the mortality.
+  //
+  // ⚠️ AND IT MUST NOT READ AS THE CHILL. That line is announce.js's AMBIENT surface,
+  // TOP_CENTER, from nobody. His greeting is BOTTOM_CENTER and coloured, from him. Two
+  // different places on the screen, so the player never has to work out who spoke.
+  var SPEAKER = 'ank'
+  var COLOUR = '§e'                   // plain yellow, NOT bold. Every god here is bold and dark.
+  var K_GREET = 'veldora_ank_greet'  // world day + 1 of his last greeting. 0 means never.
+
+  function getInt(p, k) { try { return p.persistentData.getInt(k) } catch (e) { return 0 } }
+  function putInt(p, k, v) { try { p.persistentData.putInt(k, v) } catch (e) { } }
+
+  /**
+   * What day is it. 🔑 ASKED OF urge.js, NEVER COMPUTED HERE.
+   *
+   * A local copy would be a SECOND CLOCK, and the urge escalates on the first one. Ank's
+   * bribe working is what turns the urge up - the two systems argue through the day count,
+   * so they have to agree on it. A drift of one day between them would read in game as the
+   * escalation being wrong, and nothing would point here.
+   */
+  function dayOf(srv) {
+    try {
+      if (VELDORA.urge && typeof VELDORA.urge.dayOf === 'function') return VELDORA.urge.dayOf(srv)
+    } catch (e) { }
+    console.warn(TAG + 'urge.js has not published dayOf - there is no world clock, so he ' +
+      'arrives without a greeting. This is a LOAD ORDER failure, not a quiet day.')
+    return null
+  }
+
+  function speakAs(p, text) {
+    try {
+      if (VELDORA.cast && typeof VELDORA.cast.speak === 'function') {
+        // ⚠️ `speak`, not `say`. `say` draws from a registered pool and refuses a line
+        // carrying two sentences; his writing is prose from a dialogue document and several
+        // lines are three or four. voice.speak() splits them into paced beats, which is the
+        // correct treatment and does not alter a character of what he wrote.
+        return !!VELDORA.cast.speak(p, SPEAKER, text, 'greeting')
+      }
+    } catch (e) { console.warn(TAG + 'the greeting threw :: ' + e) }
+    return false
+  }
+
+  // NEEDS-GAME: day 7 arrives as five paced beats above the hotbar, not one wrapped paragraph :: /ank greet 7
+  // NEEDS-GAME: his greeting and the chill read as two different surfaces, not one speaker :: /ank greet 2 then leave the band
+  // NEEDS-GAME: uncoloured plain yellow is legible against cave stone at BOTTOM_CENTER :: /ank greet 4
+
+  /**
+   * The day's greeting, at most once per world day.
+   *
+   * ⚠️ RETURNS A REASON, not a boolean - the rule urge.js already follows. "he greeted",
+   * "he greeted earlier today", "nobody has imported his lines" and "the clock is
+   * unreadable" are four states and only two of them are faults.
+   *
+   * ⭐ THE DAY IS STAMPED ONLY IF SOMETHING WAS ACTUALLY SAID. Stamping first would mean a
+   * cast layer that failed silently costs him the whole day, and the next spawn would
+   * report `greeted-today` about a greeting nobody heard.
+   */
+  function greet(srv, p) {
+    var L = VELDORA.ankLines
+    if (!L || typeof L.forDay !== 'function') {
+      console.warn(TAG + 'ank_lines.js is missing - he arrives MUTE. Run ' +
+        '`python tools/ank_dialogue_import.py --write`.')
+      return 'no-lines'
+    }
+    var day = dayOf(srv)
+    if (day === null) return 'unreadable'
+    if (getInt(p, K_GREET) === day + 1) return 'greeted-today'
+
+    var got = L.forDay(day)
+    var lines = (got && got.lines) || []
+    var src = (got && got.source) || '?'
+    // 🔑 AN EMPTY POOL IS NOT AN ERROR HERE and it is not silence either. It means the
+    // rotation itself is empty, which the importer would have to have produced.
+    if (!lines.length) return 'empty:' + src
+
+    var said = 0
+    for (var i = 0; i < lines.length; i++) if (speakAs(p, lines[i])) said++
+    if (!said) {
+      console.error(TAG + 'he had ' + lines.length + ' line(s) for day ' + day +
+        ' and delivered NONE - the cast layer is not carrying him. Not stamping the day.')
+      return 'mute'
+    }
+    putInt(p, K_GREET, day + 1)
+    return 'spoke:' + src + ':' + said
+  }
+
   function seesSky(p) {
     try {
       var lvl = p.level
@@ -198,8 +289,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (want && !out) {
       if (!spawn(srv, p)) return 'spawn-failed'
       setActive(p, true)
+      // ⭐ HE GREETS ON ARRIVAL, AND ONLY THE FIRST ARRIVAL OF EACH WORLD DAY. He respawns
+      // every time the player surfaces or dips below the boundary, so an ungated greeting
+      // would fire several times an hour and the written days would stop being days.
+      var g = greet(srv, p)
       console.info(TAG + p.username + ' - Ank steps out (y ' + Math.round(yOf(p)) +
-        ', ' + presetFor(p) + ')')
+        ', ' + presetFor(p) + ', greeting: ' + g + ')')
       return 'spawned'
     }
 
@@ -222,6 +317,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     consider: consider,
     shouldBeOut: shouldBeOut,
     isActive: isActive,
+    greet: greet,
+    dayOf: dayOf,
+    SPEAKER: SPEAKER,
+    COLOUR: COLOUR,
     presetFor: presetFor,
     presets: PRESETS,
     TOO_DEEP: TOO_DEEP,
@@ -261,7 +360,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       p.tell(Text.of('§7should be out: §f' +
         (want === null ? '§cUNREADABLE - nothing will happen' : String(want))))
       p.tell(Text.of('§7active: §f' + isActive(p)))
-      p.tell(Text.of('§8/ank test §7force one sweep · §8/ank clear §7forget him'))
+      p.tell(Text.of('§8/ank test §7sweep · §8/ank greet §7re-arm today · ' +
+        '§8/ank greet <day> §7read a day out loud · §8/ank clear §7forget him'))
       return 1
     })
 
@@ -271,6 +371,37 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       p.tell(Text.of('§7' + consider(ctx.source.server, p)))
       return 1
     }))
+
+    // ⭐ THE ONLY WAY TO SEE HIS WRITING WITHOUT PLAYING A WEEK. Days 2, 4 and 7 are
+    // the written ones; everything else falls to the rotation, and both need looking at
+    // on a real screen because the day-7 line is FIVE sentences and arrives as five beats.
+    root = root.then(Commands.literal('greet')
+      .then(Commands.argument('day', event.arguments.INTEGER.create(event)).executes(function (ctx) {
+        var p = ctx.source.player
+        if (!p) return 0
+        var d = 0
+        try { d = ctx.getArgument('day', Java.loadClass('java.lang.Integer')) }
+        catch (e) { p.tell(Text.of('§cunreadable day argument')); return 0 }
+        var got = VELDORA.ankLines ? VELDORA.ankLines.forDay(d) : null
+        if (!got || !got.lines.length) {
+          p.tell(Text.of('§cnothing for day ' + d + ' - and the rotation is empty too'))
+          return 0
+        }
+        p.tell(Text.of('§7day §f' + d + '§7 · source §f' + got.source +
+          '§7 · §f' + got.lines.length + '§7 beat(s)'))
+        for (var i = 0; i < got.lines.length; i++) speakAs(p, got.lines[i])
+        return 1
+      }))
+      .executes(function (ctx) {
+        var p = ctx.source.player
+        if (!p) return 0
+        // ⚠️ Clears the stamp rather than speaking, so the NEXT arrival greets. Speaking
+        // here would prove the words render and NOT that the once-a-day gate opens.
+        putInt(p, K_GREET, 0)
+        p.tell(Text.of('§7greeting re-armed - he will greet on his next arrival.'))
+        p.tell(Text.of('§8/ank greet <day> §7read a specific day out loud'))
+        return 1
+      }))
 
     root = root.then(Commands.literal('clear').executes(function (ctx) {
       var p = ctx.source.player
@@ -285,8 +416,37 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   })
 
   ServerEvents.loaded(function () {
+    // ⭐ REGISTERED HERE, NOT AT LOAD, because this file sorts before both voice.js and
+    // speaker.js - `ank` < `speaker` < `voice`. caebrim.js does the same for the same
+    // reason. ⚠️ And a missing cast is an ERROR, not a shrug: he would still spawn, still
+    // trade and still leave with the chill, so the ONLY symptom of losing his voice is a
+    // man who never says anything - which reads as writing that was never done.
+    if (VELDORA.cast && typeof VELDORA.cast.define === 'function') {
+      VELDORA.cast.define(SPEAKER, {
+        colour: COLOUR,
+        label: 'Ank',
+        // ⛔ NO `style` KEY, DELIBERATELY. Omitting it leaves voice.js's DEFAULT_STYLE -
+        // BOTTOM_CENTER, just above the hotbar, no font. That is the whole characterisation:
+        // the gods loom, Ank stands next to you.
+        note: 'the sheriff in the upper caves. Mortal, so no font and no bold - he is the ' +
+          'only Act 0 voice that speaks from where a person would be standing.',
+      })
+    } else {
+      console.error(TAG + 'VELDORA.cast is missing - Ank has NO VOICE. He will still spawn, ' +
+        'trade and leave, so this failure looks exactly like unwritten dialogue.')
+    }
+
+    var written = 0, general = 0
+    try {
+      if (VELDORA.ankLines) {
+        written = VELDORA.ankLines.written()
+        general = (VELDORA.ankLines.general || []).length
+      }
+    } catch (e) { }
     console.info(TAG + 'Ank is live. Upper caves only, above y' + TOO_DEEP +
       ', pathless players only. ' + PRESETS.length + ' price tiers, driven by descents; ' +
-      'this file owns only the band he exists in.')
+      'this file owns the band he exists in and the greeting he gives on arriving. ' +
+      written + ' written day(s) + ' + general + ' rotation quote(s); a day with nothing ' +
+      'written falls through to the rotation ON PURPOSE.')
   })
 })();
