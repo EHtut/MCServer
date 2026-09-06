@@ -1145,10 +1145,6 @@
    "desc": "Pillar 3b: horror. Built from stalkers, atmosphere and escalating pressure rather than jump-scares, so it stays frightening over a long server. Several entries are configurable ambient systems rather than mobs - exactly the surface a future dungeon master would drive. STALKER RULING (Ethan, 2026-07-31): all six hunting entities stay, staggered in config so at most one or two can be active at a time - see docs/06-BURIED-TECH.md and pack/config. Six simultaneous stalkers is comedy, not horror; the config IS the feature. THE BROKEN SCRIPT WAS CUT ON SAFETY, NOT PERIOD: the author states the mod WILL grief the world, WILL destroy buildings, can ban you from your own save and writes files to the desktop. Disqualifying for a shared long-running world.",
    "mods": [
     [
-     "An unpredictable human-like stalker that follows and visits",
-     "major"
-    ],
-    [
      "server-side-horror",
      "Fully configurable ambient horror, server-side. Pure DM surface: events without client mods",
      "major"
@@ -1212,10 +1208,6 @@
      "corpse",
      "Your body stays where you died - a walk back into the dark to retrieve it",
      "major"
-    ],
-    [
-     "Ambience-led horror with its own dimension",
-     "minor"
     ]
    ]
   },
@@ -1974,175 +1966,218 @@
    "mods": [
     [
      "accents",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "bountiful",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "capitals-a-monarchy-mod-for-mca-reborn",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "collective",
-     "Required by village-spawn-point."
+     "Required by village-spawn-point.",
+     "minor"
     ],
     [
      "companion",
-     "Ethan: \"Gives the world a bit more life, personally.\""
+     "Ethan: \"Gives the world a bit more life, personally.\"",
+     "minor"
     ],
     [
      "death-count",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "distant-friends",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "easy-npc",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "easy-npc-config-ui",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "easy-npc-core",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "fragmentum",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "immersive-messages-api",
-     "In-world text API. Ethan wants ALL god dialogue moved onto it - its own chunk."
+     "In-world text API. Ethan wants ALL god dialogue moved onto it - its own chunk.",
+     "minor"
     ],
     [
      "immersive-snow",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. | client_side forced to optional 2026-08-29: Modrinth marks it client=unsupported but it registers a client-bound network channel the server REQUIRES, so packwiz skipping it client-side made the server refuse the connection."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. | client_side forced to optional 2026-08-29: Modrinth marks it client=unsupported but it registers a client-bound network channel the server REQUIRES, so packwiz skipping it client-side made the server refuse the connection.",
+     "minor"
     ],
     [
      "inventory-pets",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "irons-lib",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "irons-simple-blood",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "irons-spells-n-spellbooks",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "kambrik",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "kiwi",
-     "Required by snow-real-magic and companion."
+     "Required by snow-real-magic and companion.",
+     "minor"
     ],
     [
      "loot-journal",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "maestro-music",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "minecraft-comes-alive-reborn",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "nyctophobia",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "obscure-tooltips",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "pandalib",
-     "Required by pandas-falling-trees."
+     "Required by pandas-falling-trees.",
+     "minor"
     ],
     [
      "pandas-falling-trees",
-     "Tree felling. BETA build."
+     "Tree felling. BETA build.",
+     "minor"
     ],
     [
      "pingit",
-     "Ping locations."
+     "Ping locations.",
+     "minor"
     ],
     [
      "put-a-plug-in-it-",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "realm-rpg-treasure-balloons",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. | client_side forced to optional 2026-08-29: Modrinth marks it client=unsupported but it registers a client-bound network channel the server REQUIRES, so packwiz skipping it client-side made the server refuse the connection."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70. | client_side forced to optional 2026-08-29: Modrinth marks it client=unsupported but it registers a client-bound network channel the server REQUIRES, so packwiz skipping it client-side made the server refuse the connection.",
+     "minor"
     ],
     [
      "reliquified-artifacts",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "seasonal-decorations",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "simple-hats",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "snow-real-magic",
-     "Real snow layers. Ethan: \"Snow!\""
+     "Real snow layers. Ethan: \"Snow!\"",
+     "minor"
     ],
     [
      "sparsestructures",
-     "Structure spacing. WORLDGEN - must land before the reset."
+     "Structure spacing. WORLDGEN - must land before the reset.",
+     "minor"
     ],
     [
      "supplementaries",
-     "Decoration. Ethan: \"Decorations.\""
+     "Decoration. Ethan: \"Decorations.\"",
+     "minor"
     ],
     [
      "terralith",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "the-day-of-the-beast",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "tough-as-nails",
-     "Thirst + temperature. BETA. Gives the pack food a reason to exist; its own balance chunk."
+     "Thirst + temperature. BETA. Gives the pack food a reason to exist; its own balance chunk.",
+     "minor"
     ],
     [
      "trashslot",
-     "A bin slot. Ethan: \"we have too much junk.\""
+     "A bin slot. Ethan: \"we have too much junk.\"",
+     "minor"
     ],
     [
      "txnilib",
-     "Required by immersive-messages-api."
+     "Required by immersive-messages-api.",
+     "minor"
     ],
     [
      "tyzs-skills",
-     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70."
+     "Added 2026-08-29 in the Veldora buildout; see docs/68 and docs/70.",
+     "minor"
     ],
     [
      "village-spawn-point",
-     "Spawn in a village. WORLDGEN - must land before the reset."
+     "Spawn in a village. WORLDGEN - must land before the reset.",
+     "minor"
     ],
     [
      "what-are-they-up-to",
-     "Shows what other players are doing."
+     "Shows what other players are doing.",
+     "minor"
     ]
    ]
   }
