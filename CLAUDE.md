@@ -261,6 +261,47 @@ shipped or not, however good the reasoning was at the time.
 
 ---
 
+## C. A LOST AGENT IS RESUMED, NOT WRITTEN OFF.
+
+> Ethan, 2026-09-06: *"Write a rule that if the session limit is reached, to always resume
+> whatever agents were lost when usage is reset."*
+
+**When the usage limit kills agents mid-run, the work is not gone - it is PAUSED.** Every
+workflow persists its script and its per-agent results, and a resume replays the ones that
+finished from cache and re-runs only the ones that died. It costs a fraction of the original.
+
+**So a partial result is never reported as the finished thing, and never quietly dropped.**
+Both of those turn "three fifths of the tree was never looked at" into "we audited it",
+which is the exact claim this project keeps having to un-tell.
+
+```
+Workflow({ scriptPath: "<path from the original tool result>", resumeFromRunId: "wf_..." })
+```
+
+**The moment agents die, write down three things** - in the report AND in a defect if the
+work mattered: **which agents died**, **the runId**, and **the scriptPath**. All three appear
+in the tool result; none can be reconstructed afterwards from memory.
+
+**Resume when the limit resets, not at the next convenient moment.** A resume left for
+"later" becomes a rewrite, because the script drifts and the cache stops matching.
+
+### OUTSTANDING RIGHT NOW - the 2026-09-06 corruption audit
+
+Two of five lenses finished (31 findings). **`fragile`, `docrot` and `shadow` all died on the
+session limit** and have never run. Filed as **D-152**.
+
+```
+runId    wf_bd6eb30d-163
+script   ~/.claude/projects/C--MCServer-repo/2b0c92a6-32e3-4e8b-8ac6-2ad665ec6b95/
+         workflows/scripts/corruption-audit-wf_bd6eb30d-163.js
+```
+
+**Resuming replays the two that finished from cache**, so it re-runs only the three that
+died. Do NOT re-launch it as a new workflow - that pays for all five again and produces a
+second, competing findings list.
+
+---
+
 ## Standing constraints from Ethan
 
 - **No coefficient below 1** — *"it should always be an increase."*
