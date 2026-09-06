@@ -241,9 +241,22 @@ def c_resource_pack():
     not shipping it at all - that was the original tofu bug.
     """
     import zipfile
+    # 🔴 THE RENAME MOVED THIS AND THE ARTIFACT DID NOT. The pack became "Arkhdottir: New
+    # Blood" on 2026-09-06 and a tree-wide replace renamed the expected zip - but the zip
+    # on disk is still the old one, because it is a BUILD OUTPUT and nothing rebuilt it.
+    # So this reported BAD regardless of whether fonts actually ship.
+    #
+    # ⚠️ Both names are accepted, and which one was found is REPORTED. An old zip is real
+    # evidence about fonts; it is just stale evidence, and saying so is the honest middle
+    # between a false FAIL and a green that hides an un-rebuilt client.
     z = os.path.join(REPO, 'dist', 'ArkhdottirNewBlood.zip')
     if not os.path.exists(z):
-        return check('font delivery', BAD, 'dist/ArkhdottirNewBlood.zip is missing')
+        _old = os.path.join(REPO, 'dist', 'CogsAndCadavers.zip')
+        if os.path.exists(_old):
+            z = _old
+    if not os.path.exists(z):
+        return check('font delivery', BAD,
+                     'no import zip in dist/ under either name - nothing to check')
     try:
         zf = zipfile.ZipFile(z)
         names = zf.namelist()

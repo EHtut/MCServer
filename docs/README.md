@@ -18,7 +18,7 @@ live state of what exists"*, which it stopped being the day after it was written
 **Before writing anything:** grep `archive/INDEX.md`. Forty docs' worth of rulings,
 measurements and arguments are summarised there. The odds are good yours has been had before.
 
-**Where things go.** State → `STATUS.md`. Broken things → `DEFECTS.md` with a `D-` id.
+**Where things go.** State → **`ACT0.md` §①** (there is no `STATUS.md`; see ④). Broken things → `DEFECTS.md` with a `D-` id.
 History → **git**, never a doc. Design → the one doc that owns that subject.
 
 ---
@@ -114,7 +114,7 @@ is stale. `VOICES.md` is the current word.
 
 | you want to write… | it goes in |
 |---|---|
-| what is running right now | `STATUS.md` — **only STATUS may say NEXT** |
+| what is running right now | 🔴 **`STATUS.md` HAS NEVER EXISTED.** Six live docs route here, including this one and `FORMAT.md`, which makes it a rule. `git log` has no record of it ever being committed. **State lives in `ACT0.md` §① and §④** — that is the live front and it is what actually gets updated |
 | a bug, a finding, anything broken | `DEFECTS.md`, with a `D-` id |
 | a plan for unbuilt work | the doc that already owns that subject |
 | what happened this session | **the commit message.** git never rots |

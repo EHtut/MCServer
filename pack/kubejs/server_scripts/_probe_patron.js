@@ -66,7 +66,12 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   ServerEvents.commandRegistry(function (event) {
     var Commands = event.commands
 
-    var root = Commands.literal('patron').executes(function (ctx) {
+    // ⚠️ ADMIN-GATED, 2026-09-06. This was the ONLY probe in the pack without a gate -
+    // _probe_salvage and dialogue_test both call .requires(ADMIN) - and it lists and
+    // SPAWNS all six gods, including retired Crown, in an act whose whole premise is
+    // that no gods exist yet. Any player could type /patron and meet the pantheon.
+    function ADMIN(s) { try { return s.hasPermission(2) } catch (e) { return false } }
+    var root = Commands.literal('patron').requires(ADMIN).executes(function (ctx) {
       var p = ctx.source.player
       if (!p) return 0
       tell(p, '§8§m                                        ')

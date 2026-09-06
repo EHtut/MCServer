@@ -33,8 +33,8 @@ a row in this table, never a correction to him.
 |---|---|---|
 | **the dialogue mod** | **Immersive Messages** — the mod that floats/types words across the screen. ⛔ NOT Easy NPC | `immersivemessages-neoforge-1.0.18`, driven by `immersive.js` |
 | **the NPC mod** | **Easy NPC** — bodies, skins, trades, the branching conversation UI | `easy_npc-neoforge-7.10.0`, presets in `pack/datapacks/mcserver_npcs` |
-| **the journal** | **"Cogs and Cadavers"**, the **Patchouli** book. ⭐ **It is NOT an item you hold** — it is a **button in the inventory screen**, next to the crafting grid, with a red `!` when there is something unread | `tools/make_guidebook.py` → `client/patchouli_books/cogs_and_cadavers`. **CLIENT-SIDE** |
-| **the guidebook** | ⚠️ **AMBIGUOUS — ASK.** There are two books in this pack and they are different mods (see ③) | — |
+| **the journal** | **"My Journal"** — the **Patchouli** book, id `patchouli:arkhdottir`. ⭐ **It is NOT an item you hold** — it is a **button in the inventory screen**, next to the crafting grid, red `!` when unread | `tools/make_guidebook.py` → `client/patchouli_books/arkhdottir`. **CLIENT-SIDE**, and the button is bound by id in `client/config/patchouli-client.toml` |
+| **the guidebook** | the same book. ⚠️ It used to be ambiguous — two guidebook mods shipped — and that is settled now: **the journal and the guidebook are both "My Journal"** (see ③) | as above |
 | **a chunk** | ⚠️ **AMBIGUOUS.** Usually a *unit of work* in this project's plan, occasionally a Minecraft chunk. Read the sentence | `docs/ACT0.md` §④ for the work sense |
 | **the tide** | the escalating wave system | `tide.js`, `waves.js` |
 | **the gods / the patrons** | the five paths — Blade, Salvage, Forge, Wall, Art | `docs/LORE.md`, `veldora-patrons` |
@@ -42,27 +42,28 @@ a row in this table, never a correction to him.
 
 ---
 
-## ③ THE TWO BOOKS, WHICH IS WHERE THIS WENT WRONG
+## ③ THERE IS ONE BOOK NOW
 
-🔴 **This pack ships two guidebook mods, both installed, both with a book called something
-different, and I picked the wrong one.**
+🔴 **This section used to describe a live choice between two guidebook mods, and that was
+the mistake it was recording.** It is settled:
 
-| | **Patchouli** ⭐ THE JOURNAL | **Modonomicon** |
-|---|---|---|
-| what he calls it | **the journal** | *(no name yet — he has never referred to it)* |
-| shown as | **a button in the inventory screen**, red `!` when unread | a book item |
-| titled | *Cogs and Cadavers, 1st Edition* | *Notes on Veldora* |
-| built by | `tools/make_guidebook.py` | `tools/make_journal.py` |
-| lives | `client/patchouli_books/` — **client-side** | a datapack — **server-side** |
-| to change it | rebuild the client, he re-imports | `/reload` |
-| has | Categories + **Unlock Progress** | four categories I added on 2026-09-06 |
+> Ethan, 2026-09-06: *"we do not use modnomicon for anything on our side. it is pure
+> dependency."*
 
-⚠️ **The practical asymmetry is real and it argues both ways.** Patchouli is the one he
-actually uses and already has unlock-progress wired; Modonomicon updates live without a
-client rebuild. ⛔ **That is a decision for him, not an inference for me** — the mistake
-tonight was picking on the merits instead of asking which book he meant.
+**The journal is Patchouli.** Titled **"My Journal"**, id `patchouli:arkhdottir`, opened by
+a **button in the inventory screen** rather than held as an item. Built by
+`tools/make_guidebook.py`; lives client-side in `client/patchouli_books/arkhdottir`.
 
----
+⛔ **The Modonomicon copy is DELETED**, along with `tools/make_journal.py`. Modonomicon is
+still installed because other mods depend on it — it is a dependency, not a surface we use.
+
+⚠️ **It is client-side, and the inventory button is bound BY ID** in
+`client/config/patchouli-client.toml`. Renaming the book without moving that config leaves
+the button opening nothing, with no error anywhere. That nearly shipped on 2026-09-06.
+
+⭐ **It holds ONE entry — Entry 0, the traveller introduction — and three empty sections.**
+Ethan: *"everything in the journal should be clear except Entry 0."* A journal that starts
+full is a manual wearing a journal's name.
 
 ## ④ HOW TO USE THIS
 

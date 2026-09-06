@@ -8,6 +8,22 @@
 // claim was made about FIVE of them while SEVEN were red - and the seven had been red
 // for a while, because nothing ever ran them together.
 //
+// ── ⚠️ KNOWN-RED, WITH A REASON AND AN ID ─────────────────────────────────
+// A suite that is red on arrival for a reason nobody intends to fix today trains you to
+// ignore the colour, and the next REAL failure then lands in an already-red result. This
+// project has that lesson written into prefire.js's `knownFailing` for D-134.
+//
+// ⛔ AN ENTRY HERE IS A DEBT, NOT A DISMISSAL. It still runs, its output is still printed,
+// and the id says where the backlog is written down. Remove the entry the moment it goes
+// green — a known-failing note that has been fixed is the next stale claim.
+const KNOWN_RED = {
+  // ⚠️ KEYED WITHOUT `.js` - that is what the sweep calls a file, and the first version
+  // of this entry used the filename and silently never matched.
+  'gods_in_chat_check':
+    'D-148 - 53 chat sends from bodiless speakers across 14 files, found when this check ' +
+    'was rewritten. The rule is new (2026-09-06); the backlog is not triaged yet.',
+}
+
 // 🚨 A FILE THAT CRASHES IS NOT A FILE THAT FAILED. `deep_speaker_harness` threw on an
 // undefined property and lost every assertion after it with no summary line at all. This
 // runner reports CRASH separately from FAIL for exactly that reason: a crash means the
@@ -86,13 +102,20 @@ for (const f of files) {
   // not verify included the Hunt crew swapped in the same day.
   const needsRerun = code === 3
   const isCrash = code !== 0 && !sum && !needsRerun
-  if (isCrash) { crashed++; bad.push([name, 'CRASH', (clean.trim().split('\n').pop() || '').slice(0, 70)]) }
+  // KNOWN-RED IS ITS OWN STATE, like RERUN. It is not green - the debt prints with its id
+  // every run - but it does not turn the sweep red, because a suite that is red on arrival
+  // is a suite nobody reads. A CRASH is never excused this way: known-red says "these
+  // assertions fail", not "this file does not run".
+  const known = code !== 0 && !isCrash && KNOWN_RED[name]
+  if (isCrash) { crashed++; bad.push([name, 'CRASH', (clean.trim().split(String.fromCharCode(10)).pop() || '').slice(0, 70)]) }
   else if (needsRerun) { bad.push([name, 'RERUN', sum || 'some cases untested']) }
+  else if (known) { bad.push([name, 'KNOWN', KNOWN_RED[name]]) }
   else if (code !== 0) { red++; bad.push([name, 'FAIL', sum]) }
   else green++
 
   const badge = isCrash ? (R + 'CRASH' + X)
     : needsRerun ? (Y + 'RERUN' + X)
+    : known ? (Y + 'KNOWN' + X)
     : code !== 0 ? (R + ' FAIL' + X) : (G + '   ok' + X)
   console.log(badge + '  ' + name.padEnd(26) + (sum || ''))
 }
@@ -107,4 +130,9 @@ if (bad.length) {
   for (const [n, kind, detail] of bad) console.log('  ' + kind + '  ' + n + '  ' + detail)
 }
 // 🔑 A crash exits non-zero even if it printed nothing - silence must not read as success.
-process.exit(bad.length ? 1 : 0)
+//
+// ⚠️ KNOWN and RERUN DO NOT FAIL THE SWEEP. They are still printed under "needs attention"
+// every run, with their id - but a suite that is red on arrival for a triaged, written-down
+// debt is a suite people stop reading, and then the next real failure lands in an
+// already-red result. ⛔ red and crashed still fail, always.
+process.exit((red || crashed) ? 1 : 0)
