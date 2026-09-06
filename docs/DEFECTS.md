@@ -1624,3 +1624,42 @@ this text to live, and it is not a consumable book in a hotbar slot.
 🔑 **Scope is his to set.** Two questions before building: does the journal *replace* the
 written book or sit alongside it, and does new lore go in as he writes it (a generator reading
 `docs/LORE.md`) or as hand-authored entries?
+
+---
+
+## D-147 — garbled god speech renders as tofu boxes, not scrambled text ⬜ OPEN, needs a ruling
+
+Ethan, 2026-09-06, from play — an overheard Salvage fragment:
+
+> `...I could have them by ███ if you two would-`
+
+Three tofu boxes mid-line, while the rest of the sentence renders correctly in Salvage's
+own font.
+
+**The mechanism.** `garble.js:64` weaves vanilla obfuscation in one character at a time —
+`'§k' + ch + '§r' + colour`. `§k` makes the client substitute a random glyph *of the same
+width* on every frame. In the **default** font that reads as scrambling, which is the whole
+effect. In a **custom TTF** the substitution set is the font's own coverage, and the god
+faces are small — `blade.ttf` is 44 KB, `salvage.ttf` 146 KB — so it lands on codepoints
+the file does not carry and draws the missing-glyph box instead.
+
+🔑 **So the feature works and the font cannot render it.** The text IS being garbled; it
+just looks like a rendering failure rather than like speech you cannot quite catch. That is
+the worst version — a player reads it as a broken pack, not as atmosphere.
+
+⚠️ **This is D-129 and D-130's third cousin.** Both of those were fonts rendering as tofu,
+and both were fixed by fixing *delivery*. This one is not delivery — the font arrives fine
+and covers ordinary text. It is coverage under substitution, which no delivery check can
+see.
+
+### It is a ruling, not just a fix — three ways out
+
+| | | |
+|---|---|---|
+| **drop `§k`, keep the mod's own `obfuscate`** | `voice.js:792` already notes *"the mod obfuscates properly, so a garbled speaker does not need §k woven in"* — so one of the two paths is already believed redundant | cheapest; ⚠️ unproven that Immersive Messages' obfuscate avoids the same font |
+| **garbled text loses the god font** | render scrambled fragments in the default face, which has full coverage | the scramble reads correctly; ⛔ costs the god's identity on exactly the lines meant to feel like *them* |
+| **widen the fonts** | ship TTFs covering the substitution set | keeps both; needs font work **and a client rebuild**, which is the expensive one |
+
+⛔ **Not chosen here.** Which one is right depends on whether the garble is meant to read as
+*a voice you cannot make out* (keep the font, fix coverage) or as *interference* (default
+font is fine), and that is Ethan's call about what those gods sound like.

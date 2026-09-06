@@ -89,6 +89,14 @@ def origin_sentences():
 
 ORIGIN = origin_sentences()
 
+# WHERE THE STORY TURNS, not where a character count runs out. Four movements: the road,
+# falling ill, the woman, and waking up after. Two pages rather than three - eighteen
+# short sentences is not a lot of book, and three pages made it feel padded.
+_MOVES = [(0, 4), (4, 8), (8, 11), (11, len(ORIGIN))]
+_P = [' '.join(ORIGIN[a:b]) for a, b in _MOVES]
+PARAS = ['$(br2)'.join(_P[:2]), '$(br2)'.join(_P[2:])]
+
+
 # ── THE FOUR SECTIONS ──────────────────────────────────────────────────────
 # Ethan, 2026-09-06: "clear it and section it into Journal entries / People /
 # World / Manual", and "Im struggling with words so you can improve the above
@@ -156,13 +164,22 @@ ENTRIES = {
         "category": "patchouli:entries",
         "icon": "minecraft:written_book",
         "priority": True,
+        # ⛔ NO PAGE TITLES. "The Road" / "The Seventh Night" / "The Morning After" were
+        # MINE, and Ethan cut them: "cut the 'seventh' night chapter title stuff, it
+        # doesn't look good and i didn't write that." Chapter headings are a cutscene's
+        # furniture. Nobody titles the pages of their own diary.
+        #
+        # ⭐ AND THE SENTENCES FLOW AS PARAGRAPHS NOW. They arrive one-per-line because
+        # that is the OVERLAY's hard rule - one send, one line - and putting a blank line
+        # between all eighteen carried that shape into a book where it does not belong.
+        # Ethan: "condense it a bit so it reads like an actual journal instead of it
+        # obviously being made as a cutscene."
+        #
+        # ⚠️ HIS TEXT IS UNCHANGED. Only the joining changed: sentences run together
+        # inside a paragraph, and the paragraph breaks fall where the story turns.
         "pages": [
-            {"type": "patchouli:text", "title": "The Road",
-             "text": "$(br2)".join(ORIGIN[:4])},
-            {"type": "patchouli:text", "title": "The Seventh Night",
-             "text": "$(br2)".join(ORIGIN[4:11])},
-            {"type": "patchouli:text", "title": "The Morning After",
-             "text": "$(br2)".join(ORIGIN[11:])},
+            {"type": "patchouli:text", "text": PARAS[0]},
+            {"type": "patchouli:text", "text": PARAS[1]},
         ],
     },
 }

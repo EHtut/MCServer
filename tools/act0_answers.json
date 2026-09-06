@@ -1,9 +1,30 @@
 {
+ "0fd01a": {
+  "note": "only Entry 0, other three sections empty",
+  "state": "pass",
+  "what": "it contains ONE entry - Entry 0 - and the other three sections are empty",
+  "when": "2026-09-06 02:22",
+  "who": "Ethan"
+ },
  "1824c1": {
   "note": "chill looped every ~10s for six minutes. Ank was spawning INSIDE the house - canSeeSky was the only underground test. FIXED, needs a re-test",
   "state": "fail",
   "what": "bobbing on the boundary does NOT loop the chill",
   "when": "2026-09-06 00:59",
+  "who": "Ethan"
+ },
+ "57214f": {
+  "note": "empty sections look fine. Ethan still to polish the other text in the journal",
+  "state": "pass",
+  "what": "the three empty sections do not look broken",
+  "when": "2026-09-06 02:22",
+  "who": "Ethan"
+ },
+ "585430": {
+  "note": "it opens, titled My Journal. Font a bit off and hard to read",
+  "state": "pass",
+  "what": "the journal opens from the INVENTORY BUTTON and is titled \"My Journal\"",
+  "when": "2026-09-06 02:22",
   "who": "Ethan"
  },
  "59aa07": {
@@ -14,10 +35,10 @@
   "who": "Ethan"
  },
  "700278": {
-  "note": "the /story reach command threw: event.stringArgument is not a KubeJS API. FIXED and deployed, needs a retest",
-  "state": "fail",
+  "note": "achievements fired and the Introductions tab renders in the advancements menu",
+  "state": "pass",
   "what": "reaching a beat fires a toast, and the Act 0 tab renders with icons",
-  "when": "2026-09-06 02:14",
+  "when": "2026-09-06 02:22",
   "who": "Ethan"
  },
  "9307b2": {
@@ -28,10 +49,10 @@
   "who": "Ethan"
  },
  "93e01e": {
-  "note": "answered by the playtest step \"reaching a beat fires a toast\" - the /story reach command threw: event.stringArgument is not a KubeJS API. FIXED and deployed, needs a retest",
-  "state": "fail",
+  "note": "answered by the playtest step \"reaching a beat fires a toast\" - achievements fired and the Introductions tab renders in the advancements menu",
+  "state": "pass",
   "what": "a toast fires and the Act 0 tab renders with the right icons",
-  "when": "2026-09-06 02:14",
+  "when": "2026-09-06 02:22",
   "who": "Ethan"
  },
  "96a2c8": {
@@ -42,11 +63,18 @@
   "who": "Ethan"
  },
  "_totals": {
-  "failed": 2,
+  "failed": 1,
   "markers": 8,
-  "passed": 2,
+  "passed": 7,
   "script": 25,
-  "when": "2026-09-06 02:14"
+  "when": "2026-09-06 02:22"
+ },
+ "b7e1eb": {
+  "note": "all 18 sentences, reads as one piece",
+  "state": "pass",
+  "what": "Entry 0 holds all 18 sentences across three pages, and reads as one piece",
+  "when": "2026-09-06 02:22",
+  "who": "Ethan"
  },
  "cfdae5": {
   "note": "all 18 sentences read as one piece across 5 pages",

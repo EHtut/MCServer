@@ -14,7 +14,7 @@ python tools/act0_smoke.py --pass 8f4b5d --note "took ~2s, came up behind me"
 python tools/act0_smoke.py --fail 8f4b5d --note "never showed"
 ```
 
-**2 of 33 passed, 2 FAILED.**
+**7 of 33 passed, 1 FAILED.**
 
 ---
 
@@ -24,17 +24,25 @@ python tools/act0_smoke.py --fail 8f4b5d --note "never showed"
 |---|---|---|---|---|
 | OK | 1 | `59aa07` | a fresh player sees the title card type itself out, and NOTHING else | /opening reset then relog |
 | OK | 2 | `9307b2` | the card is legible, clear of the crosshair and the Seasons HUD | watch it - the fade is half the question, a screenshot cannot answer it |
-|   | 3 | `585430` | the journal opens from the INVENTORY BUTTON and is titled "My Journal" | open your inventory, click the book button beside the crafting grid |
-|   | 4 | `0fd01a` | it contains ONE entry - Entry 0 - and the other three sections are empty | a journal that starts full is a manual. It fills as the story happens |
-|   | 5 | `b7e1eb` | Entry 0 holds all 18 sentences across three pages, and reads as one piece | open Entry 0 and read to the end |
-|   | 6 | `57214f` | the three empty sections do not look broken | if Patchouli renders an empty category as a dead box, say so and they get hidden |
-| X | 7 | `700278` | reaching a beat fires a toast, and the Act 0 tab renders with icons | /story reach the_caves |
+| OK | 3 | `585430` | the journal opens from the INVENTORY BUTTON and is titled "My Journal" | open your inventory, click the book button beside the crafting grid |
+| OK | 4 | `0fd01a` | it contains ONE entry - Entry 0 - and the other three sections are empty | a journal that starts full is a manual. It fills as the story happens |
+| OK | 5 | `b7e1eb` | Entry 0 holds all 18 sentences across three pages, and reads as one piece | open Entry 0 and read to the end |
+| OK | 6 | `57214f` | the three empty sections do not look broken | if Patchouli renders an empty category as a dead box, say so and they get hidden |
+| OK | 7 | `700278` | reaching a beat fires a toast, and the Act 0 tab renders with icons | /story reach the_caves |
 
 - **PASS** — Ethan, 2026-09-06 01:15: title card types out, nothing else on screen
   <br>a fresh player sees the title card type itself out, and NOTHING else
 - **PASS** — Ethan, 2026-09-06 01:15: legible and clear. Complaint: wants a FONT - it renders in vanilla type
   <br>the card is legible, clear of the crosshair and the Seasons HUD
-- **FAIL** — Ethan, 2026-09-06 02:14: the /story reach command threw: event.stringArgument is not a KubeJS API. FIXED and deployed, needs a retest
+- **PASS** — Ethan, 2026-09-06 02:22: it opens, titled My Journal. Font a bit off and hard to read
+  <br>the journal opens from the INVENTORY BUTTON and is titled "My Journal"
+- **PASS** — Ethan, 2026-09-06 02:22: only Entry 0, other three sections empty
+  <br>it contains ONE entry - Entry 0 - and the other three sections are empty
+- **PASS** — Ethan, 2026-09-06 02:22: all 18 sentences, reads as one piece
+  <br>Entry 0 holds all 18 sentences across three pages, and reads as one piece
+- **PASS** — Ethan, 2026-09-06 02:22: empty sections look fine. Ethan still to polish the other text in the journal
+  <br>the three empty sections do not look broken
+- **PASS** — Ethan, 2026-09-06 02:22: achievements fired and the Introductions tab renders in the advancements menu
   <br>reaching a beat fires a toast, and the Act 0 tab renders with icons
 
 ## Ank arrives
