@@ -579,6 +579,28 @@ def save_ledger(d):
         fh.write(blob)
     os.replace(tmp, LEDGER)
 
+# A marker whose question a play-ordered step already asks. THE SAME QUESTION UNDER TWO
+# IDS IS WORSE THAN EITHER ALONE: the tester answers it once, the other id sits unanswered
+# forever, and a checklist that repeats itself is one you learn to skim. Eight of the first
+# thirty-nine items were duplicates of each other.
+#
+# Matched on a distinctive fragment of the marker's own text, not on file:line - so
+# rewording a marker un-covers it, which is correct. A changed claim has not been tested.
+#
+# THE MARKER STAYS IN THE CODE. It is where a future reader needs it; it is only held out
+# of the answer list, and print_script says which step answers it.
+COVERED_BY_SCRIPT = {
+    'day 7 arrives as five <Ank> chat lines': 'a five-line day reads as somebody talking',
+    '<Ank> is legible against the vanilla chat': 'his greeting arrives in the CHAT BAR',
+    'his chat lines and the chill are visibly different': 'the chill comes from nobody',
+    'kill removes an Invulnerable Easy NPC': '/kill on him REMOVES him',
+    'the card is legible, clear of the Seasons HUD': 'the card is legible, clear of the crosshair',
+    'the journal actually appears in the inventory': 'a book titled Journal is in the inventory',
+    'a toast fires and the Act 0 tab renders': 'reaching a beat fires a toast',
+    'the skins render on an NPC': 'he wears his own skin',
+}
+
+
 def all_items():
     """Every answerable item: the play-ordered script, then the code's own claims.
 
@@ -587,10 +609,26 @@ def all_items():
     them ends up never being looked at.
     """
     groups = list(SCRIPT)
-    mk = scan_markers()
+    mk = [(w, h) for (w, h) in scan_markers()
+          if not any(k in w for k in COVERED_BY_SCRIPT)]
     if mk:
         groups.append(("the code's own claims (NEEDS-GAME markers)", mk))
     return groups
+
+
+def covered_note():
+    """The markers held out of the list, and which step answers each.
+
+    PRINTED, NOT DROPPED SILENTLY. A marker that vanishes from the checklist with no
+    explanation is indistinguishable from one somebody deleted.
+    """
+    out = []
+    for w, _ in scan_markers():
+        for k, by in COVERED_BY_SCRIPT.items():
+            if k in w:
+                out.append((w, by))
+                break
+    return out
 
 
 def print_script(led):
@@ -613,6 +651,13 @@ def print_script(led):
                 print('            -> %s by %s, %s%s'
                       % (a['state'].upper(), a.get('who', '?'), a.get('when', '?'),
                          (' - ' + a['note']) if a.get('note') else ''))
+    cov = covered_note()
+    if cov:
+        print('')
+        print('  ALSO COVERED, and not listed twice:')
+        for w, by in cov:
+            print('    - "%s"' % w[:66])
+            print('        answered by: %s' % by)
     passed, failed = passed_count(led), failed_count(led)
     print('')
     print('  %d/%d PASSED%s.' % (passed, n,
@@ -628,8 +673,22 @@ def record(idx, state, note, who):
         print('no such id: %s' % idx)
         print('run `python tools/act0_smoke.py --script` for the list')
         return 2
+    stamp = datetime.now().strftime('%Y-%m-%d %H:%M')
     led[idx] = {'what': known[idx], 'state': state, 'note': note or '',
-                'who': who, 'when': datetime.now().strftime('%Y-%m-%d %H:%M')}
+                'who': who, 'when': stamp}
+
+    # AND THE MARKERS THIS STEP COVERS ARE ANSWERED TOO, under their own ids. Without
+    # this, holding a duplicate out of the checklist would leave prefire listing it as owed
+    # forever - the tester looked at it, and the two tools would disagree about whether it
+    # had been looked at. One observation, every record it settles.
+    for w, _ in scan_markers():
+        for frag, by in COVERED_BY_SCRIPT.items():
+            if frag in w and by in known[idx]:
+                led[sid(w)] = {
+                    'what': w, 'state': state, 'who': who, 'when': stamp,
+                    'note': ('answered by the playtest step "%s"' % by) +
+                            ((' - ' + note) if note else ''),
+                }
     # THE PLAYTEST IS INVISIBLE TO prefire WITHOUT THIS. prefire's owed list comes from the
     # NEEDS-GAME markers in the tree; the 22 play-ordered steps - the title card, the skin,
     # the <Ank> chat bar, the wheat price, the chill - exist only inside this file, which
@@ -641,11 +700,16 @@ def record(idx, state, note, who):
     # the timestamp so a stale one is visible rather than trusted.
     led['_totals'] = {
         'script': sum(len(i) for g, i in SCRIPT),
-        'markers': len(scan_markers()),
-        'passed': sum(1 for k, v in led.items()
-                      if k != '_totals' and isinstance(v, dict) and v.get('state') == 'pass'),
-        'failed': sum(1 for k, v in led.items()
-                      if k != '_totals' and isinstance(v, dict) and v.get('state') == 'fail'),
+        # The markers a person can still be ASKED about - the covered ones are
+        # answered through their playtest step, not separately.
+        'markers': sum(1 for w, _ in scan_markers()
+                       if not any(k in w for k in COVERED_BY_SCRIPT)),
+        # COUNTED OVER THE ASKABLE ITEMS ONLY, so this number and the denominator beside
+        # it come from the same list. Counting every ledger row instead made a single
+        # answer read as "2 passed of 31" - the covered marker was in the numerator and
+        # not the denominator.
+        'passed': passed_count(led),
+        'failed': failed_count(led),
         'when': datetime.now().strftime('%Y-%m-%d %H:%M'),
     }
     save_ledger(led)
