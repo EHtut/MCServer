@@ -57,7 +57,13 @@
   // Re-check this table after ANY mod cut. tools/check_datapack_refs.py does not
   // read .js, so this one is on the reader.
   const BOOKS = {
-    veldora:   ['Notes on Veldora',        'modonomicon:modonomicon[modonomicon:book_id="mcserver:veldora"]'],
+    // 🔴 WAS the Modonomicon book mcserver:veldora, WHICH WAS DELETED 2026-09-06.
+    // Ethan: "we do not use modnomicon for anything on our side. it is pure dependency."
+    // /guide is LIVE, so this table shipped a give for a book that no longer exists -
+    // and Patchouli answers an unknown id by handing over an "Invalid Book" rather than
+    // failing, which is the silent-success failure this file's own header warns about.
+    // The journal is Patchouli now, and it is what he actually opens.
+    veldora:   ['My Journal',              "patchouli:guide_book[patchouli:book='patchouli:arkhdottir']"],
     spirits:   ['Dictionary of Spirits',   'modonomicon:modonomicon[modonomicon:book_id="occultism:dictionary_of_spirits"]'],
     ars:       ['Tattered Tome (Ars)',     "patchouli:guide_book[patchouli:book='ars_nouveau:worn_notebook']"],
     goety:     ['Black Book (necromancy)', "patchouli:guide_book[patchouli:book='goety:black_book']"],
@@ -75,7 +81,11 @@
   // anywhere. Choosing a path is the one moment we KNOW a player is asking "so
   // what do I do now", so that is when the books arrive.
   // 🪦 BOOKS ARE CUT (2026-08-15). Progression is taught by the gods now - the
-  // `guidance` pool for a walker, pathless.js for someone who has not chosen.
+  // `guidance` pool for a walker.
+  // ⛔ This used to say "pathless.js for someone who has not chosen". pathless.js is
+  // DELETED (2026-09-06): it put gods in the chat bar, which CLAUDE.md rule A forbids.
+  // Nothing currently teaches a pathless player anything, and that is a real gap rather
+  // than a thing this comment should paper over.
   //
   // The table is kept EMPTY rather than deleted, because the giving machinery below
   // is harmless and this is where anyone would look to bring books back. It was
@@ -668,7 +678,7 @@
       const p = ctx.source.player
       if (!p) return 0
       ctx.source.server.runCommandSilent('give ' + p.username + ' ' + BOOK + ' 1')
-      p.tell('§6Notes on Veldora §7- what is known, and what is only said.')
+      p.tell('§6My Journal §7- what happened, and who I met.')
       p.tell('§8Other books in this world - §f/guide <name>§8:')
       Object.keys(BOOKS).forEach(k => {
         if (k !== 'veldora') p.tell('  §e' + k + ' §8- §7' + BOOKS[k][0])
