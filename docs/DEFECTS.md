@@ -1627,7 +1627,25 @@ written book or sit alongside it, and does new lore go in as he writes it (a gen
 
 ---
 
-## D-147 — garbled god speech renders as tofu boxes, not scrambled text ⬜ OPEN, needs a ruling
+## D-147 — garbled god speech renders as tofu boxes ✅ MOOT 2026-09-06 — the speaker is gone
+
+⛔ **FILED AND MOOTED WITHIN THE HOUR, AND THE FILING WAS THE MISTAKE.** Ethan reported the
+line; I diagnosed it as a font-coverage problem, wrote up three ways to make the tofu render
+nicely, and asked him to rule between them. He answered:
+
+> *"You are not understanding. This should not happen. We already cut all of this out so why
+> is it still appearning. It should be completely axed and gone."*
+
+🔑 **The tofu was never the point.** A system that should not exist was drawing badly, and I
+went to work on the drawing. `pathless.js` is deleted; nothing garbles a god in chat because
+nothing speaks a god in chat — see CLAUDE.md rule A.
+
+⚠️ **The mechanism below is still TRUE and still worth knowing**, because `§k` in a custom
+font will do this anywhere it is used. It is kept for that reason and for no other.
+
+---
+
+### The mechanism, retained
 
 Ethan, 2026-09-06, from play — an overheard Salvage fragment:
 
@@ -1652,7 +1670,7 @@ and both were fixed by fixing *delivery*. This one is not delivery — the font 
 and covers ordinary text. It is coverage under substitution, which no delivery check can
 see.
 
-### It is a ruling, not just a fix — three ways out
+### It WAS going to be a ruling. It is not one any more — three ways out, unused
 
 | | | |
 |---|---|---|
@@ -1660,6 +1678,4 @@ see.
 | **garbled text loses the god font** | render scrambled fragments in the default face, which has full coverage | the scramble reads correctly; ⛔ costs the god's identity on exactly the lines meant to feel like *them* |
 | **widen the fonts** | ship TTFs covering the substitution set | keeps both; needs font work **and a client rebuild**, which is the expensive one |
 
-⛔ **Not chosen here.** Which one is right depends on whether the garble is meant to read as
-*a voice you cannot make out* (keep the font, fix coverage) or as *interference* (default
-font is fine), and that is Ethan's call about what those gods sound like.
+⛔ **None of them was needed.** The right answer was the fourth option nobody listed: delete the system. ⭐ Worth keeping as a worked example of the failure — I offered a menu of fixes for a feature whose existence was the defect, and the menu made the wrong question look like the only question.

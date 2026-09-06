@@ -57,25 +57,33 @@ and each item is recorded by hand — `--pass <id>` / `--fail <id>` — into a l
 reads, **so the owed list finally shrinks as testing happens.** ⛔ The two halves never
 merge: a green rcon check can never mark an eyes-only item true.
 
-🔴 **FIRST PLAYED 2026-09-06, and it broke in the first ten minutes.** Two defects, both in
-the half no offline check can see:
+🟢 **THE OPENING IS DONE — 7 of 7 passed, 2026-09-06.** Title card types out with nothing
+else on screen, legible and clear of the crosshair; the journal opens from the **inventory
+button**; Entry 0 holds all 18 sentences and reads as one piece; the plot ledger fires and
+the Introductions tab renders.
 
-**D-140 — Ank spawned in Ethan's house.** `shouldBeOut` decided "underground" by `canSeeSky`
-alone, so a roof counted as a cave. He appeared indoors, left when Ethan stepped outside,
-came back when he stepped in — and every departure fires *"A chill runs up your spine."* It
-looped for six minutes. ⚠️ **The file argued the sky test carefully in one direction and
-never asked the other.** Fixed with three guards: cover is now **counted** (a roof is 1–2
-blocks, a cave is tens), he must dwell 15s before the boundary may take him, and the line
-itself has a 60s floor.
+⭐ **The journal is the PATCHOULI book, "My Journal"** — not an item, a button beside the
+crafting grid. It holds ONE entry and three empty sections, and that is the design: it fills
+as the story happens. ⛔ A Modonomicon copy was built and deleted the same day — Ethan:
+*"we do not use modnomicon for anything on our side. it is pure dependency."*
 
-**D-141 — the journal was never given, and the log said `ok` every time.** A book page is
-JSON inside SNBT inside a command — *three* layers, and the escape counted two. A single
-backslash-n is an invalid SNBT escape, so the whole command failed to parse and nothing was
-logged. Proved live: one backslash fails, two parse. And `giveJournal` returned `true` for
-anything that did not throw, so a refused give and a working one shared a return value.
+**What the first playthrough cost, and every one was invisible offline:**
 
-⚠️ **Both fixed, both deployed, NEITHER re-tested** — they need a restart and another run.
-119 in Ank's harness, 14 in the opening's, 42/42 offline.
+| | |
+|---|---|
+| **D-140** | Ank spawned in Ethan's **house**. `canSeeSky` was the only underground test, so a roof counted as a cave — and the chill looped every ~10s for six minutes. Cover is **counted** now; a roof is 1–2 blocks, a cave is tens |
+| **D-141** | the journal was **never given**, and the log said `ok` every time. A book page is JSON inside SNBT inside a command — three layers, and the escape counted two |
+| **D-144** | **Ank had never existed.** `ank.js` ran `easy_npc spawn <preset>`, which is not a command — `/easy_npc spawn` takes a UUID. `spawn()` returned true regardless |
+| **D-145** | `/story reach` threw: `event.stringArgument` is not a KubeJS API. The toast he saw belonged to another datapack entirely |
+
+🚨 **AND THE GODS WERE IN HIS CHAT BAR.** `pathless.js` had `GATE = true` and fired at 10%
+per sweep for every **pathless** player — which is every Act 0 player. Deleted, along with
+`broadcast.js`'s chat-copy branches and the `CHAT_COPY` flag itself. **CLAUDE.md rule A** now
+states it and `tools/gods_in_chat_check.js` enforces it across 80 scripts.
+
+⚠️ **NEXT IS PART 2 OF THE PLAYTEST — Ank**, and it now opens with the gate: does `/ank
+spawn` put a body in front of you at all. Everything below that was untestable while the
+spawn command was invalid, and read as merely unanswered.
 
 🔑 **The band boundary is −32**, and it is not a number I chose: `help.js` already tells the
 player *"0 to -32 the old diggings · -32 to -52 the deep works"*, so the game had committed
