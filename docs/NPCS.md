@@ -26,9 +26,9 @@ mod *accepts*, not what it *does*. The follow behaviour, the spawn, and whether 
 preset is picked up from our own pack all need the game — they are declared as `NEEDS-GAME`
 markers and show up in `node tools/prefire.js`.
 
-**What needs Ethan.** Ank's skin. `SkinData` takes `RESOURCE_LOCATION`, `PLAYER_SKIN`, a
-remote URL, or `CUSTOM` — he built skins already, and which of those routes they are decides
-one line of the preset.
+**The skins are in and the route is settled** (§⑤). All three Act 0 characters were already
+drawn — Ank, Caebrim and Alice, 64×64 — and now ship through the same path as the god fonts.
+`SkinData: { Type: "RESOURCE_LOCATION" }` pointing at `veldora:textures/entity/<name>.png`.
 
 ---
 
@@ -175,6 +175,35 @@ name depending on type.
 
 ⚠️ **`INSECURE_REMOTE_URL` fetches over plain HTTP.** Do not use it for a shipped pack.
 
+### ⭐ OUR SKINS, AND THE ROUTE THEY TAKE
+
+Three exist, all 64×64 (the modern format, so slim arms are available):
+
+| character | resource location |
+|---|---|
+| Ank | `veldora:textures/entity/ank.png` |
+| Caebrim | `veldora:textures/entity/caebrim.png` |
+| Alice | `veldora:textures/entity/alice.png` |
+
+They live at `pack/resourcepacks/veldora/assets/veldora/textures/entity/` and reach players
+through `python tools/build_client_assets.py --build`, which copies the whole assets tree
+into `clientpack/kubejs/assets/`.
+
+🔑 **This is the route the god fonts already proved**, and it is the only one that works
+here. KubeJS loads `kubejs/assets/` as an **always-active** resource pack — nothing to
+enable, nothing for a player to forget. ⛔ A server-push resource pack is not an option on
+this pack at all: applying one forces a full client resource reload, and on 300+ mods that
+exceeds Minecraft's 31-second configuration-phase timeout and drops the player.
+
+⚠️ **Filenames are lowercase because they must be.** A Minecraft resource location accepts
+`[a-z0-9_./-]` only, so `Ank.png` cannot be addressed at all. The originals in
+`C:\MCServer\Skins\` are title-case and were renamed on the way in.
+
+🔴 **COPYING IS NOT LOADING.** Minecraft builds its asset set once per resource reload, so a
+client that was already running has not seen them — and for fonts the symptom was not
+vanilla text but TOFU, every glyph a missing-box, because an absent font yields an empty set
+rather than a fallback. F3+T or relaunch. A texture behaves the same way.
+
 ---
 
 ## ⑥ WHAT ANK NEEDS
@@ -223,6 +252,7 @@ already following; whether `Invulnerable` also blocks void and `/kill`. Each is 
 `NEEDS-GAME` marker and appears in `node tools/prefire.js`.
 
 <!-- NEEDS-GAME: a preset we ship under data/easy_npc/preset is found at all :: /easy_npc preset list -->
+<!-- NEEDS-GAME: the skins render on an NPC, not as a missing texture :: F3+T then /easy_npc spawn -->
 <!-- NEEDS-GAME: FOLLOW_PLAYER targets the nearest player without TargetPlayerName :: /easy_npc objective set follow -->
 <!-- NEEDS-GAME: Invulnerable:1b survives void and /kill, not just damage :: /kill @e[type=easy_npc:humanoid] -->
 <!-- NEEDS-GAME: removing the follow objective stops an NPC already following :: /easy_npc objective remove -->
