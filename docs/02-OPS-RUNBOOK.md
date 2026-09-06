@@ -249,3 +249,28 @@ and re-run setup.
 | `forge tps` | Per-dimension tick times |
 | `kubejs reload` | Reload scripts without restarting |
 | `debug start` / `debug stop` | Vanilla profiler |
+
+---
+
+## THE SERVER LISTING — icon and MOTD
+
+**Icon.** `instance/server-icon.png`, **64x64 exactly** or Minecraft ignores it silently.
+Ours is Alice's face, cropped from `Skins/Alice Portrait.png` and downscaled with **NEAREST**
+— the art is pixel-art and a smooth filter turns it to mush at 64px. The source of truth is
+`pack/serverfiles/server-icon.png`; the instance copy is a copy.
+
+**MOTD.** Two lines, in `instance/server.properties`:
+
+```
+motd=\u00A76\u00A7lArkhdottir: New Blood\n\u00A77You enter a world...
+```
+
+🔴 **THE SECTION SIGNS ARE WRITTEN AS `\u00A7` ESCAPES ON PURPOSE, AND THE PREVIOUS MOTD IS
+WHY.** It held its `§` as the bytes `c3 82 c2 a7` — **double-encoded UTF-8** — so the server
+list showed `Â§8[Â§6Cogs` as literal text instead of colour. Java's `Properties` loader
+converts `\uXXXX` regardless of the file's encoding, so an escape cannot be corrupted by
+whatever wrote the file last.
+
+⚠️ **`\n` is the line break and it must survive as two characters.** Written as a real newline
+it splits the property in half, and the second line becomes a stray key Minecraft ignores —
+which looks exactly like a one-line MOTD.

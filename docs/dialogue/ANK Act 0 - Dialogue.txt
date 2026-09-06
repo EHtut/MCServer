@@ -1,0 +1,61 @@
+Introduction Tree. A- Ank. P- Player. --- Dialogue branches. new lines are turns of dialogue to click through
+
+A "Oh, a villager. Don't see many of you around nowadays since the... well. What brings you here?"
+
+P "I am going down into the depths"
+"I am going to gather ores"
+
+A: "I don't recommend that."
+"It's recently been incredibly dangerous down there."
+"Rock slides and whatnot."
+"Anyways, if you need anything. Come find me instead."
+"I'll get you whatever you need"
+
+---
+
+P "Its none of your business"
+
+A: "None of business? Sure. Look. I don't want you going down there. It isn't safe, as the sheriff around these parts, your 'safety' is my business."
+"Be a good villager, and return to the surface."
+"If you need anything down there, find me."
+
+[END]
+
+Trade Day 0
+
+Day 1
+
+Day 2:
+"...I don't agree with it, i don't agree with— OH! Traveller, hey!. Do you need anything?"
+Day 3: 
+
+Day 4
+"The undead have been growing restless down there."
+"You need to be careful if you're going to ignore me and walk down"
+Day 5
+
+Day 6
+
+Day 7:
+"Hey, Stay out of the mines today."
+"Ok?"
+"There's something happening that you do not need to be apart of"
+"Im serious."
+"Please"
+
+Day 3:
+
+General trade quotes
+
+"Hey buddy, need anything?"
+---
+"Friend."
+---
+"Traveller, let me know what you need"
+---
+"Watcha buyin'. HA! Haaaa... Friend of mine used to say that. Anyways, what do you need?"
+---
+"Hey buddy, Got what you need in this cloak. Funny, alot of pockets."
+"...No, its not a magical coat."
+---
+"well, ask me for anything. I got a haul"
