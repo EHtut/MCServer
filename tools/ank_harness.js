@@ -38,7 +38,7 @@ function build() {
   //
   // So callbacks are now QUEUED, and `e.tick()` runs them. A test that never ticks is
   // testing the same instant the game would not be in.
-  const delays = [], queued = []
+  const delays = [], queued = [], world = []
   // RETURNS 1. The real runCommandSilent returns a command result and spawn() now READS
   // it - a stub returning undefined would make every spawn look refused. Set
   // `e.refuse(true)` to make it return 0, which is what Brigadier does for a command
@@ -46,7 +46,18 @@ function build() {
   let refuse = false
   const server = {
     tickCount: 0, players: [],
-    runCommandSilent: (c) => { commands.push(c); return refuse ? 0 : 1 },
+    // ⚠️ RETURNS undefined BY DEFAULT, because that is what the live build returns -
+    // Ethan's /ank spawn printed "import returned undefined". A stub returning a tidy 1
+    // would hide the whole reason spawn() stopped trusting the return value.
+    // `e.refuse(true)` makes the summon place nothing, which is what a failed spawn
+    // looks like from the outside: no entity, whatever the API said.
+    runCommandSilent: (c) => {
+      commands.push(c)
+      if (!refuse && /run summon easy_npc:humanoid/.test(c)) world.push({
+        type: 'easy_npc:humanoid', x: 0, z: 0,
+      })
+      return undefined
+    },
     scheduleInTicks: (t, fn) => { delays.push(t); queued.push(fn) },
   }
   let descents = 0
@@ -69,6 +80,9 @@ function build() {
   // ⭐ THE REAL IMPORTED TEXT, not a fixture. A stub would test the plumbing and let
   // Ethan's actual writing arrive broken - which is the only failure that matters here.
   vm.runInContext(fs.readFileSync(path.join(SS, 'ank_lines.js'), 'utf8'), ctx)
+  // ⭐ THE REAL GENERATED NBT, not a fixture - so a stale or missing ank_nbt.js fails here
+  // rather than in game. spawn() refuses without it, which is the behaviour under test.
+  vm.runInContext(fs.readFileSync(path.join(SS, 'ank_nbt.js'), 'utf8'), ctx)
   vm.runInContext(fs.readFileSync(path.join(SS, 'ank.js'), 'utf8'), ctx)
   // THE THIRD ARGUMENT IS COVER: how many solid blocks sit above the player. It defaults
   // to a cave's worth, so every test written before the roof bug still means what it meant.
@@ -78,6 +92,7 @@ function build() {
     username: 'Rehykt', y, x: 0, z: 0, server,
     level: {
       canSeeSky: () => sky,
+      getEntities: () => world,
       getBlock: (bx, by, bz) => ({
         blockState: { isAir: () => (by - Math.floor(y) - 1) > (cover === undefined ? 40 : cover) },
       }),
@@ -93,8 +108,19 @@ function build() {
     },
   })
   const tick = () => { const q = queued.splice(0); q.forEach(fn => fn()) }
+  // ⭐ ANK HAS A 15s DWELL before the boundary may take him, so a test that spawns and
+  // despawns in the same instant is testing a game that does not exist. `e.wait()` moves
+  // the clock past it. 🔴 These tests PASSED without it only because ageOf() read a
+  // tick-0 stamp as "unset" and skipped the dwell entirely - the falsy-zero bug.
+  const wait = (secs) => { server.tickCount += 20 * (secs === undefined ? 20 : secs) }
+  // A kill removes him from the world the same way the real command does.
+  const _rcs = server.runCommandSilent
+  server.runCommandSilent = (c) => {
+    if (/run kill @e\[tag=/.test(c)) world.length = 0
+    return _rcs(c)
+  }
   return { A: ctx.VELDORA.ank, ctx, server, player, commands, ambient, logs, spoken, delays,
-           tick, queued, refuse: (v) => { refuse = v },
+           tick, wait, queued, world, refuse: (v) => { refuse = v },
            setDescents: (n) => { descents = n },
            setDay: (n) => { day = n },
            setMute: (v) => { mute = v },
@@ -148,6 +174,7 @@ grp('⭐ HE ARRIVES, AND HE LEAVES WITH THE LINE')
   ok('...a second sweep does not spawn a second one', e.A.consider(e.server, p), 'with-you')
 
   p.y = -40
+  e.wait()
   ok('going too deep despawns him', e.A.consider(e.server, p), 'despawned')
   ok('...and the line is Ethan\'s, exactly', e.ambient, ['A chill runs up your spine.'])
   ok('...and he is no longer active', e.A.isActive(p), false)
@@ -160,6 +187,7 @@ grp('⭐ AND HE LEAVES THE SAME WAY WHEN YOU SURFACE')
   const p = e.player(-10, false)
   e.A.consider(e.server, p)
   p.level = { canSeeSky: () => true }
+  e.wait()
   ok('stepping into daylight despawns him', e.A.consider(e.server, p), 'despawned')
   ok('...with the same line', e.ambient, ['A chill runs up your spine.'])
 }
@@ -174,6 +202,7 @@ grp('🚨 HYSTERESIS — the line must not loop on the boundary')
   const p = e.player(-10, false)
   e.A.consider(e.server, p)          // out with him
   p.y = -33
+  e.wait()
   ok('he leaves below the boundary', e.A.consider(e.server, p), 'despawned')
   p.y = -31
   ok('...and does NOT return one block up', e.A.consider(e.server, p), 'in-the-gap')
@@ -193,6 +222,7 @@ grp('⚠️ HE IS FOUND BY TAG, NOT BY TYPE')
   const p = e.player(-10, false)
   e.A.consider(e.server, p)
   p.y = -40
+  e.wait()                              // past the 15s dwell, or he does not leave at all
   e.A.consider(e.server, p)
   const kill = e.commands.find(c => c.indexOf('kill') !== -1) || ''
   ok('the despawn targets the tag', kill.indexOf('tag=veldora_ank') !== -1, true)
@@ -221,17 +251,17 @@ grp('⭐⭐ THE PRICE FALLS AS HE LOSES — driven by descents, not days')
   // spawns is a table of numbers.
   e.setDescents(2)
   e.A.consider(e.server, p)
-  // `easy_npc spawn` IS NOT THE VERB. It takes a UUID of an already-despawned npc;
-  // creating one from a preset is `preset import_new`. This assertion matched the old,
-  // invalid command and passed for two days while nothing ever spawned.
-  const spawn = e.commands.find(c => c.indexOf('preset import_new') !== -1) || ''
-  ok('the spawn command carries the tier', spawn.indexOf('ank_t2') !== -1, true)
-  ok('...and it is the CREATE verb, not the restore-a-uuid one',
-    /easy_npc preset import_new (custom|data|default|world) easy_npc:/.test(spawn), true)
-  ok('...and it runs AS the player, which the import requires',
-    /^execute as \S+ at \S+ run /.test(spawn), true)
-  ok('...and nothing still uses `easy_npc spawn`',
-    e.commands.some(c => /easy_npc spawn/.test(c)), false)
+  // 🔴 THE VERB HAS BEEN WRONG TWICE. `easy_npc spawn` takes a UUID; `preset import_new`
+  // is the mod's create verb and does not work on this build at all - it refuses even the
+  // mod's OWN shipped preset. What works is a plain summon carrying the preset's `data`
+  // block, proved in the world and checked field by field.
+  const spawn = e.commands.find(c => c.indexOf('summon easy_npc:humanoid') !== -1) || ''
+  ok('the spawn carries the tier', spawn.indexOf('ank_t2') !== -1 ||
+    spawn.indexOf(e.ctx.VELDORA.ankNbt['arkhdottir/ank_t2'].slice(0, 40)) !== -1, true)
+  ok('...and it runs AS the player', /^execute as \S+ at \S+ run summon/.test(spawn), true)
+  ok('...and it carries real NBT, not an empty summon', spawn.length > 500, true)
+  ok('...and neither dead verb survives',
+    e.commands.some(c => /easy_npc spawn|preset import_new/.test(c)), false)
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -361,13 +391,14 @@ grp('⭐ THE GREETING — in the chat bar, as <Ank>, once a day')
   // ⚠️ DOWN, not up. The player stub's sky answer is fixed at construction, so surfacing
   // cannot be simulated by raising y — a cave at y=100 under a mountain is still a cave.
   p.y = -50
+  e.wait()
   ok('going deep sends him away', e.A.consider(e.server, p), 'despawned')
   p.y = 10
   ok('he comes back', e.A.consider(e.server, p), 'spawned')
   ok('...and says nothing the second time today', e.spoken.length, first)
 
   e.setDay(5)
-  p.y = -50; e.A.consider(e.server, p)
+  p.y = -50; e.wait(); e.A.consider(e.server, p)
   p.y = 10
   e.A.consider(e.server, p)
   ok('...but greets again tomorrow', e.spoken.length > first, true)
@@ -483,7 +514,9 @@ grp('⭐ THE GREETING — in the chat bar, as <Ank>, once a day')
   e.tick()
   ok('...while every one of his own lines went to chat',
     e.spoken.length === 5 && e.spoken.every(t => t.indexOf('<Ank> ') === 0), true)
-  p.y = -50; e.A.consider(e.server, p)   // leave: the chill
+  p.y = -50
+  e.wait()                              // the 15s dwell, or he never leaves
+  e.A.consider(e.server, p)             // leave: the chill
   ok('the AMBIENT surface carries the chill and NOTHING else',
     e.ambient, ['A chill runs up your spine.'])
 }
@@ -500,6 +533,7 @@ grp('⭐ THE GREETING — in the chat bar, as <Ank>, once a day')
   ok('one line out, four still queued', [e.spoken.length, e.queued.length], [1, 4])
 
   p.y = -50
+  e.wait()
   ok('he leaves mid-greeting', e.A.consider(e.server, p), 'despawned')
   ok('...and the chill is the last thing said', e.ambient.length, 1)
   e.tick()
@@ -601,24 +635,35 @@ grp('A ROOF IS NOT A CAVE - the loop Ethan hit')
 }
 
 // ===========================================================================
-grp('A REFUSED COMMAND MUST NOT READ AS A SPAWN')
+grp('A SUMMON THAT PUT NOTHING THERE IS CAUGHT BY THE NEXT SWEEP')
 {
-  // THE BUG THAT HID FOR TWO DAYS. `easy_npc spawn arkhdottir/ank_t0 ~ ~ ~` is not a
-  // valid command - Brigadier answered "Expected whitespace to end one argument" - and
-  // runCommandSilent returns 0 for that rather than throwing. spawn() returned true
-  // regardless, K_ACTIVE latched, and Ank was never retried. The log said "Ank steps out"
-  // because that line is our own console.info, not evidence of anything.
+  // 🔴 THE VERIFICATION USED TO RUN IN THE SAME TICK AS THE SUMMON, and a command-spawned
+  // entity is not in level.getEntities() until the tick ends. Measured in game: /ank spawn
+  // logged "spawn FAILED" at 11:09:42 and the sweep found him 2.5s later, having stood
+  // there the whole time. So spawn() is optimistic now and the SWEEP confirms.
   const e = build()
-  e.refuse(true)
+  e.refuse(true)                       // the summon places nothing
   const p = e.player(10, false, 30)
-  ok('a refused command is a FAILED spawn', e.A.consider(e.server, p), 'spawn-failed')
-  ok('...and he is NOT marked as out', e.A.isActive(p), false)
-  ok('...and it is logged as an error', e.logs.some(l => l.indexOf('ERR') === 0), true)
 
-  // AND HE IS RETRIED. A latched K_ACTIVE would mean one bad spawn silences him forever.
+  ok('the spawn is optimistic - it cannot know yet', e.A.consider(e.server, p), 'spawned')
+  ok('...and he is marked out', e.A.isActive(p), true)
+
+  // ⚠️ WITHIN THE DWELL, NOTHING IS CONCLUDED. A body that has simply not registered yet
+  // must not trigger a second summon and leave two Anks standing in one cave.
+  e.server.tickCount += 20 * 5
+  ok('inside the dwell it holds its judgement', e.A.consider(e.server, p), 'with-you')
+  ok('...and has not summoned again', e.commands.filter(c => /run summon/.test(c)).length, 1)
+
+  // Past the dwell, the world is asked and answers no.
+  e.server.tickCount += 20 * 20
+  ok('past the dwell it notices he is not there', e.A.consider(e.server, p), 'lost-him')
+  ok('...and clears the flag', e.A.isActive(p), false)
+  ok('...and says so', e.logs.some(l => l.indexOf('NOT in the world') !== -1), true)
+
+  // ⭐ SELF-HEALING: the next sweep summons again rather than latching on one bad answer.
   e.refuse(false)
-  ok('the next sweep tries again', e.A.consider(e.server, p), 'spawned')
-  ok('...and this time he is out', e.A.isActive(p), true)
+  ok('the next sweep summons again', e.A.consider(e.server, p), 'spawned')
+  ok('...and now the world agrees', e.A.consider(e.server, p), 'with-you')
 }
 
 console.log('\n' + (fail ? R + fail + ' FAILED, ' + X : G) + pass + ' passed' + X)

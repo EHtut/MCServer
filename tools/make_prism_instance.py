@@ -101,6 +101,10 @@ CLIENT_CONFIG = pathlib.Path(__file__).resolve().parent.parent / "client" / "con
 # ⚠️ HIS PRISM FOLDER, READ OFF DISK 2026-09-06. Four tools pointed at
 # "CogsAndCadavers-PrismInstance (4)", which does not exist and did not exist
 # yesterday either - so each was reading or writing nothing and reporting success.
+# ⭐ KubeJS auto-loads kubejs/assets/ as an always-active resource pack - no menu, no
+# enabling, no way for a player to miss it. build_client_assets.py argues that route
+# at length and it is the right one; it was simply never SHIPPED in the zip.
+CLIENT_ASSETS = pathlib.Path(r"C:\MCServer\clientpack\kubejs\assets")
 CLIENT_OPTIONS = (pathlib.Path.home() / "AppData" / "Roaming" / "PrismLauncher" /
                   "instances" / "ArkhdottirNewBlood-PrismInstance" / ".minecraft" /
                   "options.txt")
@@ -260,6 +264,22 @@ def live_options() -> str:
     whatever he last had selected, which is not the same as what a NEW player should get:
     if he turns Faithful on for an evening, that must not ship to everybody.
     """
+    # ⭐ THE BASELINE FIRST, the live client only as a fallback.
+    #
+    # 🔴 READING THE LIVE CLIENT DIRECTLY IS WHAT LET THE RULINGS LOSE. Minecraft rewrites
+    # options.txt on every exit, so "his current file" is whatever he last had selected -
+    # and on 2026-09-06 that was EIGHTEEN rulings out of effect, including sneak and sprint
+    # backwards and R still reloading shaders. Shipping that would have made one evening's
+    # settings everybody's defaults.
+    #
+    # client/baseline/options.txt is the artifact: his keybinds with the rulings applied
+    # over them, in git, checked by tools/controls_baseline.py.
+    base = pathlib.Path(__file__).resolve().parent.parent / "client" / "baseline" / "options.txt"
+    if base.is_file():
+        text = base.read_text(encoding="utf-8", errors="replace")
+        print("  options.txt: BASELINE, %d keybinds"
+              % sum(1 for l in text.splitlines() if l.startswith("key_")))
+        return text
     live = pathlib.Path(CLIENT_OPTIONS)
     if not live.is_file():
         print("  options.txt: template (no live instance at %s)" % live)
@@ -554,6 +574,25 @@ Options -> Controls if you hate it.
                         else cfg.read_bytes())
                 z.writestr(f".minecraft/config/{rel}", body)
                 shipped += 1
+
+        # 🔴 THE FONTS AND SKINS HAD NEVER SHIPPED IN THIS ZIP. Ethan's instance carried
+        # exactly two files here - KubeJS's own example block and item - so every god font
+        # rendered as vanilla and Ank spawned as the magenta-and-black missing texture.
+        #
+        # ⚠️ AND NOTHING REPORTED IT. A font the server NAMES and the client does not HAVE
+        # falls back to vanilla silently; a missing entity texture draws the checkerboard.
+        # That is the same shape as D-129/D-130, which were "fixed" by getting the assets
+        # into clientpack - one step short of getting them onto a player.
+        assets = 0
+        for f in sorted(CLIENT_ASSETS.rglob("*")) if CLIENT_ASSETS.is_dir() else []:
+            if f.is_file():
+                z.write(f, ".minecraft/kubejs/assets/"
+                           f"{f.relative_to(CLIENT_ASSETS).as_posix()}")
+                assets += 1
+        if assets:
+            print(f"  client assets shipped: {assets}  (fonts + entity skins)")
+        else:
+            print("  !! NO CLIENT ASSETS - fonts will be vanilla and skins will be missing")
 
         books = 0
         for f in sorted(CLIENT_BOOKS.rglob("*")) if CLIENT_BOOKS.is_dir() else []:
