@@ -66,28 +66,35 @@ NPCS = {
             {"Type": "LOOK_AT_PLAYER"},
             {"Type": "LOOK_AT_RESET"},
         ],
-        # ── ⭐ THE BRIBE ────────────────────────────────────────────────────
+        # ── ⭐ THE BRIBE, AND WHAT IT COSTS ────────────────────────────────
         # Ethan, 2026-09-05: *"ank has ores that are at severely reduced cost to go
-        # below... he tries very hard to keep you out without actually stopping you."*
+        # below... he tries very hard to keep you out without actually stopping you"* and
+        # *"the trades should be pretty free."*
         #
-        # 🔑 SO THE TRADES ARE AN ARGUMENT, NOT AN ECONOMY. Every one of these is a
-        # terrible deal FOR HIM and he offers it anyway. The player is meant to notice
-        # that the prices make no sense - somebody is paying a lot to keep them out of a
-        # cave - which is the same information the warnings carry, in a form they can act
-        # on. ⛔ Balance it and you delete the beat.
+        # 🔴 EMERALDS WERE WRONG AND HE CAUGHT IT. A day-1 pathless player has none, and
+        # numismatics coins are worse: read out of the jar, they have NO crafting recipe,
+        # NO loot table and NO villager mixin, so they only exist once somebody has built
+        # Create vendor machinery. A currency the player cannot hold is a shop they cannot
+        # enter, and Ank's whole argument would be behind a door.
         #
-        # ⚠️ THE NUMBERS ARE A FIRST GUESS AND ARE MEANT TO BE. Vanilla runs the other
-        # way entirely: a villager BUYS iron and SELLS emeralds. Do not argue about these
-        # - watch a playthrough and move them. They are one edit and a re-run.
+        # ⭐ WHEAT, AND IT IS THE REASON HE TRADES AT ALL. He lives in a cave; he cannot
+        # farm. Food is the one thing the surface has that he does not, which makes an
+        # absurd exchange rate read as CHARACTER rather than as a broken shop: he is not
+        # running an economy, he is paying whatever it costs to keep somebody up there
+        # where the wheat grows. ⛔ Price it sensibly and you delete the beat.
         #
-        # ⚠️ maxUses is deliberately high. A trade that locks out mid-Act-0 turns the
-        # bribe into a puzzle about restocking, which is not the point of it.
+        # 🔑 AND HE IS NOT THE ONLY SOURCE, WHICH IS WHAT MAKES IT A CHOICE.
+        # `mcserver_surface_ores` already places every ore in a y54-120 band precisely so
+        # "descending is a CHOICE" - so Ank is not gating anything. He is offering the
+        # same ore FASTER, which is an argument rather than a wall.
+        #
+        # ⚠️ Counts are a first guess and are meant to be. Watch a playthrough.
         "trades": [
-            ("minecraft:emerald", 1, "minecraft:iron_ingot", 8),
-            ("minecraft:emerald", 1, "minecraft:coal", 24),
-            ("minecraft:emerald", 1, "minecraft:copper_ingot", 12),
-            ("minecraft:emerald", 2, "minecraft:gold_ingot", 6),
-            ("minecraft:emerald", 4, "minecraft:diamond", 1),
+            ("minecraft:wheat", 1, "minecraft:iron_ingot", 8),
+            ("minecraft:wheat", 1, "minecraft:coal", 24),
+            ("minecraft:wheat", 1, "minecraft:copper_ingot", 12),
+            ("minecraft:wheat", 2, "minecraft:gold_ingot", 6),
+            ("minecraft:bread", 1, "minecraft:diamond", 1),
         ],
     },
 }

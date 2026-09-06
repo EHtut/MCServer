@@ -25,8 +25,13 @@ no act state machine at all.
 
 **B1, B3 and B3b are built; B2 is the writing.** Ank exists as an Easy NPC preset — unkillable, following,
 wearing his own skin — plus the band he lives in: **underground, above y −32**, leaving when
-you surface or go deeper, with *"A chill runs up your spine."* He now also **trades**: ores at
-a cost that makes no sense, which is the argument in a form the player can act on.
+you surface or go deeper, with *"A chill runs up your spine."* He now also **trades**: ore for **wheat**, at
+a rate that makes no sense, which is the argument in a form the player can act on.
+
+🔑 **And the wheat is the reason he trades at all.** He lives in a cave and cannot farm;
+food is the one thing the surface has that he does not. So an absurd exchange rate reads as
+*character* rather than a broken shop — he is not running an economy, he is paying whatever
+it costs to keep somebody up there where the wheat grows.
 
 ⭐ **And the urge answers him.** Every day the player stays out of the deep, the pull gets
 louder — four tiers across the seven days, reset by a single descent. **So Ank's bribe
@@ -95,6 +100,10 @@ Caebrim comes to warn you in person. **The player descends against advice, repea
 people who turn out to be right.** ⚠️ Both halves are needed: a pull with no warning is an
 ordinary dungeon crawl, and a warning with no pull gives the player no reason to disobey.
 
+**He is not the only source, and that is what makes it a choice.** `mcserver_surface_ores`
+already places every ore in a y54–120 band *"so descending is a CHOICE"* — so Ank gates
+nothing. He offers the same ore **faster**, which is an argument rather than a wall.
+
 **The cave is PEACEFUL, and that is a mechanic.** For seven days the danger is not mobs — it
 is two immortals arguing about what to do with you. If the caves fight the player, the
 argument becomes background noise and the seventh day stops being a change of state.
@@ -137,7 +146,7 @@ She has no dialogue at all in the opening, so there is nothing to leak.
 | **B1** | ✅ **Ank exists** | an Easy NPC preset — unkillable, follows you, wears his own skin. Plus the band he lives in | `ank_harness` 35/35. The preset carries `Invulnerable:1b`, `FOLLOW_PLAYER` and no attack objective; the band is asserted by sky **and** depth. ⚠️ Only the game can prove he spawns |
 | **B1b** | 🔜 **He leaves, with the line** | out of the band → despawn + *"A chill runs up your spine."* | fires on surfacing **and** on going below −32, once each, and **not** on a two-block bob at the boundary |
 | **B2** | 🔜 **Ank argues** | the words. He tries hard to keep you out **without stopping you** | 🖊️ **Ethan writes these.** The mechanism is built and every pool is empty |
-| **B3** | ✅ **Ank trades** | a real trade UI — ores at absurdly reduced cost, to buy you out of going down | `ank_harness`: `TradingData ADVANCED`, five offers in vanilla `Offers.Recipes`. ⚠️ Prices are a first guess; they are meant to look like somebody overpaying |
+| **B3** | ✅ **Ank trades** | a real trade UI — ore for **wheat**, at a rate that makes no sense | `ank_harness` asserts the currency is surface-obtainable and that nothing he takes has to be mined. ⚠️ Counts are a first guess |
 | **B3b** | ✅ **The urge** | days *without* the deep escalate through four tiers. Descending resets it | `urge_harness` 21/21: the ramp fits inside the seven days, a descent silences it, and an empty pool reports `no-lines:<tier>` rather than going quiet |
 | **B4** | ⬜ **The cave is peaceful** | hostiles suppressed in the Act 0 band for the seven days | a player can sit in a cave on day 3 and not be attacked |
 | **B5** | ⬜ **The argument, overheard** | Ank and Caebrim argue *about the player*, audible from underground | it fires only below ground, only pathless, and it is **legible without being addressed to you** |

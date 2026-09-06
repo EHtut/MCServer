@@ -160,6 +160,23 @@ grp('⭐ THE PRESET IS GENERATED, AND CARRIES WHAT ETHAN ASKED FOR')
   ok('follows the player', snbt.indexOf('FOLLOW_PLAYER') !== -1, true)
   ok('does not despawn on its own', snbt.indexOf('PersistenceRequired:1b') !== -1, true)
   ok('wears his own skin', snbt.indexOf('veldora:textures/entity/ank.png') !== -1, true)
+  ok('he trades at all', snbt.indexOf('Type:"ADVANCED"') !== -1, true)
+
+  // 🔴 THE CURRENCY MUST BE OBTAINABLE ABOVE GROUND, AND THIS IS THE ASSERTION THAT SAYS
+  // SO. Emeralds shipped first and a day-1 pathless player has none; numismatics coins are
+  // worse - no recipe, no loot table, no villager mixin, so they need Create machinery.
+  // A currency the player cannot hold puts Ank's whole argument behind a door.
+  const buys = (snbt.match(/buy:\{\s*id:"([^"]+)"/g) || [])
+    .map(m => (m.match(/id:"([^"]+)"/) || [])[1])
+  ok('he takes something you can get on the surface',
+    buys.every(b => b === 'minecraft:wheat' || b === 'minecraft:bread'), true)
+  ok('...and nothing that has to be mined',
+    /buy:\{\s*id:"minecraft:(iron|gold|diamond|coal|copper|emerald)/.test(snbt), false)
+  ok('...and no numismatics coin', snbt.indexOf('numismatics:') === -1, true)
+
+  // ⭐ The rate has to be absurd or it is not a bribe. One wheat must buy several ingots.
+  const iron = /sell:\{\s*id:"minecraft:iron_ingot",\s*count:(\d+)/.exec(snbt)
+  ok('one wheat buys a pile of iron', iron && Number(iron[1]) >= 8, true)
   // ⛔ He never fights. An attack objective here would turn a warning into a brawl.
   ok('carries no attack objective', /Type:"(MELEE|BOW|CROSSBOW|GUN|ZOMBIE)_ATTACK"/.test(snbt), false)
   ok('...and no attack targeting', /Type:"ATTACK_/.test(snbt), false)

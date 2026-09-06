@@ -48,7 +48,7 @@
       Recipes:[
         {
           buy:{
-            id:"minecraft:emerald",
+            id:"minecraft:wheat",
             count:1
           },
           sell:{
@@ -65,7 +65,7 @@
         },
         {
           buy:{
-            id:"minecraft:emerald",
+            id:"minecraft:wheat",
             count:1
           },
           sell:{
@@ -82,7 +82,7 @@
         },
         {
           buy:{
-            id:"minecraft:emerald",
+            id:"minecraft:wheat",
             count:1
           },
           sell:{
@@ -99,7 +99,7 @@
         },
         {
           buy:{
-            id:"minecraft:emerald",
+            id:"minecraft:wheat",
             count:2
           },
           sell:{
@@ -116,8 +116,8 @@
         },
         {
           buy:{
-            id:"minecraft:emerald",
-            count:4
+            id:"minecraft:bread",
+            count:1
           },
           sell:{
             id:"minecraft:diamond",
