@@ -86,19 +86,28 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // would attribute the chill to a speaker.
   var CHILL = 'A chill runs up your spine.'
 
-  // ── ⭐ HIS VOICE, AND WHY IT IS THE PLAINEST ONE IN THE GAME ───────────
-  // Ank is a PERSON. Every god in this pack speaks through their own font from the middle
-  // or the top of the screen; Ank has no font and speaks from just above the hotbar, which
-  // is voice.js's DEFAULT_STYLE. That is not an omission - `75-THE-SCREEN-AS-A-STAGE.md`
-  // makes placement characterisation, and he is the only speaker in Act 0 who is standing
-  // NEXT TO YOU rather than looming over the world. The absent font IS the mortality.
+  // ── ⭐ HIS VOICE: THE CHAT BAR, LIKE ANY OTHER PERSON ─────────────────
+  // Ethan, 2026-09-05: *"Nah, ank goes into the chat bar with a <Ank>: or however its
+  // done in minecraft natively."*
   //
-  // ⚠️ AND IT MUST NOT READ AS THE CHILL. That line is announce.js's AMBIENT surface,
-  // TOP_CENTER, from nobody. His greeting is BOTTOM_CENTER and coloured, from him. Two
-  // different places on the screen, so the player never has to work out who spoke.
-  var SPEAKER = 'ank'
-  var COLOUR = '§e'                   // plain yellow, NOT bold. Every god here is bold and dark.
+  // 🔴 THIS REPLACES AN OVERLAY VOICE THAT SHIPPED HOURS EARLIER. He was registered
+  // through `cast.define` and typed above the hotbar - defensible, argued for at length,
+  // and wrong. The gods own the overlay. Putting Ank on it made a man standing next to you
+  // look like one more thing narrating at you, which is the opposite of the point: he is
+  // the only person in Act 0 who is simply THERE.
+  //
+  // ⭐ SO THE FORMAT IS VANILLA'S, EXACTLY: `<Ank> text`. Not a colour, not a prefix of
+  // our own, not a bracketed tag. Minecraft already has a way to show that a person said
+  // something, every player knows how to read it, and it costs nothing to learn.
+  //
+  // ⚠️ ONE MESSAGE PER LINE HE WROTE, and no sentence-splitting. voice.js splits on
+  // terminators because the OVERLAY shows one line at a time; chat is a scrollback and
+  // wraps by itself. Splitting "Watcha buyin'. HA! Haaaa..." into four `<Ank>` lines would
+  // invent a delivery Ethan did not write. His document already puts one utterance per
+  // line, and that is the unit.
+  var NAME = 'Ank'
   var K_GREET = 'veldora_ank_greet'  // world day + 1 of his last greeting. 0 means never.
+  var BEAT = 25                      // ~1.25s between his lines. See the note on scheduling.
 
   function getInt(p, k) { try { return p.persistentData.getInt(k) } catch (e) { return 0 } }
   function putInt(p, k, v) { try { p.persistentData.putInt(k, v) } catch (e) { } }
@@ -120,22 +129,40 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return null
   }
 
-  function speakAs(p, text) {
+  /** One chat line, in vanilla's own shape. Returns false if it could not be sent. */
+  function chat(p, text) {
     try {
-      if (VELDORA.cast && typeof VELDORA.cast.speak === 'function') {
-        // ⚠️ `speak`, not `say`. `say` draws from a registered pool and refuses a line
-        // carrying two sentences; his writing is prose from a dialogue document and several
-        // lines are three or four. voice.speak() splits them into paced beats, which is the
-        // correct treatment and does not alter a character of what he wrote.
-        return !!VELDORA.cast.speak(p, SPEAKER, text, 'greeting')
-      }
-    } catch (e) { console.warn(TAG + 'the greeting threw :: ' + e) }
-    return false
+      p.tell(Text.of('<' + NAME + '> ' + String(text)))
+      return true
+    } catch (e) { console.warn(TAG + 'the chat line threw :: ' + e); return false }
   }
 
-  // NEEDS-GAME: day 7 arrives as five paced beats above the hotbar, not one wrapped paragraph :: /ank greet 7
-  // NEEDS-GAME: his greeting and the chill read as two different surfaces, not one speaker :: /ank greet 2 then leave the band
-  // NEEDS-GAME: uncoloured plain yellow is legible against cave stone at BOTTOM_CENTER :: /ank greet 4
+  /**
+   * Say a run of lines, paced, to one player.
+   *
+   * ⚠️ THE FIRST LINE IS IMMEDIATE AND THE REST ARE SCHEDULED, and that is a deliberate
+   * exposure. This project has been burned by scheduled chains before - the opening once
+   * queued 18 callbacks and a restart killed all but two, which looked exactly like a
+   * broken script. Here the whole run is under six seconds and the first line has already
+   * landed, so a restart mid-greeting costs a tail, not the beat. ⛔ Do not grow this into
+   * a long chain; if a scene ever needs one, it needs a resumable one.
+   */
+  function saySeq(srv, p, lines) {
+    if (!lines || !lines.length) return 0
+    var sent = chat(p, lines[0]) ? 1 : 0
+    if (!sent) return 0
+    for (var i = 1; i < lines.length; i++) {
+      (function (text, n) {
+        try { srv.scheduleInTicks(BEAT * n, function () { chat(p, text) }) }
+        catch (e) { chat(p, text) }   // ⚠️ no scheduler - say it now rather than lose it
+      })(lines[i], i)
+    }
+    return lines.length
+  }
+
+  // NEEDS-GAME: day 7 arrives as five <Ank> chat lines, paced, not one wall :: /ank greet 7
+  // NEEDS-GAME: <Ank> is legible against the vanilla chat and reads as a person, not a system message :: /ank greet 4
+  // NEEDS-GAME: his chat lines and the chill are visibly different surfaces :: /ank greet 2 then leave the band
 
   /**
    * The day's greeting, at most once per world day.
@@ -166,8 +193,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // rotation itself is empty, which the importer would have to have produced.
     if (!lines.length) return 'empty:' + src
 
-    var said = 0
-    for (var i = 0; i < lines.length; i++) if (speakAs(p, lines[i])) said++
+    var said = saySeq(srv, p, lines)
     if (!said) {
       console.error(TAG + 'he had ' + lines.length + ' line(s) for day ' + day +
         ' and delivered NONE - the cast layer is not carrying him. Not stamping the day.')
@@ -319,8 +345,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     isActive: isActive,
     greet: greet,
     dayOf: dayOf,
-    SPEAKER: SPEAKER,
-    COLOUR: COLOUR,
+    NAME: NAME,
+    chat: chat,
     presetFor: presetFor,
     presets: PRESETS,
     TOO_DEEP: TOO_DEEP,
@@ -389,7 +415,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         }
         p.tell(Text.of('§7day §f' + d + '§7 · source §f' + got.source +
           '§7 · §f' + got.lines.length + '§7 beat(s)'))
-        for (var i = 0; i < got.lines.length; i++) speakAs(p, got.lines[i])
+        saySeq(ctx.source.server, p, got.lines)
         return 1
       }))
       .executes(function (ctx) {
@@ -416,26 +442,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   })
 
   ServerEvents.loaded(function () {
-    // ⭐ REGISTERED HERE, NOT AT LOAD, because this file sorts before both voice.js and
-    // speaker.js - `ank` < `speaker` < `voice`. caebrim.js does the same for the same
-    // reason. ⚠️ And a missing cast is an ERROR, not a shrug: he would still spawn, still
-    // trade and still leave with the chill, so the ONLY symptom of losing his voice is a
-    // man who never says anything - which reads as writing that was never done.
-    if (VELDORA.cast && typeof VELDORA.cast.define === 'function') {
-      VELDORA.cast.define(SPEAKER, {
-        colour: COLOUR,
-        label: 'Ank',
-        // ⛔ NO `style` KEY, DELIBERATELY. Omitting it leaves voice.js's DEFAULT_STYLE -
-        // BOTTOM_CENTER, just above the hotbar, no font. That is the whole characterisation:
-        // the gods loom, Ank stands next to you.
-        note: 'the sheriff in the upper caves. Mortal, so no font and no bold - he is the ' +
-          'only Act 0 voice that speaks from where a person would be standing.',
-      })
-    } else {
-      console.error(TAG + 'VELDORA.cast is missing - Ank has NO VOICE. He will still spawn, ' +
-        'trade and leave, so this failure looks exactly like unwritten dialogue.')
-    }
-
+    // ⛔ NO SPEAKER REGISTRATION. He is not on the overlay - see HIS VOICE above.
+    // A `cast.define` for Ank stood here for one commit; it is gone rather than left
+    // gated, because a registered voice with no caller is exactly the shadow-build
+    // this project keeps catching itself doing.
     var written = 0, general = 0
     try {
       if (VELDORA.ankLines) {
@@ -445,7 +455,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     } catch (e) { }
     console.info(TAG + 'Ank is live. Upper caves only, above y' + TOO_DEEP +
       ', pathless players only. ' + PRESETS.length + ' price tiers, driven by descents; ' +
-      'this file owns the band he exists in and the greeting he gives on arriving. ' +
+      'this file owns the band he exists in and the greeting he gives on arriving, ' +
+      'in the CHAT BAR as <' + NAME + '>. ' +
       written + ' written day(s) + ' + general + ' rotation quote(s); a day with nothing ' +
       'written falls through to the rotation ON PURPOSE.')
   })

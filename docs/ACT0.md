@@ -47,13 +47,20 @@ it costs to keep somebody up there where the wheat grows.
 louder — four tiers across the seven days, reset by a single descent. **So Ank's bribe
 working is what turns the volume up**, and the two systems argue through the player.
 
-⭐ **He is the only voice in Act 0 that stands next to you.** No font, no bold, no anchor of
-his own — he speaks from just above the hotbar while every god looms from the centre or the
-top. That is deliberate, and it is the whole of his characterisation on screen.
+⭐ **He speaks in the chat bar, like a person.** `<Ank> text`, vanilla's own shape — no
+colour, no font, no tag of ours. The gods have the overlay because they are narrating at
+you; Ank is a man in a cave talking, and Minecraft already has a way to show that.
 
-⚠️ **Proven offline only. He has never been spawned.** 87/87 in his harness against your real
-text, 42/42 across the suite — and **16 things are owed the moment a server comes up**, listed
-by `node tools/prefire.js`. Green is not tested; the prefire says so itself.
+🧪 **And there is now a suite for testing all of it.** `python tools/act0_smoke.py` asks the
+running server what it can answer; `--script` prints the 38-item playtest in play order,
+and each item is recorded by hand — `--pass <id>` / `--fail <id>` — into a ledger `prefire`
+reads, **so the owed list finally shrinks as testing happens.** ⛔ The two halves never
+merge: a green rcon check can never mark an eyes-only item true.
+
+⚠️ **Proven offline only. He has never been spawned.** 93/93 in his harness against your
+real text, 42/42 across the suite. **38 items are owed the moment the server comes up** — 16
+markers the code itself raised, plus the 22-step playtest. Green is not tested, and both
+tools say so themselves.
 
 🔑 **The band boundary is −32**, and it is not a number I chose: `help.js` already tells the
 player *"0 to -32 the old diggings · -32 to -52 the deep works"*, so the game had committed
@@ -163,7 +170,7 @@ She has no dialogue at all in the opening, so there is nothing to leak.
 | **B1b** | ✅ **He leaves, with the line** | out of the band → despawn + *"A chill runs up your spine."* | `ank_harness`: fires on surfacing **and** below −32, once each, and **not** on a two-block bob. 🔴 The hysteresis was DECORATIVE first — checked below the spawn branch, so at −31 it never ran; the harness caught what the game would have shown only as a line that repeats, which reads as a design choice |
 | **B2** | ✅ **Ank argues** | his words, imported from Ethan's document and given a mouth: a branching intro tree in the preset, and a **greeting on arriving, once per world day** | `ank_harness` 87/87 against the **real** `ank_lines.js`, not a fixture. Day 7 leaves as 5 separate sends; the em-dash interruption and *"apart of"* survive to the `speak()` call; a blank day reports `spoke:general` and a written one `spoke:day`. Both gates proved by reverting — removing the once-a-day stamp fails 3, stamping before speaking fails 1. ⚠️ The **preset's** tree has never been opened in game |
 | **B3** | ✅ **Ank trades** | a real trade UI — ore for **wheat**, at a rate that makes no sense | `ank_harness` asserts the currency is surface-obtainable and that nothing he takes has to be mined. ⚠️ Counts are a first guess |
-| **B2b** | ✅ **He has a voice of his own** | `cast.define('ank')` — plain yellow, **no bold, no font**, and no `style` key at all, so he keeps voice.js's `BOTTOM_CENTER` hotbar default | the harness asserts all four absences. ⭐ **The absences ARE the characterisation**: every god here is bold, dark, fonted and centred or overhead. Ank is the only Act 0 voice that speaks from where a person would be standing |
+| **B2b** | ✅ **He speaks in the chat bar** | vanilla's own shape — `<Ank> text`, one message per line he wrote, first line immediate and the rest ~1.25s apart | `ank_harness`: every line starts `<Ank> `, carries **no** colour code and **no** tag of ours; a four-sentence line stays ONE message; the run is short enough to survive a restart. 🔴 **This REVERSES the overlay voice that shipped hours earlier** — see ⑤ |
 | **B3c** | ✅ **The price falls as he loses** | four preset tiers, chosen at spawn. **Driven by descents, not days** | the ramp is read off the files: tier 0 is an ordinary trade, each tier strictly better, tier 3 absurd — and the tier reaches the spawn command, not just a table |
 | **B3b** | ✅ **The urge** | days *without* the deep escalate through four tiers. Descending resets it | `urge_harness` 21/21: the ramp fits inside the seven days, a descent silences it, and an empty pool reports `no-lines:<tier>` rather than going quiet |
 | **B4** | ⬜ **The cave is peaceful** | hostiles suppressed in the Act 0 band for the seven days | a player can sit in a cave on day 3 and not be attacked |
@@ -218,6 +225,12 @@ hardcoded to 1 and `build()` discarded the index it was handed.
 and champion-kill give a player who never descends a way in — rejected, because *the descent
 is the act*. ⚠️ **Ruled but not implemented** — see §①.
 
+**Ank speaks in the CHAT BAR, natively.** *(Ethan, 2026-09-05: "Nah, ank goes into the chat bar with a `<Ank>:` or however its done in minecraft natively.")* The counter-argument was mine and it was argued at length: the overlay is where every other voice in the game lives, placement is characterisation, and giving him the plainest possible overlay style — no font, no bold, hotbar-height — already said *mortal*. **Rejected, and the reason is better than the argument was.** ⭐ **The overlay is for things that are narrating at you.** Ank is not narrating; he is a man standing in a cave talking. Minecraft already has a way to show that, every player can read it without being taught, and it costs nothing. The plainest overlay style is still the overlay — the distinction I was drawing was inside the wrong surface entirely.
+
+⛔ **So `cast.define` for Ank is DELETED, not gated.** A registered speaker with no caller is the shadow-build this project keeps catching itself doing, and leaving it "in case" is how the next session finds two voices for one man.
+
+⚠️ **And one sentence per send does NOT apply in chat.** That rule exists because the overlay renderer shows one line per message, so a two-sentence send becomes a wrapped paragraph. Chat is a scrollback and wraps by itself. **The unit is one message per line Ethan wrote** — splitting *"Watcha buyin'. HA! Haaaa..."* into four `<Ank>` lines would invent a delivery he did not write.
+
 **A blank day is a design, not a gap.** *(Ethan, 2026-09-05: "i left some days of dialogue blank because well there's nothing to say. we start the player's journey before the tides even became a thing. so you're good to proceed, this is also why i built alot of randomized trade dialogue aswell.")* Days 0, 1, 3, 5 and 6 have no written greeting and fall through to the rotation. The counter-argument was to fill them for completeness — **rejected**, and the reason is the arc: Act 0 starts *before* the tides exist, so on most days Ank genuinely has nothing to report, and a written line for every day would make a man with nothing to say sound like a man with an agenda. ⛔ **So a future session must not treat the blanks as a TODO.** `forDay()` returns `{lines, source}` for exactly this reason: *"he had nothing special today"* and *"nobody wrote day 5"* are the same output and must never be the same report.
 
 **Gods carry fonts, not colours, and speak through the dialogue mod.** *(Ethan, 2026-09-05.)*
@@ -247,6 +260,8 @@ and a warning with no pull gives the player no reason to disobey. The inversion 
 **"The seven days are bulk to be filled."** ❌ They are **the argument**, escalating. The old
 A5 called it "1–2 hours of bulk" and measured it in authored lines, which is the wrong unit:
 the content is one conversation getting louder, not a quantity of ambience.
+
+**"He is the only voice in Act 0 that stands next to you — no font, no bold, hotbar height."** ❌ **Written into the digest and reversed the same day.** It was a real argument about a real distinction, made entirely inside the wrong surface: the choice was never *which overlay style* but *overlay or chat*. 🔑 The tell was that the reasoning had to explain itself — a delivery that needs a paragraph of justification to read as ordinary is not reading as ordinary.
 
 **"The mechanism is built and every pool is empty."** ⚠️ **True when written, false the same day.** The B2 row said Ethan's writing was the only thing missing; his document arrived, and importing it found that the *mechanism* was half a mechanism — `ank_lines.js` was generated and **nothing anywhere read it.** A file full of his words with no consumer is this project's own standing failure (*a gate ships with a live consumer or not at all*), and it would have shipped looking finished.
 

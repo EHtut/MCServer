@@ -26,7 +26,15 @@ function grp(t) { console.log('\n' + B + t + X) }
 
 function build() {
   const commands = [], ambient = [], logs = [], spoken = []
-  const server = { tickCount: 0, players: [], runCommandSilent: (c) => commands.push(c) }
+  // ⭐ THE SCHEDULER RUNS THE CALLBACK IMMEDIATELY, and records the delay it was asked
+  // for. Deferring for real would make the harness time-dependent; dropping the callback
+  // would make a scheduled line indistinguishable from a lost one — which is the exact
+  // failure the opening's 18 dead callbacks were.
+  const delays = []
+  const server = {
+    tickCount: 0, players: [], runCommandSilent: (c) => commands.push(c),
+    scheduleInTicks: (t, fn) => { delays.push(t); fn() },
+  }
   let descents = 0
   let day = 0
   // ⚠️ `mute` makes cast.speak REFUSE, which is not the same as having no cast at all.
@@ -36,13 +44,7 @@ function build() {
     VELDORA: {
       announce: { text: (s, p, t) => { ambient.push(t); return true }, P_AMBIENT: 0 },
       urge: { descents: () => descents, dayOf: () => day },
-      cast: {
-        define: (id, spec) => { spoken.defined = { id, spec }; return { id } },
-        speak: (pl, id, text, tag) => {
-          if (mute) return false
-          spoken.push({ id, text, tag }); return true
-        },
-      },
+
     },
     Math, String, JSON,
     console: { info: (m) => logs.push(String(m)), warn: (m) => logs.push('WARN ' + m), error: (m) => logs.push('ERR ' + m) },
@@ -56,6 +58,9 @@ function build() {
   vm.runInContext(fs.readFileSync(path.join(SS, 'ank.js'), 'utf8'), ctx)
   const player = (y, sky) => ({
     username: 'Rehykt', y, server,
+    // ⚠️ `mute` makes tell() THROW, which is what a broken send looks like — not a
+    // false return. Losing his voice and having nothing to say must stay distinguishable.
+    tell: (t) => { if (mute) throw new Error('no chat'); spoken.push(String(t)) },
     level: { canSeeSky: () => sky },
     blockPosition: () => ({}),
     persistentData: {
@@ -64,7 +69,7 @@ function build() {
       putInt(k, v) { this._d[k] = v }, getInt(k) { return this._d[k] | 0 },
     },
   })
-  return { A: ctx.VELDORA.ank, ctx, server, player, commands, ambient, logs, spoken,
+  return { A: ctx.VELDORA.ank, ctx, server, player, commands, ambient, logs, spoken, delays,
            setDescents: (n) => { descents = n },
            setDay: (n) => { day = n },
            setMute: (v) => { mute = v },
@@ -277,7 +282,7 @@ grp("🖊️ HIS DIALOGUE, IMPORTED AND NOT EDITED")
 
 
 // ═══════════════════════════════════════════════════════════════════════════
-grp('⭐ THE GREETING — his words reach the player, once a day')
+grp('⭐ THE GREETING — in the chat bar, as <Ank>, once a day')
 {
   const e = build()
   const p = e.player(10, false)          // in his band
@@ -287,8 +292,20 @@ grp('⭐ THE GREETING — his words reach the player, once a day')
   ok('...and does not greet twice on one arrival',
     e.A.greet(e.server, p), 'greeted-today')
   ok('...and something was actually said', e.spoken.length > 0, true)
-  ok('...in his own voice, not the ambient surface', e.spoken[0].id, 'ank')
   ok('...and the chill did NOT fire on arriving', e.ambient.length, 0)
+}
+
+{
+  // 🔑 VANILLA'S SHAPE, EXACTLY. Ethan asked for the chat bar "or however its done in
+  // minecraft natively", and native is `<Name> text` — no colon, no colour code, no tag
+  // of ours. A future session adding §7 or a [NPC] prefix should fail here.
+  const e = build()
+  e.setDay(7)
+  e.A.greet(e.server, e.player(10, false))
+  ok('every line is vanilla chat shape',
+    e.spoken.every(t => t.indexOf('<Ank> ') === 0), true)
+  ok('...with no colour codes smuggled in', e.spoken.some(t => /§/.test(t)), false)
+  ok('...and no bracketed tag of our own', e.spoken.some(t => /\[/.test(t)), false)
 }
 
 {
@@ -303,15 +320,14 @@ grp('⭐ THE GREETING — his words reach the player, once a day')
   ok('day 4 is written, so he has something to say', first > 0, true)
 
   // ⚠️ DOWN, not up. The player stub's sky answer is fixed at construction, so surfacing
-  // cannot be simulated by raising y - a cave at y=100 under a mountain is still a cave.
-  // Going below the deep works is the boundary crossing this stub can actually express.
-  p.y = -50                              // the deep works: he leaves
+  // cannot be simulated by raising y — a cave at y=100 under a mountain is still a cave.
+  p.y = -50
   ok('going deep sends him away', e.A.consider(e.server, p), 'despawned')
-  p.y = 10                               // back up into his band: he returns
+  p.y = 10
   ok('he comes back', e.A.consider(e.server, p), 'spawned')
   ok('...and says nothing the second time today', e.spoken.length, first)
 
-  e.setDay(5)                            // a NEW day
+  e.setDay(5)
   p.y = -50; e.A.consider(e.server, p)
   p.y = 10
   e.A.consider(e.server, p)
@@ -334,39 +350,55 @@ grp('⭐ THE GREETING — his words reach the player, once a day')
 
   const e3 = build()
   e3.setDay(7)
-  const r3 = e3.A.greet(e3.server, e3.player(10, false))
-  ok('day 7 is written and says so', r3.indexOf(':day:') !== -1, true)
+  ok('day 7 is written and says so',
+    e3.A.greet(e3.server, e3.player(10, false)).indexOf(':day:') !== -1, true)
 }
 
 {
   // 🔴 ETHAN'S WRITING, THROUGH THE WHOLE PIPE. The harness loads the real
-  // ank_lines.js, so this asserts HIS text arrives at the speak() call unedited — not
+  // ank_lines.js, so this asserts HIS text arrives at the chat call unedited — not
   // that a fixture does.
   const e = build()
   e.setDay(7)
   e.A.greet(e.server, e.player(10, false))
-  const said = e.spoken.map(x => x.text)
-  ok('day 7 arrives as five separate sends, not one blob', said.length, 5)
+  const said = e.spoken.map(t => t.replace('<Ank> ', ''))
+  ok('day 7 arrives as five separate chat lines', said.length, 5)
   ok('...with his first line intact', said[0], 'Hey, Stay out of the mines today.')
   ok("...and 'apart of' still not corrected",
     said.some(t => t.indexOf('apart of') !== -1), true)
   ok('...ending on the plea', said[said.length - 1], 'Please')
 
+  // ⚠️ ONE MESSAGE PER LINE HE WROTE — no sentence-splitting. Chat wraps by itself;
+  // splitting "Watcha buyin'. HA! Haaaa..." into four <Ank> lines would invent a delivery
+  // Ethan did not write.
   const e2 = build()
   e2.setDay(2)
   e2.A.greet(e2.server, e2.player(10, false))
-  ok('the day-2 em-dash interruption survives to the mouth',
-    e2.spoken[0].text.indexOf('agree with—') !== -1, true)
+  ok('a four-sentence line stays ONE chat message', e2.spoken.length, 1)
+  ok('...and the em-dash interruption survives to the mouth',
+    e2.spoken[0].indexOf('agree with—') !== -1, true)
 }
 
 {
-  // ⚠️ "I FAILED" AND "I FOUND NOTHING" MUST NOT SHARE A RETURN VALUE. Four
-  // states, and only two of them are faults.
+  // ⭐ PACED, NOT DUMPED. The first line is immediate so a restart cannot cost the beat;
+  // the rest are scheduled about a second apart.
+  const e = build()
+  e.setDay(7)
+  e.A.greet(e.server, e.player(10, false))
+  ok('the first line is NOT scheduled', e.delays.length, 4)
+  ok('...and the rest step apart rather than landing together',
+    e.delays.every((d, i) => i === 0 || d > e.delays[i - 1]), true)
+  ok('...and the whole run is short enough to survive a restart',
+    e.delays[e.delays.length - 1] <= 20 * 8, true)
+}
+
+{
+  // ⚠️ "I FAILED" AND "I FOUND NOTHING" MUST NOT SHARE A RETURN VALUE.
   const e = build()
   e.setMute(true)
   const p = e.player(10, false)
   e.setDay(7)
-  ok('a cast that refuses every line is MUTE, not a quiet day',
+  ok('a chat surface that throws is MUTE, not a quiet day',
     e.A.greet(e.server, p), 'mute')
   ok('...and it is logged as an error',
     e.logs.some(l => l.indexOf('ERR') === 0 && l.indexOf('delivered NONE') !== -1), true)
@@ -391,17 +423,24 @@ grp('⭐ THE GREETING — his words reach the player, once a day')
 }
 
 {
-  // ⭐ PLACEMENT IS CHARACTERISATION. The gods loom; Ank stands next to you.
-  const e = build()
-  ok('...he declares an explicit colour, so a default change cannot move him',
-    e.A.COLOUR, '§e')
-  ok('...that is not bold - every god in this pack is', /§l/.test(e.A.COLOUR), false)
-
+  // 🔴 THE OVERLAY VOICE IS GONE, NOT GATED. It shipped for one commit and Ethan
+  // reversed it; a registered speaker with no caller is the shadow-build this project
+  // keeps catching itself doing.
   const src = fs.readFileSync(path.join(SS, 'ank.js'), 'utf8')
-  const def = src.slice(src.indexOf('cast.define('), src.indexOf('cast.define(') + 700)
-  ok('...and declares NO style, so he keeps voice.js hotbar default',
-    def.indexOf('style:') !== -1, false)
-  ok('...and no font - a font is what a god has', src.indexOf('font:') !== -1, false)
+  ok('no cast.define survives', /VELDORA\.cast\.define\(/.test(src), false)
+  ok('...and nothing calls cast.speak', /cast\.speak\(/.test(src), false)
+  // 🚨 MEASURED AT THE POINT OF USE, not by grep. The first version counted
+  // `typeof VELDORA.announce.text !== 'function'` — the guard — as a call site, and read 2.
+  // A string that appears in a file is not a call.
+  const e = build()
+  const p = e.player(10, false)
+  e.setDay(7)
+  e.A.consider(e.server, p)              // arrive + greet
+  p.y = -50; e.A.consider(e.server, p)   // leave: the chill
+  ok('the AMBIENT surface carries the chill and NOTHING else',
+    e.ambient, ['A chill runs up your spine.'])
+  ok('...while every one of his own lines went to chat',
+    e.spoken.length >= 5 && e.spoken.every(t => t.indexOf('<Ank> ') === 0), true)
 }
 
 console.log('\n' + (fail ? R + fail + ' FAILED, ' + X : G) + pass + ' passed' + X)

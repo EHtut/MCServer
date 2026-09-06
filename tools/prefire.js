@@ -101,7 +101,10 @@ function walk(dir) {
     // ⚠️ THIS FILE DESCRIBES THE MARKER, so scanning it reports the documentation and
     // the regex itself as two outstanding items. Caught on the first run - a checklist
     // whose first two entries are its own source teaches you to stop reading it.
-    if (e.name === 'prefire.js') continue
+    // ⚠️ AND act0_smoke.py, WHICH LEARNED THIS THE SAME WAY. It carries a copy of the
+    // marker regex so it can offer the same items for answering, and the moment it landed
+    // prefire's owed list grew by one — its own pattern, listed as work.
+    if (e.name === 'prefire.js' || e.name === 'act0_smoke.py') continue
     const p = path.join(dir, e.name)
     if (e.isDirectory()) out.push(...walk(p))
     else out.push(p)
@@ -144,15 +147,54 @@ if (!gameOnly) {
 }
 
 // ── the checklist ──────────────────────────────────────────────────────────
-const owed = scanNeedsGame()
-console.log('\n' + B + 'STILL OWED — only a live server can answer these' + X)
-if (!owed.length) {
+const crypto = require('crypto')
+const NL = String.fromCharCode(10)
+
+// ⭐ THE OWED LIST HAS TO BE ABLE TO SHRINK, or it is a monument rather than a checklist.
+// `tools/act0_smoke.py --pass <id>` writes an answer to tools/act0_answers.json; this
+// reads it, so an item somebody actually looked at stops being listed as work.
+//
+// ⛔ AND ONLY A PERSON MAY WRITE TO IT. Nothing here, and nothing in act0_smoke's rcon
+// half, can mark an item answered — that split is the whole point. An automated green
+// standing in for an eyes-only one is how this pack shipped with fonts rendering as tofu.
+//
+// 🔑 The id hashes the marker's CLAIM TEXT, not its file and line. Moving a marker keeps
+// its answer; EDITING WHAT IT CLAIMS LOSES IT, which is correct — a changed claim has not
+// been tested. Same rule, same hash, in act0_smoke.py.
+const sid = (t) => crypto.createHash('sha256').update(t, 'utf8').digest('hex').slice(0, 6)
+
+function loadAnswers() {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(ROOT, 'tools', 'act0_answers.json'), 'utf8'))
+  } catch (e) { return {} }
+}
+
+const answers = loadAnswers()
+const all = scanNeedsGame().map(o => Object.assign({}, o, { id: sid(o.what), a: answers[sid(o.what)] }))
+const owed = all.filter(o => !o.a)
+const answered = all.filter(o => o.a && o.a.state === 'pass')
+const broke = all.filter(o => o.a && o.a.state === 'fail')
+
+console.log(NL + B + 'STILL OWED — only a live server can answer these' + X)
+if (!all.length) {
   console.log('  ' + G + 'nothing' + X + D + '  (no NEEDS-GAME markers in the tree)' + X)
 } else {
   for (const o of owed) {
     console.log('  ' + Y + '?' + X + ' ' + o.what)
     console.log('    ' + C + o.how + X)
-    console.log('    ' + D + o.file + ':' + o.line + X)
+    console.log('    ' + D + o.file + ':' + o.line +
+                '   answer it: python tools/act0_smoke.py --pass ' + o.id + X)
+  }
+  // 🚨 A FAILED ITEM IS LOUDER THAN AN OWED ONE. Somebody looked and it was broken — that
+  // is a finding, not a pending task, and listing it among the unanswered inverts it.
+  for (const o of broke) {
+    console.log('  ' + R + 'X' + X + ' ' + o.what)
+    console.log('    ' + R + 'FAILED in game' + X + D + ' — ' + (o.a.note || 'no note') +
+                '  (' + o.a.who + ', ' + o.a.when + ')' + X)
+  }
+  for (const o of answered) {
+    console.log('  ' + G + 'ok' + X + ' ' + D + o.what + '  — ' + o.a.who + ', ' +
+                o.a.when + (o.a.note ? ': ' + o.a.note : '') + X)
   }
 }
 
@@ -161,9 +203,15 @@ if (!gameOnly) {
   console.log(failed ? R + failed + ' offline check(s) failed — fix before the server goes on' + X
                      : G + 'offline: clean' + X)
 }
+if (broke.length) {
+  console.log(R + broke.length + ' item(s) FAILED in game' + X +
+              D + '  — somebody looked at these and they were wrong' + X)
+}
 console.log(owed.length
   ? Y + owed.length + ' item(s) unproven until the testing phase' + X +
-    D + '  — green above does NOT mean tested' + X
-  : D + 'nothing is waiting on the game')
+    D + (answered.length ? '  (' + answered.length + ' answered)' : '') +
+    '  — green above does NOT mean tested' + X
+  : D + 'nothing is waiting on the game' +
+    (answered.length ? '  (' + answered.length + ' answered by hand)' : '') + X)
 console.log('')
 process.exit(failed ? 1 : 0)
