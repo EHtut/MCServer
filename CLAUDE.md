@@ -59,6 +59,24 @@ python tools/sync_scripts.py --deploy      # SAFE. Changes nothing until a resta
 python tools/serverctl.py restart          # ⛔ ASK FIRST. Every time.
 ```
 
+---
+
+### ⭐ AMENDED 2026-09-06 — single-operator sessions
+
+> Ethan: *"restart it you are the only operator and full control."*
+
+**The rule above exists because SEVERAL CHATS SHARE THIS SERVER.** When that premise is
+false — when Ethan has said in this session that you are the only operator — the reason for
+asking is gone and the restart is yours to spend.
+
+⚠️ **THE GRANT IS PER SESSION AND HE MUST HAVE GIVEN IT.** It is not a standing change and
+it does not carry into the next chat. Absent that sentence, the rule above is unchanged:
+**ask, every time.**
+
+⛔ **AND IT NEVER COVERS KICKING A PLAYER MID-TEST.** He is often logged in while you work.
+Being allowed to restart is not being allowed to interrupt him — say what is waiting and let
+him pick the moment.
+
 ⭐ **Batch.** Several chunks can share one restart. *"Deployed, not live, needs a restart
 when convenient"* is a complete and honest hand-off — not an unfinished one.
 
