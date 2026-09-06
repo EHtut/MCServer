@@ -28,6 +28,7 @@ duplicated-state problem this project keeps paying for.
 ⛔ GENERATED. Never hand-edit the SNBT; edit NPCS below and re-run.
 """
 import io
+import json
 import os
 import sys
 
@@ -137,6 +138,64 @@ def snbt(value, indent=0):
     raise TypeError("cannot serialise %r" % type(value))
 
 
+def load_dialog():
+    """The intro tree, imported from Ethan's document by ank_dialogue_import.py.
+
+    ⚠️ ABSENT IS FINE AND SILENT-ISH. The preset is still valid without dialogue - Ank
+    just has nothing to say - so a missing cache must not stop the pack generating. It
+    IS reported, because "he has no dialogue" and "the importer was never run" are
+    different problems.
+    """
+    p = os.path.join(HERE, ".cache", "ank_dialog.json")
+    if not os.path.exists(p):
+        return None
+    try:
+        return json.load(io.open(p, encoding="utf-8"))
+    except Exception as e:
+        print("  !! could not read the dialogue cache: %s" % e)
+        return None
+
+
+def dialog_block(d):
+    """Easy NPC's DialogData, in the shape its own shipped presets use.
+
+    ⭐ THE SCHEMA IS COPIED FROM `dialog_colors_and_styles.npc.snbt` IN THE JAR, not
+    guessed: Label / Name / Texts[{Text}] / Buttons[{Label, Name, Actions[]}].
+    `<br>` is its line break and `@initiator` is the player.
+    """
+    intro = d.get("intro") or {}
+    opening = intro.get("open") or []
+    branches = intro.get("branches") or []
+    if not opening and not branches:
+        return None
+
+    dialogs = []
+    # the opening, with one button per player option
+    buttons = []
+    for i, br in enumerate(branches):
+        buttons.append({
+            "Label": "opt_%d" % i,
+            "Name": br["choice"],
+            "Actions": [{"Type": "OPEN_NAMED_DIALOG", "Cmd": "reply_%d" % i}],
+        })
+    dialogs.append({
+        "Label": "default",
+        "Name": "Ank",
+        # ⚠️ <br><br> between turns. He writes one line per turn and the renderer shows
+        # them as one block, so without the breaks his pacing collapses into a paragraph.
+        "Texts": [{"Text": "<br><br>".join(opening)}],
+        "Buttons": buttons,
+    })
+    for i, br in enumerate(branches):
+        dialogs.append({
+            "Label": "reply_%d" % i,
+            "Name": br["choice"][:24],
+            "Texts": [{"Text": "<br><br>".join(br["reply"])}],
+            "Buttons": [{"Label": "close", "Name": "...", "Actions": [{"Type": "CLOSE_DIALOG"}]}],
+        })
+    return {"DialogDataSet": dialogs, "Type": "STANDARD"}
+
+
 def trades_for(tier):
     """One tier's offers. ⚠️ The SHAPE is fixed and only the counts move, so a player
     comparing prices across a week sees the same five rows getting better rather than a
@@ -217,13 +276,20 @@ def preset(key, spec, trades, name_suffix=""):
                 "ON_INTERACTION": [{"Type": "OPEN_TRADING_SCREEN"}],
             }},
             "Status": {"finalized": True},
+            **({"DialogData": DIALOG} if DIALOG else {}),
             "VariantType": spec["variant"],
             "id": spec["entity"],
         },
     }
 
 
+DIALOG = None
+
+
 def main():
+    global DIALOG
+    d = load_dialog()
+    DIALOG = dialog_block(d) if d else None
     if "--print" in sys.argv:
         i = sys.argv.index("--print")
         key = sys.argv[i + 1] if i + 1 < len(sys.argv) else "ank"
@@ -258,6 +324,10 @@ def main():
                 n += 1
 
     print("wrote %d preset file(s) for %d NPC(s)" % (n, len(NPCS)))
+    if DIALOG:
+        print("  dialogue: %d screen(s) from Ethan's document" % len(DIALOG["DialogDataSet"]))
+    else:
+        print("  !! NO DIALOGUE - run `python tools/ank_dialogue_import.py --write` first")
     for d in PRESET_DIRS:
         print("  " + os.path.relpath(d, ROOT))
     print("\n⚠️  Two paths on purpose - only the game can say which one a "

@@ -221,5 +221,41 @@ grp('⭐ THE PRESET IS GENERATED, AND CARRIES WHAT ETHAN ASKED FOR')
     (snbt.match(/veldora:textures\/entity\/[^"]+/) || [''])[0]), true)
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+grp("🖊️ HIS DIALOGUE, IMPORTED AND NOT EDITED")
+{
+  const snbt = fs.readFileSync(PRESET, 'utf8')
+  const lines = fs.readFileSync(path.join(SS, 'ank_lines.js'), 'utf8')
+
+  ok('the intro tree reached the preset', snbt.indexOf('DialogData') !== -1, true)
+  ok('...with his opening line', snbt.indexOf('Oh, a villager') !== -1, true)
+
+  // ⭐ THREE BUTTONS, NOT TWO. "I am going down into the depths" and "I am going to
+  // gather ores" are two ways of saying the same thing, sharing one reply — and the
+  // first parser filed the second as one of ANK'S lines, putting a player line in his
+  // mouth. That is the kind of error nobody would spot in game; it just reads as him
+  // saying something odd.
+  const buttons = (snbt.match(/Label:"opt_[0-9]+"/g) || []).length
+  ok('every player option is a button', buttons, 3)
+  ok('...including the one that shares a reply',
+    snbt.indexOf('I am going to gather ores') !== -1, true)
+  ok('...and the sheriff branch', snbt.indexOf('sheriff around these parts') !== -1, true)
+
+  // ⛔ HIS TEXT IS VERBATIM. Both of these read as typos, both are his, and a future
+  // session must not tidy them — the interruption is him being cut off by his own
+  // argument, which is the whole point of the day-2 line.
+  ok('the day-2 interruption survives',
+    lines.indexOf("I don't agree with it, i don't agree with") !== -1, true)
+  ok("...and 'apart of' is left alone", lines.indexOf('apart of') !== -1, true)
+
+  // 🔑 A BLANK DAY IS A DESIGN, NOT A GAP. Ethan: "i left some days of dialogue blank
+  // because well there's nothing to say... this is also why i built alot of randomized
+  // trade dialogue aswell."
+  ok('only the written days are in the pool',
+    (lines.match(/^    [0-9]+: \[/gm) || []).length, 3)
+  ok('...and the rotation is there to cover the rest',
+    (lines.match(/^    \[/gm) || []).length >= 6, true)
+}
+
 console.log('\n' + (fail ? R + fail + ' FAILED, ' + X : G) + pass + ' passed' + X)
 process.exit(fail ? 1 : 0)

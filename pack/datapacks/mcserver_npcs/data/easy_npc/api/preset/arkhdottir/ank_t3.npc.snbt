@@ -145,6 +145,112 @@
     Status:{
       finalized:1b
     },
+    DialogData:{
+      DialogDataSet:[
+        {
+          Label:"default",
+          Name:"Ank",
+          Texts:[
+            {
+              Text:"Oh, a villager. Don't see many of you around nowadays since the... well. What brings you here?"
+            }
+          ],
+          Buttons:[
+            {
+              Label:"opt_0",
+              Name:"I am going down into the depths",
+              Actions:[
+                {
+                  Type:"OPEN_NAMED_DIALOG",
+                  Cmd:"reply_0"
+                }
+              ]
+            },
+            {
+              Label:"opt_1",
+              Name:"I am going to gather ores",
+              Actions:[
+                {
+                  Type:"OPEN_NAMED_DIALOG",
+                  Cmd:"reply_1"
+                }
+              ]
+            },
+            {
+              Label:"opt_2",
+              Name:"Its none of your business",
+              Actions:[
+                {
+                  Type:"OPEN_NAMED_DIALOG",
+                  Cmd:"reply_2"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          Label:"reply_0",
+          Name:"I am going down into the",
+          Texts:[
+            {
+              Text:"I don't recommend that.<br><br>It's recently been incredibly dangerous down there.<br><br>Rock slides and whatnot.<br><br>Anyways, if you need anything. Come find me instead.<br><br>I'll get you whatever you need"
+            }
+          ],
+          Buttons:[
+            {
+              Label:"close",
+              Name:"...",
+              Actions:[
+                {
+                  Type:"CLOSE_DIALOG"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          Label:"reply_1",
+          Name:"I am going to gather ore",
+          Texts:[
+            {
+              Text:"I don't recommend that.<br><br>It's recently been incredibly dangerous down there.<br><br>Rock slides and whatnot.<br><br>Anyways, if you need anything. Come find me instead.<br><br>I'll get you whatever you need"
+            }
+          ],
+          Buttons:[
+            {
+              Label:"close",
+              Name:"...",
+              Actions:[
+                {
+                  Type:"CLOSE_DIALOG"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          Label:"reply_2",
+          Name:"Its none of your busines",
+          Texts:[
+            {
+              Text:"None of business? Sure. Look. I don't want you going down there. It isn't safe, as the sheriff around these parts, your 'safety' is my business.<br><br>Be a good villager, and return to the surface.<br><br>If you need anything down there, find me."
+            }
+          ],
+          Buttons:[
+            {
+              Label:"close",
+              Name:"...",
+              Actions:[
+                {
+                  Type:"CLOSE_DIALOG"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      Type:"STANDARD"
+    },
     VariantType:"STEVE",
     id:"easy_npc:humanoid"
   }
