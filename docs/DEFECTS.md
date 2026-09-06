@@ -1564,9 +1564,16 @@ one of Ethan's logins while he got nothing. It reads the result now and says so 
 backslashes at every page break and must close its brackets, and a refused give must return
 false. Reverting the escape fails one of them.
 
-⚠️ **17 sentences, not 18.** The boot banner says 18 beats; `opening_lines.js` holds 17
-quoted sentences. Not chased tonight — noted so the next session does not read the banner as
-evidence.
+⚠️ ~~17 sentences, not 18.~~ ❌ **My count was wrong, and the banner was right.** There are
+18; my counter required a trailing comma and the last entry (`"Yours."`) has none. 🔑 Filed
+here rather than deleted because a wrong caution in a defect doc is worse than no caution —
+the next session would have gone looking for a missing sentence.
+
+✅ **PROVED IN GAME 2026-09-06.** The fixed command was run against the live server with all
+18 sentences: 5 pages, 835 characters, and the server answered **`Gave 1 [Journal] to
+Rehykt`**. It parses and it delivers. ⛔ Whether the eighteen sentences *read as one piece*
+across five pages is still Ethan's to say — that is playtest item `cfdae5`, and it is not
+the same question.
 
 ---
 

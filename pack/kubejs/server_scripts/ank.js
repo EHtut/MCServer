@@ -376,17 +376,51 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // ⚠️ FOUND BY TAG, NOT BY TYPE. `@e[type=easy_npc:humanoid]` would also match every other
   // humanoid NPC this project ever adds, and the first one of those would be despawned by
   // Ank's boundary check with nothing to explain it.
+  // 🔴 THE SPAWN COMMAND WAS NEVER A COMMAND. It read
+  //     easy_npc spawn arkhdottir/ank_t0 ~ ~ ~
+  // and `/easy_npc spawn` takes a UUID of an ALREADY-DESPAWNED npc, not a preset:
+  //     /easy_npc spawn <uuid> [<position>]
+  // Brigadier refused it with "Expected whitespace to end one argument", the log said
+  // "Ank steps out" anyway because that line is our own console.info, and Ethan spent an
+  // evening looking for a man who has never once existed in the world.
+  //
+  // ⭐ CREATING one from a preset is a different verb:
+  //     /easy_npc preset import_new (custom|data|default|world) <resource>
+  // and the mod's own presets live at data/easy_npc/api/preset/base/*.npc.snbt - read out
+  // of the jar - which settles the load path make_npc_datapack.py was writing to twice.
+  //
+  // ⚠️ AND IT NEEDS A PLAYER AS THE EXECUTOR. Probed over rcon against the mod's OWN
+  // shipped preset as a control: every source (custom/data/default/world) answers
+  // "Unable to import ... preset" from the console, with or without an explicit position.
+  // So it runs `execute as <player> at <player>`, and it CANNOT be tested without somebody
+  // logged in. That is a real limit of this command, not a gap in the harness.
+  var SPAWN_SRC = 'data'                 // our datapack, not the mod's own base presets
+
   function spawn(srv, p) {
     try {
-      srv.runCommandSilent('execute at ' + p.username +
-        ' run easy_npc spawn ' + presetFor(p) + ' ~ ~ ~')
-      // Tag whatever just appeared nearest to the player, so the boundary check can find
-      // him again. ⚠️ Runs as a separate command because the spawn does not return a handle.
-      srv.runCommandSilent('execute at ' + p.username +
+      srv.runCommandSilent('execute as ' + p.username + ' at ' + p.username +
+        ' run easy_npc preset import_new ' + SPAWN_SRC + ' easy_npc:' + presetFor(p))
+      // Tag whatever appeared, so the boundary check can find him again.
+      var tagged = srv.runCommandSilent('execute at ' + p.username +
         ' run tag @e[type=easy_npc:humanoid,limit=1,sort=nearest,distance=..8] add ' + TAG_NAME)
+
+      // 🚨 AND THE RESULT IS READ. This used to `return true` for anything that did not
+      // throw - and runCommandSilent does not throw on a command Brigadier refuses, it
+      // returns 0. So "he spawned" and "the command is not even valid" shared a return
+      // value for two days, K_ACTIVE latched, and he was never retried.
+      //
+      // ⭐ THE TAG IS THE EVIDENCE, NOT THE IMPORT. The import's own return told us
+      // nothing useful in testing; a tag that matched something means a humanoid is
+      // standing there, which is the thing we actually care about.
+      if (!tagged) {
+        console.error(TAG + 'spawn FAILED for ' + p.username + ' - nothing to tag after ' +
+          'the import. Preset ' + presetFor(p) + ' from source "' + SPAWN_SRC + '". ' +
+          'Check `/easy_npc preset import_new ' + SPAWN_SRC + '` tab-completion in game.')
+        return false
+      }
       return true
     } catch (e) {
-      console.error(TAG + 'spawn failed for ' + p.username + ' :: ' + e)
+      console.error(TAG + 'spawn threw for ' + p.username + ' :: ' + e)
       return false
     }
   }
@@ -533,7 +567,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       p.tell(Text.of('§7should be out: §f' +
         (want === null ? '§cUNREADABLE - nothing will happen' : String(want))))
       p.tell(Text.of('§7active: §f' + isActive(p)))
-      p.tell(Text.of('§8/ank test §7sweep · §8/ank greet §7re-arm today · ' +
+      p.tell(Text.of('§8/ank spawn §7force him out here · §8/ank test §7sweep · ' +
+        '§8/ank greet §7re-arm today · ' +
         '§8/ank greet <day> §7read a day out loud · §8/ank clear §7forget him'))
       return 1
     })
@@ -575,6 +610,42 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         p.tell(Text.of('§8/ank greet <day> §7read a specific day out loud'))
         return 1
       }))
+
+    // ⭐ FORCE HIM OUT, WHEREVER YOU ARE. Ethan, 2026-09-06: "i did not see ank anywhere.
+    // either way lets get a command to spawn him anyways."
+    //
+    // ⚠️ IT BYPASSES THE BAND, NOT THE REPORTING. The whole point is to see whether the
+    // preset loads and renders at all, which the band was preventing anybody from ever
+    // finding out - so it spawns in daylight if that is where you are standing, and says
+    // exactly what it ran so a refusal can be read rather than guessed at.
+    root = root.then(Commands.literal('spawn').executes(function (ctx) {
+      var p = ctx.source.player
+      if (!p) { return 0 }
+      var srv = ctx.source.server
+      var preset = presetFor(p)
+      var ok1 = srv.runCommandSilent('execute as ' + p.username + ' at ' + p.username +
+        ' run easy_npc preset import_new ' + SPAWN_SRC + ' easy_npc:' + preset)
+      var tagged = srv.runCommandSilent('execute at ' + p.username +
+        ' run tag @e[type=easy_npc:humanoid,limit=1,sort=nearest,distance=..8] add ' + TAG_NAME)
+      p.tell(Text.of('§8§m                                        '))
+      p.tell(Text.of('§7preset §f' + preset + '§7 from §f' + SPAWN_SRC))
+      p.tell(Text.of('§7import returned §f' + ok1 + '§7, tag matched §f' + tagged))
+      if (tagged) {
+        setActive(p, true)
+        try { p.persistentData.putInt(K_SINCE, srv.tickCount) } catch (e) { }
+        p.tell(Text.of('§aHe is here.'))
+      } else {
+        // 🔑 THE DIAGNOSIS, NOT JUST THE FAILURE. The import needs a PLAYER as executor -
+        // proved over rcon against the mod's own shipped preset, which fails identically
+        // from the console - so the next thing to check is the resource path, and the
+        // suggestion list is the only thing that can answer it.
+        p.tell(Text.of('§cNothing spawned.'))
+        p.tell(Text.of('§7Tab-complete §f/easy_npc preset import_new ' + SPAWN_SRC +
+          ' §7- if §fank_t0§7 is not offered, the datapack path is wrong.'))
+        p.tell(Text.of('§8The mod ships its own at data/easy_npc/api/preset/base/'))
+      }
+      return tagged ? 1 : 0
+    }))
 
     root = root.then(Commands.literal('clear').executes(function (ctx) {
       var p = ctx.source.player

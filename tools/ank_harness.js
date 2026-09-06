@@ -39,8 +39,14 @@ function build() {
   // So callbacks are now QUEUED, and `e.tick()` runs them. A test that never ticks is
   // testing the same instant the game would not be in.
   const delays = [], queued = []
+  // RETURNS 1. The real runCommandSilent returns a command result and spawn() now READS
+  // it - a stub returning undefined would make every spawn look refused. Set
+  // `e.refuse(true)` to make it return 0, which is what Brigadier does for a command
+  // it will not parse, and is exactly how the invalid spawn hid for two days.
+  let refuse = false
   const server = {
-    tickCount: 0, players: [], runCommandSilent: (c) => commands.push(c),
+    tickCount: 0, players: [],
+    runCommandSilent: (c) => { commands.push(c); return refuse ? 0 : 1 },
     scheduleInTicks: (t, fn) => { delays.push(t); queued.push(fn) },
   }
   let descents = 0
@@ -88,7 +94,7 @@ function build() {
   })
   const tick = () => { const q = queued.splice(0); q.forEach(fn => fn()) }
   return { A: ctx.VELDORA.ank, ctx, server, player, commands, ambient, logs, spoken, delays,
-           tick, queued,
+           tick, queued, refuse: (v) => { refuse = v },
            setDescents: (n) => { descents = n },
            setDay: (n) => { day = n },
            setMute: (v) => { mute = v },
@@ -215,8 +221,17 @@ grp('⭐⭐ THE PRICE FALLS AS HE LOSES — driven by descents, not days')
   // spawns is a table of numbers.
   e.setDescents(2)
   e.A.consider(e.server, p)
-  const spawn = e.commands.find(c => c.indexOf('easy_npc spawn') !== -1) || ''
+  // `easy_npc spawn` IS NOT THE VERB. It takes a UUID of an already-despawned npc;
+  // creating one from a preset is `preset import_new`. This assertion matched the old,
+  // invalid command and passed for two days while nothing ever spawned.
+  const spawn = e.commands.find(c => c.indexOf('preset import_new') !== -1) || ''
   ok('the spawn command carries the tier', spawn.indexOf('ank_t2') !== -1, true)
+  ok('...and it is the CREATE verb, not the restore-a-uuid one',
+    /easy_npc preset import_new (custom|data|default|world) easy_npc:/.test(spawn), true)
+  ok('...and it runs AS the player, which the import requires',
+    /^execute as \S+ at \S+ run /.test(spawn), true)
+  ok('...and nothing still uses `easy_npc spawn`',
+    e.commands.some(c => /easy_npc spawn/.test(c)), false)
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -583,6 +598,27 @@ grp('A ROOF IS NOT A CAVE - the loop Ethan hit')
   bare(p)
   ok('past the gap it is eerie again', e.A.consider(e.server, p), 'despawned')
   ok('...and says so', e.ambient.length, 2)
+}
+
+// ===========================================================================
+grp('A REFUSED COMMAND MUST NOT READ AS A SPAWN')
+{
+  // THE BUG THAT HID FOR TWO DAYS. `easy_npc spawn arkhdottir/ank_t0 ~ ~ ~` is not a
+  // valid command - Brigadier answered "Expected whitespace to end one argument" - and
+  // runCommandSilent returns 0 for that rather than throwing. spawn() returned true
+  // regardless, K_ACTIVE latched, and Ank was never retried. The log said "Ank steps out"
+  // because that line is our own console.info, not evidence of anything.
+  const e = build()
+  e.refuse(true)
+  const p = e.player(10, false, 30)
+  ok('a refused command is a FAILED spawn', e.A.consider(e.server, p), 'spawn-failed')
+  ok('...and he is NOT marked as out', e.A.isActive(p), false)
+  ok('...and it is logged as an error', e.logs.some(l => l.indexOf('ERR') === 0), true)
+
+  // AND HE IS RETRIED. A latched K_ACTIVE would mean one bad spawn silences him forever.
+  e.refuse(false)
+  ok('the next sweep tries again', e.A.consider(e.server, p), 'spawned')
+  ok('...and this time he is out', e.A.isActive(p), true)
 }
 
 console.log('\n' + (fail ? R + fail + ' FAILED, ' + X : G) + pass + ' passed' + X)

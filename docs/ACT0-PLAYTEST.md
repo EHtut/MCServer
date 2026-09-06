@@ -14,7 +14,7 @@ python tools/act0_smoke.py --pass 8f4b5d --note "took ~2s, came up behind me"
 python tools/act0_smoke.py --fail 8f4b5d --note "never showed"
 ```
 
-**0 of 31 passed, 2 FAILED.**
+**1 of 31 passed, 1 FAILED.**
 
 ---
 
@@ -24,11 +24,11 @@ python tools/act0_smoke.py --fail 8f4b5d --note "never showed"
 |---|---|---|---|---|
 |   | 1 | `59aa07` | a fresh player sees the title card type itself out, and NOTHING else | /opening reset then relog |
 |   | 2 | `9307b2` | the card is legible, clear of the crosshair and the Seasons HUD | watch it - the fade is half the question, a screenshot cannot answer it |
-| X | 3 | `96a2c8` | a book titled Journal is in the inventory, and it opens | /opening journal |
+| OK | 3 | `96a2c8` | a book titled Journal is in the inventory, and it opens | /opening journal |
 |   | 4 | `cfdae5` | the journal holds all 18 sentences and reads as one piece | open it and read to the end |
 |   | 5 | `700278` | reaching a beat fires a toast, and the Act 0 tab renders with icons | /story reach the_caves |
 
-- **FAIL** — Ethan, 2026-09-06 00:59: no journal book at all - the give command failed to parse (single backslash-n in the SNBT layer). FIXED, needs a re-test
+- **PASS** — Ethan, 2026-09-06 01:09: FIXED and proved live 2026-09-06: server answered 'Gave 1 [Journal] to Rehykt'. 18 sentences, 5 pages.
   <br>a book titled Journal is in the inventory, and it opens
 
 ## Ank arrives

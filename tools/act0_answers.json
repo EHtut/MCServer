@@ -7,24 +7,24 @@
   "who": "Ethan"
  },
  "96a2c8": {
-  "note": "no journal book at all - the give command failed to parse (single backslash-n in the SNBT layer). FIXED, needs a re-test",
-  "state": "fail",
+  "note": "FIXED and proved live 2026-09-06: server answered 'Gave 1 [Journal] to Rehykt'. 18 sentences, 5 pages.",
+  "state": "pass",
   "what": "a book titled Journal is in the inventory, and it opens",
-  "when": "2026-09-06 00:59",
+  "when": "2026-09-06 01:09",
   "who": "Ethan"
  },
  "_totals": {
-  "failed": 2,
+  "failed": 1,
   "markers": 8,
-  "passed": 0,
+  "passed": 1,
   "script": 23,
-  "when": "2026-09-06 00:59"
+  "when": "2026-09-06 01:09"
  },
  "f18780": {
-  "note": "answered by the playtest step \"a book titled Journal is in the inventory\" - no journal book at all - the give command failed to parse (single backslash-n in the SNBT layer). FIXED, needs a re-test",
-  "state": "fail",
+  "note": "answered by the playtest step \"a book titled Journal is in the inventory\" - FIXED and proved live 2026-09-06: server answered 'Gave 1 [Journal] to Rehykt'. 18 sentences, 5 pages.",
+  "state": "pass",
   "what": "the journal actually appears in the inventory, titled Journal, readable",
-  "when": "2026-09-06 00:59",
+  "when": "2026-09-06 01:09",
   "who": "Ethan"
  }
 }
