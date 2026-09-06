@@ -7,29 +7,31 @@
 
 ## ① DIGEST
 
-**What Act 0 is.** You spawn as an ordinary person in a village. No gods, no voices — the
-**silence is the mechanism**, not the absence of content. You wake stronger and glad from a
-plague a white-haired doctor sat with you through. Around day 7 something pulls you *down*.
-**You die in the depths**, and that death — nothing else — makes you eligible. You wake
-wrong, you lose what she gave you, and the gods start bickering in your ear.
+**What Act 0 is.** Normal Minecraft, with the book narrating *you*. No gods, no voices. You
+head for the caves and **Ank stops you** — he tells you not to go down, and trades with you to
+keep you above ground. You go anyway, and underground you **overhear him arguing with
+Caebrim about you.** The argument escalates across seven days in a **peaceful** cave. Around
+day 4 **Caebrim finds you in person** to warn you off; more meetings follow. **On day 7 you
+run into Alice.** She tells you a few things, disappears, and **tides you at the hardest
+difficulty.** You die, and wake up wrong.
 
-**Where it stands: the first third is built, the rest does not exist.**
-The opening cutscene is live and lands its title card. Everything from day 7 onward — the
-pull, the depth-death gate, the buff, its loss, "You feel wrong" — is **unbuilt**, and there
-is no act state machine of any kind: the string "act" appears nowhere in the code.
+⭐ **The shape is: two people try to keep you out, and you go anyway.** Nothing lures the
+player down. Every beat is somebody trying to stop them, which is what makes the ending land.
 
-**The next chunk is A1, THE DOCTOR'S GIFT.** Nothing grants a buff and nothing takes one
-away, so *"You feel wrong"* — the emotional payload the entire act is built to deliver —
-currently has **nothing to remove**. Everything downstream is decoration until this exists.
-**Falsifier:** a player who finishes the opening has a visible effect they did not have
-before, and a player who dies in the depths no longer has it. If either half cannot be
-observed without reading a log, the chunk is not done.
+**Where it stands.** The opening is built and lands its title card. **Everything else in the
+act is unbuilt** — Ank does not exist in any form, the argument does not exist, and there is
+no act state machine at all.
 
-**🔴 What needs Ethan, and it blocks A2.** `78` §5 ruled that **depth-death is the ONLY route
-to a path** and that drift and champion-kill both retire. Neither retired: `chosen.js:73`
-still runs `DRIFT_DAYS = 30` and `:123` still offers *"be killed by a champion while
-pathless"*. So the eligibility rule **in code is the opposite of the ruled one** right now.
-Confirm the ruling stands and I will cut both.
+**The next chunk is B1, ANK EXISTS.** Nothing else can start: he is the first thing the player
+meets, half of the argument that is the act's spine, and today he is *two mentions in other
+characters' dialogue* and nothing more. **Falsifier:** he is a registered speaker who can be
+heard in game — not a name someone else says.
+
+**🔴 What needs Ethan.** Three, all cheap to answer and all blocking something:
+**(a)** Does the doctor's gift survive? The old arc had a buff granted in the opening and lost
+on death; your new arc does not mention one, and *"wake up wrong"* needs something to contrast
+against. **(b)** Is Caebrim's meeting fixed at day 4 or a window — you wrote "Day 4(?)".
+**(c)** Is Ank a literal trader (a real trade UI) or persuasion that *reads* as a merchant?
 
 ---
 
@@ -37,7 +39,7 @@ Confirm the ruling stands and I will cut both.
 
 | | |
 |---|---|
-| **OWNS** | the Act 0 arc · the opening · the buff and its loss · the depth-death gate · the pathless experience · the act boundary into Act 1 |
+| **OWNS** | the Act 0 arc · the opening · Ank and Caebrim's argument · the peaceful cave · Alice on day 7 · the act boundary into Act 1 |
 | **DOES NOT OWN** | *how a voice is placed or formatted* → `VOICES.md` · *who these people are* → `LORE.md` · *how a god is built* → `40` `43` `53` `56` · *the tide's composition* → `74` · *what is broken* → `DEFECTS.md` |
 | **STATE** | → `STATUS.md` — **only STATUS says what is in flight** |
 | **BLOCKS** | Act 1. The act-ending tide is Act 1's opening beat |
@@ -47,77 +49,102 @@ Confirm the ruling stands and I will cut both.
 
 ## ③ THE DESIGN
 
+> ⭐ **Ethan, 2026-09-05.** This replaces the earlier arc wholesale — see §⑥, the correction
+> is the whole shape of the act.
+
 ```
-spawn in a village, as a PERSON        no gods, no patron, no voices
-    ↓                                  ONE origin — the script Ethan wrote
-a plague you brought with you          BACKSTORY. Over before you play
+NORMAL MINECRAFT, with the book narrating YOU        the opening. No gods. No voices.
     ↓
-a doctor with white hair               she healed you overnight, said nothing
+you head for the caves — and ANK STOPS YOU           he tells you not to go down there
+    ↓                                                and TRADES with you to keep you up
+you go down anyway
     ↓
-you wake STRONGER, and GLAD            ⭐ the player should be happy to be alive
+you OVERHEAR ANK AND CAEBRIM ARGUING                 about you. In a peaceful cave —
+    ↓                                                nothing down there is trying to kill you
+        ── the argument ESCALATES across seven days ──
     ↓
-        ── around day 7 ──
-something pulls you DOWN               not gods. something else
+~day 4  CAEBRIM FINDS YOU. PHYSICALLY.               she tells you how dangerous the caves are
     ↓
-YOU DIE IN THE DEPTHS                  🔑 the gate. Nothing else makes you eligible
+days 4–7  more meetings, from both. Louder arguments.
     ↓
-"You feel wrong"                       you respawn undead
-you lose the buff                      her gift was for the living
+DAY 7 — YOU RUN INTO ALICE                           she tells you a few things
+    ↓                                                and disappears
+she TIDES YOU AT THE HARDEST DIFFICULTY
     ↓
-the gods start bickering in your ear   each one tempting you
+YOU DIE, AND WAKE UP WRONG                           Act 1
 ```
 
-### 🔑 The three things that carry the act
+### 🔑 The four things that carry it
 
-**The silence is load-bearing.** A god heard before the death spends the whole reveal. This
-is why `arrival.js` was cut on 2026-09-05 — it played all five gods, legibly and in colour,
-**60 seconds after first login**, four to nine minutes *before* the cutscene establishing that
-the player hears none.
+**⭐ THEY ARE KEEPING YOU OUT, NOT DRAWING YOU IN.** Ank blocks the entrance and *trades* to
+keep you above ground; Caebrim comes to warn you in person. **The player descends against
+advice, repeatedly, from people who turn out to be right.** Every beat is somebody trying to
+stop you, which is why the ending lands: you were told.
 
-**The doctor is Alice, and she must never be named.** She heals a stranger and leaves. Hours
-later that same player dies, meets *the Doctor* in the dark, and she has already touched them
-once. ⛔ **Do not add a hint, a journal entry or a callback.** The connection is the reward
-for paying attention, and pointing at it spends it. She has **no dialogue at all** in the
-opening, so there is nothing to leak.
+**The cave is PEACEFUL, and that is a mechanic.** For seven days the danger is not mobs — it
+is two immortals arguing about what to do with you. If the caves fight the player, the
+argument becomes background noise and the seventh day stops being a change of state.
 
-**The gladness is a mechanism, not decoration.** Ethan: *"make life actually seem worth living
-and the player is happy and excited to be alive."* Everything in the opening exists so that
-*"You feel wrong"*, hours later, has something to take away. **A line that foreshadows spends
-the ending early.**
+**The argument is the content.** It is not ambience between beats; it *is* the act's spine,
+and it must audibly escalate. Day 1 overheard and distant; day 6 unmistakable and about you.
+
+**The silence still holds — no GODS speak.** Ank, Caebrim and Alice are not the five. This is
+why `arrival.js` was cut: it played all five gods 60 seconds after first login, minutes
+before the cutscene establishing the player hears none.
+
+### ⭐ The doctor is Alice, and she must never be named
+
+She heals a stranger in the opening and leaves without a word. On day 7 the player meets her
+again, in the dark, and she is the one who ends them. ⛔ **No hint, no journal entry, no
+callback.** The connection is the reward for paying attention, and pointing at it spends it.
+She has no dialogue at all in the opening, so there is nothing to leak.
 
 ---
 
 ## ④ CHUNKS
 
-> A chunk with no falsifier is not a chunk. `state · what changes · falsifier`
+> `state · what changes · falsifier`. A chunk with no falsifier is not a chunk.
 
 ### Built
 
 | | chunk | falsifier answered |
 |---|---|---|
-| ✅ | **The opening cutscene** — 18 beats, one sentence each, typed, once per world, 5–10 min after first login | `dialogue_check opening` clean; 19 beats over 114s |
-| ✅ | **The title card** — `ARKHDOTTIR: NEW BLOOD / A story written by Rehykt` | `finale_check.js` runs the real `ritual.js` and sees the popup. **It never rendered before 2026-09-05** |
-| ✅ | **`arrival.js` cut** — the five-god join scene | word-boundary grep is empty; blade's colour made explicit first |
-| ✅ | **The randomised life cut** — one origin | harness asserts `lifeOf` is gone *and* that 18 beats still play |
+| ✅ | **The opening** — the book narrating you. 18 beats, one sentence each, typed, once per world | `dialogue_check opening` clean; 19 beats over 114s |
+| ✅ | **The title card** | `finale_check.js` runs the real `ritual.js` and sees the popup. It never rendered before 2026-09-05 |
+| ✅ | **`arrival.js` cut** — no god speaks in Act 0 | word-boundary grep empty; blade's colour made explicit first |
+| ✅ | **The randomised life cut** — one origin | harness asserts `lifeOf` is gone *and* 18 beats still play |
 
-### Next — in dependency order
+### The act, in order
 
 | | chunk | what changes | falsifier |
 |---|---|---|---|
-| **A1** | 🔜 **The doctor's gift** | the opening's last beat grants a visible, lasting effect. A death in the depths removes it | a player has it after the cutscene and not after that death — **both observable in game, not in a log** |
-| **A2** | 🔒 **The depth-death gate** | dying below the cutoff is the ONLY thing that makes a player eligible. `DRIFT_DAYS` and the champion-kill route are cut | a pathless player who drifts 30 days is offered nothing; one who dies deep is offered everything. **Blocked on Ethan** — see §① |
-| **A3** | ⬜ **"You feel wrong"** | the respawn after that death says it, once, in nobody's voice | it fires exactly once, on the gate death only, and never for an ordinary death |
-| **A4** | ⬜ **The day-7 pull** | something draws the player downward around day 7 | a player who ignores it is still pulled; one who follows it reaches the depths without being told to |
-| **A5** | ⬜ **The pathless bulk** | 1–2 hours of things to do before the gate | measured: a pathless player has more than the **~91 authored lines** currently reachable |
-| **A6** | ⬜ **Ank** | he exists at all | he is a speaker with pools, not a name in someone else's mouth |
-| **A7** | ⬜ **The death-refusal system** | the player is refused death | `death_cost.js` currently charges 5 levels and lets the death stand |
-| **A8** | ⬜ **The Caebrim encounter** | a staged scene, not ambient lines | `caebrim.js scene()` gets a live consumer that is not the admin command |
-| **A9** | ⬜ **The Alice encounter** | the Doctor meets you in the dark, deliberately | it is a scene, not a pool roll |
-| **A10** | ⬜ **The act-ending tide** | a first tide that ends the player and opens Act 1 | ⚠️ needs its own mechanism — see the correction in §⑥ about the ordinary tide loop |
+| **B1** | 🔜 **Ank exists** | a speaker with pools, a presence, a place | he is registered and can be heard. Today he is **two mentions in other characters' mouths** and nothing else |
+| **B2** | ⬜ **Ank stops you** | he intercepts the player at a cave mouth and argues them out of descending | a player heading down is met. One who stays above ground is not |
+| **B3** | ⬜ **Ank trades** | he offers something worth staying up for | the offer is *taken* often enough to be a real choice, not a speed bump |
+| **B4** | ⬜ **The cave is peaceful** | hostiles suppressed in the Act 0 band for the seven days | a player can sit in a cave on day 3 and not be attacked |
+| **B5** | ⬜ **The argument, overheard** | Ank and Caebrim argue *about the player*, audible from underground | it fires only below ground, only pathless, and it is **legible without being addressed to you** |
+| **B6** | ⬜ **The argument escalates** | seven days of ramp — distant and oblique → unmistakable and about you | day 1 and day 6 are distinguishable **as writing**, not just as frequency |
+| **B7** | ⬜ **Caebrim finds you (~day 4)** | a physical meeting, not a voice. She warns you off | she arrives *at* the player, once, and the scene has a live consumer — `caebrim.js scene()` currently has none but an admin command |
+| **B8** | ⬜ **More meetings, both of them** | days 4–7 carry repeat encounters | a player reaching day 7 has met each of them more than once |
+| **B9** | ⬜ **Alice, day 7** | she appears, says her piece, disappears | it fires once, on day 7, and only after the argument has run |
+| **B10** | ⬜ **She tides you** | a tide at maximum difficulty, aimed at a pathless player | ⚠️ **cannot reuse the ordinary tide loop** — that loop deliberately skips the pathless. Needs its own trigger. It must actually kill |
+| **B11** | ⬜ **You wake up wrong** | the respawn says so, once, in nobody's voice | it fires on that death only, never on an ordinary one |
 
 ---
 
 ## ⑤ RULINGS
+
+**Act 0 is people keeping you OUT, not something drawing you in.** *(Ethan, 2026-09-05.)*
+The counter-argument was the earlier arc — a pull downward around day 7, which is the more
+familiar shape and needs no characters to carry it. **Rejected**, and it is the better call:
+a lure needs no one, while a warning needs somebody who cares enough to give it, which is
+what makes Ank and Caebrim matter before the player knows what they are. It also means the
+player's death is *earned* rather than sprung — they were told, repeatedly, by name.
+
+**The cave is peaceful for the seven days.** The counter-argument was that an empty cave is
+boring and Minecraft's danger is free content. Rejected: the danger *is* the argument, and
+mobs would bury it. It also makes day 7 a genuine change of state rather than more of the same.
+
 
 **The old god introduction is cut.** *(Ethan, 2026-09-05: "we cut the old introduction and
 randomized life.")* The counter-argument was that `arrival.js` is Ethan's own writing and the
@@ -144,6 +171,21 @@ path is taken and arrive as a punishment for choosing one.
 ---
 
 ## ⑥ CORRECTIONS
+
+**"Around day 7 something pulls you DOWN."** ❌ **The arc is inverted, and this was the whole
+design.** *(Ethan, 2026-09-05, rejecting most of the previous ledger.)* Nothing pulls. **Ank
+blocks the way and trades to keep you out; Caebrim comes in person to warn you off.** The
+player descends *against advice*, from people who turn out to be right. Everything the old
+§③ said about a lure, and chunks A4–A10 built on it, are void.
+
+**"The seven days are bulk to be filled."** ❌ They are **the argument**, escalating. The old
+A5 called it "1–2 hours of bulk" and measured it in authored lines, which is the wrong unit:
+the content is one conversation getting louder, not a quantity of ambience.
+
+**"The depths are dangerous during Act 0."** ❌ **The cave is peaceful for the seven days,
+deliberately.** If mobs fight the player, the argument becomes background and day 7 stops
+being a change of state.
+
 
 **"The tide being off for the pathless is a gap in Act 0."** ❌ **It is Ethan's own ruling**
 and it is correct. ⚠️ But it has a consequence worth stating: **A10 cannot reuse the ordinary
