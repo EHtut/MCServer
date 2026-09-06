@@ -1,0 +1,23 @@
+{
+ "category": "mcserver:entries",
+ "name": "How I Got Here",
+ "description": "The road, the sickness, and the woman who did not speak.",
+ "icon": "minecraft:written_book",
+ "x": 0,
+ "y": 0,
+ "pages": [
+  {
+   "type": "modonomicon:text",
+   "text": "You were a traveler, Traveling from a distant land, you picked up your life an set off.\n\nA life of adventure before you.\n\nYou contracted a mysterious plague, forced to take refuge in nearby village.\n\nYou felt the life sapping from you, your strength fading.",
+   "title": "How I Got Here"
+  },
+  {
+   "type": "modonomicon:text",
+   "text": "It was that 7th night when a mysterious woman arrived in town.\n\nHer hairs as white as snow.\n\nHer eyes, like azure and ruby gemstones.\n\nShe tended to your dying body, caring for your sickness.\n\nShe spoke no words.\n\nMade no sounds.\n\nShe left the following morning."
+  },
+  {
+   "type": "modonomicon:text",
+   "text": "Your mind races with confusion.\n\nWho was that?\n\nThe world awaits you.\n\nAnd life seems almost brighter.\n\nYou set off.\n\nAdventure awaits.\n\nYours."
+  }
+ ]
+}

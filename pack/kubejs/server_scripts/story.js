@@ -193,7 +193,21 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
         .executes(function (ctx) {
           var p = ctx.source.player
           if (!p) return 0
-          var key = event.stringArgument(ctx, 'key')
+          // `event.stringArgument` IS NOT A KUBEJS API. It appeared in this file and
+          // NOWHERE ELSE in the pack - every other command reads its argument with
+          // ctx.getArgument(name, Java.loadClass(...)). It threw, the player saw a red
+          // error, and the beat was never granted.
+          //
+          // Ethan reported item 5 as "it gives an error" and the log showed him earning
+          // [The Old Diggings] seconds later - a DIFFERENT advancement, from
+          // mcserver_progression, for going underground. The toast that looked like
+          // success belonged to something else entirely.
+          var key = null
+          try { key = String(ctx.getArgument('key', Java.loadClass('java.lang.String'))) }
+          catch (e) {
+            p.tell(Text.of('§cunreadable key argument :: ' + e))
+            return 0
+          }
           var first = reach(p, key)
           p.tell(Text.of(first ? '§a' + key + ' reached.'
             : '§7' + key + ' — already had it, or it is not a known beat.'))

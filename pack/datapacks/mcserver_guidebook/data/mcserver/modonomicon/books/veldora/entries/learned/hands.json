@@ -1,0 +1,15 @@
+{
+ "category": "mcserver:learned",
+ "name": "My Own Hands",
+ "description": "The controls are not where I expect them.",
+ "icon": "minecraft:leather_boots",
+ "x": 2,
+ "y": 0,
+ "pages": [
+  {
+   "type": "modonomicon:text",
+   "text": "Crouching is CONTROL. Running is SHIFT.\n\nThat is backwards from everywhere else and it has already killed me once.",
+   "title": "My Own Hands"
+  }
+ ]
+}

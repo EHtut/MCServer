@@ -1,0 +1,15 @@
+{
+ "category": "mcserver:land",
+ "name": "The Strata",
+ "description": "How far down is too far down.",
+ "icon": "minecraft:deepslate",
+ "x": 1,
+ "y": 0,
+ "pages": [
+  {
+   "type": "modonomicon:text",
+   "text": "The old diggings run from the surface to about thirty blocks below sea level. That is where people still go.\n\nBelow that are the deep works, and below those the sealed floor.\n\nEveryone I have asked stops talking at the second one.",
+   "title": "The Strata"
+  }
+ ]
+}

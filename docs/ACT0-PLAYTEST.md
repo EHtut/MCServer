@@ -14,7 +14,7 @@ python tools/act0_smoke.py --pass 8f4b5d --note "took ~2s, came up behind me"
 python tools/act0_smoke.py --fail 8f4b5d --note "never showed"
 ```
 
-**1 of 31 passed, 1 FAILED.**
+**3 of 31 passed, 3 FAILED.**
 
 ---
 
@@ -22,14 +22,22 @@ python tools/act0_smoke.py --fail 8f4b5d --note "never showed"
 
 | | # | id | what to look for | how |
 |---|---|---|---|---|
-|   | 1 | `59aa07` | a fresh player sees the title card type itself out, and NOTHING else | /opening reset then relog |
-|   | 2 | `9307b2` | the card is legible, clear of the crosshair and the Seasons HUD | watch it - the fade is half the question, a screenshot cannot answer it |
-| OK | 3 | `96a2c8` | a book titled Journal is in the inventory, and it opens | /opening journal |
-|   | 4 | `cfdae5` | the journal holds all 18 sentences and reads as one piece | open it and read to the end |
-|   | 5 | `700278` | reaching a beat fires a toast, and the Act 0 tab renders with icons | /story reach the_caves |
+| OK | 1 | `59aa07` | a fresh player sees the title card type itself out, and NOTHING else | /opening reset then relog |
+| OK | 2 | `9307b2` | the card is legible, clear of the crosshair and the Seasons HUD | watch it - the fade is half the question, a screenshot cannot answer it |
+| X | 3 | `96a2c8` | a book titled Journal is in the inventory, and it opens | /opening journal |
+| OK | 4 | `cfdae5` | the journal holds all 18 sentences and reads as one piece | open it and read to the end |
+| X | 5 | `700278` | reaching a beat fires a toast, and the Act 0 tab renders with icons | /story reach the_caves |
 
-- **PASS** — Ethan, 2026-09-06 01:09: FIXED and proved live 2026-09-06: server answered 'Gave 1 [Journal] to Rehykt'. 18 sentences, 5 pages.
+- **PASS** — Ethan, 2026-09-06 01:15: title card types out, nothing else on screen
+  <br>a fresh player sees the title card type itself out, and NOTHING else
+- **PASS** — Ethan, 2026-09-06 01:15: legible and clear. Complaint: wants a FONT - it renders in vanilla type
+  <br>the card is legible, clear of the crosshair and the Seasons HUD
+- **FAIL** — Ethan, 2026-09-06 01:24: no journal in game: KubeJS give returned 0 (the same command works from rcon - likely a permission-level difference). SUPERSEDED - replaced by the Modonomicon journal, D-143
   <br>a book titled Journal is in the inventory, and it opens
+- **PASS** — Ethan, 2026-09-06 01:15: all 18 sentences read as one piece across 5 pages
+  <br>the journal holds all 18 sentences and reads as one piece
+- **FAIL** — Ethan, 2026-09-06 01:15: C:/Program Files/Git/story reach the_caves gives an error
+  <br>reaching a beat fires a toast, and the Act 0 tab renders with icons
 
 ## Ank arrives
 

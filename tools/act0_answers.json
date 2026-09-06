@@ -6,25 +6,67 @@
   "when": "2026-09-06 00:59",
   "who": "Ethan"
  },
- "96a2c8": {
-  "note": "FIXED and proved live 2026-09-06: server answered 'Gave 1 [Journal] to Rehykt'. 18 sentences, 5 pages.",
+ "59aa07": {
+  "note": "title card types out, nothing else on screen",
   "state": "pass",
+  "what": "a fresh player sees the title card type itself out, and NOTHING else",
+  "when": "2026-09-06 01:15",
+  "who": "Ethan"
+ },
+ "700278": {
+  "note": "C:/Program Files/Git/story reach the_caves gives an error",
+  "state": "fail",
+  "what": "reaching a beat fires a toast, and the Act 0 tab renders with icons",
+  "when": "2026-09-06 01:15",
+  "who": "Ethan"
+ },
+ "9307b2": {
+  "note": "legible and clear. Complaint: wants a FONT - it renders in vanilla type",
+  "state": "pass",
+  "what": "the card is legible, clear of the crosshair and the Seasons HUD",
+  "when": "2026-09-06 01:15",
+  "who": "Ethan"
+ },
+ "93e01e": {
+  "note": "answered by the playtest step \"reaching a beat fires a toast\" - C:/Program Files/Git/story reach the_caves gives an error",
+  "state": "fail",
+  "what": "a toast fires and the Act 0 tab renders with the right icons",
+  "when": "2026-09-06 01:15",
+  "who": "Ethan"
+ },
+ "96a2c8": {
+  "note": "no journal in game: KubeJS give returned 0 (the same command works from rcon - likely a permission-level difference). SUPERSEDED - replaced by the Modonomicon journal, D-143",
+  "state": "fail",
   "what": "a book titled Journal is in the inventory, and it opens",
-  "when": "2026-09-06 01:09",
+  "when": "2026-09-06 01:24",
   "who": "Ethan"
  },
  "_totals": {
-  "failed": 1,
+  "failed": 3,
   "markers": 8,
-  "passed": 1,
+  "passed": 3,
   "script": 23,
-  "when": "2026-09-06 01:09"
+  "when": "2026-09-06 01:24"
+ },
+ "cfdae5": {
+  "note": "all 18 sentences read as one piece across 5 pages",
+  "state": "pass",
+  "what": "the journal holds all 18 sentences and reads as one piece",
+  "when": "2026-09-06 01:15",
+  "who": "Ethan"
+ },
+ "e06eb7": {
+  "note": "answered by the playtest step \"the card is legible, clear of the crosshair\" - legible and clear. Complaint: wants a FONT - it renders in vanilla type",
+  "state": "pass",
+  "what": "the card is legible, clear of the Seasons HUD and the crosshair",
+  "when": "2026-09-06 01:15",
+  "who": "Ethan"
  },
  "f18780": {
-  "note": "answered by the playtest step \"a book titled Journal is in the inventory\" - FIXED and proved live 2026-09-06: server answered 'Gave 1 [Journal] to Rehykt'. 18 sentences, 5 pages.",
-  "state": "pass",
+  "note": "answered by the playtest step \"a book titled Journal is in the inventory\" - no journal in game: KubeJS give returned 0 (the same command works from rcon - likely a permission-level difference). SUPERSEDED - replaced by the Modonomicon journal, D-143",
+  "state": "fail",
   "what": "the journal actually appears in the inventory, titled Journal, readable",
-  "when": "2026-09-06 01:09",
+  "when": "2026-09-06 01:24",
   "who": "Ethan"
  }
 }
