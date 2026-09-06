@@ -1,0 +1,23 @@
+{
+  "name": "How I Got Here",
+  "category": "patchouli:entries",
+  "icon": "minecraft:written_book",
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "The Road",
+      "text": "You were a traveler, Traveling from a distant land, you picked up your life an set off.$(br2)A life of adventure before you.$(br2)You contracted a mysterious plague, forced to take refuge in nearby village.$(br2)You felt the life sapping from you, your strength fading."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Seventh Night",
+      "text": "It was that 7th night when a mysterious woman arrived in town.$(br2)Her hairs as white as snow.$(br2)Her eyes, like azure and ruby gemstones.$(br2)She tended to your dying body, caring for your sickness.$(br2)She spoke no words.$(br2)Made no sounds.$(br2)She left the following morning."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Morning After",
+      "text": "Your mind races with confusion.$(br2)Who was that?$(br2)The world awaits you.$(br2)And life seems almost brighter.$(br2)You set off.$(br2)Adventure awaits.$(br2)Yours."
+    }
+  ]
+}

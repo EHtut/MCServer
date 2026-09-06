@@ -1,6 +1,6 @@
 {
   "name": "Controls",
-  "category": "patchouli:playing",
+  "category": "patchouli:learned",
   "icon": "minecraft:lever",
   "priority": true,
   "pages": [

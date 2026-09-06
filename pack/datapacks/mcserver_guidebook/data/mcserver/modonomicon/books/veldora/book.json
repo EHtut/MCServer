@@ -1,6 +1,0 @@
-{
- "name": "My Journal",
- "tooltip": "What happened, who I met, and what it cost to find out.",
- "generate_book_item": true,
- "model": "modonomicon:modonomicon_purple"
-}

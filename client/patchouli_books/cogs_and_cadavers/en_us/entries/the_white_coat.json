@@ -1,0 +1,13 @@
+{
+  "name": "The Woman in the White Coat",
+  "category": "patchouli:people",
+  "icon": "minecraft:white_wool",
+  "advancement": "mcserver:act0/the_white_coat",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "The Woman in the White Coat",
+      "text": "She came on the seventh night, when I was dying, and she did not say one word the whole time.$(br2)She was gone by morning.$(br2)$(italic)I have never been able to decide whether she was a doctor.$()"
+    }
+  ]
+}

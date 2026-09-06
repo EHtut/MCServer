@@ -61,32 +61,135 @@ BOOK = {
     "i18n": False,
 }
 
+
+def origin_sentences():
+    """Ethan's origin, read from opening_lines.js rather than copied in.
+
+    ONE SOURCE. The opening types the title card and the journal holds the words; if the
+    text lived in two files, editing the opening would leave the journal telling an older
+    version of his story, and nothing would report it.
+    """
+    f = pathlib.Path(__file__).resolve().parent.parent / "pack" / "kubejs" /         "server_scripts" / "opening_lines.js"
+    t = f.read_text(encoding="utf-8")
+    a = t.index("var SENTENCES = [")
+    b = t.index("]", a)
+    out = []
+    for ln in t[a:b].splitlines()[1:]:
+        ln = ln.strip()
+        if ln:
+            out.append(ln.rstrip(",").strip('"'))
+    if not out:
+        raise SystemExit("no sentences in opening_lines.js - has it been regenerated?")
+    return out
+
+
+ORIGIN = origin_sentences()
+
+# ── THE FOUR SECTIONS ──────────────────────────────────────────────────────
+# Ethan, 2026-09-06: "clear it and section it into Journal entries / People /
+# World / Manual", and "Im struggling with words so you can improve the above
+# the categories with something that would make sense to exist in a journal."
+#
+# So they are written as the PLAYER'S OWN journal rather than as a wiki:
+#
+#   Journal entries -> Entries                what happened, in order
+#   People          -> Those I Have Met       only who you have actually met
+#   World           -> This Land
+#   Manual          -> Things I Have Learned  a journal has no "manual" section
+#
+# The last one carries the argument. A journal does not contain a manual - it
+# contains what the writer worked out the hard way, which is exactly what that
+# section is: sneak is CTRL, nothing spawns above y40, your corpse keeps your
+# gear. Written as lessons they read as the character's, not the developer's.
+#
+# THIS IS THE BOOK HE MEANS BY "THE JOURNAL". It is Patchouli, it is a BUTTON IN
+# THE INVENTORY SCREEN rather than an item, and it is the one he actually uses.
+# A Modonomicon copy of all this was built on 2026-09-06 and DELETED the same
+# hour - Ethan: "we do not use modnomicon for anything on our side. it is pure
+# dependency." See docs/WORDS.md.
 CATEGORIES = {
-    "the_world": {
-        "name": "How This World Works",
-        "description": "The rules this pack changed. Read this one first.",
-        "icon": "minecraft:compass",
+    "entries": {
+        "name": "Entries",
+        "description": "What happened, in the order it happened to me.",
+        "icon": "minecraft:writable_book",
         "sortnum": 0,
     },
-    "the_depths": {
-        "name": "The Depths",
-        "description": "Why anyone would go down there.",
-        "icon": "minecraft:deepslate",
+    "people": {
+        "name": "Those I Have Met",
+        "description": "Names and faces. Only the ones I have actually met.",
+        "icon": "minecraft:player_head",
         "sortnum": 1,
     },
-    "playing": {
-        "name": "Playing",
-        "description": "Controls, combat and making the game look good.",
-        "icon": "minecraft:iron_sword",
+    "land": {
+        "name": "This Land",
+        "description": "Where I am, and what is under it.",
+        "icon": "minecraft:grass_block",
         "sortnum": 2,
+    },
+    "learned": {
+        "name": "Things I Have Learned",
+        "description": "Usually the hard way.",
+        "icon": "minecraft:lantern",
+        "sortnum": 3,
     },
 }
 
 ENTRIES = {
+    # ------------------------------------------------------------- entries
+    "how_i_got_here": {
+        "name": "How I Got Here",
+        "category": "patchouli:entries",
+        "icon": "minecraft:written_book",
+        "priority": True,
+        "pages": [
+            {"type": "patchouli:text", "title": "The Road",
+             "text": "$(br2)".join(ORIGIN[:4])},
+            {"type": "patchouli:text", "title": "The Seventh Night",
+             "text": "$(br2)".join(ORIGIN[4:11])},
+            {"type": "patchouli:text", "title": "The Morning After",
+             "text": "$(br2)".join(ORIGIN[11:])},
+        ],
+    },
+
+    # -------------------------------------------------------------- people
+    # LOCKED UNTIL YOU HAVE ACTUALLY MET THEM. Patchouli hides an entry whose
+    # `advancement` the player has not earned, and story.js already grants these
+    # nine beats - so the section is a RECORD rather than a cast list, with no
+    # new machinery. NEEDS-GAME: whether Patchouli hides or greys a locked entry.
+    "ank": {
+        "name": "Ank",
+        "category": "patchouli:people",
+        "icon": "minecraft:iron_pickaxe",
+        "advancement": "mcserver:act0/ank",
+        "pages": [
+            {"type": "patchouli:text", "title": "Ank",
+             "text": "He was waiting in the upper caves, which is a strange place to "
+                     "wait.$(br2)He says the deep is dangerous, that there have been rock "
+                     "slides, that as $(o)sheriff$() my safety is his business.$(br2)He will "
+                     "trade me almost anything to keep me above ground, and his prices make "
+                     "no sense."},
+            {"type": "patchouli:text",
+             "text": "A man that keen to sell me a reason to stay is a man with a reason "
+                     "of his own.$(br2)I have not worked out what it is yet."},
+        ],
+    },
+    "the_white_coat": {
+        "name": "The Woman in the White Coat",
+        "category": "patchouli:people",
+        "icon": "minecraft:white_wool",
+        "advancement": "mcserver:act0/the_white_coat",
+        "pages": [
+            {"type": "patchouli:text", "title": "The Woman in the White Coat",
+             "text": "She came on the seventh night, when I was dying, and she did not say "
+                     "one word the whole time.$(br2)She was gone by morning.$(br2)"
+                     "$(italic)I have never been able to decide whether she was a doctor.$()"},
+        ],
+    },
+
     # ---------------------------------------------------------------- world
     "the_surface_is_safe": {
         "name": "The Surface Is Safe",
-        "category": "patchouli:the_world",
+        "category": "patchouli:learned",
         "icon": "minecraft:grass_block",
         "priority": True,
         "pages": [
@@ -110,7 +213,7 @@ ENTRIES = {
     },
     "dying": {
         "name": "Dying",
-        "category": "patchouli:the_world",
+        "category": "patchouli:learned",
         "icon": "minecraft:skeleton_skull",
         "pages": [
             {"type": "patchouli:text", "title": "You Keep Going",
@@ -128,7 +231,7 @@ ENTRIES = {
     },
     "the_horror": {
         "name": "Things That Are Not Bugs",
-        "category": "patchouli:the_world",
+        "category": "patchouli:learned",
         "icon": "minecraft:soul_lantern",
         "pages": [
             {"type": "patchouli:text", "title": "It Is Supposed To Do That",
@@ -147,7 +250,7 @@ ENTRIES = {
     # --------------------------------------------------------------- depths
     "why_go_down": {
         "name": "Why Go Down",
-        "category": "patchouli:the_depths",
+        "category": "patchouli:land",
         "icon": "minecraft:diamond",
         "priority": True,
         "pages": [
@@ -165,7 +268,7 @@ ENTRIES = {
     },
     "gunpowder": {
         "name": "Gunpowder And Guns",
-        "category": "patchouli:the_depths",
+        "category": "patchouli:land",
         "icon": "minecraft:gunpowder",
         "pages": [
             {"type": "patchouli:text", "title": "It Is Not Up Here",
@@ -183,7 +286,7 @@ ENTRIES = {
     # -------------------------------------------------------------- playing
     "controls": {
         "name": "Controls",
-        "category": "patchouli:playing",
+        "category": "patchouli:learned",
         "icon": "minecraft:lever",
         "priority": True,
         "pages": [
@@ -201,7 +304,7 @@ ENTRIES = {
     },
     "making_it_pretty": {
         "name": "Making It Look Good",
-        "category": "patchouli:playing",
+        "category": "patchouli:learned",
         "icon": "minecraft:glowstone",
         "pages": [
             {"type": "patchouli:text", "title": "Already Installed, Switched Off",
