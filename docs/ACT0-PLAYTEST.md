@@ -14,7 +14,7 @@ python tools/act0_smoke.py --pass 8f4b5d --note "took ~2s, came up behind me"
 python tools/act0_smoke.py --fail 8f4b5d --note "never showed"
 ```
 
-**7 of 33 passed, 1 FAILED.**
+**7 of 38 passed.**
 
 ---
 
@@ -49,60 +49,62 @@ python tools/act0_smoke.py --fail 8f4b5d --note "never showed"
 
 | | # | id | what to look for | how |
 |---|---|---|---|---|
-|   | 8 | `8f4b5d` | he spawns when you enter a cave, without you doing anything | walk into the upper caves and wait up to 2s |
-|   | 9 | `416968` | he wears his own skin, not a missing-texture check pattern | look at him. F3+T first if you suspect the client cache |
-|   | 10 | `95982d` | he follows you around the cave | walk 20 blocks and look back |
-|   | 11 | `e7acb4` | he survives being hit - a player cannot kill him | hit him repeatedly with the best weapon you have |
-|   | 12 | `847a90` | /kill on him REMOVES him - if it does not, the despawn path is broken and needs `easy_npc despawn` instead | /kill @e[tag=veldora_ank] then look for him |
+|   | 8 | `7fcfaf` | /ank spawn puts a body in front of you | /ank spawn - it prints what it ran and what came back |
+|   | 9 | `b36cd0` | ...and if it fails, the tab-completion says why | /easy_npc preset import_new data - is arkhdottir/ank_t0 offered? |
+|   | 10 | `d12784` | he spawns on his own when you enter a cave, without doing anything | walk into the upper caves and wait up to 2s |
+|   | 11 | `3bcd8d` | he does NOT spawn indoors - a house is not a cave | stand inside a building at surface level and wait |
+|   | 12 | `416968` | he wears his own skin, not a missing-texture check pattern | look at him. F3+T first if you suspect the client cache |
+|   | 13 | `95982d` | he follows you around the cave | walk 20 blocks and look back |
+|   | 14 | `e7acb4` | he survives being hit - a player cannot kill him | hit him repeatedly with the best weapon you have |
+|   | 15 | `847a90` | /kill on him REMOVES him - if it does not, the despawn path is broken and needs `easy_npc despawn` instead | /kill @e[tag=veldora_ank] then look for him |
 
 ## Ank talks
 
 | | # | id | what to look for | how |
 |---|---|---|---|---|
-|   | 13 | `d348c3` | his greeting arrives in the CHAT BAR as <Ank>, like any person speaking | /ank greet 7 |
-|   | 14 | `d2061f` | a five-line day reads as somebody talking, not as a wall of text | /ank greet 7 and watch the pacing |
-|   | 15 | `4c9f75` | he greets ONCE a day - leaving and returning does not repeat it | go below -32, then come back up |
-|   | 16 | `99475c` | right-clicking him opens his dialogue with three options | right-click him |
-|   | 17 | `47aa8c` | picking "Its none of your business" gets the sheriff answer | the branch with three reply lines |
+|   | 16 | `d348c3` | his greeting arrives in the CHAT BAR as <Ank>, like any person speaking | /ank greet 7 |
+|   | 17 | `d2061f` | a five-line day reads as somebody talking, not as a wall of text | /ank greet 7 and watch the pacing |
+|   | 18 | `4c9f75` | he greets ONCE a day - leaving and returning does not repeat it | go below -32, then come back up |
+|   | 19 | `99475c` | right-clicking him opens his dialogue with three options | right-click him |
+|   | 20 | `47aa8c` | picking "Its none of your business" gets the sheriff answer | the branch with three reply lines |
 
 ## Ank trades
 
 | | # | id | what to look for | how |
 |---|---|---|---|---|
-|   | 18 | `2994c8` | the trade UI opens, and the price is wheat rather than emeralds | right-click him, or the trade button in his dialogue |
-|   | 19 | `1e6c3d` | a first-time player can actually afford the tier-0 trade | count the wheat it asks for against what a new player has |
-|   | 20 | `582a5d` | after descending, his next offer is visibly better | go below -32, come back, trade again |
+|   | 21 | `2994c8` | the trade UI opens, and the price is wheat rather than emeralds | right-click him, or the trade button in his dialogue |
+|   | 22 | `1e6c3d` | a first-time player can actually afford the tier-0 trade | count the wheat it asks for against what a new player has |
+|   | 23 | `582a5d` | after descending, his next offer is visibly better | go below -32, come back, trade again |
 
 ## Ank leaves
 
 | | # | id | what to look for | how |
 |---|---|---|---|---|
-|   | 21 | `3543e7` | going below -32 despawns him and prints "A chill runs up your spine." | dig down past the deep-works boundary |
-|   | 22 | `8608b7` | stepping into daylight does the same | walk out of the cave |
-| X | 23 | `1824c1` | bobbing on the boundary does NOT loop the chill | stand at y -31 and jump |
-|   | 24 | `1fe8f9` | the chill reads as coming from nobody, not from Ank | it is at the top of the screen; his own lines are in chat |
-
-- **FAIL** — Ethan, 2026-09-06 00:59: chill looped every ~10s for six minutes. Ank was spawning INSIDE the house - canSeeSky was the only underground test. FIXED, needs a re-test
-  <br>bobbing on the boundary does NOT loop the chill
+|   | 24 | `3543e7` | going below -32 despawns him and prints "A chill runs up your spine." | dig down past the deep-works boundary |
+|   | 25 | `8608b7` | stepping into daylight does the same | walk out of the cave |
+|   | 26 | `54b628` | bobbing on the -32 boundary does NOT loop the chill | stand at y -31 and jump |
+|   | 27 | `d2dd87` | ...and walking in and out of a doorway does not either | the dwell timer holds him 15s before the boundary may take him |
+|   | 28 | `ad0b7d` | ...and if it does fire twice, the second one is SILENT | the line has a 60s floor; the log says despawned-quiet |
+|   | 29 | `1fe8f9` | the chill reads as coming from nobody, not from Ank | it is at the top of the screen; his own lines are in chat |
 
 ## the urge
 
 | | # | id | what to look for | how |
 |---|---|---|---|---|
-|   | 25 | `43ff11` | a day spent out of the deep produces an urge line | sleep through a day topside. The pools are EMPTY until Ethan writes them |
+|   | 30 | `43ff11` | a day spent out of the deep produces an urge line | sleep through a day topside. The pools are EMPTY until Ethan writes them |
 
 ## the code's own claims (NEEDS-GAME markers)
 
 | | # | id | what to look for | how |
 |---|---|---|---|---|
-|   | 26 | `1546cd` | align actually left-aligns - the mod may ignore it like maxWidth | /im test |
-|   | 27 | `2ec286` | ON_DISTANCE_NEAR fires without a click, and at what range | walk up to Ank |
-|   | 28 | `89a104` | an ADVANCEMENT condition reads our mcserver:act0 tree | /story reach the_caves then talk to him |
-|   | 29 | `f02007` | SET_OPACITY actually fades rather than snapping | /easy_npc dialog test |
-|   | 30 | `3bda20` | a preset we ship under data/easy_npc/preset is found at all, and under WHICH of the two paths | /easy_npc preset import_new then tab-complete |
-|   | 31 | `0647c3` | FOLLOW_PLAYER targets the nearest player without TargetPlayerName | /easy_npc objective set follow |
-|   | 32 | `d08ae3` | Invulnerable:1b survives void and /kill, not just damage | /kill @e[type=easy_npc:humanoid] |
-|   | 33 | `f2cd20` | removing the follow objective stops an NPC already following | /easy_npc objective remove |
+|   | 31 | `1546cd` | align actually left-aligns - the mod may ignore it like maxWidth | /im test |
+|   | 32 | `2ec286` | ON_DISTANCE_NEAR fires without a click, and at what range | walk up to Ank |
+|   | 33 | `89a104` | an ADVANCEMENT condition reads our mcserver:act0 tree | /story reach the_caves then talk to him |
+|   | 34 | `f02007` | SET_OPACITY actually fades rather than snapping | /easy_npc dialog test |
+|   | 35 | `3bda20` | a preset we ship under data/easy_npc/preset is found at all, and under WHICH of the two paths | /easy_npc preset import_new then tab-complete |
+|   | 36 | `0647c3` | FOLLOW_PLAYER targets the nearest player without TargetPlayerName | /easy_npc objective set follow |
+|   | 37 | `d08ae3` | Invulnerable:1b survives void and /kill, not just damage | /kill @e[type=easy_npc:humanoid] |
+|   | 38 | `f2cd20` | removing the follow objective stops an NPC already following | /easy_npc objective remove |
 
 ---
 

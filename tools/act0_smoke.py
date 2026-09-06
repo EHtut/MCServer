@@ -418,8 +418,21 @@ SCRIPT = [
          '/story reach the_caves'),
     ]),
     ('Ank arrives', [
-        ('he spawns when you enter a cave, without you doing anything',
+        # ⭐ THIS IS THE GATE, AND IT GOES FIRST. Until 2026-09-06 ank.js ran
+        # `easy_npc spawn <preset>`, which is not a command - /easy_npc spawn takes the
+        # UUID of an already-despawned NPC. Ank had NEVER EXISTED in the world, and every
+        # item below it was untestable while reading as merely unanswered.
+        ('/ank spawn puts a body in front of you',
+         '/ank spawn - it prints what it ran and what came back'),
+        ('...and if it fails, the tab-completion says why',
+         '/easy_npc preset import_new data - is arkhdottir/ank_t0 offered?'),
+        ('he spawns on his own when you enter a cave, without doing anything',
          'walk into the upper caves and wait up to 2s'),
+        # 🔴 THE REGRESSION HE HIT. canSeeSky was the only underground test, so a ROOF
+        # counted as a cave: Ank spawned in his kitchen and the chill looped for six
+        # minutes. Cover is counted now - a roof is 1-2 blocks, a cave is tens.
+        ('he does NOT spawn indoors - a house is not a cave',
+         'stand inside a building at surface level and wait'),
         ('he wears his own skin, not a missing-texture check pattern',
          'look at him. F3+T first if you suspect the client cache'),
         ('he follows you around the cave',
@@ -460,8 +473,12 @@ SCRIPT = [
          'dig down past the deep-works boundary'),
         ('stepping into daylight does the same',
          'walk out of the cave'),
-        ('bobbing on the boundary does NOT loop the chill',
+        ('bobbing on the -32 boundary does NOT loop the chill',
          'stand at y -31 and jump'),
+        ('...and walking in and out of a doorway does not either',
+         'the dwell timer holds him 15s before the boundary may take him'),
+        ('...and if it does fire twice, the second one is SILENT',
+         'the line has a 60s floor; the log says despawned-quiet'),
         ('the chill reads as coming from nobody, not from Ank',
          'it is at the top of the screen; his own lines are in chat'),
     ]),
