@@ -25,6 +25,8 @@ History → **git**, never a doc. Design → the one doc that owns that subject.
 
 ## ② THE ESTATE
 
+⭐ **`ACT0.md` is the live front.** It is the doc being built from right now.
+
 ### Read these first
 
 | doc | answers |
@@ -60,7 +62,7 @@ not lore.
 | `74-THE-WAVES-AND-THE-LADDER.md` | the tide's composition, as shipped |
 | `75-THE-SCREEN-AS-A-STAGE.md` | placement as characterisation |
 | `77-THE-TONE-PASS.md` | tone, counted rather than felt |
-| `78-THE-OPENING.md` | Act 0's opening. ⚠️ **still marked DRAFT while `opening.js` shipped from it** |
+| **`ACT0.md`** | **the live front** — the whole Act 0 arc, what is built, and the chunk ledger |
 | `76-THE-BACKLOG.md` | the work register — who holds what |
 
 ### Reference — how to work, not the work

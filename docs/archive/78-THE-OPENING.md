@@ -1,3 +1,16 @@
+> ⛔ **ARCHIVED 2026-09-05 — SUPERSEDED BY `docs/ACT0.md`.** This doc only ever covered
+> the first beat of Act 0; the act now owns a doc of its own, with the whole arc and a
+> chunk ledger.
+>
+> **HOLDS:** the original arc in Ethan's framing, the ruling that the doctor is Alice and
+> must never be named, and §5's ruling that depth-death is the ONLY route to a path —
+> which is still unimplemented and is carried forward as ACT0 chunk A2.
+>
+> ⚠️ Its §6 (the randomised life) was CUT 2026-09-05, and its DRAFT banner was false for
+> the whole of its life. ⛔ Read `ACT0.md` instead.
+
+---
+
 # 78 — The Opening: a person, a plague, a doctor, and the death that makes you eligible
 
 > **STATUS: DRAFT — design only, zero code.** Ethan, 2026-08-30, after closing the

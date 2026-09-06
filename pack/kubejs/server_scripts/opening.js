@@ -1,7 +1,7 @@
 // opening.js — the cutscene a player gets once, before they are anybody's champion.
 //
 // Ethan's words are `docs/dialogue/Player intros.txt` -> opening_lines.js (generated).
-// The design is `docs/78-THE-OPENING.md`.
+// The design is `docs/ACT0.md`.
 //
 // ── ⚠️ NOT introductions.js ─────────────────────────────────────────────────
 // That file is the GOD-OFFER scenes: a patron asks, and you accept or refuse. This is the

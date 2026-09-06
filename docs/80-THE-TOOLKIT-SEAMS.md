@@ -235,7 +235,7 @@ interval arithmetic is already general and correct; only the numbers are local.
 | `00-DESIGN.md` | The design thesis; re-frame audience as one player, acts as structure. |
 | `11-OPEN-DECISIONS.md` | Several decisions were about multiplayer and are now moot. |
 | `21-THE-SIX-ROLES.md`, `23-THE-PATH-SYSTEM.md`, `17-PATHS-TO-POWER.md` | Paths assume champions of *different* gods coexisting; single-player makes them sequential, not parallel. |
-| `26-INTRODUCTIONS.md` | Superseded in part by `78-THE-OPENING.md` and last night's work. |
+| `26-INTRODUCTIONS.md` | Superseded in part by `ACT0.md` and last night's work. |
 | `79-THE-CONTROLS-AUDIT.md` | Already carries its own corrections; the shipping question ("send to all four") is moot. |
 
 ## Keep — mention other players incidentally, still accurate
