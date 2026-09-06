@@ -23,10 +23,15 @@ anyway. Every beat is somebody trying to stop you, which is what makes the endin
 act is unbuilt** — Ank does not exist in any form, the argument does not exist, and there is
 no act state machine at all.
 
-**The next chunk is B1, ANK EXISTS.** Nothing else can start: he is the first thing the player
-meets, half of the argument that is the act's spine, and today he is *two mentions in other
-characters' dialogue* and nothing more. **Falsifier:** he is a registered speaker who can be
-heard in game — not a name someone else says.
+**B1 is built and B2 is next.** Ank exists as an Easy NPC preset — unkillable, following,
+wearing his own skin — plus the band he lives in: **underground, above y −32**, leaving when
+you surface or go deeper, with *"A chill runs up your spine."* ⚠️ Proven offline only; he has
+never been spawned. **Next is B2, Ank stops you** — he currently *accompanies* the player
+rather than arguing them out of descending.
+
+🔑 **The band boundary is −32**, and it is not a number I chose: `help.js` already tells the
+player *"0 to -32 the old diggings · -32 to -52 the deep works"*, so the game had committed
+to it. Say if the deep works are too shallow a place for him to give up.
 
 **🔴 What needs Ethan.** Three, all cheap to answer and all blocking something:
 **(a)** Does the doctor's gift survive? The old arc had a buff granted in the opening and lost
@@ -122,7 +127,8 @@ She has no dialogue at all in the opening, so there is nothing to leak.
 
 | | chunk | what changes | falsifier |
 |---|---|---|---|
-| **B1** | 🔜 **Ank exists** | a speaker with pools, a presence, a place | he is registered and can be heard. Today he is **two mentions in other characters' mouths** and nothing else |
+| **B1** | ✅ **Ank exists** | an Easy NPC preset — unkillable, follows you, wears his own skin. Plus the band he lives in | `ank_harness` 35/35. The preset carries `Invulnerable:1b`, `FOLLOW_PLAYER` and no attack objective; the band is asserted by sky **and** depth. ⚠️ Only the game can prove he spawns |
+| **B1b** | 🔜 **He leaves, with the line** | out of the band → despawn + *"A chill runs up your spine."* | fires on surfacing **and** on going below −32, once each, and **not** on a two-block bob at the boundary |
 | **B2** | ⬜ **Ank stops you** | he intercepts the player at a cave mouth and argues them out of descending | a player heading down is met. One who stays above ground is not |
 | **B3** | ⬜ **Ank trades** | he offers something worth staying up for | the offer is *taken* often enough to be a real choice, not a speed bump |
 | **B4** | ⬜ **The cave is peaceful** | hostiles suppressed in the Act 0 band for the seven days | a player can sit in a cave on day 3 and not be attacked |

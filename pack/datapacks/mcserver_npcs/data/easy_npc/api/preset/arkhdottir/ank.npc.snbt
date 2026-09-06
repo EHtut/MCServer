@@ -1,0 +1,47 @@
+{
+  PresetMetadata:{
+    access:"PUBLIC",
+    author:"Rehykt",
+    category:"Arkhdottir",
+    created:1,
+    description:"Act 0",
+    entityTypeId:"easy_npc:humanoid",
+    modified:1,
+    name:"Ank",
+    variantType:"STEVE",
+    version:"1.0.0"
+  },
+  data:{
+    CustomName:"{\"text\":\"Ank\"}",
+    CustomNameVisible:0b,
+    EasyNPCVersion:3,
+    Invulnerable:1b,
+    CanPickUpLoot:0b,
+    PersistenceRequired:1b,
+    ObjectiveData:{
+      ObjectiveDataSet:[
+        {
+          Type:"FOLLOW_PLAYER",
+          StartDistance:16,
+          StopDistance:3,
+          SpeedModifier:1f
+        },
+        {
+          Type:"LOOK_AT_PLAYER"
+        },
+        {
+          Type:"LOOK_AT_RESET"
+        }
+      ]
+    },
+    SkinData:{
+      Type:"RESOURCE_LOCATION",
+      Texture:"veldora:textures/entity/ank.png"
+    },
+    Status:{
+      finalized:1b
+    },
+    VariantType:"STEVE",
+    id:"easy_npc:humanoid"
+  }
+}
