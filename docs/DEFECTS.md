@@ -1679,3 +1679,124 @@ see.
 | **widen the fonts** | ship TTFs covering the substitution set | keeps both; needs font work **and a client rebuild**, which is the expensive one |
 
 ⛔ **None of them was needed.** The right answer was the fourth option nobody listed: delete the system. ⭐ Worth keeping as a worked example of the failure — I offered a menu of fixes for a feature whose existence was the defect, and the menu made the wrong question look like the only question.
+
+---
+
+## D-148 — 53 chat sends from things with no body ⬜ OPEN, needs triage
+
+`tools/gods_in_chat_check.js`, rewritten 2026-09-06 after the first version was found
+vacuous, reports **53 chat sends across 14 files** that are not a physically present
+character and not operator output.
+
+| file | sends | what it is |
+|---|---|---|
+| `tide.js` | 10 | the tide talking |
+| `paths.js` | 10 | patron entry lines, book-giving output |
+| `stalker.js` | 9 | the stalker |
+| `fall.js` | 7 | "You have lost… Your levels are gone." |
+| `ritual.js` | 5 | the patron channel |
+| `chosen.js` | 2 | *"Something has noticed you."* — a god announcing itself |
+| `forge_talk.js` | 2 | **Milantros speaking** |
+| `salvage.js` | 2 | |
+| `blade_events.js`, `help.js`, `introductions.js`, `release.js`, `salvage_events.js`, `voice.js` | 1 each | |
+
+⛔ **NOT FIXED, DELIBERATELY.** That is fourteen systems against a rule that is one day old,
+and rewriting them overnight while Ethan slept is the exact shape of how this project
+accumulated the work he now wants removed. **The triage is his.**
+
+### Three questions decide most of it
+
+1. **Is narration a violation?** `fall.js` says *"Your levels are gone. You walk no path."*
+   That is nobody speaking — the player's own experience. The rule names *characters*; it
+   does not say where narration goes. ⭐ Everything the chill does already goes to the
+   overlay, which suggests narration should too.
+2. **Do system notices count?** `paths.js` printing *"Reading, for the road:"* when it hands
+   you books is closer to a receipt than to speech.
+3. **What happens to the systems that would go silent?** `forge_talk.js` and `art_deal.js`
+   route through `voice.chat()`, which is pinned to `return false` — so those are ALREADY
+   silent (see D-149). Moving them to the overlay would make them speak for the first time.
+
+⚠️ **`run_all.js` carries this as KNOWN_RED** so the debt prints every run with this id
+without turning the suite red — a suite that is red on arrival is one nobody reads. ⛔ Remove
+that entry the moment this is triaged; a known-failing note that has been fixed is the next
+stale claim.
+
+---
+
+## D-149 — three systems are silent, and their boot banners say they are live ⬜ OPEN
+
+Found by the audit's rules lens. `voice.chat()` is pinned to `return false` (`CHAT_COPY`
+was and is off), **but it is still the ONLY output route for**:
+
+- **`forge_talk.js`** — Milantros' entire charm conversation. `say()` routes only to
+  `voice.chat`, so she has never said any of it.
+- **`art_deal.js`** — Kayer's deal **wipes every XP level the player has** and then says
+  nothing, because the confirmation goes the same way.
+
+🚨 **And three boot banners claim these systems are live and speaking.** `art_deal.js:271`
+and `reckoning.js:313-316` among them. This project has now caught **eleven** lying banners,
+and the rule is written in CLAUDE.md §7: *a banner is a claim, not evidence.*
+
+🔑 **The XP wipe is the part that matters.** A system that silently takes every level a
+player has is one bug away from the standing rule *"never take items from players — that is
+how you cause them to quit."* It is not the same thing, but it is the same feeling.
+
+---
+
+## D-150 — Crown was retired on 2026-08-14 and is still a claimable god ⬜ OPEN, needs a ruling
+
+`/path crown` works today. `paths.js:321` still carries his full entry — name, blurb, drop
+table — and `paths.js:460`'s CLOSED table lists only `salvage`.
+
+⚠️ **And he has no voice.** `warn.js:86` states it plainly: *"CROWN HAS NO VOICE OF ITS OWN…
+there is no crown_voice.js and no crown pools."* So a player who picks Crown gets **Wall's
+voice under a retired name**.
+
+🔴 **Four places in the code promise this is handled "at the world reset"** —
+`coefficients.js:153`, `counters.js:38`, `blade_events.js:93`, `tools/new_god.py:53`. The
+reset gate, `tools/reset_preflight.py`, **has no Crown check at all** (`grep -i crown`
+returns nothing). So the reset would silently leave him in, and four comments would go on
+promising otherwise.
+
+⭐ **The fix is two lines** — add `crown` to CLOSED, add a Crown check to the reset gate —
+but it changes what a player can do, so it is his call and not an inference.
+
+⬜ **Still shipping as Crown CONTENT beyond the alias:** a drop table, a hint pool, whisper
+and regard pools, and a line in `patron_sound.js`.
+
+---
+
+## D-151 — retired systems still loading on the live server ⬜ OPEN, needs a ruling
+
+The audit found roughly **2,250 lines retired on 2026-08-15** still in the tree and still
+loading three weeks later — `stalker.js` (1,933 lines) chief among them, plus `whispers.js`.
+And `cutscene.js`: **221 lines with no caller anywhere in the pack**, a general "cutscene
+tool" facade written while the opening cutscene was being cut.
+
+⚠️ **`cutscene.js` is the one I would keep.** Ethan asked on 2026-09-05 to *"fix the cutscene
+machinery because it will be used alot"* — so it is unbuilt-for, not dead. ⛔ The other
+retirements are exactly the "unnecessary or outdated work" he asked to have removed, and
+each is a separate decision about whether the content ever comes back.
+
+**Also unreachable by construction**, per the audit: the whole release/fall system (every
+god is `mode:'never'`), and `spawn_pressure.js`'s natural-spawn suppression branch plus the
+`/pressure` readout describing it — because **no coefficient may sit below 1**, which is
+Ethan's own standing rule, so the branch can never be entered.
+
+---
+
+## D-152 — the audit itself is incomplete ⚠️ OPEN
+
+Five lenses were launched; **two finished** (axed-but-here, standing-rules) and three did
+not — `fragile`, `docrot` and `shadow` all died on a session limit.
+
+🔑 **Recorded because "we audited it" is exactly the kind of claim that rots.** Three fifths
+of the tree has not been looked at by this pass:
+
+- **fragile** — a fourth invented KubeJS API, swallowed failures, callbacks firing after
+  their subject is gone
+- **docrot** — the systematic doc-versus-code sweep
+- **shadow** — published APIs with no callers
+
+⭐ The two that completed found 31 confident findings, so the remaining three are likely to
+find a comparable number. ⛔ Do not read the list above as the whole picture.
