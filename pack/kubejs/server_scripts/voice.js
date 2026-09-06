@@ -1240,6 +1240,9 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // chat line land". Callers key off it - blade_events.js gates events on hasVoice/mute -
   // so the answer now comes from whether a line existed and was dispatched, which is what
   // the question always meant.
+  // ⛔ ALWAYS FALSE AND NOW UNREADABLE FROM OUTSIDE. GODS DO NOT USE THE CHAT - Ethan, 2026-09-06, in capitals. This was a GATE, and a gate someone can flip back is not gone. See CLAUDE.md rule A and tools/gods_in_chat_check.js.
+  // Kept as a constant only so the guard below still compiles; nothing may
+  // export it, and no caller may test it.
   var CHAT_COPY = false
 
   // ⭐⭐ THE ONE DOOR TO CHAT, and it exists because turning the chat copy off at two
@@ -1355,7 +1358,6 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // false for every line over 110 characters until 2026-08-30.
     beatFor: beatFor,
     draftSilenced: function () { return draftSilenced },
-    CHAT_COPY: CHAT_COPY,
     chat: chat,
     TYPE_CHARS_PER_SEC: TYPE_CHARS_PER_SEC,
     MIN_ON_SCREEN: MIN_ON_SCREEN,

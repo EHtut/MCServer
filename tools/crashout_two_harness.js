@@ -428,12 +428,31 @@ t('the crashout flat line is off the crosshair too', () => {
     'the loudest line in the game must not sit on the crosshair, got y=' + flat.y)
 })
 
-t('the chat copy is off', () => {
+t('the chat copy is GONE, not merely off', () => {
+  // Ethan said it twice, months apart:
+  //   2026-08-30  "We still have text in the chat bar. That should be gone by now."
+  //   2026-09-06  "GODS.DO.NOT.USE.THE.CHAT. ... WE DO NOT EVER USE THE CHAT UNLESS IT
+  //                IS A PHYSICALLY PRESENT CHARACTER"
+  //
+  // 🔴 THE FIRST TIME IT WAS FIXED WITH A FLAG, AND THIS TEST GUARDED THE FLAG'S VALUE.
+  // That is not the same thing. A `CHAT_COPY = false` with live call sites behind it is a
+  // switch, and a switch gets flipped - by a debug session, by a merge, by somebody
+  // reading the doc that justified it. It came back, and he found gods bickering in his
+  // chat bar six days later.
+  //
+  // ⭐ SO THE ASSERTION MOVED UP A LEVEL: the flag may not be reachable, and no call site
+  // may exist. There is nothing left to flip.
   const env = build()
   load(env, 'screen.js')
   load(env, 'voice.js')
-  assert(env.ctx.VELDORA.voice.CHAT_COPY === false,
-    'Ethan: "We still have text in the chat bar. That should be gone by now."')
+  assert(env.ctx.VELDORA.voice.CHAT_COPY === undefined,
+    'CHAT_COPY is still exported - it can be read, so it can be turned back on')
+
+  const bc = fs.readFileSync(path.join(SS, 'broadcast.js'), 'utf8')
+  assert(bc.indexOf('CHAT_COPY') === -1,
+    'broadcast.js still has a chat-copy branch to re-enable')
+  assert(!/\.tell\s*\([^)]*colourOf\s*\(/.test(bc),
+    "broadcast.js still sends a god's colour to chat")
 })
 
 t('⭐ the ENRAGED sound has a live consumer', () => {

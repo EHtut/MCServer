@@ -215,6 +215,52 @@ it go red, restore, and verify the restore byte-for-byte.
 
 ---
 
+## 🚨🚨 A. GODS DO NOT USE THE CHAT. EVER.
+
+> Ethan, 2026-09-06, in capitals, after finding god bickering in his chat bar:
+> *"GODS.DO.NOT.USE.THE.CHAT. GODS USE THE DIALOGUE SYSTEM ONLY. WE DO NOT EVER USE THE
+> CHAT UNLESS IT IS A PHYSICALLY PRESENT CHARACTER."*
+
+**The chat bar is for people who are STANDING THERE.** Ank is in the chat bar because Ank
+has a body you can walk up to. A god has no body, so a god has no business in the chat bar
+and never did.
+
+| speaker | surface |
+|---|---|
+| a **physically present character** — Ank, Caebrim in person | `p.tell(...)`, as `<Name> text` |
+| **a god, a patron, a tide, a whisper, anything without a body** | the **dialogue system** — Immersive Messages, via `voice.js` / `immersive.js` |
+
+⛔ **`p.tell()` in a god's code path is a defect**, regardless of how long it has been
+there or how well it tests. `tools/gods_in_chat_check.js` fails the build on it.
+
+---
+
+## 🚨🚨 B. NEW INSTRUCTIONS BEAT OLD DOCUMENTS. ALWAYS.
+
+> Ethan, 2026-09-06: *"you are overwriting my recent instructions with old documents.
+> everyting older than like 2-3 days are to be challenged regardless if built or not. New
+> instructions always take precendent. Always."*
+
+**A document is evidence of what was decided THEN. It is not permission to ignore what he
+said an hour ago.** This project has ~30 live docs and a large archive, and every one of
+them is a plausible-sounding reason to do the wrong thing.
+
+🔑 **The failure shape, exactly:** he gives an instruction; a doc written weeks earlier
+describes a system that contradicts it; the doc is detailed, argued and internally
+consistent; it wins. It should never win.
+
+⛔ **So: anything written more than 2–3 days ago is CHALLENGED, not cited** — built or not,
+shipped or not, however good the reasoning was at the time.
+
+- If a doc contradicts something he said recently, **he is right and the doc is stale.**
+  Fix the doc in the same session; do not "reconcile" them.
+- If a doc justifies a system he has just complained about, **that is not a defence of the
+  system.** It is an explanation of how it got there.
+- ⚠️ **"But it was ruled on 2026-08-15" is not an argument.** He rules again all the time,
+  and the newer ruling wins by definition.
+
+---
+
 ## Standing constraints from Ethan
 
 - **No coefficient below 1** — *"it should always be an increase."*

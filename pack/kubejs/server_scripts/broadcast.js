@@ -148,11 +148,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
             try {
               var ps = audience(server)
               for (var k = 0; k < ps.length; k++) {
-                // ⛔ CHAT COPY OFF (2026-08-30) - see voice.js CHAT_COPY. The overlay
-                // carries every god now, with their own place and font.
-                if (VELDORA.voice && VELDORA.voice.CHAT_COPY) {
-                  try { ps[k].tell(Text.of(colourOf(row.god) + row.text)) } catch (e) { }
-                }
+                // ⛔ NO CHAT. GODS DO NOT USE THE CHAT - Ethan, 2026-09-06, in capitals. This was a GATE, and a gate someone can flip back is not gone. See CLAUDE.md rule A and tools/gods_in_chat_check.js.
                 // ⭐ THE GODS ON SCREEN WHILE THEY BICKER. Ethan, 2026-08-30:
                 // *"during god bickering, the gods you aren't aligned to should be
                 // garbled."*
@@ -257,9 +253,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
               var ps = audience(server)
               for (var k = 0; k < ps.length; k++) {
                 for (var c = 0; c < turn.chunks.length; c++) {
-                  if (VELDORA.voice && VELDORA.voice.CHAT_COPY) {
-                    try { ps[k].tell(Text.of(colourOf(turn.god) + turn.chunks[c])) } catch (e) { }
-                  }
+                  // ⛔ NO CHAT. GODS DO NOT USE THE CHAT - Ethan, 2026-09-06, in capitals. This was a GATE, and a gate someone can flip back is not gone. See CLAUDE.md rule A and tools/gods_in_chat_check.js.
                 }
                 try {
                   // ⭐ Same garbling rule as `exchange`: readable to that god's own

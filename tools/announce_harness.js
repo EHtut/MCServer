@@ -463,7 +463,6 @@ grp('* THE GOD DIALOGUE PASS - 2026-08-30')
   // dialogue straight to chat and never reached a screen.
   const wh = code('whispers.js')
   const st = code('stalker.js')
-  const pl = code('pathless.js')
 
   ok('voice publishes an interior surface', /function aside\(player, s, opts\)/.test(vo2), true)
   ok('...which takes NO god, so it gets no colour or chime',
@@ -476,17 +475,20 @@ grp('* THE GOD DIALOGUE PASS - 2026-08-30')
     (st.match(/VELDORA\.voice\.aside\(player, line/g) || []).length, 2)
   ok('...and its RARE line stays brighter there too',
     /rare \? \{ color: '#FFFFFF'/.test(st), true)
-  ok('the pathless interior reaches the overlay',
-    (pl.match(/VELDORA\.voice\.aside\(p, _[fhb]\)/g) || []).length, 3)
-
-  // Gods overheard arguing ARE god dialogue, and this audience is pathless by
-  // definition - so both speakers garble.
-  ok('gods overheard arguing reach the overlay',
-    /\n\s*overheardOverlay\(p, a, opener\)/.test(pl), true)
-  ok('...both halves of the exchange, not just the opener',
-    /\n\s*overheardOverlay\(p, b, reply\)/.test(pl), true)
-  ok('...garbled unless that god is yours',
-    /mine \? null : \{ obfuscate: 'RANDOM' \}/.test(pl), true)
+  // pathless.js IS DELETED, AND SO ARE THE FOUR ASSERTIONS THAT LIVED HERE.
+  //
+  // They checked that the gods-overheard-arguing exchange reached the overlay, and that it
+  // was garbled for gods that are not yours. Every one of them PASSED, continuously, while
+  // the same system was ALSO sending those lines to the CHAT BAR - which is the thing
+  // Ethan actually saw, twice, months apart.
+  //
+  // THE ASSERTIONS WERE TRUE AND THE FEATURE WAS WRONG. They tested that the overlay copy
+  // existed; nothing tested that it was the ONLY copy. A test that confirms a surface is
+  // reached is not a test that another surface is not.
+  //
+  // Ethan, 2026-09-06: "It should be completely axed and gone, we are not readding it. Do
+  // not attempt to readd it." The replacement guard is tools/gods_in_chat_check.js, which
+  // asks the opposite question: does a god's colour reach chat ANYWHERE.
 
   // Ethan: "throw in test commands aswell."
   ok('/gd exists to test the pass by hand', /Commands\.literal\('gd'\)/.test(vo2), true)
