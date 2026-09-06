@@ -631,6 +631,91 @@ def covered_note():
     return out
 
 
+MD_OUT = os.path.join(REPO, 'docs', 'ACT0-PLAYTEST.md')
+
+
+def write_md(led):
+    """The same list, as a file you can keep open on a second screen while playing.
+
+    GENERATED, NEVER HAND-EDITED - it goes in docs/README.md's generated table beside
+    the dialogue docs and the gap report. Editing it by hand would put a tick beside
+    something nobody looked at, which is the one thing this whole file exists to prevent.
+
+    Regenerate after recording answers and the ticks move.
+    """
+    L = []
+    A = L.append
+    A('# Act 0 — the playtest')
+    A('')
+    A('> **GENERATED — do not hand-edit.** `python tools/act0_smoke.py --md`')
+    A('>')
+    A('> These are the things **only a person looking at a screen can answer.** Nothing')
+    A('> here is green by default and nothing automated can tick one — that substitution')
+    A('> is how this pack shipped with fonts rendering as tofu and a title card that had')
+    A('> never once rendered.')
+    A('')
+    A('Record what you see. The note matters more than the tick:')
+    A('')
+    A('```bash')
+    A('python tools/act0_smoke.py --pass 8f4b5d --note "took ~2s, came up behind me"')
+    A('python tools/act0_smoke.py --fail 8f4b5d --note "never showed"')
+    A('```')
+    A('')
+    passed, failed = passed_count(led), failed_count(led)
+    total = sum(len(i) for _, i in all_items())
+    A('**%d of %d passed%s.**' % (passed, total,
+                                  (', %d FAILED' % failed) if failed else ''))
+    A('')
+    A('---')
+    A('')
+    n = 0
+    for group, items in all_items():
+        A('## %s' % group)
+        A('')
+        A('| | # | id | what to look for | how |')
+        A('|---|---|---|---|---|')
+        for what, how in items:
+            n += 1
+            i = sid(what)
+            a = led.get(i)
+            mark = ' ' if not a else ('OK' if a['state'] == 'pass' else 'X')
+            A('| %s | %d | `%s` | %s | %s |' % (mark, n, i, what, how))
+        A('')
+        # The notes go BELOW the table rather than in a cell - what somebody actually saw
+        # is the valuable part and a table cell squeezes it into nothing.
+        notes = [(w, led[sid(w)]) for w, _ in items if sid(w) in led]
+        if notes:
+            for w, a in notes:
+                A('- **%s** — %s, %s%s' % (a['state'].upper(), a.get('who', '?'),
+                                           a.get('when', '?'),
+                                           (': ' + a['note']) if a.get('note') else ''))
+                A('  <br>%s' % w)
+            A('')
+    cov = covered_note()
+    if cov:
+        A('---')
+        A('')
+        A('## Also covered, and not listed twice')
+        A('')
+        A('These are `NEEDS-GAME` markers the code raised that a step above already asks.')
+        A('Answering that step records these too, under their own ids. ⛔ They are listed')
+        A('rather than dropped, because a marker that vanishes with no explanation is')
+        A('indistinguishable from one somebody deleted.')
+        A('')
+        A('| the marker | answered by |')
+        A('|---|---|')
+        for w, by in cov:
+            A('| %s | %s |' % (w, by))
+        A('')
+    blob = (chr(10).join(L) + chr(10)).encode('utf-8')
+    tmp = MD_OUT + '.tmp'
+    with open(tmp, 'wb') as fh:
+        fh.write(blob)
+    os.replace(tmp, MD_OUT)
+    print('wrote %s  (%d items, %d passed)'
+          % (os.path.relpath(MD_OUT, REPO), n, passed))
+
+
 def print_script(led):
     print('')
     print('THE PLAYTEST - in play order. Record each with:')
@@ -713,6 +798,10 @@ def record(idx, state, note, who):
         'when': datetime.now().strftime('%Y-%m-%d %H:%M'),
     }
     save_ledger(led)
+    # REGENERATED ON EVERY ANSWER. A checklist file that drifts from the ledger is a
+    # doc that lies, and this project's oldest standing rule is that a doc is updated
+    # in the session that changed the truth or it is deleted.
+    write_md(led)
     print('%s  %s' % (state.upper(), known[idx]))
     if note:
         print('      %s' % note)
@@ -723,6 +812,7 @@ def main():
     ap = argparse.ArgumentParser(add_help=True)
     ap.add_argument('--script', action='store_true', help='print the by-hand playtest')
     ap.add_argument('--answers', action='store_true', help='what has been answered')
+    ap.add_argument('--md', action='store_true', help='write docs/ACT0-PLAYTEST.md')
     ap.add_argument('--pass', dest='ok', metavar='ID')
     ap.add_argument('--fail', dest='no', metavar='ID')
     ap.add_argument('--note', default='')
@@ -741,6 +831,10 @@ def main():
             print('%s  %s  %s' % (v['state'].upper().ljust(4), v['when'], v['what']))
             if v.get('note'):
                 print('      %s' % v['note'])
+        return 0
+
+    if a.md:
+        write_md(led)
         return 0
 
     if a.script:

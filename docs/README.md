@@ -37,7 +37,7 @@ History → **git**, never a doc. Design → the one doc that owns that subject.
 | **`NPC-PALETTE.md`** | what a character can *do* — triggers, actions and conditions. **Read before writing a scene** |
 | **`DEFECTS.md`** | what is known-broken, with `D-` ids |
 | **`TOOLKIT.md`** | the story tools, written for other projects to use |
-| **`tools/act0_smoke.py`** | ⭐ **the live Act 0 suite** — `--script` for the playtest, `--pass <id>` to record what you saw. Not a doc; listed here because nothing else points at it |
+| **`tools/act0_smoke.py`** | ⭐ **the live Act 0 suite** — `--script` to read it, `--md` to write `ACT0-PLAYTEST.md`, `--pass <id>` to record what you saw. Not a doc; listed here because nothing else points at it |
 
 ### The world and its people — Ethan's writing lives here
 
@@ -78,6 +78,7 @@ not lore.
 
 | doc | tool |
 |---|---|
+| **`ACT0-PLAYTEST.md`** | `python tools/act0_smoke.py --md` — ⭐ **the live checklist.** Regenerated on every recorded answer, so it cannot drift from the ledger |
 | `04-GAP-REPORT.md` | `python tools/gen_docs.py` |
 | `48-EVERY-EVENT.md` | regenerated from a live boot |
 | `51-LINES-TO-REFRESH.md` | `python tools/dialogue_doc.py` |

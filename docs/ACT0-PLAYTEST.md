@@ -1,0 +1,106 @@
+# Act 0 — the playtest
+
+> **GENERATED — do not hand-edit.** `python tools/act0_smoke.py --md`
+>
+> These are the things **only a person looking at a screen can answer.** Nothing
+> here is green by default and nothing automated can tick one — that substitution
+> is how this pack shipped with fonts rendering as tofu and a title card that had
+> never once rendered.
+
+Record what you see. The note matters more than the tick:
+
+```bash
+python tools/act0_smoke.py --pass 8f4b5d --note "took ~2s, came up behind me"
+python tools/act0_smoke.py --fail 8f4b5d --note "never showed"
+```
+
+**0 of 31 passed.**
+
+---
+
+## the opening
+
+| | # | id | what to look for | how |
+|---|---|---|---|---|
+|   | 1 | `59aa07` | a fresh player sees the title card type itself out, and NOTHING else | /opening reset then relog |
+|   | 2 | `9307b2` | the card is legible, clear of the crosshair and the Seasons HUD | watch it - the fade is half the question, a screenshot cannot answer it |
+|   | 3 | `96a2c8` | a book titled Journal is in the inventory, and it opens | /opening journal |
+|   | 4 | `cfdae5` | the journal holds all 18 sentences and reads as one piece | open it and read to the end |
+|   | 5 | `700278` | reaching a beat fires a toast, and the Act 0 tab renders with icons | /story reach the_caves |
+
+## Ank arrives
+
+| | # | id | what to look for | how |
+|---|---|---|---|---|
+|   | 6 | `8f4b5d` | he spawns when you enter a cave, without you doing anything | walk into the upper caves and wait up to 2s |
+|   | 7 | `416968` | he wears his own skin, not a missing-texture check pattern | look at him. F3+T first if you suspect the client cache |
+|   | 8 | `95982d` | he follows you around the cave | walk 20 blocks and look back |
+|   | 9 | `e7acb4` | he survives being hit - a player cannot kill him | hit him repeatedly with the best weapon you have |
+|   | 10 | `847a90` | /kill on him REMOVES him - if it does not, the despawn path is broken and needs `easy_npc despawn` instead | /kill @e[tag=veldora_ank] then look for him |
+
+## Ank talks
+
+| | # | id | what to look for | how |
+|---|---|---|---|---|
+|   | 11 | `d348c3` | his greeting arrives in the CHAT BAR as <Ank>, like any person speaking | /ank greet 7 |
+|   | 12 | `d2061f` | a five-line day reads as somebody talking, not as a wall of text | /ank greet 7 and watch the pacing |
+|   | 13 | `4c9f75` | he greets ONCE a day - leaving and returning does not repeat it | go below -32, then come back up |
+|   | 14 | `99475c` | right-clicking him opens his dialogue with three options | right-click him |
+|   | 15 | `47aa8c` | picking "Its none of your business" gets the sheriff answer | the branch with three reply lines |
+
+## Ank trades
+
+| | # | id | what to look for | how |
+|---|---|---|---|---|
+|   | 16 | `2994c8` | the trade UI opens, and the price is wheat rather than emeralds | right-click him, or the trade button in his dialogue |
+|   | 17 | `1e6c3d` | a first-time player can actually afford the tier-0 trade | count the wheat it asks for against what a new player has |
+|   | 18 | `582a5d` | after descending, his next offer is visibly better | go below -32, come back, trade again |
+
+## Ank leaves
+
+| | # | id | what to look for | how |
+|---|---|---|---|---|
+|   | 19 | `3543e7` | going below -32 despawns him and prints "A chill runs up your spine." | dig down past the deep-works boundary |
+|   | 20 | `8608b7` | stepping into daylight does the same | walk out of the cave |
+|   | 21 | `1824c1` | bobbing on the boundary does NOT loop the chill | stand at y -31 and jump |
+|   | 22 | `1fe8f9` | the chill reads as coming from nobody, not from Ank | it is at the top of the screen; his own lines are in chat |
+
+## the urge
+
+| | # | id | what to look for | how |
+|---|---|---|---|---|
+|   | 23 | `43ff11` | a day spent out of the deep produces an urge line | sleep through a day topside. The pools are EMPTY until Ethan writes them |
+
+## the code's own claims (NEEDS-GAME markers)
+
+| | # | id | what to look for | how |
+|---|---|---|---|---|
+|   | 24 | `1546cd` | align actually left-aligns - the mod may ignore it like maxWidth | /im test |
+|   | 25 | `2ec286` | ON_DISTANCE_NEAR fires without a click, and at what range | walk up to Ank |
+|   | 26 | `89a104` | an ADVANCEMENT condition reads our mcserver:act0 tree | /story reach the_caves then talk to him |
+|   | 27 | `f02007` | SET_OPACITY actually fades rather than snapping | /easy_npc dialog test |
+|   | 28 | `3bda20` | a preset we ship under data/easy_npc/preset is found at all, and under WHICH of the two paths | /easy_npc preset import_new then tab-complete |
+|   | 29 | `0647c3` | FOLLOW_PLAYER targets the nearest player without TargetPlayerName | /easy_npc objective set follow |
+|   | 30 | `d08ae3` | Invulnerable:1b survives void and /kill, not just damage | /kill @e[type=easy_npc:humanoid] |
+|   | 31 | `f2cd20` | removing the follow objective stops an NPC already following | /easy_npc objective remove |
+
+---
+
+## Also covered, and not listed twice
+
+These are `NEEDS-GAME` markers the code raised that a step above already asks.
+Answering that step records these too, under their own ids. ⛔ They are listed
+rather than dropped, because a marker that vanishes with no explanation is
+indistinguishable from one somebody deleted.
+
+| the marker | answered by |
+|---|---|
+| day 7 arrives as five <Ank> chat lines, paced, not one wall | a five-line day reads as somebody talking |
+| <Ank> is legible against the vanilla chat and reads as a person, not a system message | his greeting arrives in the CHAT BAR |
+| his chat lines and the chill are visibly different surfaces | the chill comes from nobody |
+| kill removes an Invulnerable Easy NPC, or we need `easy_npc despawn` | /kill on him REMOVES him |
+| the card is legible, clear of the Seasons HUD and the crosshair | the card is legible, clear of the crosshair |
+| the journal actually appears in the inventory, titled Journal, readable | a book titled Journal is in the inventory |
+| a toast fires and the Act 0 tab renders with the right icons | reaching a beat fires a toast |
+| the skins render on an NPC, not as a missing texture | he wears his own skin |
+
