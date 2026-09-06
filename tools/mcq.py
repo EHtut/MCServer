@@ -57,7 +57,7 @@ import zipfile
 
 SERVER_MODS = r"C:\MCServer\instance\mods"
 CLIENT_MODS = (r"C:\Users\Ethan\AppData\Roaming\PrismLauncher\instances"
-               r"\CogsAndCadavers-PrismInstance\.minecraft\mods")
+               r"\ArkhdottirNewBlood-PrismInstance\.minecraft\mods")
 CACHE = pathlib.Path(__file__).resolve().parent / ".cache" / "mcq-index.json"
 
 TOMLS = ("META-INF/neoforge.mods.toml", "META-INF/mods.toml")

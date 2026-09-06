@@ -61,7 +61,7 @@ import sys
 
 INSTANCE = os.path.join(
     os.path.expanduser('~'), 'AppData', 'Roaming', 'PrismLauncher', 'instances',
-    'CogsAndCadavers-PrismInstance (4)', '.minecraft', 'options.txt')
+    'ArkhdottirNewBlood-PrismInstance', '.minecraft', 'options.txt')
 
 K = 'key.keyboard.'
 UNBOUND = 'key.keyboard.unknown'

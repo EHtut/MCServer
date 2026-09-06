@@ -46,7 +46,7 @@ TT = os.path.join(
     # disk is still CogsAndCadavers, because renaming a Prism instance directory breaks
     # the launcher's own entry. The pack name and the folder name are different things,
     # and only one of them is ours.
-    'CogsAndCadavers', '.minecraft', 'config',
+    'ArkhdottirNewBlood-PrismInstance', '.minecraft', 'config',
     'travelerstitles-neoforge-1_21.toml')
 
 # Minecraft's font is 9px per line; a title's drawn height is that times its scale.

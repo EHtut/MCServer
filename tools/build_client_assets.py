@@ -58,7 +58,7 @@ CLIENTPACK = os.path.join(r"C:\MCServer", "clientpack", "kubejs", "assets")
 # Everyone else gets it through the client pack.
 LIVE = os.path.join(
     r"C:\Users\Ethan\AppData\Roaming\PrismLauncher\instances",
-    "CogsAndCadavers-PrismInstance (4)", ".minecraft", "kubejs", "assets")
+    "ArkhdottirNewBlood-PrismInstance", ".minecraft", "kubejs", "assets")
 
 
 # ⭐⭐ DELIVERED IS NOT LOADED, AND THAT COST AN EVENING.

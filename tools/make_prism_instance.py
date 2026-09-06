@@ -98,6 +98,12 @@ CLIENT_CONFIG = pathlib.Path(__file__).resolve().parent.parent / "client" / "con
 # patchouli_books/ and loads any subfolder holding a book.json - no resource
 # pack, no mod jar. It is a loose game file, so packwiz will never carry it and
 # the instance zip is the only route to the other players.
+# ⚠️ HIS PRISM FOLDER, READ OFF DISK 2026-09-06. Four tools pointed at
+# "CogsAndCadavers-PrismInstance (4)", which does not exist and did not exist
+# yesterday either - so each was reading or writing nothing and reporting success.
+CLIENT_OPTIONS = (pathlib.Path.home() / "AppData" / "Roaming" / "PrismLauncher" /
+                  "instances" / "ArkhdottirNewBlood-PrismInstance" / ".minecraft" /
+                  "options.txt")
 CLIENT_BOOKS = pathlib.Path(__file__).resolve().parent.parent / "client" / "patchouli_books"
 
 
@@ -233,6 +239,51 @@ incompatibleResourcePacks:[]
 # it cannot resolve, so a stale name is invisible: the pack just never applies
 # and nothing is logged. The shaderPack key had precisely that bug; it is now
 # derived from the resolver at build time instead (see iris_properties below).
+
+
+def live_options() -> str:
+    """The options.txt to ship: Ethan's real one if it exists, else the template.
+
+    🔴 THE TEMPLATE ALONE SHIPPED A 460-BYTE FILE, and Ethan's own instance carries 16 KB
+    across 281 keybinds. `tools/controls_pass.py` spends real effort rekeying 317 mods'
+    worth of collisions onto a saturated keyboard - and none of that reached the zip, so
+    every import handed a player the raw defaults and the collisions back.
+
+    Ethan, 2026-09-06: *"the controls refresh and mod settings refresh were not included
+    in the new import file."*
+
+    ⚠️ THE TEMPLATE IS STILL THE FALLBACK, and it is not dead weight: it carries the
+    rulings that must survive a fresh machine with no instance to read - sneak on CTRL,
+    sprint on SHIFT, shaders and Faithful off by default.
+
+    ⛔ AND THE RULINGS ARE RE-APPLIED OVER THE LIVE FILE regardless. A live options.txt is
+    whatever he last had selected, which is not the same as what a NEW player should get:
+    if he turns Faithful on for an evening, that must not ship to everybody.
+    """
+    live = pathlib.Path(CLIENT_OPTIONS)
+    if not live.is_file():
+        print("  options.txt: template (no live instance at %s)" % live)
+        return OPTIONS
+    text = live.read_text(encoding="utf-8", errors="replace")
+    # The template's own lines win, key by key - they are the rulings.
+    forced = {}
+    for line in OPTIONS.splitlines():
+        if ":" in line:
+            forced[line.split(":", 1)[0]] = line
+    out, seen = [], set()
+    for line in text.splitlines():
+        k = line.split(":", 1)[0] if ":" in line else None
+        if k in forced:
+            out.append(forced[k]); seen.add(k)
+        else:
+            out.append(line)
+    for k, line in forced.items():
+        if k not in seen:
+            out.append(line)
+    print("  options.txt: HIS, %d keybinds, with %d ruling(s) re-applied"
+          % (sum(1 for l in out if l.startswith("key_")), len(forced)))
+    NL = chr(10)
+    return NL.join(out) + NL
 
 
 def main() -> int:
@@ -481,7 +532,7 @@ Options -> Controls if you hate it.
         "instance.cfg": instance_cfg,
         "mmc-pack.json": mmc_pack,
         "INSTALL.txt": install_txt,
-        ".minecraft/options.txt": OPTIONS,
+        ".minecraft/options.txt": live_options(),
     }
 
     zpath = out_dir / "ArkhdottirNewBlood-PrismInstance.zip"
