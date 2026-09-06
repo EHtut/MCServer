@@ -33,6 +33,7 @@ History → **git**, never a doc. Design → the one doc that owns that subject.
 |---|---|
 | **`FORMAT.md`** | how a doc here is written, and when not to write one |
 | **`VOICES.md`** | the dialogue mod's real limits · where every god stands · how to write a voice |
+| **`NPCS.md`** | Easy NPC as it actually is — the preset schema, objectives, attributes, read from the jar |
 | **`DEFECTS.md`** | what is known-broken, with `D-` ids |
 | **`TOOLKIT.md`** | the story tools, written for other projects to use |
 

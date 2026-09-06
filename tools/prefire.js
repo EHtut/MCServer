@@ -69,9 +69,6 @@ const SCAN_DIRS = ['pack/kubejs/server_scripts', 'tools', 'docs']
 //
 // ⚠️ The line is TRIMMED before matching rather than the pattern being patched, so this
 // cannot come back the next time somebody edits the regex.
-//
-// ⚠️ Lines are trimmed before matching rather than patching the pattern, so this cannot
-// come back the next time somebody edits the regex.
 const MARKER = /NEEDS-GAME:\s*(.+?)\s*::\s*(.+)$/
 
 function scanNeedsGame() {
@@ -84,7 +81,10 @@ function scanNeedsGame() {
       let lines
       try { lines = fs.readFileSync(f, 'utf8').split('\n') } catch (e) { continue }
       lines.forEach((rawLine, i) => {
-        const line = rawLine.replace(/\s+$/, '')
+        // ⚠️ Strip a trailing HTML comment terminator: a marker inside a .md file is
+        // written as <!-- NEEDS-GAME: ... --> and the `-->` was landing in the command
+        // column, so the checklist printed a command nobody can run.
+        const line = rawLine.replace(/\s*-->\s*$/, '').replace(/\s+$/, '')
         const m = MARKER.exec(line)
         if (m) out.push({ file: path.relative(ROOT, f).replace(/\\/g, '/'),
                           line: i + 1, what: m[1], how: m[2] })
