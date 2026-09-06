@@ -14,7 +14,7 @@ python tools/act0_smoke.py --pass 8f4b5d --note "took ~2s, came up behind me"
 python tools/act0_smoke.py --fail 8f4b5d --note "never showed"
 ```
 
-**0 of 31 passed.**
+**0 of 31 passed, 2 FAILED.**
 
 ---
 
@@ -24,9 +24,12 @@ python tools/act0_smoke.py --fail 8f4b5d --note "never showed"
 |---|---|---|---|---|
 |   | 1 | `59aa07` | a fresh player sees the title card type itself out, and NOTHING else | /opening reset then relog |
 |   | 2 | `9307b2` | the card is legible, clear of the crosshair and the Seasons HUD | watch it - the fade is half the question, a screenshot cannot answer it |
-|   | 3 | `96a2c8` | a book titled Journal is in the inventory, and it opens | /opening journal |
+| X | 3 | `96a2c8` | a book titled Journal is in the inventory, and it opens | /opening journal |
 |   | 4 | `cfdae5` | the journal holds all 18 sentences and reads as one piece | open it and read to the end |
 |   | 5 | `700278` | reaching a beat fires a toast, and the Act 0 tab renders with icons | /story reach the_caves |
+
+- **FAIL** — Ethan, 2026-09-06 00:59: no journal book at all - the give command failed to parse (single backslash-n in the SNBT layer). FIXED, needs a re-test
+  <br>a book titled Journal is in the inventory, and it opens
 
 ## Ank arrives
 
@@ -62,8 +65,11 @@ python tools/act0_smoke.py --fail 8f4b5d --note "never showed"
 |---|---|---|---|---|
 |   | 19 | `3543e7` | going below -32 despawns him and prints "A chill runs up your spine." | dig down past the deep-works boundary |
 |   | 20 | `8608b7` | stepping into daylight does the same | walk out of the cave |
-|   | 21 | `1824c1` | bobbing on the boundary does NOT loop the chill | stand at y -31 and jump |
+| X | 21 | `1824c1` | bobbing on the boundary does NOT loop the chill | stand at y -31 and jump |
 |   | 22 | `1fe8f9` | the chill reads as coming from nobody, not from Ank | it is at the top of the screen; his own lines are in chat |
+
+- **FAIL** — Ethan, 2026-09-06 00:59: chill looped every ~10s for six minutes. Ank was spawning INSIDE the house - canSeeSky was the only underground test. FIXED, needs a re-test
+  <br>bobbing on the boundary does NOT loop the chill
 
 ## the urge
 

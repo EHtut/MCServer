@@ -57,10 +57,25 @@ and each item is recorded by hand — `--pass <id>` / `--fail <id>` — into a l
 reads, **so the owed list finally shrinks as testing happens.** ⛔ The two halves never
 merge: a green rcon check can never mark an eyes-only item true.
 
-⚠️ **Proven offline only. He has never been spawned.** 93/93 in his harness against your
-real text, 42/42 across the suite. **38 items are owed the moment the server comes up** — 16
-markers the code itself raised, plus the 22-step playtest. Green is not tested, and both
-tools say so themselves.
+🔴 **FIRST PLAYED 2026-09-06, and it broke in the first ten minutes.** Two defects, both in
+the half no offline check can see:
+
+**D-140 — Ank spawned in Ethan's house.** `shouldBeOut` decided "underground" by `canSeeSky`
+alone, so a roof counted as a cave. He appeared indoors, left when Ethan stepped outside,
+came back when he stepped in — and every departure fires *"A chill runs up your spine."* It
+looped for six minutes. ⚠️ **The file argued the sky test carefully in one direction and
+never asked the other.** Fixed with three guards: cover is now **counted** (a roof is 1–2
+blocks, a cave is tens), he must dwell 15s before the boundary may take him, and the line
+itself has a 60s floor.
+
+**D-141 — the journal was never given, and the log said `ok` every time.** A book page is
+JSON inside SNBT inside a command — *three* layers, and the escape counted two. A single
+backslash-n is an invalid SNBT escape, so the whole command failed to parse and nothing was
+logged. Proved live: one backslash fails, two parse. And `giveJournal` returned `true` for
+anything that did not throw, so a refused give and a working one shared a return value.
+
+⚠️ **Both fixed, both deployed, NEITHER re-tested** — they need a restart and another run.
+119 in Ank's harness, 14 in the opening's, 42/42 offline.
 
 🔑 **The band boundary is −32**, and it is not a number I chose: `help.js` already tells the
 player *"0 to -32 the old diggings · -32 to -52 the deep works"*, so the game had committed
@@ -225,6 +240,8 @@ hardcoded to 1 and `build()` discarded the index it was handed.
 and champion-kill give a player who never descends a way in — rejected, because *the descent
 is the act*. ⚠️ **Ruled but not implemented** — see §①.
 
+**The introduction belongs in the GUIDEBOOK, not a hotbar book.** *(Ethan, 2026-09-06, on finding the Modonomicon book instead of a journal: "this is amazing and a game changer and can hold the journal entries, let me add lore to read through the world... That being said its outdated and i can't find the act 0 introduction so this fails.")* The counter-argument is the one that shipped: a written book was HIS OWN instruction four days ago — *"all of the introduction cutscene stuff is in a book in your inventory titled journal"* — and it is the one surface where his hard rule about one sentence per line actually renders. **Superseded, and by something better than the argument:** a written book is a consumable in a hotbar slot, and the guidebook is a place lore can KEEP being added to as he writes it. ⬜ Unbuilt — see D-143, and the scope is his: does the journal replace the written book or sit beside it, and does lore land by generator or by hand?
+
 **Ank speaks in the CHAT BAR, natively.** *(Ethan, 2026-09-05: "Nah, ank goes into the chat bar with a `<Ank>:` or however its done in minecraft natively.")* The counter-argument was mine and it was argued at length: the overlay is where every other voice in the game lives, placement is characterisation, and giving him the plainest possible overlay style — no font, no bold, hotbar-height — already said *mortal*. **Rejected, and the reason is better than the argument was.** ⭐ **The overlay is for things that are narrating at you.** Ank is not narrating; he is a man standing in a cave talking. Minecraft already has a way to show that, every player can read it without being taught, and it costs nothing. The plainest overlay style is still the overlay — the distinction I was drawing was inside the wrong surface entirely.
 
 ⛔ **So `cast.define` for Ank is DELETED, not gated.** A registered speaker with no caller is the shadow-build this project keeps catching itself doing, and leaving it "in case" is how the next session finds two voices for one man.
@@ -262,6 +279,10 @@ A5 called it "1–2 hours of bulk" and measured it in authored lines, which is t
 the content is one conversation getting louder, not a quantity of ambience.
 
 **"He is the only voice in Act 0 that stands next to you — no font, no bold, hotbar height."** ❌ **Written into the digest and reversed the same day.** It was a real argument about a real distinction, made entirely inside the wrong surface: the choice was never *which overlay style* but *overlay or chat*. 🔑 The tell was that the reasoning had to explain itself — a delivery that needs a paragraph of justification to read as ordinary is not reading as ordinary.
+
+**"Proven offline only. He has never been spawned."** ✅ True, and the point. The first ten minutes in game produced two defects that **every offline instrument was green on** — 119 harness assertions, 42/42 prefire, and a live rcon suite reporting seven checks ok. 🔑 Neither bug was subtle; both were in the gap between *the code computes correctly* and *the thing happens*. That gap is what the eyes half of `act0_smoke.py` is for, and it earned its keep on its first outing.
+
+**"journal given (ok)"** ❌ It was never given, on any login. See D-141. ⚠️ The banner is the lie, and this project has now caught eleven of them.
 
 **"The mechanism is built and every pool is empty."** ⚠️ **True when written, false the same day.** The B2 row said Ethan's writing was the only thing missing; his document arrived, and importing it found that the *mechanism* was half a mechanism — `ank_lines.js` was generated and **nothing anywhere read it.** A file full of his words with no consumer is this project's own standing failure (*a gate ships with a live consumer or not at all*), and it would have shipped looking finished.
 

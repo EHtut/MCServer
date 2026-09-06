@@ -64,12 +64,21 @@ function build() {
   // Ethan's actual writing arrive broken - which is the only failure that matters here.
   vm.runInContext(fs.readFileSync(path.join(SS, 'ank_lines.js'), 'utf8'), ctx)
   vm.runInContext(fs.readFileSync(path.join(SS, 'ank.js'), 'utf8'), ctx)
-  const player = (y, sky) => ({
-    username: 'Rehykt', y, server,
+  // THE THIRD ARGUMENT IS COVER: how many solid blocks sit above the player. It defaults
+  // to a cave's worth, so every test written before the roof bug still means what it meant.
+  // A ROOF IS 1-2. That is the whole distinction Ank was missing, and the reason he spawned
+  // in Ethan's kitchen and looped the chill for six minutes.
+  const player = (y, sky, cover) => ({
+    username: 'Rehykt', y, x: 0, z: 0, server,
+    level: {
+      canSeeSky: () => sky,
+      getBlock: (bx, by, bz) => ({
+        blockState: { isAir: () => (by - Math.floor(y) - 1) > (cover === undefined ? 40 : cover) },
+      }),
+    },
     // ⚠️ `mute` makes tell() THROW, which is what a broken send looks like — not a
     // false return. Losing his voice and having nothing to say must stay distinguishable.
     tell: (t) => { if (mute) throw new Error('no chat'); spoken.push(String(t)) },
-    level: { canSeeSky: () => sky },
     blockPosition: () => ({}),
     persistentData: {
       _d: {},
@@ -498,6 +507,82 @@ grp('⭐ THE GREETING — in the chat bar, as <Ank>, once a day')
     /saySeq\(ctx\.source\.server, p, got\.lines, false\)/.test(src), true)
   ok('...while his own greeting is guarded',
     /saySeq\(srv, p, lines, true\)/.test(src), true)
+}
+
+// ===========================================================================
+grp('A ROOF IS NOT A CAVE - the loop Ethan hit')
+{
+  // MEASURED FROM THE LOG, not imagined. Ten spawn/despawn pairs at y = 69, 67, 61, 64,
+  // 65, 64, 65, 72, 72, 73 - Ank inside Ethan's house, leaving each time he stepped out,
+  // and "A chill runs up your spine." every few seconds for six minutes.
+  const e = build()
+  ok('a house at y=70 is NOT underground', e.A.shouldBeOut(e.player(70, false, 2)), false)
+  ok('...nor is a one-block roof', e.A.shouldBeOut(e.player(70, false, 1)), false)
+  ok('...nor a tree', e.A.shouldBeOut(e.player(70, false, 3)), false)
+  ok('a proper cave still is', e.A.shouldBeOut(e.player(70, false, 30)), true)
+  ok('...and so is a shallow one with real rock over it',
+    e.A.shouldBeOut(e.player(10, false, 5)), true)
+
+  // AND AN UNREADABLE COLUMN IS ITS OWN ANSWER. "No cover" and "I could not look" would
+  // send him away for opposite reasons.
+  const blind = e.player(70, false, 30)
+  blind.level.getBlock = () => { throw new Error('no world') }
+  ok('an unreadable column does NOTHING', e.A.shouldBeOut(blind), null)
+}
+
+{
+  const roof = (p) => { p.level.getBlock = (bx, by) =>
+    ({ blockState: { isAir: () => (by - Math.floor(p.y)) > 2 } }) }
+  const cave = (p) => { p.level.getBlock = (bx, by) =>
+    ({ blockState: { isAir: () => (by - Math.floor(p.y)) > 30 } }) }
+
+  // The loop end to end: step outside, step back in, repeatedly.
+  const e = build()
+  const p = e.player(70, false, 30)
+  ok('he steps out', e.A.consider(e.server, p), 'spawned')
+
+  roof(p)
+  e.server.tickCount = 20 * 60          // past the dwell, so this is a real departure
+  ok('a roof sends him away', e.A.consider(e.server, p), 'despawned')
+  ok('...with the chill', e.ambient.length, 1)
+
+  cave(p)
+  e.A.consider(e.server, p)             // back under rock
+  e.server.tickCount += 20 * 3          // three seconds later, out again
+  roof(p)
+  ok('...and he does NOT leave again three seconds later',
+    e.A.consider(e.server, p), 'just-arrived')
+  ok('...so the chill did not repeat', e.ambient.length, 1)
+}
+
+{
+  // THE COOLDOWN IS THE LAST LINE OF DEFENCE and does not care why. Even a departure that
+  // clears the dwell takes his body without the words if one just fired.
+  const bare = (p) => { p.level.getBlock = () => ({ blockState: { isAir: () => true } }) }
+  const cave = (p) => { p.level.getBlock = (bx, by) =>
+    ({ blockState: { isAir: () => (by - Math.floor(p.y)) > 30 } }) }
+
+  const e = build()
+  const p = e.player(70, false, 30)
+  e.A.consider(e.server, p)
+  e.server.tickCount = 20 * 60
+  bare(p)
+  ok('he leaves', e.A.consider(e.server, p), 'despawned')
+  ok('...and says the line once', e.ambient.length, 1)
+
+  cave(p); e.A.consider(e.server, p)
+  e.server.tickCount += 20 * 20         // 20s: clears the dwell, NOT the 60s gap
+  bare(p)
+  ok('a second departure inside the minute still takes his body',
+    e.A.consider(e.server, p), 'despawned-quiet')
+  ok('...but NOT the line', e.ambient.length, 1)
+
+  // And it is a floor, not a mute: past the gap the line comes back.
+  cave(p); e.A.consider(e.server, p)
+  e.server.tickCount += 20 * 90
+  bare(p)
+  ok('past the gap it is eerie again', e.A.consider(e.server, p), 'despawned')
+  ok('...and says so', e.ambient.length, 2)
 }
 
 console.log('\n' + (fail ? R + fail + ' FAILED, ' + X : G) + pass + ' passed' + X)

@@ -37,7 +37,9 @@ function build() {
     tickCount: 0,
     players: [player],
     scheduleInTicks(t, fn) { scheduled.push({ at: t, fn }) },
-    runCommandSilent(c) { commands.push(c) },
+    // RETURNS 1, because the real one returns a command result and giveJournal now
+    // READS it. A stub returning undefined would make every give look refused.
+    runCommandSilent(c) { commands.push(c); return 1 },
     runCommand(c) { commands.push(c); return 1 },
   }
   const VELDORA = {
@@ -251,6 +253,46 @@ t('every beat is long enough to be read', () => {
 })
 
 let failed = 0
+t('the journal command actually PARSES - two backslashes, not one', () => {
+  // THIS IS THE BUG ETHAN HIT. He got no journal at all, and the log said
+  // "journal given (ok)" on every login.
+  //
+  // A book page is a JSON text component inside an SNBT single-quoted string inside a
+  // command - THREE layers, and the code counted two. SNBT strips a backslash before
+  // JSON ever sees it, so a single backslash-n is an invalid SNBT escape and the WHOLE
+  // command fails to parse. Nothing is given, and nothing is logged.
+  //
+  // Verified against the live server, same command otherwise:
+  //     'alpha'                     PARSES
+  //     'alpha\nbravo'   (one backslash)   FAILS TO PARSE
+  //     'alpha\\nbravo'  (two backslashes)  PARSES
+  const e = build()
+  e.ctx.VELDORA.opening.play(e.player, false)
+  const give = e.commands.filter(c => c.indexOf('written_book') !== -1)
+  assert(give.length === 1, 'expected one give, got ' + give.length)
+  const cmd = give[0]
+
+  // Every page break must carry TWO backslashes. One is the bug.
+  const doubled = '\\\\n'
+  assert(cmd.indexOf(doubled.replace(/\\\\/g, '\\')) !== -1 ||
+    cmd.indexOf('\\\\n') !== -1, 'no escaped newline in the command at all')
+  const stripped = cmd.split('\\\\n').join('')
+  assert(stripped.indexOf('\\n') === -1,
+    'a page break carries only ONE backslash - the command will not parse')
+
+  // And the brackets close. A truncated command is the other way this fails silently.
+  assert(/\]\}\] 1$/.test(cmd),
+    'the command does not close its brackets: ' + cmd.slice(-40))
+})
+
+t('a REFUSED give is reported, not swallowed', () => {
+  // It returned true for anything that did not throw, so a command the server rejected
+  // logged "journal given (ok)". I failed and I found nothing sharing a return value.
+  const e = build()
+  const srv = { runCommandSilent: () => 0 }          // the server refuses
+  const gave = e.ctx.VELDORA.opening.journal(srv, e.player, ['one', 'two'])
+  assert(gave === false, 'a refused give must return false, got ' + gave)
+})
 for (const [n, f] of CASES) {
   try { f(); console.log('  ok    ' + n) } catch (e) {
     failed++; console.log('  FAIL  ' + n); console.log('        ' + e.message)

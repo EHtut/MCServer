@@ -1,0 +1,30 @@
+{
+ "1824c1": {
+  "note": "chill looped every ~10s for six minutes. Ank was spawning INSIDE the house - canSeeSky was the only underground test. FIXED, needs a re-test",
+  "state": "fail",
+  "what": "bobbing on the boundary does NOT loop the chill",
+  "when": "2026-09-06 00:59",
+  "who": "Ethan"
+ },
+ "96a2c8": {
+  "note": "no journal book at all - the give command failed to parse (single backslash-n in the SNBT layer). FIXED, needs a re-test",
+  "state": "fail",
+  "what": "a book titled Journal is in the inventory, and it opens",
+  "when": "2026-09-06 00:59",
+  "who": "Ethan"
+ },
+ "_totals": {
+  "failed": 2,
+  "markers": 8,
+  "passed": 0,
+  "script": 23,
+  "when": "2026-09-06 00:59"
+ },
+ "f18780": {
+  "note": "answered by the playtest step \"a book titled Journal is in the inventory\" - no journal book at all - the give command failed to parse (single backslash-n in the SNBT layer). FIXED, needs a re-test",
+  "state": "fail",
+  "what": "the journal actually appears in the inventory, titled Journal, readable",
+  "when": "2026-09-06 00:59",
+  "who": "Ethan"
+ }
+}

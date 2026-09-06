@@ -152,7 +152,19 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     var src = String(t), out = ''
     for (var i = 0; i < src.length; i++) {
       var ch = src.charAt(i)
-      if (ch === '\n') { out += BS + 'n'; continue }
+      // THREE LAYERS, NOT TWO, AND THIS LINE ONLY COUNTED TWO. The comment above got the
+      // JSON layer right and forgot that SNBT strips a backslash FIRST. A single
+      // backslash-n is an INVALID SNBT ESCAPE, so the whole command fails to parse, the
+      // give never runs, and nothing is logged. Ethan got no journal at all.
+      //
+      // PROVED AGAINST THE LIVE SERVER - same command otherwise, three page forms:
+      //     'alpha'                      PARSES
+      //     'alpha\nbravo'   (one backslash)    FAILS TO PARSE
+      //     'alpha\\nbravo'  (two backslashes)   PARSES
+      //
+      // So the command must carry TWO backslashes: SNBT eats one, JSON turns the
+      // survivor into a real newline, and the book renders the line break.
+      if (ch === '\n') { out += BS + BS + 'n'; continue }
       if (ch === BS || ch === '"') out += BS
       out += ch
     }
@@ -185,7 +197,16 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
       }
       var cmd = 'give ' + p.username + ' written_book[written_book_content={' +
         'title:"Journal",author:"Rehykt",resolved:true,pages:[' + parts.join(',') + ']}] 1'
-      srv.runCommandSilent(cmd)
+      // AND THE RESULT IS READ. This returned `true` for anything that did not throw, so a
+      // command that failed to parse logged "journal given (ok)" - the exact shape this
+      // project bans: "I failed" and "I found nothing" sharing a return value. It printed
+      // ok on every one of Ethan's logins while he was getting no book at all.
+      var r = srv.runCommandSilent(cmd)
+      if (!r) {
+        console.error(TAG + 'the give was REFUSED - the journal did NOT arrive. ' +
+          pages.length + ' page(s), command length ' + cmd.length + '.')
+        return false
+      }
       return true
     } catch (e) {
       console.error(TAG + 'the journal could not be given :: ' + e)

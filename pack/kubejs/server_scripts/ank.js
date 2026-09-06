@@ -80,6 +80,38 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   var CHECK_EVERY = 40                  // 2s. He is a presence, not a trap.
 
+  // ── 🚨 AND TWO GUARDS THAT DO NOT CARE WHY ─────────────────────────────────
+  // The cover test fixes the CAUSE of the loop Ethan hit. These two make the SYMPTOM
+  // impossible whatever the cause, and that is the point: a line repeating on a timer stops
+  // being eerie and becomes a bug you can watch. Three guards, because the depth
+  // hysteresis already in this file was written for exactly this failure and did not
+  // cover the sky half of the same boundary.
+  //
+  // ⭐ DWELL. He has to have been out a while before the boundary may take him. A player
+  // walking through a doorway cannot produce a spawn and a despawn in the same breath.
+  var MIN_DWELL = 20 * 15               // 15s
+
+  // ⭐ AND THE LINE ITSELF HAS A FLOOR. Even a legitimate second departure inside a minute
+  // takes his body without the words - because the second one is not eerie, and the log
+  // says it was suppressed rather than going quiet.
+  var CHILL_GAP = 20 * 60               // 60s
+
+  var K_SINCE = 'veldora_ank_since'     // server tick he stepped out
+  var K_CHILLED = 'veldora_ank_chilled' // server tick the chill last fired
+
+  /** Ticks since a stamp, or null if it cannot be read or the clock went backwards
+   *  (a restart resets tickCount, and a negative age must not read as "ages ago"). */
+  function ageOf(srv, p, key) {
+    try {
+      var was = p.persistentData.getInt(key)
+      if (!was) return null
+      var now = srv.tickCount
+      if (typeof now !== 'number') return null
+      var d = now - was
+      return d < 0 ? null : d
+    } catch (e) { return null }
+  }
+
   // 🚨 THE LINE IS ETHAN'S, VERBATIM. Ank does not say it - it is not his voice, it is the
   // player's own body. So it goes through announce.js's AMBIENT priority, the "comes from
   // nobody" surface trespass.js uses, and NOT through voice.js, which colours by god and
@@ -253,6 +285,48 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return 'spoke:' + src + ':' + said.sent + '+' + said.queued
   }
 
+  // ── 🔴 A ROOF IS NOT A CAVE ────────────────────────────────────────────────
+  // THE SKY TEST ALONE PUT ANK IN ETHAN'S HOUSE. `canSeeSky` is false under a roof, under
+  // a tree, in a doorway - and this file treated "no sky" as "underground". So Ank spawned
+  // INDOORS at y~70, despawned the moment Ethan stepped outside, and respawned when he
+  // stepped back in. Every despawn fires the chill, so "A chill runs up your spine." looped
+  // every few seconds for six minutes. Measured, from the log: ten spawn/despawn pairs at
+  // y = 69, 67, 61, 64, 65, 64, 65, 72, 72, 73. Not one of them underground.
+  //
+  // 🔑 THE FILE'S OWN COMMENT DEFENDED THE SKY TEST CORRECTLY AND INCOMPLETELY. "A player
+  // at y=70 in a cave under a mountain is not outside" - true. A player at y=70 in a
+  // KITCHEN is not underground either, and only one half of that was ever written down.
+  //
+  // ⭐ SO COVER IS COUNTED, NOT MERELY CHECKED. A house roof is one or two blocks; a second
+  // storey adds a couple more. Rock over a cave is tens. Counting what is above the player
+  // separates a building from a cave with nothing world-specific in it.
+  var MIN_COVER = 5            // solid blocks overhead before this counts as underground
+  var COVER_SCAN = 40          // how far up to look; past this it is a mountain either way
+
+  /**
+   * How many solid blocks sit in the column above the player, up to COVER_SCAN.
+   *
+   * ⚠️ `.blockState.isAir()`, NOT `.isAir()` - the latter does not exist on a KubeJS block
+   * and threw on its first live run when stalker.js's footing probe shipped with it.
+   * ⛔ Returns null when the column cannot be read. Never 0 - "no cover" and "I could not
+   * look" would send Ank away for opposite reasons.
+   */
+  function coverAbove(p) {
+    try {
+      var lvl = p.level
+      if (!lvl || typeof lvl.getBlock !== 'function') return null
+      var x = Math.floor(p.x), y = Math.floor(p.y), z = Math.floor(p.z)
+      var n = 0
+      for (var i = 2; i <= COVER_SCAN; i++) {
+        var b = lvl.getBlock(x, y + i, z)
+        if (!b) continue
+        if (!b.blockState.isAir()) n++
+        if (n >= MIN_COVER) return n        // enough is enough; stop scanning
+      }
+      return n
+    } catch (e) { return null }
+  }
+
   function seesSky(p) {
     try {
       var lvl = p.level
@@ -284,6 +358,10 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (sky === null) return null
     if (sky) return false               // outside
     if (y < TOO_DEEP) return false      // too deep
+    // ⛔ AND A BUILDING IS NOT A CAVE. See coverAbove - this is the guard that was missing.
+    var cover = coverAbove(p)
+    if (cover === null) return null     // cannot read the column: do nothing, as ever
+    if (cover < MIN_COVER) return false // a roof, a tree, an overhang
     return true
   }
 
@@ -365,6 +443,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (want && !out) {
       if (!spawn(srv, p)) return 'spawn-failed'
       setActive(p, true)
+      try { p.persistentData.putInt(K_SINCE, srv.tickCount) } catch (e) { }
       // ⭐ HE GREETS ON ARRIVAL, AND ONLY THE FIRST ARRIVAL OF EACH WORLD DAY. He respawns
       // every time the player surfaces or dips below the boundary, so an ungated greeting
       // would fire several times an hour and the written days would stop being days.
@@ -375,16 +454,33 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     }
 
     if (!want && out) {
+      // ⭐ DWELL. He arrived seconds ago; let him stand there. A doorway must not be able
+      // to produce a spawn and a despawn in the same breath.
+      var age = ageOf(srv, p, K_SINCE)
+      if (age !== null && age < MIN_DWELL) return 'just-arrived'
+
       // ⭐ THE CHILL FIRES WHETHER OR NOT THE BODY WENT. A despawn that failed and a
       // despawn that worked look the same to the player, and the line is the beat - but
       // the LOG must tell them apart, or a stuck Ank is invisible.
       var gone = despawn(srv, p)
       setActive(p, false)
       speechEpoch++            // anything still queued from his last greeting is now void
-      chill(srv, p)
-      if (!gone) console.warn(TAG + p.username + ' - the chill fired but the despawn FAILED')
-      else console.info(TAG + p.username + ' - Ank is gone (y ' + Math.round(yOf(p)) + ')')
-      return gone ? 'despawned' : 'despawn-failed'
+
+      // ⚠️ THE BODY ALWAYS GOES; ONLY THE LINE IS RATE-LIMITED. Suppressing the despawn
+      // instead would leave him standing in daylight, which is a worse bug than a missing
+      // line - and the log says which happened, so a silenced chill is never mistaken for
+      // a chill that failed to fire.
+      var since = ageOf(srv, p, K_CHILLED)
+      var quiet = (since !== null && since < CHILL_GAP)
+      if (!quiet) {
+        chill(srv, p)
+        try { p.persistentData.putInt(K_CHILLED, srv.tickCount) } catch (e) { }
+      }
+      if (!gone) console.warn(TAG + p.username + ' - the despawn FAILED' +
+        (quiet ? ' (chill suppressed, ' + since + 't since the last)' : ', but the chill fired'))
+      else console.info(TAG + p.username + ' - Ank is gone (y ' + Math.round(yOf(p)) + ')' +
+        (quiet ? ' - chill SUPPRESSED, only ' + since + 't since the last one' : ''))
+      return gone ? (quiet ? 'despawned-quiet' : 'despawned') : 'despawn-failed'
     }
 
     return out ? 'with-you' : 'away'

@@ -1485,3 +1485,135 @@ who acquires a path while Ank is out is skipped by the sweep forever, so he is n
 despawned and the chill never fires; and the *"he cannot be killed"* playtest step is written
 with the same `/kill @e[tag=veldora_ank]` the despawn path uses, so a tester confirming
 unkillability would be filing a pass for the observation that proves the despawn is broken.
+
+---
+
+## D-140 — Ank spawned in Ethan's house, and the chill looped for six minutes ✅ FIXED 2026-09-06
+
+**The first live test of Act 0.** *"a chill has run up your spine has been firing on repeat
+every 10 seconds."*
+
+🔴 **`shouldBeOut` decided "underground" purely by `canSeeSky`, so a roof counted as a cave.**
+Ank spawned indoors, despawned the moment Ethan stepped outside, and respawned when he
+stepped back in. Every despawn fires the chill.
+
+**Measured from the log — ten spawn/despawn pairs, every one above ground:**
+
+```
+steps out y=69   is gone y=67   steps out y=61   is gone y=64
+steps out y=65   is gone y=64   steps out y=65   is gone y=72
+steps out y=72   is gone y=73
+```
+
+⚠️ **The file's own comment defended the sky test correctly and incompletely.** It argued at
+length that *"a player at y=70 in a cave under a mountain is not outside"* — which is true,
+and is why `canSeeSky` is the right test for the OUTSIDE half. Nobody wrote down the
+converse: **a player at y=70 in a kitchen is not underground either.** One direction was
+reasoned about carefully and the other was never asked.
+
+🔑 **And the depth hysteresis already in the file was written for exactly this failure.** It
+guards the −32 boundary against a two-block bob, with a comment explaining that a repeating
+line stops being eerie and becomes a visible bug. It did not cover the *sky* half of the same
+boundary, so the identical symptom arrived through the door the guard was not on.
+
+### The fix is three guards, because any one of them alone still allows it
+
+| | |
+|---|---|
+| **cover is COUNTED, not just checked** | `coverAbove()` counts solid blocks in the column overhead, up to 40. A house roof is 1–2; a second storey adds a couple. Rock over a cave is tens. `MIN_COVER = 5`. ⛔ Returns **null** when the column cannot be read — "no cover" and "I could not look" would send him away for opposite reasons |
+| **dwell** | he must have been out `MIN_DWELL` (15s) before the boundary may take him. A doorway cannot produce a spawn and a despawn in the same breath |
+| **the line has a floor** | the chill cannot fire twice inside `CHILL_GAP` (60s). ⚠️ **The body always goes; only the line is rate-limited** — suppressing the despawn would leave him standing in daylight, which is worse. The log says `despawned-quiet` with the gap, so a silenced chill is never mistaken for one that failed |
+
+⭐ **`.blockState.isAir()`, not `.isAir()`.** The latter does not exist on a KubeJS block and
+threw on its first live run when stalker.js's footing probe shipped with it. That lesson was
+already written down in stalker.js and was there to be read.
+
+**The harness had no case for a roof at all.** It now carries the measured y values, the
+loop end to end, and the cooldown as a floor rather than a mute. 119 assertions.
+
+---
+
+## D-141 — the journal was never given, and the log said "ok" every time ✅ FIXED 2026-09-06
+
+Ethan got **no book at all**. `[opening] Rehykt - journal given (ok), 18 sentences` printed
+on every login.
+
+🔴 **A book page is three layers, and the code counted two.** Each page is a JSON text
+component, inside an SNBT single-quoted string, inside a command. SNBT strips a backslash
+**before JSON ever sees it**, so a single backslash-n is an *invalid SNBT escape* — the whole
+command fails to parse, the `give` never runs, and **nothing is logged**.
+
+⭐ **Proved against the live server**, same command otherwise, three page forms:
+
+```
+'alpha'                       PARSES
+'alpha\nbravo'   (one)        FAILS TO PARSE
+'alpha\\nbravo'  (two)        PARSES
+```
+
+⚠️ **The file's comment was one layer short and read as authoritative.** *"a real newline has
+to become the two characters backslash-n"* — correct for the JSON layer, and the reason the
+SNBT layer was never counted.
+
+🚨 **And `giveJournal` returned `true` for anything that did not throw.** `runCommandSilent`
+does not throw on a malformed command; it returns 0. So a give the server refused and a give
+that worked shared a return value — the project's own banned shape, printing **ok** on every
+one of Ethan's logins while he got nothing. It reads the result now and says so loudly.
+
+**Two harness cases added**, both with negative controls: the emitted command must carry two
+backslashes at every page break and must close its brackets, and a refused give must return
+false. Reverting the escape fails one of them.
+
+⚠️ **17 sentences, not 18.** The boot banner says 18 beats; `opening_lines.js` holds 17
+quoted sentences. Not chased tonight — noted so the next session does not read the banner as
+evidence.
+
+---
+
+## D-142 — `SERVER.getPlayer(name)` prints a stack trace on every call ⬜ OPEN, not ours
+
+```
+UUID string must be 32 or 36 characters long, got 'rehykt'
+  at kubejs .. UUIDWrapper.fromString
+  at kubejs .. PlayerSelector.fromString
+  ...
+  at kubejs .. ScheduledEvents$ScheduledEvent.tick
+```
+
+`stalker.js:590` calls `SERVER.getPlayer(owner)` with a username. KubeJS's `PlayerSelector`
+tries the string as a UUID first, **prints the failure to STDERR**, and then falls back to a
+name lookup — so the call works and the log fills with stack traces.
+
+⚠️ **It predates this work** — the identical stack is in `2026-08-30-8.log.gz`, and it is in
+another channel's file. Filed rather than fixed. It is noise, not a fault: it is inside a
+`try/catch` and nothing downstream misbehaves.
+
+🔑 **Worth knowing while reading a log**, because it looks exactly like a crash and appears
+right after unrelated `[immersive]` and `[ank]` lines. It cost time tonight before the
+rotated logs settled that it was not new.
+
+---
+
+## D-143 — the guidebook is stale, and Ethan wants the introduction in it ⬜ OPEN
+
+Ethan, 2026-09-06, on finding the Modonomicon book in his hotbar instead of a journal:
+
+> *"this is amazing and a game changer and can hold the journal entries, let me add lore to
+> read through the world. This is just amazing. That being said its outdated and i can't find
+> the act 0 introduction so this fails"*
+
+⭐ **A ruling and a defect in one sentence.** The book he wants the origin in already exists —
+`pack/datapacks/mcserver_guidebook`, the Modonomicon book `veldora`, categories
+`descent` / `paths` / `world`.
+
+**It is stale, confirmed:** `entries/paths/crown.json` still ships, and **Crown was retired
+on 2026-08-14** (merged into Wall). A book that names a sixth path is a book that teaches a
+player something untrue.
+
+⬜ **Unbuilt:** the Act 0 introduction has no entry. The written-book journal (D-141) is now
+fixed and works, but ⛔ **do not treat that as the answer** — Ethan has said where he wants
+this text to live, and it is not a consumable book in a hotbar slot.
+
+🔑 **Scope is his to set.** Two questions before building: does the journal *replace* the
+written book or sit alongside it, and does new lore go in as he writes it (a generator reading
+`docs/LORE.md`) or as hand-authored entries?

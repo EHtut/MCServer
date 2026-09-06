@@ -827,7 +827,16 @@ def main():
         if not led:
             print('nothing answered yet.')
             return 1
-        for k, v in sorted(led.items(), key=lambda kv: kv[1]['when']):
+        # _totals IS BOOKKEEPING, NOT AN ANSWER. It has no state, and --answers crashed
+        # on it - the same shape as load_ledger having to skip it. A row that is not an
+        # observation has to be excluded everywhere an observation is expected, not just
+        # where somebody remembered.
+        rows = [(k, v) for k, v in led.items()
+                if k != '_totals' and isinstance(v, dict) and 'state' in v]
+        if not rows:
+            print('nothing answered yet.')
+            return 1
+        for k, v in sorted(rows, key=lambda kv: kv[1].get('when', '')):
             print('%s  %s  %s' % (v['state'].upper().ljust(4), v['when'], v['what']))
             if v.get('note'):
                 print('      %s' % v['note'])
