@@ -139,9 +139,20 @@ CATEGORIES = {
 }
 
 ENTRIES = {
-    # ------------------------------------------------------------- entries
-    "how_i_got_here": {
-        "name": "How I Got Here",
+    # ⭐ ONE ENTRY. Ethan, 2026-09-06: "everything in the journal should be clear except
+    # Entry 0: And the traveller introduction."
+    #
+    # 🔴 SEVEN ENTRIES WERE DELETED HERE, and they were good prose about the pack's real
+    # rules - the surface being safe, gunpowder, the controls, dying. They are in git.
+    # ⛔ They are not "temporarily removed": a journal that starts full is not a journal,
+    # it is a manual with a journal's name on it. The book fills as the story happens or
+    # it is not his.
+    #
+    # ⚠️ The three other categories are therefore EMPTY. That is the design - they fill in
+    # as he writes - but if Patchouli renders an empty category as a dead clickable box,
+    # say so and they can be hidden until they have something in them.
+    "entry_0": {
+        "name": "Entry 0",
         "category": "patchouli:entries",
         "icon": "minecraft:written_book",
         "priority": True,
@@ -152,180 +163,6 @@ ENTRIES = {
              "text": "$(br2)".join(ORIGIN[4:11])},
             {"type": "patchouli:text", "title": "The Morning After",
              "text": "$(br2)".join(ORIGIN[11:])},
-        ],
-    },
-
-    # -------------------------------------------------------------- people
-    # LOCKED UNTIL YOU HAVE ACTUALLY MET THEM. Patchouli hides an entry whose
-    # `advancement` the player has not earned, and story.js already grants these
-    # nine beats - so the section is a RECORD rather than a cast list, with no
-    # new machinery. NEEDS-GAME: whether Patchouli hides or greys a locked entry.
-    "ank": {
-        "name": "Ank",
-        "category": "patchouli:people",
-        "icon": "minecraft:iron_pickaxe",
-        "advancement": "mcserver:act0/ank",
-        "pages": [
-            {"type": "patchouli:text", "title": "Ank",
-             "text": "He was waiting in the upper caves, which is a strange place to "
-                     "wait.$(br2)He says the deep is dangerous, that there have been rock "
-                     "slides, that as $(o)sheriff$() my safety is his business.$(br2)He will "
-                     "trade me almost anything to keep me above ground, and his prices make "
-                     "no sense."},
-            {"type": "patchouli:text",
-             "text": "A man that keen to sell me a reason to stay is a man with a reason "
-                     "of his own.$(br2)I have not worked out what it is yet."},
-        ],
-    },
-    "the_white_coat": {
-        "name": "The Woman in the White Coat",
-        "category": "patchouli:people",
-        "icon": "minecraft:white_wool",
-        "advancement": "mcserver:act0/the_white_coat",
-        "pages": [
-            {"type": "patchouli:text", "title": "The Woman in the White Coat",
-             "text": "She came on the seventh night, when I was dying, and she did not say "
-                     "one word the whole time.$(br2)She was gone by morning.$(br2)"
-                     "$(italic)I have never been able to decide whether she was a doctor.$()"},
-        ],
-    },
-
-    # ---------------------------------------------------------------- world
-    "the_surface_is_safe": {
-        "name": "The Surface Is Safe",
-        "category": "patchouli:learned",
-        "icon": "minecraft:grass_block",
-        "priority": True,
-        "pages": [
-            {"type": "patchouli:text", "title": "No Monsters Up Here",
-             "text": "Nothing hostile spawns in the open overworld above $(l)y 40$(). "
-                     "Not at night, not in the dark, not in a cave mouth on a hillside.$(br2)"
-                     "This is deliberate. The surface is for animals, farms, villages and "
-                     "building. If you want to be afraid, you have to go looking for it."},
-            {"type": "patchouli:text", "title": "Three Exceptions",
-             "text": "$(li)$(l)Structures$() are exempt. A dungeon, fort, outpost or camp "
-                     "spawns monsters normally, at any depth. Dangerous places stay dangerous.$(br)"
-                     "$(li)$(l)Pillager patrols$() roam anywhere. They are not covered by the "
-                     "rule and never will be - they use a different spawning system entirely.$(br)"
-                     "$(li)$(l)The stalkers$() come when they want to. See the last page."},
-            {"type": "patchouli:text", "title": "Below y 40",
-             "text": "Between $(l)y 0$() and $(l)y 39$() monsters spawn normally, but no more "
-                     "than forty at once. Uneasy, not swarming.$(br2)"
-                     "Below $(l)y 0$() nothing is held back at all. The deep is meant to be "
-                     "the most dangerous place in the world, and it is."},
-        ],
-    },
-    "dying": {
-        "name": "Dying",
-        "category": "patchouli:learned",
-        "icon": "minecraft:skeleton_skull",
-        "pages": [
-            {"type": "patchouli:text", "title": "You Keep Going",
-             "text": "There is $(o)no death screen$(). You die, and a moment later you are "
-                     "awake at your bed.$(br2)"
-                     "Your things do not come with you. They stay in a $(l)corpse$() where you "
-                     "fell, holding everything you had."},
-            {"type": "patchouli:text", "title": "The Cost Is The Walk",
-             "text": "Dying never costs you your gear and never costs you your base. It costs "
-                     "you $(o)the trip back$().$(br2)"
-                     "That is the whole point. Dying nine hundred blocks down is a real loss of "
-                     "an evening, and dying in your wheat field is nothing at all. The danger "
-                     "scales with how far you went."},
-        ],
-    },
-    "the_horror": {
-        "name": "Things That Are Not Bugs",
-        "category": "patchouli:learned",
-        "icon": "minecraft:soul_lantern",
-        "pages": [
-            {"type": "patchouli:text", "title": "It Is Supposed To Do That",
-             "text": "Some of what happens here reads like a broken game. It is not.$(br2)"
-                     "$(li)Whispering and voices in certain forests$(br)"
-                     "$(li)Knocking on doors at night$(br)"
-                     "$(li)A figure at the treeline that is gone when you look again$(br)"
-                     "$(li)Someone wearing a face you recognise"},
-            {"type": "patchouli:text", "title": "The Stalkers",
-             "text": "A handful of things in this world hunt $(o)you$() specifically, on their "
-                     "own schedule, and the surface rules do not hold them back.$(br2)"
-                     "They are rare on purpose. If one has decided about you, you will know.$(br2)"
-                     "$(italic)Not everything that walks like a player is one.$()"},
-        ],
-    },
-    # --------------------------------------------------------------- depths
-    "why_go_down": {
-        "name": "Why Go Down",
-        "category": "patchouli:land",
-        "icon": "minecraft:diamond",
-        "priority": True,
-        "pages": [
-            {"type": "patchouli:text", "title": "What The Surface Lacks",
-             "text": "Everything above ground is wood, stone, crops and magic. The things that "
-                     "$(o)do not belong$() in a world like this are buried in it.$(br2)"
-                     "Gems. Gunpowder. Machinery nobody up here could have built. The further "
-                     "down you dig, the less the world explains itself."},
-            {"type": "patchouli:text", "title": "The Deeper, The Stranger",
-             "text": "Depth is the progression. Not a tech tree, not a quest list - just how "
-                     "far down you are willing to go, and what you can survive once you are "
-                     "there.$(br2)"
-                     "Bring light, bring food, and expect the walk home to be the hard part."},
-        ],
-    },
-    "gunpowder": {
-        "name": "Gunpowder And Guns",
-        "category": "patchouli:land",
-        "icon": "minecraft:gunpowder",
-        "pages": [
-            {"type": "patchouli:text", "title": "It Is Not Up Here",
-             "text": "Gunpowder ore does not generate near the surface. It sits between "
-                     "$(l)y -128$() and $(l)y -64$(), in the deepest band of the world.$(br2)"
-                     "Creepers still drop it. But if you want $(o)enough$() gunpowder to feed "
-                     "a firearm, you are going mining, and you are going deep."},
-            {"type": "patchouli:text", "title": "Why It Is Gated",
-             "text": "Guns are not an early game option in this world - they are what you earn "
-                     "by surviving the bottom of it.$(br2)"
-                     "That is the trade the depths offer everywhere: the thing you want is "
-                     "under the thing that wants you."},
-        ],
-    },
-    # -------------------------------------------------------------- playing
-    "controls": {
-        "name": "Controls",
-        "category": "patchouli:learned",
-        "icon": "minecraft:lever",
-        "priority": True,
-        "pages": [
-            {"type": "patchouli:text", "title": "Not Vanilla",
-             "text": "$(li)$(l)Sneak$() is $(o)LEFT CTRL$()$(br)"
-                     "$(li)$(l)Sprint$() is $(o)LEFT SHIFT$()$(br2)"
-                     "These are swapped from Minecraft's defaults on purpose. If you hate it, "
-                     "$(l)Options -> Controls$() and put them back - it is your game."},
-            {"type": "patchouli:text", "title": "Combat",
-             "text": "Weapons have real movesets. A sword, an axe and a spear do not just deal "
-                     "different numbers, they $(o)swing differently$() and combo differently.$(br2)"
-                     "Try holding a weapon and attacking repeatedly rather than clicking once. "
-                     "Different weapons reward different rhythms."},
-        ],
-    },
-    "making_it_pretty": {
-        "name": "Making It Look Good",
-        "category": "patchouli:learned",
-        "icon": "minecraft:glowstone",
-        "pages": [
-            {"type": "patchouli:text", "title": "Already Installed, Switched Off",
-             "text": "Shaders and a texture pack came with the game. Nothing to download.$(br2)"
-                     "They ship $(o)off$() because this install is tuned for the slowest "
-                     "computer in the group. If yours has room, turn them on."},
-            {"type": "patchouli:text", "title": "Turning Them On",
-             "text": "$(l)Shaders$() - expensive, good graphics card only:$(br)"
-                     "Options -> Video Settings -> Shader Packs, then switch shaders on. "
-                     "BSL is already selected.$(br2)"
-                     "$(l)Textures$() - cheap, most machines cope:$(br)"
-                     "Options -> Resource Packs, move $(o)Faithful 32x$() to the right."},
-            {"type": "patchouli:text", "title": "If It Runs Badly",
-             "text": "Turn the $(o)shader$() off first, every time. It is by far the most "
-                     "expensive thing here and nothing breaks without it.$(br2)"
-                     "Suspect it immediately if frames collapse, the world renders with strange "
-                     "stripes or flickering, or menus and text go missing."},
         ],
     },
 }

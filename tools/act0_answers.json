@@ -14,10 +14,10 @@
   "who": "Ethan"
  },
  "700278": {
-  "note": "C:/Program Files/Git/story reach the_caves gives an error",
+  "note": "the /story reach command threw: event.stringArgument is not a KubeJS API. FIXED and deployed, needs a retest",
   "state": "fail",
   "what": "reaching a beat fires a toast, and the Act 0 tab renders with icons",
-  "when": "2026-09-06 01:15",
+  "when": "2026-09-06 02:14",
   "who": "Ethan"
  },
  "9307b2": {
@@ -28,10 +28,10 @@
   "who": "Ethan"
  },
  "93e01e": {
-  "note": "answered by the playtest step \"reaching a beat fires a toast\" - C:/Program Files/Git/story reach the_caves gives an error",
+  "note": "answered by the playtest step \"reaching a beat fires a toast\" - the /story reach command threw: event.stringArgument is not a KubeJS API. FIXED and deployed, needs a retest",
   "state": "fail",
   "what": "a toast fires and the Act 0 tab renders with the right icons",
-  "when": "2026-09-06 01:15",
+  "when": "2026-09-06 02:14",
   "who": "Ethan"
  },
  "96a2c8": {
@@ -42,11 +42,11 @@
   "who": "Ethan"
  },
  "_totals": {
-  "failed": 3,
+  "failed": 2,
   "markers": 8,
-  "passed": 3,
-  "script": 23,
-  "when": "2026-09-06 01:24"
+  "passed": 2,
+  "script": 25,
+  "when": "2026-09-06 02:14"
  },
  "cfdae5": {
   "note": "all 18 sentences read as one piece across 5 pages",

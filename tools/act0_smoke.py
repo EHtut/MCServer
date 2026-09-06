@@ -406,10 +406,14 @@ SCRIPT = [
          '/opening reset then relog'),
         ('the card is legible, clear of the crosshair and the Seasons HUD',
          'watch it - the fade is half the question, a screenshot cannot answer it'),
-        ('a book titled Journal is in the inventory, and it opens',
-         '/opening journal'),
-        ('the journal holds all 18 sentences and reads as one piece',
-         'open it and read to the end'),
+        ('the journal opens from the INVENTORY BUTTON and is titled "My Journal"',
+         'open your inventory, click the book button beside the crafting grid'),
+        ('it contains ONE entry - Entry 0 - and the other three sections are empty',
+         'a journal that starts full is a manual. It fills as the story happens'),
+        ('Entry 0 holds all 18 sentences across three pages, and reads as one piece',
+         'open Entry 0 and read to the end'),
+        ('the three empty sections do not look broken',
+         'if Patchouli renders an empty category as a dead box, say so and they get hidden'),
         ('reaching a beat fires a toast, and the Act 0 tab renders with icons',
          '/story reach the_caves'),
     ]),
@@ -752,6 +756,18 @@ def print_script(led):
 
 
 def record(idx, state, note, who):
+    # A NOTE STARTING WITH A SLASH GETS EATEN BY GIT BASH. MSYS rewrites a leading-slash
+    # argument into a Windows path, so `--note "/story reach ... gives an error"` was stored
+    # as "C:/Program Files/Git/story reach ... gives an error". The note is the whole value
+    # of this ledger - a corrupted one is worse than a missing one, because it reads as a
+    # real observation. Prefix with MSYS_NO_PATHCONV=1, or start the note with a word.
+    if 'Program Files/Git/' in (note or ''):
+        print('REFUSED: that note was mangled by Git Bash path conversion.')
+        print('  got: %s' % note)
+        print('  re-run as:  MSYS_NO_PATHCONV=1 python tools/act0_smoke.py --fail %s '
+              '--note "..."' % idx)
+        return 2
+
     led = load_ledger()
     known = {sid(w): w for _, items in all_items() for w, _ in items}
     if idx not in known:

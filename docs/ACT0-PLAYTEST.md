@@ -14,7 +14,7 @@ python tools/act0_smoke.py --pass 8f4b5d --note "took ~2s, came up behind me"
 python tools/act0_smoke.py --fail 8f4b5d --note "never showed"
 ```
 
-**3 of 31 passed, 3 FAILED.**
+**2 of 33 passed, 2 FAILED.**
 
 ---
 
@@ -24,57 +24,55 @@ python tools/act0_smoke.py --fail 8f4b5d --note "never showed"
 |---|---|---|---|---|
 | OK | 1 | `59aa07` | a fresh player sees the title card type itself out, and NOTHING else | /opening reset then relog |
 | OK | 2 | `9307b2` | the card is legible, clear of the crosshair and the Seasons HUD | watch it - the fade is half the question, a screenshot cannot answer it |
-| X | 3 | `96a2c8` | a book titled Journal is in the inventory, and it opens | /opening journal |
-| OK | 4 | `cfdae5` | the journal holds all 18 sentences and reads as one piece | open it and read to the end |
-| X | 5 | `700278` | reaching a beat fires a toast, and the Act 0 tab renders with icons | /story reach the_caves |
+|   | 3 | `585430` | the journal opens from the INVENTORY BUTTON and is titled "My Journal" | open your inventory, click the book button beside the crafting grid |
+|   | 4 | `0fd01a` | it contains ONE entry - Entry 0 - and the other three sections are empty | a journal that starts full is a manual. It fills as the story happens |
+|   | 5 | `b7e1eb` | Entry 0 holds all 18 sentences across three pages, and reads as one piece | open Entry 0 and read to the end |
+|   | 6 | `57214f` | the three empty sections do not look broken | if Patchouli renders an empty category as a dead box, say so and they get hidden |
+| X | 7 | `700278` | reaching a beat fires a toast, and the Act 0 tab renders with icons | /story reach the_caves |
 
 - **PASS** — Ethan, 2026-09-06 01:15: title card types out, nothing else on screen
   <br>a fresh player sees the title card type itself out, and NOTHING else
 - **PASS** — Ethan, 2026-09-06 01:15: legible and clear. Complaint: wants a FONT - it renders in vanilla type
   <br>the card is legible, clear of the crosshair and the Seasons HUD
-- **FAIL** — Ethan, 2026-09-06 01:24: no journal in game: KubeJS give returned 0 (the same command works from rcon - likely a permission-level difference). SUPERSEDED - replaced by the Modonomicon journal, D-143
-  <br>a book titled Journal is in the inventory, and it opens
-- **PASS** — Ethan, 2026-09-06 01:15: all 18 sentences read as one piece across 5 pages
-  <br>the journal holds all 18 sentences and reads as one piece
-- **FAIL** — Ethan, 2026-09-06 01:15: C:/Program Files/Git/story reach the_caves gives an error
+- **FAIL** — Ethan, 2026-09-06 02:14: the /story reach command threw: event.stringArgument is not a KubeJS API. FIXED and deployed, needs a retest
   <br>reaching a beat fires a toast, and the Act 0 tab renders with icons
 
 ## Ank arrives
 
 | | # | id | what to look for | how |
 |---|---|---|---|---|
-|   | 6 | `8f4b5d` | he spawns when you enter a cave, without you doing anything | walk into the upper caves and wait up to 2s |
-|   | 7 | `416968` | he wears his own skin, not a missing-texture check pattern | look at him. F3+T first if you suspect the client cache |
-|   | 8 | `95982d` | he follows you around the cave | walk 20 blocks and look back |
-|   | 9 | `e7acb4` | he survives being hit - a player cannot kill him | hit him repeatedly with the best weapon you have |
-|   | 10 | `847a90` | /kill on him REMOVES him - if it does not, the despawn path is broken and needs `easy_npc despawn` instead | /kill @e[tag=veldora_ank] then look for him |
+|   | 8 | `8f4b5d` | he spawns when you enter a cave, without you doing anything | walk into the upper caves and wait up to 2s |
+|   | 9 | `416968` | he wears his own skin, not a missing-texture check pattern | look at him. F3+T first if you suspect the client cache |
+|   | 10 | `95982d` | he follows you around the cave | walk 20 blocks and look back |
+|   | 11 | `e7acb4` | he survives being hit - a player cannot kill him | hit him repeatedly with the best weapon you have |
+|   | 12 | `847a90` | /kill on him REMOVES him - if it does not, the despawn path is broken and needs `easy_npc despawn` instead | /kill @e[tag=veldora_ank] then look for him |
 
 ## Ank talks
 
 | | # | id | what to look for | how |
 |---|---|---|---|---|
-|   | 11 | `d348c3` | his greeting arrives in the CHAT BAR as <Ank>, like any person speaking | /ank greet 7 |
-|   | 12 | `d2061f` | a five-line day reads as somebody talking, not as a wall of text | /ank greet 7 and watch the pacing |
-|   | 13 | `4c9f75` | he greets ONCE a day - leaving and returning does not repeat it | go below -32, then come back up |
-|   | 14 | `99475c` | right-clicking him opens his dialogue with three options | right-click him |
-|   | 15 | `47aa8c` | picking "Its none of your business" gets the sheriff answer | the branch with three reply lines |
+|   | 13 | `d348c3` | his greeting arrives in the CHAT BAR as <Ank>, like any person speaking | /ank greet 7 |
+|   | 14 | `d2061f` | a five-line day reads as somebody talking, not as a wall of text | /ank greet 7 and watch the pacing |
+|   | 15 | `4c9f75` | he greets ONCE a day - leaving and returning does not repeat it | go below -32, then come back up |
+|   | 16 | `99475c` | right-clicking him opens his dialogue with three options | right-click him |
+|   | 17 | `47aa8c` | picking "Its none of your business" gets the sheriff answer | the branch with three reply lines |
 
 ## Ank trades
 
 | | # | id | what to look for | how |
 |---|---|---|---|---|
-|   | 16 | `2994c8` | the trade UI opens, and the price is wheat rather than emeralds | right-click him, or the trade button in his dialogue |
-|   | 17 | `1e6c3d` | a first-time player can actually afford the tier-0 trade | count the wheat it asks for against what a new player has |
-|   | 18 | `582a5d` | after descending, his next offer is visibly better | go below -32, come back, trade again |
+|   | 18 | `2994c8` | the trade UI opens, and the price is wheat rather than emeralds | right-click him, or the trade button in his dialogue |
+|   | 19 | `1e6c3d` | a first-time player can actually afford the tier-0 trade | count the wheat it asks for against what a new player has |
+|   | 20 | `582a5d` | after descending, his next offer is visibly better | go below -32, come back, trade again |
 
 ## Ank leaves
 
 | | # | id | what to look for | how |
 |---|---|---|---|---|
-|   | 19 | `3543e7` | going below -32 despawns him and prints "A chill runs up your spine." | dig down past the deep-works boundary |
-|   | 20 | `8608b7` | stepping into daylight does the same | walk out of the cave |
-| X | 21 | `1824c1` | bobbing on the boundary does NOT loop the chill | stand at y -31 and jump |
-|   | 22 | `1fe8f9` | the chill reads as coming from nobody, not from Ank | it is at the top of the screen; his own lines are in chat |
+|   | 21 | `3543e7` | going below -32 despawns him and prints "A chill runs up your spine." | dig down past the deep-works boundary |
+|   | 22 | `8608b7` | stepping into daylight does the same | walk out of the cave |
+| X | 23 | `1824c1` | bobbing on the boundary does NOT loop the chill | stand at y -31 and jump |
+|   | 24 | `1fe8f9` | the chill reads as coming from nobody, not from Ank | it is at the top of the screen; his own lines are in chat |
 
 - **FAIL** — Ethan, 2026-09-06 00:59: chill looped every ~10s for six minutes. Ank was spawning INSIDE the house - canSeeSky was the only underground test. FIXED, needs a re-test
   <br>bobbing on the boundary does NOT loop the chill
@@ -83,20 +81,20 @@ python tools/act0_smoke.py --fail 8f4b5d --note "never showed"
 
 | | # | id | what to look for | how |
 |---|---|---|---|---|
-|   | 23 | `43ff11` | a day spent out of the deep produces an urge line | sleep through a day topside. The pools are EMPTY until Ethan writes them |
+|   | 25 | `43ff11` | a day spent out of the deep produces an urge line | sleep through a day topside. The pools are EMPTY until Ethan writes them |
 
 ## the code's own claims (NEEDS-GAME markers)
 
 | | # | id | what to look for | how |
 |---|---|---|---|---|
-|   | 24 | `1546cd` | align actually left-aligns - the mod may ignore it like maxWidth | /im test |
-|   | 25 | `2ec286` | ON_DISTANCE_NEAR fires without a click, and at what range | walk up to Ank |
-|   | 26 | `89a104` | an ADVANCEMENT condition reads our mcserver:act0 tree | /story reach the_caves then talk to him |
-|   | 27 | `f02007` | SET_OPACITY actually fades rather than snapping | /easy_npc dialog test |
-|   | 28 | `3bda20` | a preset we ship under data/easy_npc/preset is found at all, and under WHICH of the two paths | /easy_npc preset import_new then tab-complete |
-|   | 29 | `0647c3` | FOLLOW_PLAYER targets the nearest player without TargetPlayerName | /easy_npc objective set follow |
-|   | 30 | `d08ae3` | Invulnerable:1b survives void and /kill, not just damage | /kill @e[type=easy_npc:humanoid] |
-|   | 31 | `f2cd20` | removing the follow objective stops an NPC already following | /easy_npc objective remove |
+|   | 26 | `1546cd` | align actually left-aligns - the mod may ignore it like maxWidth | /im test |
+|   | 27 | `2ec286` | ON_DISTANCE_NEAR fires without a click, and at what range | walk up to Ank |
+|   | 28 | `89a104` | an ADVANCEMENT condition reads our mcserver:act0 tree | /story reach the_caves then talk to him |
+|   | 29 | `f02007` | SET_OPACITY actually fades rather than snapping | /easy_npc dialog test |
+|   | 30 | `3bda20` | a preset we ship under data/easy_npc/preset is found at all, and under WHICH of the two paths | /easy_npc preset import_new then tab-complete |
+|   | 31 | `0647c3` | FOLLOW_PLAYER targets the nearest player without TargetPlayerName | /easy_npc objective set follow |
+|   | 32 | `d08ae3` | Invulnerable:1b survives void and /kill, not just damage | /kill @e[type=easy_npc:humanoid] |
+|   | 33 | `f2cd20` | removing the follow objective stops an NPC already following | /easy_npc objective remove |
 
 ---
 
