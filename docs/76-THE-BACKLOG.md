@@ -120,7 +120,7 @@ that. Anything written anywhere else is invisible to it — not filtered out, ne
 |---|---|---|
 | `deep_speaker.js` | **177** | 🔑 **Caebrim, both of her.** The single biggest block of unreviewed dialogue in the game, and the subject of **E6** |
 | `introductions.js` | **98** | ⭐ **First contact with each god** — literally the first thing a player ever hears one say |
-| `pathless.js` | 60 | the gods overheard by someone with no path |
+| ~~`pathless.js`~~ | — | ⛔ **DELETED 2026-09-06.** pathless.js was DELETED 2026-09-06 - it put gods in the chat bar, which CLAUDE.md rule A forbids outright. See docs/DEFECTS.md and gods_in_chat_check.js. |
 | `regard.js` | 37 | how a god speaks about *you* |
 | `whispers.js` · `stalker.js` | 24 · 23 | your god muttering · the thing following you |
 | `blade_events.js` · `salvage_events.js` · `wall_events.js` · `art_events.js` · `forge_events.js` | 23 · 18 · 14 · 14 · 4 | **per-god event lines that never went through the pools** |

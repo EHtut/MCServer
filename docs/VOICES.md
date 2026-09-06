@@ -19,8 +19,7 @@ bar, and **gods no longer carry colours** — they carry per-god *fonts*. `arriv
 old five-god join scene, is cut. Both are Ethan's rulings; see §6.
 
 **Next chunk.** Finish the chat-path retirement: `voice.js` already has `CHAT_COPY = false`,
-but callers that bypass it with their own `tell()` still exist — `pathless.js:189` and
-`:202` are known. **Falsifier:** a tree-wide grep for god-coloured `tell(` returns nothing,
+⛔ **AND NOTHING MAY BYPASS IT INTO CHAT.** CLAUDE.md rule A, 2026-09-06: gods use the dialogue system ONLY; the chat bar is for a physically present character. The two callers that did — `pathless.js` and `broadcast.js`'s CHAT_COPY branches — are deleted, and `tools/gods_in_chat_check.js` fails the build if another appears.
 and `dialogue_check.js` stays clean.
 
 **What needs Ethan.** Whether the keep-out numbers in §3 should be per-client config rather

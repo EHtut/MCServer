@@ -271,7 +271,8 @@ the five by some distance — worth watching in play rather than assuming.
 2. ~~**Art: after she kills you, what?**~~ ✅ **RULED** — see above.
 3. ~~**Forge: timeout and retry?**~~ ✅ **RULED** — see above.
 4. **What does a godless early game look like now?** Every condition is much harder
-   than carrying an item. `pathless.js` already has the pantheon arguing overhead so
+   than carrying an item. ⛔ **This once leaned on `pathless.js`, which is GONE** — pathless.js was DELETED 2026-09-06 - it put gods in the chat bar, which CLAUDE.md rule A forbids outright. See docs/DEFECTS.md and gods_in_chat_check.js.
+   Anything built here needs its own surface, and it is the dialogue system, not chat.
    the wait is not silent, but it is now considerably longer.
 
 ---
