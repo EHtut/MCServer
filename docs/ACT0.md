@@ -7,7 +7,7 @@
 
 ## ① DIGEST
 
-**What Act 0 is.** Normal Minecraft, with the book narrating *you*. No gods, no voices. You
+**What Act 0 is.** Normal Minecraft. On your first join you get **a journal in your inventory** holding the origin, and the only thing on screen is the title typing itself out. No gods, no voices. You
 head for the caves and **Ank stops you** — he tells you not to go down, and trades with you to
 keep you above ground. You go anyway, and underground you **overhear him arguing with
 Caebrim about you.** The argument escalates across seven days in a **peaceful** cave. Around
@@ -109,10 +109,11 @@ She has no dialogue at all in the opening, so there is nothing to leak.
 
 | | chunk | falsifier answered |
 |---|---|---|
-| ✅ | **The opening** — the book narrating you. 18 beats, one sentence each, typed, once per world | `dialogue_check opening` clean; 19 beats over 114s |
-| ✅ | **The title card** | `finale_check.js` runs the real `ritual.js` and sees the popup. It never rendered before 2026-09-05 |
+| ✅ | **The opening** — a **journal book** holding the 18 sentences, plus a typed title card. **No cutscene.** | harness asserts `ritual` is never called *and* that all 18 sentences are in the book — "cutscene removed" and "origin deleted" must not score the same |
+| ✅ | **The title card** — typed, centred, clear of the crosshair and biome bands | 2 sends over 12.5s in the emulator; harness asserts both are typed and neither sits in a keep-out band |
 | ✅ | **`arrival.js` cut** — no god speaks in Act 0 | word-boundary grep empty; blade's colour made explicit first |
-| ✅ | **The randomised life cut** — one origin | harness asserts `lifeOf` is gone *and* 18 beats still play |
+| ✅ | **The randomised life cut** — one origin | harness asserts `lifeOf` is gone *and* 18 sentences still reach the player |
+| 🔜 | **Achievements for plot progression** | Ethan, 2026-09-05: *"We can also do an achievement system to track plot progression."* **Not built.** Falsifier: reaching a beat grants a visible advancement, and a fresh world grants none |
 
 ### The act, in order
 

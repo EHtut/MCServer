@@ -30,33 +30,33 @@ function build() {
     },
   }
   const scheduled = []
+  const ritualCalls = []
+  const popups = []
+  const commands = []
   const server = {
     tickCount: 0,
     players: [player],
     scheduleInTicks(t, fn) { scheduled.push({ at: t, fn }) },
+    runCommandSilent(c) { commands.push(c) },
+    runCommand(c) { commands.push(c); return 1 },
   }
   const VELDORA = {
     voice: {
       aside: (p, text, o) => { said.push({ text, o: o || {} }); return true },
       beatFor: (t, st) => Math.max(80, t.length * 2 * ((st && st.beatScale) || 1)),
     },
-    // 🔴 THE OPENING IS A RITUAL CUTSCENE NOW. It used to schedule eighteen separate
-    // callbacks, which is why a restart mid-sequence delivered two lines and then
-    // silence - the rest died with the server. It hands the whole scene to ritual.begin
-    // as one unit instead, so the sandbox has to provide that primitive.
-    //
-    // ⚠️ The stub records every LINE, so the assertions below still check the beats
-    // themselves rather than just that something was called.
+    // 🔴 THE OPENING IS NOT A CUTSCENE ANY MORE (Ethan, 2026-09-05). It gives a book and
+    // types a title card. ritual is still stubbed, but only so the harness can PROVE it is
+    // never called - a dormant path that still looks callable is how the wrong one gets
+    // fixed later.
     ritual: {
-      begin: (p, spec) => {
-        // ⚠️ Pass the SPEC through. The stub used to synthesise a tiny opts object, so
-        // assertions about typewriter / anchor / y could not see what the Opening actually
-        // asked for - they were testing the stub, not the code.
-        (spec.lines || []).forEach(t => said.push({ text: t, o: spec }))
-        return true
-      },
+      begin: (p, spec) => { ritualCalls.push(spec); return true },
       release: () => true,
       active: () => false,
+    },
+    im: {
+      show: (p, text, o) => { said.push({ text, o: o || {} }); return true },
+      popup: (p, t, sub, secs) => { popups.push({ t, sub, secs }); return true },
     },
   }
   const ctx = {
@@ -71,7 +71,7 @@ function build() {
   for (const f of ['opening_lines.js', 'opening.js']) {
     vm.runInContext(fs.readFileSync(path.join(SS, f), 'utf8'), ctx, { filename: f })
   }
-  return { ctx, said, store, player, server, scheduled }
+  return { ctx, said, store, player, server, scheduled, ritualCalls, popups, commands }
 }
 
 function runAll(env) {
@@ -84,56 +84,39 @@ const CASES = []
 const t = (n, f) => CASES.push([n, f])
 function assert(c, m) { if (!c) throw new Error(m || 'failed') }
 
-t('it plays, and every beat reaches the player', () => {
+t('it plays, and the ONLY thing on screen is the card', () => {
+  // ⭐ Ethan, 2026-09-05: *"The only thing you see is the words typing out."* Two sends,
+  // the title and the byline, and nothing else. Eighteen overlay beats was the old design.
   const e = build()
-  assert(e.ctx.VELDORA.opening.play(e.player, true) === 'played', 'should play')
-  runAll(e)
-  // 🔴 WAS A HARDCODED 15. The `end` section became pick-one instead of play-all (it
-  // holds interchangeable ENDINGS, and concatenating it made them read as consecutive
-  // plot), which dropped every life by three beats and failed a correct change.
-  //
-  // 🔑 Ask the data how many beats there should be. A test carrying its own copy of a
-  // number the code owns will go red every time that number legitimately moves - which is
-  // the third time tonight, after the scatter reach and the tide GRACE.
-  // ⭐ THE CONTRACT, MEASURED AGAINST THE MOD'S REAL LIMITS.
-  //
-  // Three things were tested live on 2026-08-30 with a player watching, and together they
-  // decide the shape - so this asserts the consequences rather than a chosen design:
-  //
-  //   escaped newline  renders literally, both single and double escaped
-  //   text NBT field   does not exist - text is the command's greedy trailing argument
-  //   maxWidth         a real field in the jar, and ignored: 90 and 400 looked identical
-  //
-  // ⇒ A single message cannot hold two lines. Ethan's hard rule - *"every sentence is on a
-  //   new line"* - therefore REQUIRES one send per sentence, and the swap between them is
-  //   unavoidable. Typing is what makes that a beat arriving rather than a line popping.
-  const L = e.ctx.VELDORA.openingLines
-  const sentences = L.sentences()
-  assert(sentences.length > 5, 'the prose looks empty - ' + sentences.length + ' sentences')
-  assert(e.said.length === sentences.length,
-    'one send per sentence (' + sentences.length + '), got ' + e.said.length)
+  const r = e.ctx.VELDORA.opening.play(e.player, false)
+  assert(r === 'played', 'expected played, got ' + r)
+  assert(e.said.length === 2, 'expected exactly 2 sends (title, byline), got ' + e.said.length)
+  const [title, byline] = e.ctx.VELDORA.opening.title()
+  assert(e.said[0].text === title, 'first send must be the title, got ' + e.said[0].text)
+  assert(e.said[1].text === byline, 'second send must be the byline, got ' + e.said[1].text)
+})
 
-  // ⛔ NO SENTENCE MAY CARRY TWO. That is the hard rule, and it is the thing a future
-  // "optimisation" would break by re-joining them into one message.
-  for (const s2 of e.said) {
-    const inner = s2.text.replace(/[.!?]+$/, '')
-    assert(!/[.!?]\s+\S/.test(inner),
-      'a send carries more than one sentence: ' + s2.text)
+t('⭐ the card is TYPED, and clear of the crosshair', () => {
+  // 🔴 IT WAS A `popup` UNTIL 2026-09-05 AND A POPUP CANNOT TYPE - it carries no NBT at
+  // all, so the typewriter flag has nowhere to go. Typed means the overlay route.
+  const e = build()
+  e.ctx.VELDORA.opening.play(e.player, false)
+  for (const send of e.said) {
+    assert(send.o.typewriter, 'the card must be typed: ' + send.text)
+    assert(String(send.o.anchor).indexOf('CENTER') === 0, 'the card is centred')
+    // From a CENTER anchor the crosshair owns -34..34 and the biome title -53..-11.
+    const y = send.o.y
+    assert(!(y > -34 && y < 34), 'y=' + y + ' sits on the crosshair')
+    assert(!(y > -53 && y < -11), 'y=' + y + ' sits in the biome-title band')
   }
-  const o = e.said[0].o || {}
-  assert(o.typewriter === true, 'every line MUST be typed - a standing rule')
-  assert(o.perChar === true, 'each line must be timed from its own length')
-  assert((o.y || 0) >= 100, 'the prose must clear the Serene Seasons HUD, y=' + o.y)
+})
 
-  // 🔴 AND THE POSITION MUST SURVIVE THE RITUAL BOUNDARY. ritualOverlay forwarded seconds,
-  // anchor, align and typewriter - and silently dropped x and y, so three separate fixes
-  // to move the entry off the Serene Seasons HUD did nothing and looked like failed
-  // deploys. This asserts the boundary carries them.
-  const ri = fs.readFileSync(path.join(SS, 'ritual.js'), 'utf8')
-  const start = ri.indexOf('function ritualOverlay')
-  const body = ri.slice(start, ri.indexOf('function scene', start) + 1 || start + 3000)
-  assert(/STATE_X/.test(body), 'ritualOverlay must forward x')
-  assert(/STATE_Y/.test(body), 'ritualOverlay must forward y')
+t('⛔ and the title never leaks into the journal', () => {
+  const e = build()
+  e.ctx.VELDORA.opening.play(e.player, false)
+  const give = e.commands.find(c => c.indexOf('written_book') !== -1) || ''
+  assert(give.indexOf('ARKHDOTTIR') === -1,
+    'the title is the card, not a page - it would be delivered twice')
 })
 
 t('🔴 it plays ONCE - a second attempt is refused', () => {
@@ -176,14 +159,48 @@ t('⛔ THE RANDOMISED LIFE IS CUT, AND MUST STAY CUT', () => {
     'opening_lines.count() is back - there is one origin, not a set to pick from')
 })
 
-t('⭐ ...and the one origin still delivers every beat', () => {
-  // 🔑 THE NEGATIVE ABOVE NEEDS THIS. On its own it would pass just as well against
-  // an opening that had been gutted entirely - "the life is gone" and "the story is gone"
-  // must not look the same.
+t('⭐ ...and the one origin still reaches the player - in the JOURNAL', () => {
+  // 🔴 THE EIGHTEEN SENTENCES MOVED SURFACE, THEY DID NOT GO AWAY. This is the assertion
+  // that tells "the cutscene was removed" apart from "the origin was deleted" - two very
+  // different outcomes that a test counting overlay sends would have scored identically.
   const e = build()
   e.ctx.VELDORA.opening.play(e.player, false)
-  assert(e.said.length === 18,
-    'expected the 18 sentences of the origin, got ' + e.said.length)
+  const give = e.commands.find(c => c.indexOf('written_book') !== -1)
+  assert(give, 'no written_book was given')
+  // ⚠️ READ THE SENTENCES FROM THE API, NOT BY REGEXING THE SOURCE. My first version
+  // matched every quoted string in the file and picked up a COMMENT quoting Ethan's
+  // one-sentence rule, then reported it as a missing journal page. The export is the
+  // thing production uses; the file is not.
+  const sentences = e.ctx.VELDORA.openingLines.build()
+  assert(sentences.length === 18, 'expected 18 sentences, saw ' + sentences.length)
+  for (const text of sentences) {
+    assert(give.indexOf(text) !== -1, 'this sentence is missing from the journal: ' + text)
+  }
+})
+
+t('⛔ the cutscene is GONE - ritual is never called', () => {
+  // ⚠️ Ethan spent four days on the cutscene before cutting it. A path that still runs
+  // "sometimes" is worse than one that never runs, so this asserts the absence directly
+  // rather than trusting that nothing calls it.
+  const e = build()
+  e.ctx.VELDORA.opening.play(e.player, false)
+  assert(e.ritualCalls.length === 0,
+    'the opening called ritual.begin ' + e.ritualCalls.length + ' time(s) - the cutscene is cut')
+})
+
+t('⭐ the journal is titled Journal, and its pages do not overflow', () => {
+  const e = build()
+  e.ctx.VELDORA.opening.play(e.player, false)
+  const give = e.commands.find(c => c.indexOf('written_book') !== -1) || ''
+  assert(give.indexOf('title:"Journal"') !== -1, 'the book must be titled Journal')
+  assert(give.indexOf('author:"Rehykt"') !== -1, 'the book must be authored')
+  // 🔑 A page that overflows silently drops its tail in game and there is no error.
+  const pages = e.ctx.VELDORA.opening.paginate(e.ctx.VELDORA.openingLines.build())
+  for (const pg of pages) {
+    let h = 0
+    for (const line of pg) h += Math.ceil(line.length / 19) + 1
+    assert(h <= 14, 'a page is ' + h + ' lines, over the 14 a book page holds: ' + pg[0])
+  }
 })
 
 t('🚨 NO GOD APPEARS ANYWHERE IN IT', () => {
@@ -211,34 +228,6 @@ t('⭐ the doctor never speaks', () => {
     'something is quoted, which means somebody spoke: ' +
     quoted.map(s => s.text).join(' / '))
 })
-
-t('⭐ the title is its own centred announcement, not a tail on the prose', () => {
-  // Ethan: *"arkhdottir new blood should play across the middle of the screen like an
-  // announcement."* It used to run inline as the last words of a paragraph, where it had
-  // no weight at all - the moment the whole scene builds to was the least prominent thing
-  // on screen.
-  const e = build()
-  e.ctx.VELDORA.opening.play(e.player, true)
-  runAll(e)
-  const spec = e.said[0].o || {}
-  // ⭐ THE CARD IS A `popup`, measured in play: the only command route that renders two
-  // lines - gold underlined title with the subtitle beneath, in a background box. subtext
-  // is builder-only and unreachable from Rhino (D-123), and both newline routes are dead.
-  assert(spec.finale, 'the opening must declare a finale card')
-  assert(spec.finale.popup === true, 'the card must use the popup route, not an overlay')
-  assert((spec.finale.title || '').indexOf('ARKHDOTTIR') !== -1,
-    'the card must carry the title, got: ' + spec.finale.title)
-  assert((spec.finale.subtitle || '').length > 5,
-    'the card must carry the byline as its subtitle')
-  // ⛔ And it must NOT also be buried in the prose.
-  for (const s3 of e.said) {
-    assert(s3.text.indexOf('ARKHDOTTIR') === -1,
-      'the title leaked into the prose - it would be delivered twice: ' + s3.text)
-  }
-})
-
-
-
 
 t('every beat is long enough to be read', () => {
   const e = build()

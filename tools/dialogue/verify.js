@@ -22,7 +22,7 @@ const BASE = ['immersive.js', 'voice.js', 'screen.js']
 
 const SCENES = {
   opening: {
-    what: 'the origin script, ending on the ARKHDOTTIR: NEW BLOOD card',
+    what: 'the title card - the only thing on screen. The origin is in the journal',
     files: [...BASE, 'ritual.js', 'opening_lines.js', 'opening.js'],
     start: (w) => w.ctx.VELDORA.opening.play(w.player, true),
     ticks: 4000,
