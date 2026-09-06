@@ -1546,6 +1546,11 @@ hash = "18755836fe5817992e8f52bdb1d42857e85a41a7a19287b04d63a072006931b5"
 metafile = true
 
 [[files]]
+file = "mods/weather-storms-tornadoes.pw.toml"
+hash = "54d07601a6be738af7115e07b29d75de786b5ffdc98681a383d6c66f1bd6a6c9"
+metafile = true
+
+[[files]]
 file = "mods/what-are-they-up-to.pw.toml"
 hash = "9ce52d07c0c3d146a2a44f8bc187138ce7a5558a4e3ab540c86234702b6de274"
 metafile = true
