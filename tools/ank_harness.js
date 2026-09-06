@@ -13,7 +13,7 @@ const vm = require('vm')
 const ROOT = path.join(__dirname, '..')
 const SS = path.join(ROOT, 'pack', 'kubejs', 'server_scripts')
 const PRESET = path.join(ROOT, 'pack', 'datapacks', 'mcserver_npcs',
-  'data', 'easy_npc', 'preset', 'arkhdottir', 'ank.npc.snbt')
+  'data', 'easy_npc', 'preset', 'arkhdottir', 'ank_t0.npc.snbt')
 
 const G = '\x1b[32m', R = '\x1b[31m', B = '\x1b[1m', X = '\x1b[0m'
 let pass = 0, fail = 0
@@ -27,9 +27,11 @@ function grp(t) { console.log('\n' + B + t + X) }
 function build() {
   const commands = [], ambient = [], logs = []
   const server = { tickCount: 0, players: [], runCommandSilent: (c) => commands.push(c) }
+  let descents = 0
   const ctx = {
     VELDORA: {
       announce: { text: (s, p, t) => { ambient.push(t); return true }, P_AMBIENT: 0 },
+      urge: { descents: () => descents },
     },
     Math, String, JSON,
     console: { info: (m) => logs.push(String(m)), warn: (m) => logs.push('WARN ' + m), error: (m) => logs.push('ERR ' + m) },
@@ -47,7 +49,8 @@ function build() {
       putBoolean(k, v) { this._d[k] = v }, getBoolean(k) { return !!this._d[k] },
     },
   })
-  return { A: ctx.VELDORA.ank, server, player, commands, ambient, logs }
+  return { A: ctx.VELDORA.ank, ctx, server, player, commands, ambient, logs,
+           setDescents: (n) => { descents = n } }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -152,6 +155,29 @@ grp('⚠️ HE IS FOUND BY TAG, NOT BY TYPE')
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+grp('⭐⭐ THE PRICE FALLS AS HE LOSES — driven by descents, not days')
+{
+  // 🔑 Every descent is Ank losing the argument, so his next offer is better. The
+  // discount is EVIDENCE that he is failing — which means a player who never goes down
+  // never sees him desperate, and days would have given that away for free.
+  const e = build()
+  const p = e.player(-10, false)
+  const at = (n) => { e.setDescents(n); return e.A.presetFor(p) }
+  ok('a player who has never descended meets an ordinary merchant', at(0), 'arkhdottir/ank_t0')
+  ok('one descent and he improves the offer', at(1), 'arkhdottir/ank_t1')
+  ok('...two or three, further', at(2), 'arkhdottir/ank_t2')
+  ok('...and by four he is openly desperate', at(4), 'arkhdottir/ank_t3')
+  ok('...and it does not run off the end', at(99), 'arkhdottir/ank_t3')
+
+  // ⚠️ The tier must reach the SPAWN, not just be computable. A price stage nothing
+  // spawns is a table of numbers.
+  e.setDescents(2)
+  e.A.consider(e.server, p)
+  const spawn = e.commands.find(c => c.indexOf('easy_npc spawn') !== -1) || ''
+  ok('the spawn command carries the tier', spawn.indexOf('ank_t2') !== -1, true)
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 grp('⭐ THE PRESET IS GENERATED, AND CARRIES WHAT ETHAN ASKED FOR')
 {
   const snbt = fs.existsSync(PRESET) ? fs.readFileSync(PRESET, 'utf8') : ''
@@ -174,9 +200,19 @@ grp('⭐ THE PRESET IS GENERATED, AND CARRIES WHAT ETHAN ASKED FOR')
     /buy:\{\s*id:"minecraft:(iron|gold|diamond|coal|copper|emerald)/.test(snbt), false)
   ok('...and no numismatics coin', snbt.indexOf('numismatics:') === -1, true)
 
-  // ⭐ The rate has to be absurd or it is not a bribe. One wheat must buy several ingots.
-  const iron = /sell:\{\s*id:"minecraft:iron_ingot",\s*count:(\d+)/.exec(snbt)
-  ok('one wheat buys a pile of iron', iron && Number(iron[1]) >= 8, true)
+  // ⭐ THE RAMP, READ OFF THE FILES. Tier 0 is an ordinary trade and only the later ones
+  // look like panic — if he starts absurd there is nowhere left for him to go.
+  const ironAt = (t) => {
+    const f = PRESET.replace('ank_t0', 'ank_t' + t)
+    const m = /sell:\{\s*id:"minecraft:iron_ingot",\s*count:(\d+)/.exec(fs.readFileSync(f, 'utf8'))
+    return m ? Number(m[1]) : -1
+  }
+  const ramp = [0, 1, 2, 3].map(ironAt)
+  ok('four tiers exist', ramp.every(n => n > 0), true)
+  ok('...tier 0 is an ordinary trade, not a bribe', ramp[0] <= 2, true)
+  ok('...and each tier is strictly better than the last',
+    ramp.every((n, i) => i === 0 || n > ramp[i - 1]), true)
+  ok('...ending somewhere absurd', ramp[3] >= 12, true)
   // ⛔ He never fights. An attack objective here would turn a warning into a brawl.
   ok('carries no attack objective', /Type:"(MELEE|BOW|CROSSBOW|GUN|ZOMBIE)_ATTACK"/.test(snbt), false)
   ok('...and no attack targeting', /Type:"ATTACK_/.test(snbt), false)

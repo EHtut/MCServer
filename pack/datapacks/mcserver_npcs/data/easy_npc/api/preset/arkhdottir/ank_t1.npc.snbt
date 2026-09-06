@@ -53,7 +53,7 @@
           },
           sell:{
             id:"minecraft:iron_ingot",
-            count:8
+            count:3
           },
           maxUses:9999,
           uses:0,
@@ -70,7 +70,7 @@
           },
           sell:{
             id:"minecraft:coal",
-            count:24
+            count:10
           },
           maxUses:9999,
           uses:0,
@@ -87,7 +87,7 @@
           },
           sell:{
             id:"minecraft:copper_ingot",
-            count:12
+            count:5
           },
           maxUses:9999,
           uses:0,
@@ -104,7 +104,7 @@
           },
           sell:{
             id:"minecraft:gold_ingot",
-            count:6
+            count:2
           },
           maxUses:9999,
           uses:0,
@@ -117,7 +117,7 @@
         {
           buy:{
             id:"minecraft:bread",
-            count:1
+            count:4
           },
           sell:{
             id:"minecraft:diamond",

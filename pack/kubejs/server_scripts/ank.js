@@ -36,7 +36,33 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var TAG = '[ank] '
   var GATE = true
 
-  var PRESET = 'arkhdottir/ank'
+  // ⭐ ONE PRESET PER PRICE TIER, chosen at spawn. Ethan, 2026-09-05: *"is it possible
+  // to stage the prices as expensive to start, getting cheaper?"*
+  //
+  // 🔑 IT COSTS NOTHING AT RUNTIME BECAUSE HE ALREADY RESPAWNS CONSTANTLY. He leaves
+  // every time the player surfaces or goes deep, so the tier is simply which file to
+  // spawn - no way to mutate a live merchant's offers is needed, and the mod may well
+  // not have one.
+  //
+  // ⚠️ THE DRIVER IS DESCENTS, NOT DAYS, and that is the character of it. Every descent
+  // is Ank losing the argument, so his next offer is better - the discount is EVIDENCE
+  // that he is failing. A player who never goes down never sees him desperate at all,
+  // which days would have given away for free.
+  var PRESETS = [
+    'arkhdottir/ank_t0',   // 0 descents - an ordinary merchant
+    'arkhdottir/ank_t1',   // 1
+    'arkhdottir/ank_t2',   // 2-3
+    'arkhdottir/ank_t3',   // 4+  - openly desperate
+  ]
+  var TIER_AT = [0, 1, 2, 4]     // descents needed for each tier above
+
+  function presetFor(p) {
+    var n = 0
+    try { if (VELDORA.urge && typeof VELDORA.urge.descents === 'function') n = VELDORA.urge.descents(p) } catch (e) { }
+    var idx = 0
+    for (var i = 0; i < TIER_AT.length; i++) if (n >= TIER_AT[i]) idx = i
+    return PRESETS[Math.min(idx, PRESETS.length - 1)]
+  }
   var TAG_NAME = 'veldora_ank'          // scoreboard tag, so we can find our own NPC
   var K_ACTIVE = 'veldora_ank_active'   // per-player: is he out with them right now
 
@@ -108,7 +134,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   function spawn(srv, p) {
     try {
       srv.runCommandSilent('execute at ' + p.username +
-        ' run easy_npc spawn ' + PRESET + ' ~ ~ ~')
+        ' run easy_npc spawn ' + presetFor(p) + ' ~ ~ ~')
       // Tag whatever just appeared nearest to the player, so the boundary check can find
       // him again. ⚠️ Runs as a separate command because the spawn does not return a handle.
       srv.runCommandSilent('execute at ' + p.username +
@@ -172,7 +198,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     if (want && !out) {
       if (!spawn(srv, p)) return 'spawn-failed'
       setActive(p, true)
-      console.info(TAG + p.username + ' - Ank steps out (y ' + Math.round(yOf(p)) + ')')
+      console.info(TAG + p.username + ' - Ank steps out (y ' + Math.round(yOf(p)) +
+        ', ' + presetFor(p) + ')')
       return 'spawned'
     }
 
@@ -195,6 +222,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     consider: consider,
     shouldBeOut: shouldBeOut,
     isActive: isActive,
+    presetFor: presetFor,
+    presets: PRESETS,
     TOO_DEEP: TOO_DEEP,
     COME_BACK: COME_BACK,
     CHILL: CHILL,
@@ -257,7 +286,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
 
   ServerEvents.loaded(function () {
     console.info(TAG + 'Ank is live. Upper caves only, above y' + TOO_DEEP +
-      ', pathless players only. He is a PRESET (' + PRESET + '); this file owns only ' +
-      'the band he exists in.')
+      ', pathless players only. ' + PRESETS.length + ' price tiers, driven by descents; ' +
+      'this file owns only the band he exists in.')
   })
 })();

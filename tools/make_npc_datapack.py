@@ -68,33 +68,42 @@ NPCS = {
         ],
         # ── ⭐ THE BRIBE, AND WHAT IT COSTS ────────────────────────────────
         # Ethan, 2026-09-05: *"ank has ores that are at severely reduced cost to go
-        # below... he tries very hard to keep you out without actually stopping you"* and
-        # *"the trades should be pretty free."*
+        # below... he tries very hard to keep you out"* and *"the trades should be pretty
+        # free."*
         #
         # 🔴 EMERALDS WERE WRONG AND HE CAUGHT IT. A day-1 pathless player has none, and
         # numismatics coins are worse: read out of the jar, they have NO crafting recipe,
-        # NO loot table and NO villager mixin, so they only exist once somebody has built
-        # Create vendor machinery. A currency the player cannot hold is a shop they cannot
-        # enter, and Ank's whole argument would be behind a door.
+        # NO loot table and no villager mixin, so they only exist once somebody has built
+        # Create vendor machinery. A currency the player cannot hold is a shop with the
+        # door locked, which is worse than no shop because it looks finished.
         #
         # ⭐ WHEAT, AND IT IS THE REASON HE TRADES AT ALL. He lives in a cave; he cannot
         # farm. Food is the one thing the surface has that he does not, which makes an
-        # absurd exchange rate read as CHARACTER rather than as a broken shop: he is not
-        # running an economy, he is paying whatever it costs to keep somebody up there
-        # where the wheat grows. ⛔ Price it sensibly and you delete the beat.
+        # absurd rate read as CHARACTER rather than a broken shop.
         #
-        # 🔑 AND HE IS NOT THE ONLY SOURCE, WHICH IS WHAT MAKES IT A CHOICE.
-        # `mcserver_surface_ores` already places every ore in a y54-120 band precisely so
-        # "descending is a CHOICE" - so Ank is not gating anything. He is offering the
-        # same ore FASTER, which is an argument rather than a wall.
+        # 🔑 HE IS NOT THE ONLY SOURCE. `mcserver_surface_ores` already places every ore
+        # in a y54-120 band precisely so "descending is a CHOICE" - so Ank gates nothing.
+        # He offers the same ore FASTER, which is an argument rather than a wall.
         #
-        # ⚠️ Counts are a first guess and are meant to be. Watch a playthrough.
-        "trades": [
-            ("minecraft:wheat", 1, "minecraft:iron_ingot", 8),
-            ("minecraft:wheat", 1, "minecraft:coal", 24),
-            ("minecraft:wheat", 1, "minecraft:copper_ingot", 12),
-            ("minecraft:wheat", 2, "minecraft:gold_ingot", 6),
-            ("minecraft:bread", 1, "minecraft:diamond", 1),
+        # ── ⭐⭐ AND THE PRICE FALLS AS HE LOSES ──────────────────────────────
+        # Ethan, 2026-09-05: *"is it possible to stage the prices as expensive to start,
+        # getting cheaper?"*
+        #
+        # 🔑 THE DRIVER IS DESCENTS, NOT DAYS, and that is the whole character of it.
+        # Every time the player goes down anyway, Ank loses the argument and bids higher -
+        # so the discount is EVIDENCE that he is failing, and a player who never descends
+        # never sees the desperate prices at all. Days would make it a schedule; descents
+        # make it a reaction.
+        #
+        # ⚠️ Tier 0 is a NORMAL trade. He opens like an ordinary merchant, and only the
+        # later tiers look like somebody panicking - which is what makes the panic legible.
+        # If he starts absurd there is nowhere for him to go.
+        "trade_tiers": [
+            # descents seen -> what one wheat buys
+            {"at": 0, "iron": 1, "coal": 4, "copper": 2, "gold_per_2": 1, "diamond_bread": 8},
+            {"at": 1, "iron": 3, "coal": 10, "copper": 5, "gold_per_2": 2, "diamond_bread": 4},
+            {"at": 2, "iron": 8, "coal": 24, "copper": 12, "gold_per_2": 6, "diamond_bread": 2},
+            {"at": 4, "iron": 16, "coal": 48, "copper": 24, "gold_per_2": 12, "diamond_bread": 1},
         ],
     },
 }
@@ -128,6 +137,19 @@ def snbt(value, indent=0):
     raise TypeError("cannot serialise %r" % type(value))
 
 
+def trades_for(tier):
+    """One tier's offers. ⚠️ The SHAPE is fixed and only the counts move, so a player
+    comparing prices across a week sees the same five rows getting better rather than a
+    different shop each time."""
+    return [
+        ("minecraft:wheat", 1, "minecraft:iron_ingot", tier["iron"]),
+        ("minecraft:wheat", 1, "minecraft:coal", tier["coal"]),
+        ("minecraft:wheat", 1, "minecraft:copper_ingot", tier["copper"]),
+        ("minecraft:wheat", 2, "minecraft:gold_ingot", tier["gold_per_2"]),
+        ("minecraft:bread", tier["diamond_bread"], "minecraft:diamond", 1),
+    ]
+
+
 def offers(trades):
     """Vanilla MerchantOffers. ⚠️ 1.21 items are `{id, count}` — lowercase `count`; the
     pre-1.20.5 `Count` is silently ignored and the trade shows an empty slot."""
@@ -147,7 +169,7 @@ def offers(trades):
     return out
 
 
-def preset(key, spec):
+def preset(key, spec, trades, name_suffix=""):
     return {
         "PresetMetadata": {
             # ⛔ NOT "INTERNAL" — that is the mod's own marker and it feeds a security
@@ -159,7 +181,7 @@ def preset(key, spec):
             "description": "Act 0",
             "entityTypeId": spec["entity"],
             "modified": 1,
-            "name": spec["name"],
+            "name": spec["name"] + name_suffix,
             "variantType": spec["variant"],
             "version": "1.0.0",
         },
@@ -190,7 +212,7 @@ def preset(key, spec):
                 # end the argument early.
                 "ResetsEveryMin": 60,
             },
-            "Offers": {"Recipes": offers(spec.get("trades", []))},
+            "Offers": {"Recipes": offers(trades)},
             "ActionData": {"ActionEventSet": {
                 "ON_INTERACTION": [{"Type": "OPEN_TRADING_SCREEN"}],
             }},
@@ -205,7 +227,9 @@ def main():
     if "--print" in sys.argv:
         i = sys.argv.index("--print")
         key = sys.argv[i + 1] if i + 1 < len(sys.argv) else "ank"
-        print(snbt(preset(key, NPCS[key])))
+        spec = NPCS[key]
+        t = spec.get("trade_tiers")
+        print(snbt(preset(key, spec, trades_for(t[0]) if t else [])))
         return 0
 
     os.makedirs(PACK, exist_ok=True)
@@ -217,9 +241,21 @@ def main():
     for d in PRESET_DIRS:
         os.makedirs(d, exist_ok=True)
         for key, spec in NPCS.items():
-            path = os.path.join(d, key + ".npc.snbt")
-            io.open(path, "w", encoding="utf-8").write(snbt(preset(key, spec)) + "\n")
-            n += 1
+            tiers = spec.get("trade_tiers")
+            if not tiers:
+                path = os.path.join(d, key + ".npc.snbt")
+                io.open(path, "w", encoding="utf-8").write(
+                    snbt(preset(key, spec, [])) + chr(10))
+                n += 1
+                continue
+            # ⭐ ONE FILE PER TIER. ank.js picks which to spawn, and he despawns and
+            # returns constantly anyway - so staging the price costs nothing at runtime
+            # and needs no way to mutate a live merchant.
+            for i2, tier in enumerate(tiers):
+                path = os.path.join(d, "%s_t%d.npc.snbt" % (key, i2))
+                io.open(path, "w", encoding="utf-8").write(
+                    snbt(preset(key, spec, trades_for(tier))) + chr(10))
+                n += 1
 
     print("wrote %d preset file(s) for %d NPC(s)" % (n, len(NPCS)))
     for d in PRESET_DIRS:

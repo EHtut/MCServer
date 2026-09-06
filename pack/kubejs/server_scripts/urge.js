@@ -42,6 +42,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   }
 
   var K_LAST = 'veldora_urge_last_deep'   // world day of the last descent
+  var K_COUNT = 'veldora_urge_descents'   // how many times they have gone down at all
   var K_SPOKE = 'veldora_urge_spoke'      // world day the urge last spoke
 
   // ⭐ THE TIERS. Days without going below -> how agitated the line is.
@@ -124,13 +125,26 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     return out
   }
 
-  /** Record a descent. Resets the urge to nothing. */
+  /**
+   * Record a descent. Resets the urge to nothing, and counts it.
+   *
+   * ⭐ THE COUNT IS WHAT PRICES ANK. Every descent is him losing the argument, and his
+   * next offer is better for it - so the discount is EVIDENCE that he is failing rather
+   * than a schedule ticking over. A player who never goes down never sees him desperate.
+   */
   function descended(srv, p) {
     var now = dayOf(srv)
     if (now === null) return false
+    var first = getInt(p, K_LAST) !== now + 1
     putInt(p, K_LAST, now + 1)
+    // ⚠️ ONCE PER DAY, not once per sweep. The tick runs every ten seconds and a player
+    // mining below the boundary would otherwise reach the bottom tier in three minutes.
+    if (first) putInt(p, K_COUNT, getInt(p, K_COUNT) + 1)
     return true
   }
+
+  /** How many separate days this player has gone below. */
+  function descents(p) { return getInt(p, K_COUNT) }
 
   /**
    * Speak, if there is anything to say and it has not been said today.
@@ -177,6 +191,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     tierOf: tierOf,
     daysWithout: daysWithout,
     descended: descended,
+    descents: descents,
     tiers: TIERS,
     lines: LINES,
     written: function () {

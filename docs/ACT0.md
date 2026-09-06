@@ -28,6 +28,11 @@ wearing his own skin — plus the band he lives in: **underground, above y −32
 you surface or go deeper, with *"A chill runs up your spine."* He now also **trades**: ore for **wheat**, at
 a rate that makes no sense, which is the argument in a form the player can act on.
 
+⭐ **And the price falls every time he loses.** Four tiers, driven by **descents rather than
+days**: each descent is Ank losing the argument, so his next offer is better. The discount is
+*evidence that he is failing* — and a player who never goes down never sees him desperate,
+which a calendar would have given away for free.
+
 🔑 **And the wheat is the reason he trades at all.** He lives in a cave and cannot farm;
 food is the one thing the surface has that he does not. So an absurd exchange rate reads as
 *character* rather than a broken shop — he is not running an economy, he is paying whatever
@@ -147,6 +152,7 @@ She has no dialogue at all in the opening, so there is nothing to leak.
 | **B1b** | 🔜 **He leaves, with the line** | out of the band → despawn + *"A chill runs up your spine."* | fires on surfacing **and** on going below −32, once each, and **not** on a two-block bob at the boundary |
 | **B2** | 🔜 **Ank argues** | the words. He tries hard to keep you out **without stopping you** | 🖊️ **Ethan writes these.** The mechanism is built and every pool is empty |
 | **B3** | ✅ **Ank trades** | a real trade UI — ore for **wheat**, at a rate that makes no sense | `ank_harness` asserts the currency is surface-obtainable and that nothing he takes has to be mined. ⚠️ Counts are a first guess |
+| **B3c** | ✅ **The price falls as he loses** | four preset tiers, chosen at spawn. **Driven by descents, not days** | the ramp is read off the files: tier 0 is an ordinary trade, each tier strictly better, tier 3 absurd — and the tier reaches the spawn command, not just a table |
 | **B3b** | ✅ **The urge** | days *without* the deep escalate through four tiers. Descending resets it | `urge_harness` 21/21: the ramp fits inside the seven days, a descent silences it, and an empty pool reports `no-lines:<tier>` rather than going quiet |
 | **B4** | ⬜ **The cave is peaceful** | hostiles suppressed in the Act 0 band for the seven days | a player can sit in a cave on day 3 and not be attacked |
 | **B5** | ⬜ **The argument, overheard** | Ank and Caebrim argue *about the player*, audible from underground | it fires only below ground, only pathless, and it is **legible without being addressed to you** |
