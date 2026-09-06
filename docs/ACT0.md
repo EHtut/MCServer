@@ -44,7 +44,7 @@ against. **(b)** Is Caebrim's meeting fixed at day 4 or a window — you wrote "
 | **DOES NOT OWN** | *how a voice is placed or formatted* → `VOICES.md` · *who these people are* → `LORE.md` · *how a god is built* → `40` `43` `53` `56` · *the tide's composition* → `74` · *what is broken* → `DEFECTS.md` |
 | **STATE** | → `STATUS.md` — **only STATUS says what is in flight** |
 | **BLOCKS** | Act 1. The act-ending tide is Act 1's opening beat |
-| **VERIFIED BY** | `node tools/dialogue_check.js opening` · `node tools/dialogue_emu.js opening --play` |
+| **VERIFIED BY** | **`node tools/prefire.js`** after every chunk — offline suite plus the in-game checklist. `--game` for just the checklist |
 
 ---
 
@@ -137,6 +137,19 @@ She has no dialogue at all in the opening, so there is nothing to leak.
 ---
 
 ## ⑤ RULINGS
+
+**The server stays OFF until the testing phase.** *(Ethan, 2026-09-05: "the server should
+not even be on until the testing phase. we can build a prefire checklist for testing
+everything after each chunk.")* The counter-argument was that a live server catches things
+no offline check can — which is TRUE, and is exactly why prefire's second half exists
+rather than why the server should be up. A chunk closes on `node tools/prefire.js` being
+green **and its NEEDS-GAME items being written down**, not on someone having played it.
+
+⚠️ **So "green" and "tested" are different words here, permanently.** Prefire reports what
+was proved and what is still owed, and refuses to merge them. This project shipped 35/35
+green with a gate never flipped, a font in nobody's load path and a title card that had
+never rendered — every one invisible offline, and **nothing anywhere said so.**
+
 
 **Act 0 is people keeping you OUT, not something drawing you in.** *(Ethan, 2026-09-05.)*
 The counter-argument was the earlier arc — a pull downward around day 7, which is the more

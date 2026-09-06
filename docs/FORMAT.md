@@ -72,6 +72,12 @@ week something was dropped because it either wasn't logged or it was lost in the
 text."* Four of that week's five drops fell **between** docs, because every doc described its
 subject and none described its edges.
 
+**§④ a chunk closes on `prefire`, not on play.** The server is off until the testing phase
+(Ethan, 2026-09-05), so `node tools/prefire.js` is what finishes a chunk: it runs everything
+provable offline and then lists what only a live server can answer, scanned out of
+`NEEDS-GAME:` markers in the source. ⚠️ **Green there is not "tested"** — it is "everything
+testable without the game passes, and here are the N things still owed."
+
 **§④ a falsifier, not a description.** *"What result would tell me this chunk is wrong?"* If
 there is no answer, the chunk is not defined yet. Written **before** building.
 

@@ -29,6 +29,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   var TAG = '[story] '
   var GATE = true
 
+  // NEEDS-GAME: a toast fires and the Act 0 tab renders with the right icons :: /story reach the_caves
   var NS = 'mcserver:act0/'
   var K = 'veldora_story_'      // + key -> boolean, per player, per world
 

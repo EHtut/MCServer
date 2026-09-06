@@ -227,6 +227,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
     // pass-through that quietly omits a field is worse than one that errors, because the
     // caller cannot tell "ignored" from "applied and wrong" — so the same fix gets made
     // over and over against a boundary that never carried it.
+    // NEEDS-GAME: align actually left-aligns - the mod may ignore it like maxWidth :: /im test
     if (typeof o.align === 'number') t.push('align:' + Math.round(o.align))
 
     if (colour) t.push('color:' + quote(colour))

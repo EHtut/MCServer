@@ -69,6 +69,7 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   // 🔴 -70, AND THE NUMBER IS NOT FREE. From a CENTER anchor the crosshair owns -34..34
   // and the vanilla biome title owns -53..-11, so dead centre is unreadable and just
   // above centre collides with Traveler's Titles. -70 clears both. See VOICES.md §3.
+  // NEEDS-GAME: the card is legible, clear of the Seasons HUD and the crosshair :: /opening reset then relog
   var TITLE_Y = -70
 
   function lines() {
@@ -139,7 +140,8 @@ var VELDORA = (typeof VELDORA !== 'undefined') ? VELDORA : {};
   //
   // 🔴 THIS IS THE ONE PART OF THIS FILE THAT HAS NOT RUN AGAINST A LIVE SERVER. Everything
   // else here is exercised by the harness and the emulator; a `give` with a component
-  // argument can only be proved in game. `/opening journal` re-gives it for exactly that.
+  // argument can only be proved in game.
+  // NEEDS-GAME: the journal actually appears in the inventory, titled Journal, readable :: /opening journal
   // ⚠️ TWO LAYERS OF QUOTING, and they are easy to get backwards. Each page is a JSON text
   // component (double quotes) living inside an SNBT single-quoted string, inside a command.
   // A backslash must survive as a backslash, a double quote must be escaped for the JSON

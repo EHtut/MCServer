@@ -1318,3 +1318,45 @@ Two comments were arguing for behaviour Ethan had already overruled — `forge_v
 still made the case for shake-and-scatter, and `art_voice.js` still said "CENTER_CENTER
 with NO y" above a `y: -70`. Both corrected. ⚠️ **A stale comment outranks the code it sits
 on when the next person reads it.**
+
+---
+
+## D-134 — `check_datapack_refs.py` reads prose as a namespace ⬜ OPEN
+
+Found 2026-09-05 while building `tools/prefire.js`. **Pre-existing** — it fails identically
+six commits back, so nothing this session caused it.
+
+It reports:
+
+```
+*** wall - NOT INSTALLED, referenced by 2 file(s):
+      instance/kubejs/server_scripts/counter_hooks.js
+      repo/pack/kubejs/server_scripts/counter_hooks.js
+```
+
+⚠️ **`wall` is a GOD, not a mod**, and the "reference" is a comment — `counter_hooks.js:13`
+is a table of the five paths:
+
+```js
+//   wall     RAGE              🔴 NOT a verb, and NOT counted here - see below
+```
+
+The scanner matches `word:` shapes without excluding comments, so any prose containing a
+colon after a bare word reads as a namespaced id.
+
+**Why it matters more than the noise suggests.** This check exists to catch a real and
+silent failure — an unresolvable entity in a biome modifier fails registry load, and an
+unresolvable item in a Modonomicon book kicks players at login. A check that is
+*permanently red for a false reason* is one nobody reads, so the real hit arrives into an
+already-red result and is waved through. **A checker that cries wolf is worse than no
+checker**, which is the same conclusion the dialogue emulator reached twice in one day.
+
+⚠️ **`prefire.js` marks it `knownFailing` rather than hiding it or failing on it.** It is
+reported every run, distinctly, with this id — but it does not turn prefire red, because a
+suite that is red on arrival trains you to ignore the colour. ⛔ Remove that flag the moment
+this is fixed; a known-failing entry that has been fixed is the next stale claim.
+
+**The fix**, when it is worth doing: strip `//` and `#` comments before scanning, and
+require a namespace to look like an id (`[a-z0-9_]+:[a-z0-9_/.]+`) rather than any word
+followed by a colon.
+
